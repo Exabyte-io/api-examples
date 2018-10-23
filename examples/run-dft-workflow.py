@@ -89,3 +89,9 @@ if __name__ == '__main__':
 
         # form table
         data = flatten_material(initial_structure)
+        data.extend(flatten_material(final_structure))
+        data.extend([pressure, band_gap_direct, band_gap_indirect])
+
+        rows.append(data)
+
+    print tabulate(rows, headers, tablefmt='grid', stralign='center')

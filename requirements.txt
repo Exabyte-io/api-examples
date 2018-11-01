@@ -1,0 +1,2 @@
+jupyter==1.0.0
+-e git+git@github.com:Exabyte-io/exabyte-api-client.git#egg=exabyte-api-client

@@ -31,4 +31,4 @@ This repository contains the RESTful API examples in iPython notebook format.
     jupyter notebook
     ```
 
-5.
+5. Navigate to desired example, open, adjust and run it.

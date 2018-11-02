@@ -43,11 +43,6 @@ If you would like to add new examples or adjust existing ones, please consider t
 
 2. Provide enough explanation in examples, close to the code as much as possible.
 
-3. We use [post-save hooks](https://jupyter-notebook.readthedocs.io/en/stable/extending/savehooks.html) to automatically convert notebooks to python scripts as it is difficult to review the notebooks on GitHub. Please push iPython notebooks to [Git LFS](https://git-lfs.github.com/) and scripts to  GitHub.
-
-    ```bash
-    git lfs track get_authentication_params.ipynb
-    git add .gitattributes get_authentication_params.py
-    git commit -m 'COMMIT MESSAGE'
-    git push
-    ```
+3. We use [post-save hooks](https://jupyter-notebook.readthedocs.io/en/stable/extending/savehooks.html) to automatically convert notebooks to python scripts. See [jupyter_notebook_config.py](jupyter_notebook_config.py) for more information.
+ 
+4. As it is difficult to review the notebooks on GitHub we [automatically](.gitattributes) add iPython notebooks to [Git LFS](https://git-lfs.github.com/) to only review python scripts on GitHub.

@@ -31,4 +31,6 @@ This repository contains the RESTful API examples in iPython notebook format.
     jupyter notebook
     ```
 
-5. Navigate to desired example, open, adjust and run it.
+5. Open [settings](examples/settings.ipynb) and adjust it as necessary.
+
+6. Navigate to desired example, open, adjust and run it.

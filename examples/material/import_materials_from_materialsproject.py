@@ -27,12 +27,19 @@ from endpoints.materials import MaterialEndpoints
 #     
 #     - **TAGS**: A list of tags you want to assign to imported materials.
 
-# In[4]:
+# In[2]:
 
 
 MATERIALS_PROJECT_API_KEY = "YOUR_API_KEY"
 MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
 TAGS = ["phase-ii", "difficulty-1"]
+
+
+# In[8]:
+
+
+from IPython.display import IFrame    
+IFrame('https://materialsproject.org/materials/{}'.format(MATERIALS_PROJECT_IDS[0]), width=800, height=650)
 
 
 # 3. Initialize `MaterialEndpoints` class and call `import_from_materialsproject` function to import materials.

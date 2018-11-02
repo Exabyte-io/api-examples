@@ -7,9 +7,9 @@ _script_exporter = None
 
 
 def script_post_save(model, os_path, contents_manager, **kwargs):
-    """convert notebooks to Python script after save with nbconvert
-
-    replaces `jupyter notebook --script`
+    """
+    Converts notebooks to Python script on save.
+    See https://jupyter-notebook.readthedocs.io/en/stable/extending/savehooks.html for more information.
     """
     from nbconvert.exporters.script import ScriptExporter
 

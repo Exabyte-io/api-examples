@@ -28,7 +28,7 @@ This repository contains the RESTful API examples in iPython notebook format.
 
     ```bash
     cd examples
-    jupyter notebook --config=jupyter_notebook_config.py
+    jupyter notebook --config=config.py
     ```
 
 5. Open [settings](examples/settings.ipynb) and adjust it as necessary.

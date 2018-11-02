@@ -10,7 +10,7 @@ This repository contains the RESTful API examples in [Jupyter Notebook](http://j
     git clone git@github.com:Exabyte-io/exabyte-api-examples.git
     ```
 
-2. Install python [virtualenv](https://virtualenv.pypa.io/en/stable/installation/) if you do not have it.
+2. Install python [virtualenv](https://virtualenv.pypa.io/en/stable/) by [pip](https://pip.pypa.io/en/stable/)if you do not have it.
     ```bash
     pip install virtualenv
     ```

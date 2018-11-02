@@ -45,9 +45,9 @@ This repository contains examples for performing most-common tasks in the Exabyt
 
 If you would like to add new examples or adjust existing ones, please consider the following points.
 
-1. Put examples into proper directories.
+1. Put examples into the corresponding directories by domain.
 
-2. Provide enough explanation in examples, close to the code as much as possible.
+2. Walk the readers through the examples by providing step-by-step explanation similar to our examples, e.g. [this](material/get_materials_by_formula.ipynb).
 
 3. We use post-save hooks to automatically convert notebooks to python scripts. See [jupyter notebook config](config.py) for more information.
  

@@ -3,7 +3,7 @@
 
 # # Overview
 # 
-# Inside this example we contact [materials](https://docs.exabyte.io/api/#!/Materials/get_materials) endpoint to obtain a list materials that an account has access to. We use chemical formula to filter the list.
+# Inside this example we contact [Material](https://docs.exabyte.io/api/Material/get_materials) endpoint to obtain a list materials that an account has access to. We use chemical formula to filter the list.
 
 # 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
 
@@ -25,7 +25,8 @@ from endpoints.materials import MaterialEndpoints
 
 
 QUERY = {
-    "formula": "SiGe"
+    "formula": "SiGe",
+    "owner.slug": "demo"
 }
 
 

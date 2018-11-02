@@ -3,7 +3,7 @@
 
 # # Overview
 # 
-# This example demonstrates how to import materials from the materials project database. We use [this](https://docs.exabyte.io/api/#!/Materials/get_materials) endpoint to do so.
+# This example demonstrates how to import materials from the materials project database via [Material](https://docs.exabyte.io/api/Material/post_materials_import) endpoint.
 
 # 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
 

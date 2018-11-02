@@ -3,7 +3,7 @@
 
 # # Overview
 # 
-# This example shows how to log in to Exabyte RESTFul API via [login](https://docs.exabyte.io/api/) endpoint and generate API authentication parameters.
+# This example shows how to log in to Exabyte RESTFul API via [Login](https://docs.exabyte.io/api/API/post_login) endpoint and generate API authentication parameters.
 
 # 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
 

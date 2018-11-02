@@ -3,7 +3,7 @@
 
 # # Overview
 # 
-# This example demonstrates how to create and submit a job. We use [this]() endpoint to create and [this]() endpoint to submit the job.
+# This example demonstrates how to create and submit a job via [Job](https://docs.exabyte.io/api/Job/put_jobs_create) endpoints.
 
 # 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
 

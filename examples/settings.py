@@ -23,6 +23,9 @@
 # 
 # 
 # - **AUTH_TOKEN**: Your authentication token.
+# 
+# 
+# - **MATERIALS_PROJECT_API_KEY**: Your materials project API key.
 
 # In[ ]:
 
@@ -32,6 +35,7 @@ SECURE = True
 VERSION = "2018-10-01"
 HOST = "platform.exabyte.io"
 
-ACCOUNT_ID = "knJyjbqxww7kt4GpA"
-AUTH_TOKEN = "Jh6umOZqjfTQldC4gMnObb-rdoiNMg87ga0yZ-wcnQ9"
+ACCOUNT_ID = "YOUR_ACCOUNT_ID"
+AUTH_TOKEN = "YOUR_AUTH_TOKEN"
+MATERIALS_PROJECT_API_KEY = "YOUR_API_KEY"
 

@@ -19,7 +19,7 @@ from settings import *
 from endpoints.materials import MaterialEndpoints
 
 
-# 2. Cerate material config in JSON format.
+# 2. Create material config in JSON format. See [this endpoint](https://docs.exabyte.io/api/Material/put_materials_create) for more information about material config format.
 
 # In[3]:
 

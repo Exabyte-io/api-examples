@@ -4,7 +4,7 @@ This repository contains the RESTful API examples in iPython notebook format.
 
 # How to run examples
 
-1. Clone the repository into the user home directory.
+1. Clone the repository.
     
     ```bash
     git clone git@github.com:Exabyte-io/exabyte-api-examples.git

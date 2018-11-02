@@ -1,0 +1,4 @@
+run-dft-workflow.ipynb filter=lfs diff=lfs merge=lfs -text
+run-ml-workflow.ipynb filter=lfs diff=lfs merge=lfs -text
+settings.ipynb filter=lfs diff=lfs merge=lfs -text
+create_and_submit_job.ipynb filter=lfs diff=lfs merge=lfs -text

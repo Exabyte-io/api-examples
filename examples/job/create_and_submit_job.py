@@ -20,6 +20,8 @@ from endpoints.jobs import JobEndpoints
 
 
 # 2. Create job config in JSON format. Adjust material ID, workflow ID and job name accordingly.
+#     - Use [this](../material/get_materials_by_formula.py) example to get the material from API and extract its ID.
+#     - Use [this](../workflow/get_workflows.ipynb) example to get the workflow from API and extract its ID.
 
 # In[4]:
 

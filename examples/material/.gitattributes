@@ -1,0 +1,4 @@
+create_material.ipynb filter=lfs diff=lfs merge=lfs -text
+get_materials_by_formula.ipynb filter=lfs diff=lfs merge=lfs -text
+import_materials_from_materialsproject.ipynb filter=lfs diff=lfs merge=lfs -text
+settings.ipynb filter=lfs diff=lfs merge=lfs -text

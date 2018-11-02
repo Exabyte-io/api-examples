@@ -1,8 +1,8 @@
-# Exabyte RESTful API examples
+# Exabyte RESTful API Examples
 
-This repository contains the RESTful API examples in iPython notebook format.
+This repository contains the RESTful API examples in [Jupyter Notebook](http://jupyter.org/) format.
 
-# How to run examples
+# Run Examples
 
 1. Clone the repository.
     
@@ -10,7 +10,7 @@ This repository contains the RESTful API examples in iPython notebook format.
     git clone git@github.com:Exabyte-io/exabyte-api-examples.git
     ```
 
-2. Install python virtualenv if you do not have it.
+2. Install python [virtualenv](https://virtualenv.pypa.io/en/stable/installation/) if you do not have it.
     ```bash
     pip install virtualenv
     ```
@@ -24,7 +24,7 @@ This repository contains the RESTful API examples in iPython notebook format.
     pip install -r requirements.txt
     ```
 
-4. Run Jupyter notebook. This will open Jupyter notebook in your browser.
+4. Run Jupyter. This will open Jupyter notebook in your browser.
 
     ```bash
     cd examples
@@ -35,7 +35,8 @@ This repository contains the RESTful API examples in iPython notebook format.
 
 6. Navigate to desired example, open, adjust and run it.
 
-# How to contribute
+
+# Contribute
 
 If you would like to add new examples or adjust existing ones, please consider the following points.
 
@@ -43,6 +44,6 @@ If you would like to add new examples or adjust existing ones, please consider t
 
 2. Provide enough explanation in examples, close to the code as much as possible.
 
-3. We use [post-save hooks](https://jupyter-notebook.readthedocs.io/en/stable/extending/savehooks.html) to automatically convert notebooks to python scripts. See [jupyter_notebook_config.py](jupyter_notebook_config.py) for more information.
+3. We use post-save hooks to automatically convert notebooks to python scripts. See [jupyter notebook config](config.py) for more information.
  
-4. As it is difficult to review the notebooks on GitHub we [automatically](.gitattributes) add iPython notebooks to [Git LFS](https://git-lfs.github.com/) to only review python scripts on GitHub.
+4. As it is difficult to review the notebooks on GitHub we [automatically](.gitattributes) add iPython notebooks to [Git LFS](https://git-lfs.github.com/).

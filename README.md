@@ -34,3 +34,20 @@ This repository contains the RESTful API examples in iPython notebook format.
 5. Open [settings](examples/settings.ipynb) and adjust it as necessary.
 
 6. Navigate to desired example, open, adjust and run it.
+
+# How to contribute
+
+If you would like to add new examples or adjust existing ones, please consider the following points.
+
+1. Put examples into proper directories.
+
+2. Provide enough explanation in examples, close to the code as much as possible.
+
+3. We use [post-save hooks](https://jupyter-notebook.readthedocs.io/en/stable/extending/savehooks.html) to automatically convert notebooks to python scripts as it is difficult to review the notebooks on GitHub. Please push iPython notebooks to [Git LFS](https://git-lfs.github.com/) and scripts to  GitHub.
+
+    ```bash
+    git lfs track get_authentication_params.ipynb
+    git add .gitattributes get_authentication_params.py
+    git commit -m 'COMMIT MESSAGE'
+    git push
+    ```

@@ -81,7 +81,7 @@ ACCOUNT_SLUG = "exabyte"
 
 MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
 MATERIALS_SET_NAME = "materials-set"
-TAGS = ["phase-iii", "difficulty-1"]
+TAGS = ["tag1", "tag2"]
 
 
 # Set parameters for the jobs to be ran for the imported materials:

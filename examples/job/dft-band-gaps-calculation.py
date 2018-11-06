@@ -270,7 +270,7 @@ for result in results:
 # 
 # - **"INI"**: INITIAL
 # - **"FIN"**: FINAL
-# - **"NS"**: Number of sites
+# - **"NS"**: Number of Sites
 # - **"LAT"**: LATTICE
 
 # In[ ]:
@@ -291,8 +291,8 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 headers = []
 data = [[flatten_material(d["initial_structure"]), flatten_material(d["initial_structure"], d["pressure"], d["band_gap_direct"], d["band_gap_indirect"]] for d in data]
 keys = ["ID", "NAME", "TAGS", "N-SITES", "LAT-A", "LAT-B", "LAT-C", "LAT-ALPHA", "LAT-BETA", "LAT-GAMMA"]
-headers.extend(["-".join(("INITIAL", key)) for key in keys])
-headers.extend(["-".join(("FINAL", key)) for key in keys])
+headers.extend(["-".join(("INI", key)) for key in keys])
+headers.extend(["-".join(("FIN", key)) for key in keys])
 headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 pd.set_option('display.max_colwidth', -1)
 pd.set_option('display.max_columns', 30)

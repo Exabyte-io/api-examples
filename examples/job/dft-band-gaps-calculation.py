@@ -99,12 +99,12 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 JOBS_SET_NAME = "jobs-set"
 
 
-# This example is based on the below public [bank workflow](https://docs.exabyte.io/workflows/bank/#workflows-bank) which is later copied to the account workflows.
+# This example is based on the below [bank workflow](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) which is later copied to the account workflows.
 
 # In[3]:
 
 
-BANK_WORKFLOW_ID = "QJ679L68QnasvM9iP"
+BANK_WORKFLOW_ID = "BEWfDREDFFL9g8Qpk"
 
 
 # Setup compute parameters:
@@ -124,7 +124,7 @@ PPN = "1"
 QUEUE = "D"
 NODES = "1"
 TIME_LIMIT = "01:00:00"
-CLUSTER = "master-vagrant-cluster-001.exabyte.io"
+CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
 
 
 # ## Initialize the endpoints

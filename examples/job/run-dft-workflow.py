@@ -17,7 +17,7 @@
 # 
 # - Outputing the results as pandas dataFrame
 
-# 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
+# Import required packages. Adjust [settings](../settings.ipynb) as necessary.
 
 # In[24]:
 
@@ -33,55 +33,49 @@ from endpoints.materials import MaterialEndpoints
 from endpoints.raw_properties import RawPropertiesEndpoints
 
 
-# 2. Setup parameters
+# Setup parameters:
 #     
-#     - **MATERIALS_PROJECT_IDS**: A list of material IDs you would like to import.
+# - **MATERIALS_PROJECT_IDS**: A list of material IDs to be imported from [materials project](https://materialsproject.org/).
 # 
-#     - **TAGS**: A list of tags you want to assign to imported materials.
+# - **TAGS**: A list of tags to assign to imported materials.
 # 
-#     - **OWNER_ID**: ID of account that materials and jobs belongs to.
+# - **OWNER_ID**: ID of account that materials and jobs belongs to.
 # 
-#     - **PROJECT_ID**: The ID of project you would like to create the jobs in.
+# - **PROJECT_ID**: The ID of project to create the jobs in.
 # 
-#     - **JOBS_SET_NAME**: The name of the jobs set. Defaults to set.
+# - **JOBS_SET_NAME**: The name of the jobs set. Defaults to "jobs-set".
 # 
-#     - **MATERIALS_SET_NAME**: The name of the materials set. Defaults to set.
+# - **MATERIALS_SET_NAME**: The name of the materials set. Defaults to "materials-set".
 
 # In[25]:
 
 
-JOBS_SET_NAME = "set"
 JOB_PREFIX = "phase-iii"
-MATERIALS_SET_NAME = "set"
+JOBS_SET_NAME = "jobs-set"
 OWNER_ID = "knJyjbqxww7kt4GpA"
 PROJECT_ID = "qqzbhRckbgTDNtD33"
+MATERIALS_SET_NAME = "materials-set"
 TAGS = ["phase-iii", "difficulty-1"]
 MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
 
 
-# This example is based on the below workflow. Make sure to copy it into your account and use its ID here. 
-
-# In[5]:
-
-
-IFrame('https://platform.exabyte.io/exabyte-io/workflows/YorcAEzG9gqtdvARj', width=800, height=650)
-
+# This example is based on the below bank workflow which is later copied to the account workflows.
 
 # In[26]:
 
 
-WORKFLOW_ID = "5bdcdab3d7aad220b93140da"
+BANK_WORKFLOW_ID = "5bdcdab3d7aad220b93140da"
 
 
-# 3. Setup compute parameters
+# Setup compute parameters:
 # 
-#     - **NODES**: Number of nodes. Defaults to 1.
-#     - **PPN**: Number of MPI processes per each node, Defaults to 1.
-#     - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
-#     - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
-#     - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into:
-#         - master-production-20160630-cluster-001.exabyte.io (AWS, c4, hyperthreaded)
-#         - master-production-20160630-cluster-007.exabyte.io (Azure, H and NCv2 series, premium)
+# - **NODES**: Number of nodes. Defaults to 1.
+# - **PPN**: Number of MPI processes per each node, Defaults to 1.
+# - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
+# - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
+# - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into:
+#     - master-production-20160630-cluster-001.exabyte.io (AWS, c4, hyperthreaded)
+#     - master-production-20160630-cluster-007.exabyte.io (Azure, H and NCv2 series, premium)
 
 # In[64]:
 
@@ -93,7 +87,7 @@ TIME_LIMIT = "01:00:00"
 CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
 
 
-# 4. Initialize job, material, and raw property endpoints. This needs to be done only once.
+# Initialize job, material, and raw property endpoints. This needs to be done only once.
 
 # In[28]:
 
@@ -101,9 +95,18 @@ CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
 job_endpoints = JobEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
 material_endpoints = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
 raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+bank_workflow_endpoints = bankWorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
 
 
-# 5. Import material from materials project with the above tags.
+# Copy bank workflow to account workflows.
+
+# In[ ]:
+
+
+bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, OWNER_ID)
+
+
+# Import material from materials project with the above tags.
 
 # In[ ]:
 
@@ -111,7 +114,7 @@ raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOK
 materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, OWNER_ID, TAGS)
 
 
-# 6. Create a materials set and move the materials into it.
+# Create a materials set and move the materials into it.
 
 # In[31]:
 
@@ -120,7 +123,7 @@ materials_set = material_endpoints.create_set({"name": MATERIALS_SET_NAME, "owne
 for material in materials: material_endpoints.move_to_set(material["_id"], "", materials_set["_id"])
 
 
-# 7. Create jobs for the materials above.
+# Create jobs for the materials above.
 
 # In[32]:
 
@@ -129,7 +132,7 @@ compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
 jobs = job_endpoints.create_by_ids(materials, WORKFLOW_ID, PROJECT_ID, OWNER_ID, JOB_PREFIX, compute)
 
 
-# 8. Create a jobs set and move the jobs into it.
+# Create a jobs set and move the jobs into it.
 
 # In[33]:
 
@@ -138,7 +141,7 @@ jobs_set = job_endpoints.create_set({"name": JOBS_SET_NAME, "projectId": PROJECT
 for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 
 
-# 9. Submit the jobs to the cluster.
+# Submit the jobs to the cluster.
 
 # In[34]:
 
@@ -146,7 +149,7 @@ for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 for job in jobs: job_endpoints.submit(job["_id"])
 
 
-# 10. Wait for jobs to finish.
+# Wait for jobs to finish.
 
 # In[35]:
 
@@ -168,7 +171,7 @@ def get_property_by_subworkow_and_unit_indecies(property_name, job, subworkflow_
     return raw_property_endpoints.get_property(job["_id"], unit_flowchart_id, property_name)
 
 
-# 11. For each material, extract final structure, pressure, and band gaps and flatten them to form the final dataFrame.
+# For each material, extract final structure, pressure, and band gaps and flatten them to form the final dataFrame.
 
 # In[39]:
 
@@ -187,7 +190,7 @@ for material in materials:
     rows.append(data)
 
 
-# 12. Create and print the final data as dataFrame.
+# Create and print the final data as dataFrame.
 
 # In[65]:
 

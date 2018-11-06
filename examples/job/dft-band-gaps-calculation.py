@@ -3,26 +3,26 @@
 
 # # Overview
 # 
-# This example demonstrates how to use Exabyte RESTful API to create simulation Jobs programmatically for multiple Materials at a time and extract the resulting properties forming a Pandas dataframe.
+# This example demonstrates how to use Exabyte RESTful API to create simulation [Jobs](https://docs.exabyte.io/jobs/overview/) programmatically for multiple [Materials](https://docs.exabyte.io/materials/overview/) at a time and extract the resulting [Properties](https://docs.exabyte.io/properties/overview/) forming a [Pandas](https://pandas.pydata.org/) dataframe.
 # 
-# This approach can work with any Workflow and multiple materials at once. For the demonstration purpose we use the Density Functional Theory and extract Electronic Band Gap as the property of interest.
+# This approach can work with any [Workflows](https://docs.exabyte.io/workflows/overview/) and multiple materials at once. For the demonstration purpose we use the Density Functional Theory and extract Electronic Band Gap as the property of interest.
 # 
 # 
 # # Steps
 # 
 # We following the below steps:
 # 
-# - Import [materials](https://docs.exabyte.io/materials/overview/) from materials project
+# - Import materials from [materials project](https://materialsproject.org/)
 # 
 # - Group imported materials inside a [materials set](https://docs.exabyte.io/entities-general/sets/)
 # 
-# - Create [jobs](https://docs.exabyte.io/jobs/overview/) for the materials and grouping them inside a [jobs set](https://docs.exabyte.io/entities-general/sets/)
+# - Create jobs for the materials and grouping them inside a [jobs set](https://docs.exabyte.io/entities-general/sets/)
 # 
 # - Submit jobs and monitoring the progress
 # 
-# - Extract the [final structure](https://docs.exabyte.io/properties/overview/) (relaxed structure) and its properties
+# - Extract the final structure (relaxed structure) and its properties
 # 
-# - Output the results as [pandas](https://pandas.pydata.org/) dataFrame
+# - Output the results as Pandas dataFrame
 # 
 # # Pre-requisites
 # 
@@ -57,9 +57,9 @@ from endpoints.raw_properties import RawPropertiesEndpoints
 
 # ## Setup parameters
 # 
-# Set the account under which all the steps will be executed below:
+# Set the [account](https://docs.exabyte.io/accounts/overview/) under which all the steps will be executed below:
 # 
-# - **ACCOUNT_SLUG**: Slug of [account](https://docs.exabyte.io/accounts/overview/) entities belong to.
+# - **ACCOUNT_SLUG**: Slug of the account under which all the steps will be executed.
 # 
 # > <span style="color: orange">**NOTE**</span>: The above step is required!
 
@@ -71,9 +71,9 @@ ACCOUNT_SLUG = "exabyte"
 
 # Set parameters for the materials to be imported:
 #     
-# - **MATERIALS_PROJECT_IDS**: A list of material IDs to be imported from [materials project](https://materialsproject.org/).
-# - **TAGS**: A list of [tags](https://docs.exabyte.io/entities-general/actions/metadata/) to assign to imported materials.
-# - **MATERIALS_SET_NAME**: The name of the materials set. Defaults to "materials-set".
+# - **MATERIALS_PROJECT_IDS**: a list of material IDs to be imported from materials project
+# - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/actions/metadata/) to assign to imported materials
+# - **MATERIALS_SET_NAME**: the name of the materials set. Defaults to "materials-set"
 # 
 
 # In[2]:

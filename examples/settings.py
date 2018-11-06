@@ -30,6 +30,9 @@
 # In[ ]:
 
 
+import nbimporter
+nbimporter.options['only_defs'] = False
+
 PORT = 443
 SECURE = True
 VERSION = "2018-10-01"

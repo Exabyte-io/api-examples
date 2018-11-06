@@ -23,10 +23,8 @@
 
 
 import time
-import nbimporter
 import pandas as pd
-from IPython.display import IFrame    
-nbimporter.options['only_defs'] = False
+from IPython.display import IFrame
 
 from settings import *
 from endpoints.jobs import JobEndpoints

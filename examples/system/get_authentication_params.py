@@ -7,13 +7,11 @@
 
 # 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
 
-# In[5]:
+# In[1]:
 
 
 import json
 import argparse
-import nbimporter
-nbimporter.options['only_defs'] = False
 
 from settings import *
 from endpoints.login import LoginEndpoint
@@ -28,13 +26,13 @@ from endpoints.login import LoginEndpoint
 # In[2]:
 
 
-USERNAME = "demo"
-PASSWORD = "demo"
+USERNAME = "YOUR_USERNANE"
+PASSWORD = "YOUR_PASSWORD"
 
 
 # 3. Initialize `LoginEndpoint` and call `login` function to generate authentication parameters.
 
-# In[3]:
+# In[ ]:
 
 
 endpoint = LoginEndpoint(HOST, PORT, USERNAME, PASSWORD, VERSION, SECURE)

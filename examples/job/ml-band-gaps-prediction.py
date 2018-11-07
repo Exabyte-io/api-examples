@@ -286,9 +286,9 @@ for exabyte_id, properties in predicted_properties.iteritems():
 # 
 # Create and print the final table as Pandas dataFrame.
 
-# In[74]:
+# In[90]:
 
 
 headers = ["ID", "NAME", "FORMULA", "EXABYTE-ID", "DIRECT-GAP", "INDIRECT-GAP"]
-pd.DataFrame(data=table, columns=headers)
+pretty_print_dataframe(pd.DataFrame(data=table, columns=headers))
 

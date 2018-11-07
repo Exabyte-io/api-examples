@@ -54,7 +54,7 @@ def wait_for_jobs_to_finish(endpoint, job_ids, pulling_interval=60):
         time.sleep(pulling_interval)
 
 
-def get_property_by_subworkow_and_unit_indecies(endpoint, property_name, job, subworkflow_index, unit_index):
+def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, subworkflow_index, unit_index):
     """
     Returns the property extracted in the given unit of the job's subworkflow.
 

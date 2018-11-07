@@ -34,11 +34,11 @@ This repository contains examples for performing most-common tasks in the Exabyt
 
 # Usage
 
-0. Examples require an existing account with Exabyte.io platform. Register [here](https://platform.exabyte.io/register) to obtain one.
+1. Examples require an existing account with Exabyte.io platform. Register [here](https://platform.exabyte.io/register) to obtain one.
 
-1. Open [settings](examples/settings.ipynb) and adjust it to provide authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) for how to obtain the authentication parameters with your username and password.
+2. Open [settings](examples/settings.ipynb) and adjust it to provide authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) for how to obtain the authentication parameters with your username and password.
 
-2. Open the desired example notebook, adjust it as necessary and run it.
+3. Open the desired example notebook, adjust it as necessary and run it.
 
 
 # Contribute

@@ -38,7 +38,7 @@ This repository contains examples for performing most-common tasks in the Exabyt
 
 1. Open [settings](examples/settings.ipynb) and adjust it to provide authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) for how to obtain the authentication parameters with your username and password.
 
-2. Navigate to a desired example notebook, open and run it.
+2. Open the desired example notebook, adjust it as necessary and run it.
 
 
 # Contribute

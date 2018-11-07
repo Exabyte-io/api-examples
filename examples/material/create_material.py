@@ -11,7 +11,7 @@
 # 
 # ## Import packages
 
-# In[2]:
+# In[1]:
 
 
 import json
@@ -24,7 +24,7 @@ from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 # 
 # Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
 
-# In[3]:
+# In[2]:
 
 
 CONFIG = {
@@ -104,7 +104,7 @@ CONFIG = {
 # 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
 
-# In[4]:
+# In[3]:
 
 
 endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
@@ -113,7 +113,7 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
-# In[5]:
+# In[4]:
 
 
 print json.dumps(material, indent=4)

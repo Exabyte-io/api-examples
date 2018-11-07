@@ -33,15 +33,6 @@ MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
 TAGS = ["phase-ii", "difficulty-1"]
 
 
-# The below is an embeded [iframe](https://ipython.org/ipython-doc/2/api/generated/IPython.lib.display.html) in the IPython notebook to visualize the material.
-
-# In[4]:
-
-
-from IPython.display import IFrame    
-IFrame('https://materialsproject.org/materials/{}'.format(MATERIALS_PROJECT_IDS[0]), width=800, height=650)
-
-
 # ## Import materials
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_materialsproject` function to import materials.

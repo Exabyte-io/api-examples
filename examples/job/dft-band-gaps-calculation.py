@@ -10,7 +10,7 @@
 # 
 # # Steps
 # 
-# We following the below steps:
+# We follow the below steps:
 # 
 # - Import materials from [materials project](https://materialsproject.org/)
 # 
@@ -274,7 +274,7 @@ for result in results:
 # 
 # - **"INI"**: INITIAL
 # - **"FIN"**: FINAL
-# - **"NS"**: Number of Sites
+# - **"N-SITES"**: Number of Sites
 # - **"LAT"**: LATTICE
 
 # In[42]:
@@ -292,11 +292,6 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 # In[44]:
 
 
-headers = []
-keys = ["ID", "NAME", "TAGS", "N-SITES", "LAT-A", "LAT-B", "LAT-C", "LAT-ALPHA", "LAT-BETA", "LAT-GAMMA"]
-headers.extend(["-".join(("INI", key)) for key in keys])
-headers.extend(["-".join(("FIN", key)) for key in keys])
-headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 pd.set_option('display.max_colwidth', -1)
 pd.set_option('display.max_columns', 30)
 pd.DataFrame(data=table, columns=headers)

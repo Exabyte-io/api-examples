@@ -36,7 +36,7 @@ This repository contains examples for performing most-common tasks in the Exabyt
 
 0. Examples require an existing account with Exabyte.io platform. Register [here](https://platform.exabyte.io/register) to obtain one.
 
-1. Open [settings](examples/settings.ipynb) and adjust it to provide authentication parameters. See the [corresponding example](examples/api/get_authentication_params.ipynb) for how to obtain the authentication parameters with your username and password.
+1. Open [settings](examples/settings.ipynb) and adjust it to provide authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) for how to obtain the authentication parameters with your username and password.
 
 2. Navigate to a desired example notebook, open and run it.
 

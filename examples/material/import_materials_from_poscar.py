@@ -47,7 +47,7 @@ endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 material = endpoint.import_from_file(NAME, content)
 
 
-# ## Print imported materials
+# ## Print imported material
 # 
 # Print the list of imported materials in pretty JSON below.
 

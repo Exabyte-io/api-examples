@@ -5,6 +5,11 @@
 # 
 # This file contains settings that are used inside the examples.
 # 
+# Adjust settings as necessary and save the changes. When the file is saved a post-save [hook](https://jupyter-notebook.readthedocs.io/en/stable/extending/savehooks.html) is triggered to create the script (settings.py) which should be symlinked from within the example directories as notebook does not support importing from the other directories.
+# 
+# > <span style="color: orange">**NOTE**</span>: Jupyter may need to be reloaded on changes to load the new settings.
+# 
+# 
 # # Settings
 # 
 # - **HOST**: Hostname of the RESTful API server. Defaults to platform.exabyte.io.

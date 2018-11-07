@@ -5,19 +5,22 @@
 # 
 # Inside this example we contact [Material](https://docs.exabyte.io/api/Material/get_materials) endpoint to obtain a list materials that an account has access to. We use chemical formula to filter the list.
 
-# 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
+# # Execution
+# 
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# 
+# ## Import packages
 
 # In[4]:
 
 
 import json
-import argparse
 
-from settings import *
 from endpoints.materials import MaterialEndpoints
+from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
-# 2. Set QUERY in [MongoDB](https://docs.mongodb.com/manual/tutorial/query-documents/) format. 
+# ## Set QUERY in [MongoDB](https://docs.mongodb.com/manual/tutorial/query-documents/) format
 
 # In[5]:
 
@@ -28,7 +31,7 @@ QUERY = {
 }
 
 
-# 3. Initialize a helper class to interact with `MaterialEndpoints`. This only has to be done once.
+# ## Initialize the endpoint
 
 # In[6]:
 
@@ -36,7 +39,9 @@ QUERY = {
 endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
 
 
-# 4. Contact the endpoint to list materials according to the query above.
+# ## List materials
+# 
+# Contact the endpoint to list materials according to the query above.
 
 # In[7]:
 
@@ -44,7 +49,9 @@ endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 materials = endpoint.list(QUERY)
 
 
-# 5. Print the list of materials saved under the corresponding variable in pretty JSON below.
+# ## Print materials
+# 
+# Print the list of materials saved under the corresponding variable in pretty JSON below.
 
 # In[8]:
 

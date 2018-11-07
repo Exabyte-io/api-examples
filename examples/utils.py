@@ -3,7 +3,12 @@
 
 # # Overview
 # 
-# This module defines a set of common functions which are used in other examples.
+# This module defines a set of common functions which are used in other examples. 
+# 
+# Add the function into corresponding section with proper docstring and save the changes. When the file is saved a post-save [hook](https://jupyter-notebook.readthedocs.io/en/stable/extending/savehooks.html) is triggered to create the script (utils.py) which should be symlinked from within the example directories as notebook does not support importing from the other directories.
+# 
+# > <span style="color: orange">**NOTE**</span>: Jupyter may need to be reloaded on changes to load the latest code.
+# 
 
 # In[ ]:
 
@@ -11,6 +16,11 @@
 import time
 from tabulate import tabulate
 from IPython.display import HTML
+
+
+# # Job
+
+# In[2]:
 
 
 def get_jobs_statuses_by_ids(endpoint, job_ids):
@@ -54,6 +64,32 @@ def wait_for_jobs_to_finish(endpoint, job_ids, pulling_interval=60):
         time.sleep(pulling_interval)
 
 
+# # Workflow
+
+# In[4]:
+
+
+def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
+    """
+    Copies a bank workflow with given ID into the account's workflows.
+
+    Args:
+        endpoint (endpoints.bank_workflows.BankWorkflowEndpoints): an instance of BankWorkflowEndpoints class
+        system_name (str): workflow system name.
+        account_id (str): ID of account to copy the bank workflow into.
+
+    Returns:
+        dict: new account's workflow
+    """
+    bank_workflow_id = endpoint.list({"systemName": system_name})[0]["_id"]
+    return endpoint.copy(bank_workflow_id, account_id)["_id"]
+
+
+# # Property
+
+# In[ ]:
+
+
 def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, subworkflow_index, unit_index):
     """
     Returns the property extracted in the given unit of the job's subworkflow.
@@ -72,20 +108,9 @@ def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, su
     return endpoint.get_property(job["_id"], unit_flowchart_id, property_name)
 
 
-def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
-    """
-    Copies a bank workflow with given ID into the account's workflows.
+# # General
 
-    Args:
-        endpoint (endpoints.bank_workflows.BankWorkflowEndpoints): an instance of BankWorkflowEndpoints class
-        system_name (str): workflow system name.
-        account_id (str): ID of account to copy the bank workflow into.
-
-    Returns:
-        dict: new account's workflow
-    """
-    bank_workflow_id = endpoint.list({"systemName": system_name})[0]["_id"]
-    return endpoint.copy(bank_workflow_id, account_id)["_id"]
+# In[ ]:
 
 
 def pretty_print_dataframe(df, text_align="center"):

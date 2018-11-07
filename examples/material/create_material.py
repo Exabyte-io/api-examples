@@ -3,21 +3,26 @@
 
 # # Overview
 # 
-# In this example we create a material from a JSON config with certain tags to identify the material.
+# In this example we create a material from a JSON config with [tags](https://docs.exabyte.io/entities-general/data/#tags) to identify the material.
 
-# 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
+# # Execution
+# 
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# 
+# ## Import packages
 
 # In[2]:
 
 
 import json
-import argparse
 
-from settings import *
 from endpoints.materials import MaterialEndpoints
+from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
-# 2. Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
+# ## Create material config
+# 
+# Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
 
 # In[3]:
 
@@ -95,7 +100,9 @@ CONFIG = {
 }
 
 
-# 3. Initialize `MaterialEndpoints` class and call `create` function to create material.
+# ## Create material
+# 
+# Initialize `MaterialEndpoints` class and call `create` function to create material.
 
 # In[4]:
 
@@ -104,7 +111,7 @@ endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 material = endpoint.create(CONFIG)
 
 
-# 4. Print new material in pretty JSON below.
+# ## Print new material
 
 # In[5]:
 

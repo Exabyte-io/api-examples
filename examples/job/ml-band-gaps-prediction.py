@@ -126,7 +126,7 @@ raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOK
 
 # ## Retrieve owner and project IDs
 # 
-# Retrieve account and project IDs as they are needed by the endpoints. 
+# Retrieve owner and project IDs as they are needed by the endpoints. 
 # 
 # Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
@@ -159,9 +159,9 @@ train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJ
 predict_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, PREDICT_MATERIALS_PROJECT_IDS, owner_id)
 
 
-# ## Create jobs for train materials
+# ## Calculate band gap for train materials
 # 
-# Calculate band gap for the train materials.
+# Create jobs for the train materials.
 
 # In[62]:
 
@@ -218,7 +218,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 # ## Extract the predict workflow
 # 
-# The following function returns a material property extracted in the given unit of the job's subworkflow. 
+# Predict workflow is extracted from the last unit (train with index 4) of the first job's subworkflow (ML: Train Model with index 0).
 
 # In[68]:
 
@@ -239,7 +239,7 @@ config = job_endpoints.get_config(material_ids, ml_predict_workflow_id, project_
 job = job_endpoints.create(config)
 
 
-# Submit the train job for execution.
+# Submit the predict job for execution.
 
 # In[70]:
 
@@ -257,11 +257,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 # ## Extract predicted properties
 # 
-# For each material, extract final structure, pressure and band gaps. 
-# 
-# - Final structure and pressure are extracted from the first unit (vasp_relax with index 0) of the first job's subworkflow (volume-relaxation with index 0)
-# 
-# - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
+# Predicted properties are extracted from the last unit (score with index 3) of the first job's subworkflow (ml_predict_subworkflow with index 0).
 
 # In[72]:
 

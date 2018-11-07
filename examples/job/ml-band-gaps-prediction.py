@@ -3,7 +3,7 @@
 
 # # Overview
 # 
-# This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials (named train materials) and use the model to predict the band gap of another set (named predict materials).
+# This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials called "train materials" and use the model to predict Electronic Band Gap of another set called "target materials".
 # 
 # 
 # 
@@ -13,13 +13,13 @@
 # 
 # - Import materials from [materials project](https://materialsproject.org/)
 # 
-# - Calculate band gap for the train materials
+# - Calculate band gap for the "train materials"
 # 
-# - Build ML Train model for the train materials
+# - Build ML Train model based on the "train materials"
 # 
-# - Create and submit a job to predict band gap for the predict materials
+# - Create and submit a job to predict band gap for the "target materials"
 # 
-# - Extract band gap for predict materials
+# - Extract band gap for "target materials"
 # 
 # - Output the results as Pandas dataFrame
 # 
@@ -45,8 +45,6 @@ import time
 import pandas as pd
 from IPython.display import IFrame
 
-from utils import *
-from settings import *
 from endpoints.jobs import JobEndpoints
 from endpoints.utils import flatten_material
 from endpoints.projects import ProjectEndpoints
@@ -54,6 +52,8 @@ from endpoints.materials import MaterialEndpoints
 from endpoints.workflows import WorkflowEndpoints
 from endpoints.bank_workflows import BankWorkflowEndpoints
 from endpoints.raw_properties import RawPropertiesEndpoints
+from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
+from utils import pretty_print_dataframe, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish
 
 
 # ## Setup parameters
@@ -70,14 +70,14 @@ ACCOUNT_SLUG = "exabyte"
 
 # Set parameters for the materials to be imported:
 #     
-# - **TRAIN_MATERIALS_PROJECT_IDS**: a list of train material IDs to be imported from materials project
-# - **PREDICT_MATERIALS_PROJECT_IDS**: a list of predict material IDs to be imported from materials project
+# - **TRAIN_MATERIALS_PROJECT_IDS**: a list of material IDs to train ML model based on
+# - **TARGET_MATERIALS_PROJECT_IDS**: a list of material IDs to predict the property for
 
-# In[54]:
+# In[1]:
 
 
 TRAIN_MATERIALS_PROJECT_IDS = ["mp-10694"]
-PREDICT_MATERIALS_PROJECT_IDS = ["mp-29803"]
+TARGET_MATERIALS_PROJECT_IDS = ["mp-29803"]
 
 
 # Set parameters for the jobs to be ran for the imported materials:
@@ -116,12 +116,13 @@ CLUSTER = "cluster-001"
 # In[57]:
 
 
-job_endpoints = JobEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-project_endpoints = ProjectEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-material_endpoints = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-workflow_endpoints = WorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-bank_workflow_endpoints = BankWorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+args = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]
+job_endpoints = JobEndpoints(*args)
+project_endpoints = ProjectEndpoints(*args)
+material_endpoints = MaterialEndpoints(*args)
+workflow_endpoints = WorkflowEndpoints(*args)
+bank_workflow_endpoints = BankWorkflowEndpoints(*args)
+raw_property_endpoints = RawPropertiesEndpoints(*args)
 
 
 # ## Retrieve owner and project IDs
@@ -139,7 +140,7 @@ project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT
 
 # ## Create workflows
 # 
-# Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows.
+# Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows. We use exabyte bank workflows which are identified by "systemName" field. The below can be adjusted to get the bank workflows by ID.
 
 # In[59]:
 
@@ -150,13 +151,13 @@ ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints
 
 # ## Import materials
 # 
-# Import materials from materials project .
+# Import materials from materials project.
 
 # In[61]:
 
 
 train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id)
-predict_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, PREDICT_MATERIALS_PROJECT_IDS, owner_id)
+target_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TARGET_MATERIALS_PROJECT_IDS, owner_id)
 
 
 # ## Calculate band gap for train materials
@@ -216,7 +217,7 @@ job_endpoints.submit(job["_id"])
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 
-# ## Extract the predict workflow
+# ## Extract ML predict workflow
 # 
 # Predict workflow is extracted from the last unit (train with index 4) of the first job's subworkflow (ML: Train Model with index 0).
 
@@ -234,7 +235,7 @@ ml_predict_workflow_id = get_property_by_subworkow_and_unit_indecies(raw_propert
 
 
 name = "-".join((JOB_NAME_PREFIX, "predict"))
-material_ids = [m["_id"] for m in predict_materials]
+material_ids = [m["_id"] for m in target_materials]
 config = job_endpoints.get_config(material_ids, ml_predict_workflow_id, project_id, owner_id, name, compute, True)
 job = job_endpoints.create(config)
 
@@ -275,7 +276,7 @@ predicted_properties = get_property_by_subworkow_and_unit_indecies(raw_property_
 
 table = []
 for exabyte_id, properties in predicted_properties.iteritems():
-    material = next((m for m in predict_materials if m["exabyteId"] == exabyte_id))
+    material = next((m for m in target_materials if m["exabyteId"] == exabyte_id))
     band_gaps = next((v for v in properties if v["name"] == "band_gaps"))
     direct_gap = next((v for v in band_gaps["values"] if v["type"] == "direct"))["value"]
     indirect_gap = next((v for v in band_gaps["values"] if v["type"] == "indirect"))["value"]

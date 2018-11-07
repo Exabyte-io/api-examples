@@ -111,7 +111,7 @@ BANK_WORKFLOW_ID = "BEWfDREDFFL9g8Qpk"
 # - **PPN**: Number of MPI processes per each node, Defaults to 1.
 # - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
-# - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into.
+# - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
 # In[33]:
 
@@ -120,7 +120,7 @@ PPN = "1"
 QUEUE = "D"
 NODES = "1"
 TIME_LIMIT = "01:00:00"
-CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
+CLUSTER = "cluster-001"
 
 
 # ## Initialize the endpoints
@@ -135,7 +135,7 @@ raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOK
 bank_workflow_endpoints = BankWorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
 
 
-# ## Create workflow
+# ## Retrieve owner and project IDs
 # 
 # Retrieve account and project IDs as they are needed by the endpoints. 
 # 
@@ -148,6 +148,8 @@ owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLU
 project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
 
 
+# ## Create workflow
+# 
 # Copy bank workflow to the account's workflows.
 
 # In[27]:

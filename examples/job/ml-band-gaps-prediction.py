@@ -38,7 +38,7 @@
 # 
 # ## Import packages
 
-# In[1]:
+# In[52]:
 
 
 import time
@@ -62,7 +62,7 @@ from endpoints.raw_properties import RawPropertiesEndpoints
 # 
 # > <span style="color: orange">**NOTE**</span>: The above step is required!
 
-# In[2]:
+# In[53]:
 
 
 ACCOUNT_SLUG = "exabyte"
@@ -73,11 +73,11 @@ ACCOUNT_SLUG = "exabyte"
 # - **TRAIN_MATERIALS_PROJECT_IDS**: a list of train material IDs to be imported from materials project
 # - **PREDICT_MATERIALS_PROJECT_IDS**: a list of predict material IDs to be imported from materials project
 
-# In[3]:
+# In[54]:
 
 
-TRAIN_MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
-PREDICT_MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
+TRAIN_MATERIALS_PROJECT_IDS = ["mp-10694"]
+PREDICT_MATERIALS_PROJECT_IDS = ["mp-29803"]
 
 
 # Set parameters for the jobs to be ran for the imported materials:
@@ -86,7 +86,7 @@ PREDICT_MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
 # - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
 # 
 
-# In[4]:
+# In[55]:
 
 
 PROJECT_SLUG = ACCOUNT_SLUG + "-default"
@@ -99,21 +99,21 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 # - **PPN**: Number of MPI processes per each node, Defaults to 1.
 # - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
-# - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into.
+# - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
-# In[17]:
+# In[56]:
 
 
 PPN = "1"
 QUEUE = "D"
 NODES = "1"
 TIME_LIMIT = "01:00:00"
-CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
+CLUSTER = "cluster-001"
 
 
 # ## Initialize the endpoints
 
-# In[6]:
+# In[57]:
 
 
 job_endpoints = JobEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
@@ -130,7 +130,7 @@ raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOK
 # 
 # Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
-# In[8]:
+# In[58]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
@@ -141,7 +141,7 @@ project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT
 # 
 # Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows.
 
-# In[11]:
+# In[59]:
 
 
 band_gap_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints, "espresso-band-gap", owner_id)
@@ -152,7 +152,7 @@ ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints
 # 
 # Import materials from materials project .
 
-# In[14]:
+# In[61]:
 
 
 train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id)
@@ -163,7 +163,7 @@ predict_materials = material_endpoints.import_from_materialsproject(MATERIALS_PR
 # 
 # Calculate band gap for the train materials.
 
-# In[18]:
+# In[62]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
@@ -172,7 +172,7 @@ jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, projec
 
 # Submit the jobs for execution.
 
-# In[19]:
+# In[63]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
@@ -180,7 +180,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[20]:
+# In[64]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -191,7 +191,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # Create ML Train job for the train materials.
 
-# In[21]:
+# In[65]:
 
 
 name = "-".join((JOB_NAME_PREFIX, "train"))
@@ -202,7 +202,7 @@ job = job_endpoints.create(config)
 
 # Submit the train job for execution.
 
-# In[22]:
+# In[66]:
 
 
 job_endpoints.submit(job["_id"])
@@ -210,7 +210,7 @@ job_endpoints.submit(job["_id"])
 
 # Monitor the job and print the status until it is done.
 
-# In[23]:
+# In[67]:
 
 
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
@@ -220,7 +220,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # 
 # The following function returns a material property extracted in the given unit of the job's subworkflow. 
 
-# In[24]:
+# In[68]:
 
 
 ml_predict_workflow_id = get_property_by_subworkow_and_unit_indecies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]["_id"]
@@ -230,7 +230,7 @@ ml_predict_workflow_id = get_property_by_subworkow_and_unit_indecies(raw_propert
 # 
 # Create ML Predict job for the predict materials.
 
-# In[25]:
+# In[69]:
 
 
 name = "-".join((JOB_NAME_PREFIX, "predict"))
@@ -241,7 +241,7 @@ job = job_endpoints.create(config)
 
 # Submit the train job for execution.
 
-# In[26]:
+# In[70]:
 
 
 job_endpoints.submit(job["_id"])
@@ -249,7 +249,7 @@ job_endpoints.submit(job["_id"])
 
 # Monitor the job and print the status until its done.
 
-# In[27]:
+# In[71]:
 
 
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
@@ -263,7 +263,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # 
 # - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[28]:
+# In[72]:
 
 
 
@@ -274,7 +274,7 @@ predicted_properties = get_property_by_subworkow_and_unit_indecies(raw_property_
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[34]:
+# In[73]:
 
 
 table = []
@@ -290,7 +290,7 @@ for exabyte_id, properties in predicted_properties.iteritems():
 # 
 # Create and print the final table as Pandas dataFrame.
 
-# In[35]:
+# In[74]:
 
 
 headers = ["ID", "NAME", "FORMULA", "EXABYTE-ID", "DIRECT-GAP", "INDIRECT-GAP"]

@@ -1,90 +1,298 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# # Overview
+# 
+# This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials (train materials) and use the ML model to predict the band gap of another set of materials (predict materials).
+# 
+# 
+# 
+# # Steps
+# 
+# We follow the below steps:
+# 
+# - Import train and predict materials from [materials project](https://materialsproject.org/)
+# 
+# - Calculate band gap for the train materials
+# 
+# - Build ML Train model for the train materials
+# 
+# - Create and submit a job to predict band gap for the predict material
+# 
+# - Extract band gap for predict material
+# 
+# - Output the results as Pandas dataFrame
+# 
+# # Pre-requisites
+# 
+# The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We outline these below and direct the reader to the original sources of information:
+# 
+# - [Generating RESTful API authentication parameters](../system/get_authentication_params.ipynb)
+# - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
+# - [Creating and submitting jobs](./create_and_submit_job.ipynb)
+# - [Running DFT calculations](./dft-band-gaps-calculation.ipynb)
+
+# # Execution
+# 
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# 
+# ## Import packages
+
+# In[19]:
 
 
-import argparse
+import time
+import pandas as pd
+from IPython.display import IFrame
 
-from tabulate import tabulate
-
+from utils import *
+from settings import *
 from endpoints.jobs import JobEndpoints
-from endpoints.login import LoginEndpoint
+from endpoints.utils import flatten_material
+from endpoints.projects import ProjectEndpoints
 from endpoints.materials import MaterialEndpoints
-from examples.utils import wait_for_jobs_to_finish
+from endpoints.workflows import WorkflowEndpoints
+from endpoints.bank_workflows import BankWorkflowEndpoints
 from endpoints.raw_properties import RawPropertiesEndpoints
 
 
-def parse_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-H', '--host', default="platform.exabyte.io", help='RESTful API hostname')
-    parser.add_argument('-P', '--port', type=int, default=443, help='RESTful API port')
-    parser.add_argument('-u', '--username', required=True, help='Your Exabyte username')
-    parser.add_argument('-p', '--password', required=True, help='Your Exabyte password')
-    parser.add_argument('-tmi', '--train-material-id', dest="train_material_ids", action="append", required=True, help='train material ID')
-    parser.add_argument('-pmi', '--predict-material-id', dest="predict_material_id", required=True, help='predict material ID')
-    parser.add_argument('-oi', '--owner-id', dest="owner_id", help='owner ID')
-    parser.add_argument('-wi', '--workflow-id', dest="workflow_id", help='train workflow ID')
-    parser.add_argument('-pi', '--project-id', dest="project_id", help='project id')
-    parser.add_argument('-j', '--job-prefix', dest="job_prefix", default="job", help='job name prefix')
-    return parser.parse_args()
+# ## Setup parameters
+# 
+# Set the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the steps will be executed below.
+# 
+# > <span style="color: orange">**NOTE**</span>: The above step is required!
+
+# In[20]:
 
 
-if __name__ == '__main__':
-    args = parse_arguments()
+ACCOUNT_SLUG = "exabyte"
 
-    # params
-    owner_id = args.owner_id
-    job_prefix = args.job_prefix
-    project_id = args.project_id
-    workflow_id = args.workflow_id
-    train_material_ids = args.train_material_ids
-    predict_material_id = args.predict_material_id
 
-    endpoint_options = LoginEndpoint.get_endpoint_options(args.host, args.port, args.username, args.password)
+# Set parameters for the materials to be imported:
+#     
+# - **TRAIN_MATERIALS_PROJECT_IDS**: a list of train material IDs to be imported from materials project
+# - **PREDICT_MATERIALS_PROJECT_IDS**: a list of predict material IDs to be imported from materials project
 
-    # endpoints
-    job_endpoints = JobEndpoints(**endpoint_options)
-    material_endpoints = MaterialEndpoints(**endpoint_options)
-    raw_property_endpoints = RawPropertiesEndpoints(**endpoint_options)
+# In[21]:
 
-    # create ML Train job and submit it
-    job_name = "-".join((job_prefix, "train"))
-    job_config = job_endpoints.get_config(train_material_ids, workflow_id, project_id, owner_id, job_name,
-                                          is_multi_material=True)
-    job = job_endpoints.create(job_config)
-    job_endpoints.submit(job["_id"])
 
-    # wait for job to finish
-    wait_for_jobs_to_finish(job_endpoints, [job])
+TRAIN_MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
+PREDICT_MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
 
-    # extract predict workflow
-    unit_flowchart_id = job["workflow"]["subworkflows"][0]["units"][4]["flowchartId"]
-    predict_workflow = raw_property_endpoints.get_property(job["_id"], unit_flowchart_id, "workflow:ml_predict")["data"]
 
-    # create ML Predict job and submit it
-    job_name = "-".join((job_prefix, "predict"))
-    job_config = job_endpoints.get_config([predict_material_id], predict_workflow["_id"], project_id, owner_id, job_name)
-    job = job_endpoints.create(job_config)
-    job_endpoints.submit(job["_id"])
+# Set parameters for the jobs to be ran for the imported materials:
+# 
+# - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
+# - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
+# 
 
-    # wait for job to finish
-    wait_for_jobs_to_finish(job_endpoints, [job])
+# In[22]:
 
-    # extract band gaps
-    predict_material = material_endpoints.get(predict_material_id)
 
-    unit_flowchart_id = job["workflow"]["subworkflows"][0]["units"][3]["flowchartId"]
-    predicted_properties = raw_property_endpoints.get_property(job["_id"], unit_flowchart_id, "predicted_properties")
+PROJECT_SLUG = ACCOUNT_SLUG + "-default"
+JOB_NAME_PREFIX = "Job Name Prefix"
 
-    predict_material_properties = predicted_properties["data"]["values"][predict_material["exabyteId"]]
-    band_gaps = next((v for v in predict_material_properties if v["name"] == "band_gaps"))
 
-    band_gap_direct = next((v for v in band_gaps["values"] if v["type"] == "direct"), None)["value"]
-    band_gap_indirect = next((v for v in band_gaps["values"] if v["type"] == "indirect"), None)["value"]
+# Setup compute parameters. See [this](https://docs.exabyte.io/infrastructure/compute-settings/ui) for more information about compute parameters.
+# 
+# - **NODES**: Number of nodes. Defaults to 1.
+# - **PPN**: Number of MPI processes per each node, Defaults to 1.
+# - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
+# - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
+# - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into.
 
-    # print results
-    header = ["DIRECT-GAP", "INDIRECT-GAP"]
-    rows = [[band_gap_direct, band_gap_indirect]]
-    print tabulate(rows, header, tablefmt='grid', stralign='center')
+# In[33]:
+
+
+PPN = "1"
+QUEUE = "D"
+NODES = "1"
+TIME_LIMIT = "01:00:00"
+CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
+
+
+# ## Initialize the endpoints
+
+# In[25]:
+
+
+job_endpoints = JobEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+project_endpoints = ProjectEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+material_endpoints = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+workflow_endpoints = WorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+bank_workflow_endpoints = BankWorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+
+
+# ## Retrieve owner and project IDs
+# 
+# Retrieve account and project IDs as they are needed by the endpoints. 
+# 
+# Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
+
+# In[26]:
+
+
+owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
+project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
+
+
+# ## Create workflows
+# 
+# Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows.
+
+# In[27]:
+
+
+ml_train_workflow_id = copy_bank_workflow_by_system_name("exabyteml-ml-train-model". owner_id)
+band_gap_workflow_id = copy_bank_workflow_by_system_name("espresso-band-gap". owner_id)
+
+
+# ## Import materials
+# 
+# Import materials from materials project .
+
+# In[28]:
+
+
+train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id)
+predict_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, PREDICT_MATERIALS_PROJECT_IDS, owner_id)
+
+
+# ## Create jobs for train materials
+# 
+# Calculate band gap for the train materials.
+
+# In[34]:
+
+
+compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
+jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, project_id, owner_id, JOB_NAME_PREFIX, compute)
+
+
+# Submit the jobs for execution.
+
+# In[36]:
+
+
+for job in jobs: job_endpoints.submit(job["_id"])
+
+
+# Monitor the jobs and print the status until they are all finished.
+
+# In[37]:
+
+
+job_ids = [job["_id"] for job in jobs]
+wait_for_jobs_to_finish(job_endpoints, job_ids)
+
+
+# ## Build ML Train model
+# 
+# Create ML Train job for the train materials.
+
+# In[34]:
+
+
+name = "-".join((JOB_NAME_PREFIX, "train"))
+material_ids = [m["_id"] for m in train_materials]
+config = job_endpoints.get_config(material_ids, ml_train_workflow_id, project_id, owner_id, name, compute, True)
+job = job_endpoints.create(config)
+
+
+# Submit the train job for execution.
+
+# In[36]:
+
+
+job_endpoints.submit(job["_id"])
+
+
+# Monitor the job and print the status until it is done.
+
+# In[37]:
+
+
+wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
+
+
+# ## Extract the predict workflow
+# 
+# The following function returns a material property extracted in the given unit of the job's subworkflow. 
+
+# In[38]:
+
+
+ml_predict_workflow_id = get_property_by_subworkow_and_unit_indecies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]["_id"]
+
+
+# ## Create ML Predict job
+# 
+# Create ML Predict job for the predict materials.
+
+# In[34]:
+
+
+name = "-".join((JOB_NAME_PREFIX, "predict"))
+material_ids = [m["_id"] for m in predict_materials]
+config = job_endpoints.get_config(material_ids, ml_predict_workflow_id, project_id, owner_id, name, compute, True)
+job = job_endpoints.create(config)
+
+
+# Submit the train job for execution.
+
+# In[ ]:
+
+
+job_endpoints.submit(job["_id"])
+
+
+# Monitor the job and print the status until its done.
+
+# In[37]:
+
+
+wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
+
+
+# ## Extract predicted properties
+# 
+# For each material, extract final structure, pressure and band gaps. 
+# 
+# - Final structure and pressure are extracted from the first unit (vasp_relax with index 0) of the first job's subworkflow (volume-relaxation with index 0)
+# 
+# - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
+
+# In[ ]:
+
+
+
+predicted_properties = get_property_by_subworkow_and_unit_indecies(raw_property_endpoints, "predicted_properties", job, 0, 3)["data"]["values"]
+
+
+# ## Flatten the results
+# 
+# The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
+
+# In[41]:
+
+
+table = []
+for exabyte_id, properties in predicted_properties.iteritems():
+    material = next((m for in predict_material if m["exabyteId"] == exabyte_id))
+    band_gaps = next((v for v in properties if v["name"] == "band_gaps"))
+    band_gap_direct = next((v for v in band_gaps["values"] if v["type"] == "direct"))["value"]
+    band_gap_indirect = next((v for v in band_gaps["values"] if v["type"] == "indirect"))["value"]
+    table.append([material["_id"], material["exabyteId"], band_gap_direct, band_gap_indirect])
+
+
+# ## Ouput the results
+# 
+# Create and print the final table as Pandas dataFrame.
+
+# In[44]:
+
+
+headers = ["ID", "EXABYTE-ID", "DIRECT-GAP", "INDIRECT-GAP"]
+pd.DataFrame(data=table, columns=headers)
 

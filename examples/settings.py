@@ -25,7 +25,7 @@
 # - **AUTH_TOKEN**: Your authentication token. See [this](../system/get_authentication_params.ipynb) example to obtain RESTful API authentication parameters.
 # 
 # 
-# - **MATERIALS_PROJECT_API_KEY**: Your materials project API key.
+# - **MATERIALS_PROJECT_API_KEY**: Your materials project [API](https://materialsproject.org/open) key.
 
 # In[ ]:
 

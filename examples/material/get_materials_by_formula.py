@@ -11,7 +11,7 @@
 # 
 # ## Import packages
 
-# In[4]:
+# In[2]:
 
 
 import json
@@ -20,20 +20,22 @@ from endpoints.materials import MaterialEndpoints
 from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
-# ## Set QUERY in [MongoDB](https://docs.mongodb.com/manual/tutorial/query-documents/) format
+# ## Set Parameters
+# 
+# - **QUERY**: A query describing the documents to find. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[5]:
+# In[3]:
 
 
 QUERY = {
-    "formula": "SiGe",
+    "formula": "Si",
     "owner.slug": "demo"
 }
 
 
 # ## Initialize the endpoint
 
-# In[6]:
+# In[4]:
 
 
 endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
@@ -43,7 +45,7 @@ endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 # 
 # Contact the endpoint to list materials according to the query above.
 
-# In[7]:
+# In[5]:
 
 
 materials = endpoint.list(QUERY)
@@ -53,7 +55,7 @@ materials = endpoint.list(QUERY)
 # 
 # Print the list of materials saved under the corresponding variable in pretty JSON below.
 
-# In[8]:
+# In[6]:
 
 
 print json.dumps(materials, indent=4)

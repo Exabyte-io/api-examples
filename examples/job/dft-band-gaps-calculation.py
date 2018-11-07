@@ -28,17 +28,17 @@
 # 
 # The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We outline these below and direct the reader to the original sources of information:
 # 
-# - [Generating RESTFul API authentication parameters](../system/get_authentication_params.ipynb)
+# - [Generating RESTful API authentication parameters](../system/get_authentication_params.ipynb)
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
 # - [Creating and submitting jobs](../job/create_and_submit_job.ipynb)
 
 # # Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active account with Exabyte.io is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account with VASP access is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
 # 
 # ## Import packages
 
-# In[1]:
+# In[19]:
 
 
 import time
@@ -57,13 +57,11 @@ from endpoints.raw_properties import RawPropertiesEndpoints
 
 # ## Setup parameters
 # 
-# Set the [account](https://docs.exabyte.io/accounts/overview/) under which all the steps will be executed below:
-# 
-# - **ACCOUNT_SLUG**: Slug of the account under which all the steps will be executed.
+# Set the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the steps will be executed below.
 # 
 # > <span style="color: orange">**NOTE**</span>: The above step is required!
 
-# In[18]:
+# In[20]:
 
 
 ACCOUNT_SLUG = "exabyte"
@@ -72,11 +70,11 @@ ACCOUNT_SLUG = "exabyte"
 # Set parameters for the materials to be imported:
 #     
 # - **MATERIALS_PROJECT_IDS**: a list of material IDs to be imported from materials project
-# - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/actions/metadata/) to assign to imported materials
-# - **MATERIALS_SET_NAME**: the name of the materials set. Defaults to "materials-set"
+# - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
+# - **MATERIALS_SET_NAME**: the name of the materials set
 # 
 
-# In[2]:
+# In[21]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
@@ -86,12 +84,12 @@ TAGS = ["tag1", "tag2"]
 
 # Set parameters for the jobs to be ran for the imported materials:
 # 
-# - **JOB_NAME_PREFIX**: prefix to be used for the jobs created for imported materials, the resulting names will be similar to "{JOB_NAME_PREFIX} {FORMULA}" - "Job Name Prefix - SiGe",
-# - **JOBS_SET_NAME**: the name of the jobs set. Defaults to "jobs-set",
-# - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used.
+# - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
+# - **JOBS_SET_NAME**: the name of the jobs set
+# - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
 # 
 
-# In[2]:
+# In[22]:
 
 
 PROJECT_SLUG = ACCOUNT_SLUG + "-default"
@@ -99,25 +97,23 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 JOBS_SET_NAME = "jobs-set"
 
 
-# This example is based on the below [bank workflow](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) which is later copied to the account workflows.
+# This example is based on [this](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) bank workflow which is later copied to the account workflows.
 
-# In[3]:
+# In[23]:
 
 
 BANK_WORKFLOW_ID = "BEWfDREDFFL9g8Qpk"
 
 
-# Setup compute parameters:
+# Setup compute parameters. See [this](https://docs.exabyte.io/infrastructure/compute-settings/ui) for more information about compute parameters.
 # 
 # - **NODES**: Number of nodes. Defaults to 1.
 # - **PPN**: Number of MPI processes per each node, Defaults to 1.
 # - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
-# - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into:
-#     - master-production-20160630-cluster-001.exabyte.io (AWS, c4, hyperthreaded)
-#     - master-production-20160630-cluster-007.exabyte.io (Azure, H and NCv2 series, premium)
+# - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into.
 
-# In[4]:
+# In[33]:
 
 
 PPN = "1"
@@ -129,7 +125,7 @@ CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
 
 # ## Initialize the endpoints
 
-# In[5]:
+# In[25]:
 
 
 job_endpoints = JobEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
@@ -141,18 +137,20 @@ bank_workflow_endpoints = BankWorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOK
 
 # ## Create workflow
 # 
-# Obtain account and project IDs as the endpoints work with IDs than slugs.
+# Retrieve account and project IDs as they are needed by the endpoints. 
+# 
+# Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
-# In[6]:
+# In[26]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
 project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
 
 
-# Copy bank workflow to account workflows.
+# Copy bank workflow to the account's workflows.
 
-# In[7]:
+# In[27]:
 
 
 workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
@@ -160,9 +158,9 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 
 # ## Import materials
 # 
-# Import material from materials project with the above tags.
+# Import materials from materials project with the above tags.
 
-# In[8]:
+# In[28]:
 
 
 materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS)
@@ -170,7 +168,7 @@ materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_AP
 
 # Create a materials set and move the materials into it.
 
-# In[9]:
+# In[29]:
 
 
 materials_set = material_endpoints.create_set({"name": MATERIALS_SET_NAME, "owner": {"_id": owner_id}})
@@ -181,42 +179,44 @@ for material in materials: material_endpoints.move_to_set(material["_id"], "", m
 # 
 # Create jobs for the materials above.
 
-# In[10]:
+# In[34]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
-jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id, JOB_PREFIX, compute)
+jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id, JOB_NAME_PREFIX, compute)
 
 
 # Create a jobs set and move the jobs into it.
 
-# In[11]:
+# In[35]:
 
 
 jobs_set = job_endpoints.create_set({"name": JOBS_SET_NAME, "projectId": project_id, "owner": {"_id": owner_id}})
 for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 
 
-# Submit the jobs for execution
+# Submit the jobs for execution.
 
-# In[12]:
+# In[36]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
 
 
-# Wait for jobs to finish.
+# Monitor the jobs and print the status until they are all finished.
 
-# In[13]:
+# In[37]:
 
 
 job_ids = [job["_id"] for job in jobs]
 wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 
+# ## Extract the results
+# 
 # The following function returns a material property extracted in the given unit of the job's subworkflow. 
 
-# In[14]:
+# In[38]:
 
 
 def get_property_by_subworkow_and_unit_indecies(property_name, job, subworkflow_index, unit_index):
@@ -227,11 +227,13 @@ def get_property_by_subworkow_and_unit_indecies(property_name, job, subworkflow_
     return raw_property_endpoints.get_property(job["_id"], unit_flowchart_id, property_name)
 
 
-# ## Extract the results
+# For each material, extract final structure, pressure and band gaps. 
 # 
-# For each material, extract final structure, pressure and add them to "results".
+# - Final structure and pressure are extracted from the first unit (vasp_relax with index 0) of the first job's subworkflow (volume-relaxation with index 0)
+# 
+# - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[15]:
+# In[39]:
 
 
 results = []
@@ -252,28 +254,30 @@ for material in materials:
 
 
 # ## Flatten the results
+# 
+# The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[ ]:
+# In[41]:
 
 
 table = []
 for result in results:
     data = flatten_material(result["initial_structure"])
     data.extend(flatten_material(result["initial_structure"]))
-    data.extend(result["pressure"], result["band_gap_direct"], result["band_gap_indirect"])
+    data.extend([result["pressure"], result["band_gap_direct"], result["band_gap_indirect"]])
     table.append(data)
 
 
 # ## Ouput the results
 # 
-# Form the headers with the following abbreviations:
+# Form the Pandas dataFrame headers according to the table generated above with the following abbreviations:
 # 
 # - **"INI"**: INITIAL
 # - **"FIN"**: FINAL
 # - **"NS"**: Number of Sites
 # - **"LAT"**: LATTICE
 
-# In[ ]:
+# In[42]:
 
 
 headers = []
@@ -283,13 +287,12 @@ headers.extend(["-".join(("FIN", key)) for key in keys])
 headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 
 
-# Create and print the final data as dataFrame.
+# Create and print the final table as Pandas dataFrame.
 
-# In[16]:
+# In[44]:
 
 
 headers = []
-data = [[flatten_material(d["initial_structure"]), flatten_material(d["initial_structure"], d["pressure"], d["band_gap_direct"], d["band_gap_indirect"]] for d in data]
 keys = ["ID", "NAME", "TAGS", "N-SITES", "LAT-A", "LAT-B", "LAT-C", "LAT-ALPHA", "LAT-BETA", "LAT-GAMMA"]
 headers.extend(["-".join(("INI", key)) for key in keys])
 headers.extend(["-".join(("FIN", key)) for key in keys])

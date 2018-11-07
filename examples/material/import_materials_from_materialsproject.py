@@ -17,28 +17,25 @@
 import json
 
 from endpoints.materials import MaterialEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
+from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE, MATERIALS_PROJECT_API_KEY
 
 
 # ## Set Parameters
-# 
-# - **MATERIALS_PROJECT_API_KEY**: materials project API key
 # 
 # - **MATERIALS_PROJECT_IDS**: a list of material IDs to be imported
 # 
 # - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
 
-# In[2]:
+# In[3]:
 
 
-MATERIALS_PROJECT_API_KEY = "YOUR_API_KEY"
 MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
 TAGS = ["phase-ii", "difficulty-1"]
 
 
 # The below is an embeded [iframe](https://ipython.org/ipython-doc/2/api/generated/IPython.lib.display.html) in the IPython notebook to visualize the material.
 
-# In[8]:
+# In[4]:
 
 
 from IPython.display import IFrame    
@@ -49,7 +46,7 @@ IFrame('https://materialsproject.org/materials/{}'.format(MATERIALS_PROJECT_IDS[
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_materialsproject` function to import materials.
 
-# In[7]:
+# In[5]:
 
 
 endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)

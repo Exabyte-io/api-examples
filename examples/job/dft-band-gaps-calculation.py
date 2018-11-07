@@ -20,7 +20,7 @@
 # 
 # - Submit jobs and monitoring the progress
 # 
-# - Extract the final structure (relaxed structure) and its properties
+# - Extract the [final structure](https://docs.exabyte.io/properties/structural/final-structure) (relaxed structure) and its properties
 # 
 # - Output the results as Pandas dataFrame
 # 
@@ -45,21 +45,21 @@ import time
 import pandas as pd
 from IPython.display import IFrame
 
-from utils import *
-from settings import *
 from endpoints.jobs import JobEndpoints
+from utils import wait_for_jobs_to_finish
 from endpoints.utils import flatten_material
 from endpoints.projects import ProjectEndpoints
 from endpoints.materials import MaterialEndpoints
 from endpoints.bank_workflows import BankWorkflowEndpoints
 from endpoints.raw_properties import RawPropertiesEndpoints
+from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
 # ## Setup parameters
 # 
 # Set the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the steps will be executed below.
 # 
-# > <span style="color: orange">**NOTE**</span>: The above step is required!
+# > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
 # In[20]:
 
@@ -97,7 +97,7 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 JOBS_SET_NAME = "jobs-set"
 
 
-# This example is based on [this](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) bank workflow which is later copied to the account workflows.
+# This example is based on [this](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) bank workflow which is later copied to the account workflows collection.
 
 # In[23]:
 
@@ -111,7 +111,7 @@ BANK_WORKFLOW_ID = "BEWfDREDFFL9g8Qpk"
 # - **PPN**: Number of MPI processes per each node, Defaults to 1.
 # - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
-# - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into.
+# - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
 # In[33]:
 
@@ -120,7 +120,7 @@ PPN = "1"
 QUEUE = "D"
 NODES = "1"
 TIME_LIMIT = "01:00:00"
-CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
+CLUSTER = "cluster-001"
 
 
 # ## Initialize the endpoints
@@ -128,16 +128,17 @@ CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
 # In[25]:
 
 
-job_endpoints = JobEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-project_endpoints = ProjectEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-material_endpoints = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-bank_workflow_endpoints = BankWorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+args = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]
+job_endpoints = JobEndpoints(*args)
+project_endpoints = ProjectEndpoints(*args)
+material_endpoints = MaterialEndpoints(*args)
+raw_property_endpoints = RawPropertiesEndpoints(*args)
+bank_workflow_endpoints = BankWorkflowEndpoints(*args)
 
 
-# ## Create workflow
+# ## Retrieve owner and project IDs
 # 
-# Retrieve account and project IDs as they are needed by the endpoints. 
+# Retrieve owner and project IDs as they are needed by the endpoints. 
 # 
 # Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
@@ -148,6 +149,8 @@ owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLU
 project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
 
 
+# ## Create workflow
+# 
 # Copy bank workflow to the account's workflows.
 
 # In[27]:
@@ -214,20 +217,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 # ## Extract the results
 # 
-# The following function returns a material property extracted in the given unit of the job's subworkflow. 
-
-# In[38]:
-
-
-def get_property_by_subworkow_and_unit_indecies(property_name, job, subworkflow_index, unit_index):
-    """
-    Returns the property extracted in the given unit of the job's subworkflow. 
-    """
-    unit_flowchart_id = job["workflow"]["subworkflows"][subworkflow_index]["units"][unit_index]["flowchartId"]
-    return raw_property_endpoints.get_property(job["_id"], unit_flowchart_id, property_name)
-
-
-# For each material, extract final structure, pressure and band gaps. 
+# For each material, simulaion job, final structure, pressure and band gaps are extracted. 
 # 
 # - Final structure and pressure are extracted from the first unit (vasp_relax with index 0) of the first job's subworkflow (volume-relaxation with index 0)
 # 
@@ -239,8 +229,8 @@ def get_property_by_subworkow_and_unit_indecies(property_name, job, subworkflow_
 results = []
 for material in materials:
     job = next((job for job in jobs if job["_material"]["_id"] == material["_id"]))
-    final_structure = get_property_by_subworkow_and_unit_indecies("final_structure", job, 0, 0)["data"]
-    pressure = get_property_by_subworkow_and_unit_indecies("pressure", job, 0, 0)["data"]["value"]
+    final_structure = get_property_by_subworkow_and_unit_indicies("final_structure", job, 0, 0)["data"]
+    pressure = get_property_by_subworkow_and_unit_indicies("pressure", job, 0, 0)["data"]["value"]
     unit_flowchart_id = job["workflow"]["subworkflows"][1]["units"][1]["flowchartId"]
     band_gap_direct = raw_property_endpoints.get_direct_band_gap(job["_id"], unit_flowchart_id)
     band_gap_indirect = raw_property_endpoints.get_indirect_band_gap(job["_id"], unit_flowchart_id)

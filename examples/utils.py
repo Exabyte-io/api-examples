@@ -90,7 +90,8 @@ def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
 
 def pretty_print_dataframe(df, text_align="center"):
     """
-    Prints the Pandas dataframe 
+    Prints the Pandas dataframe.
+    See https://pandas.pydata.org/pandas-docs/stable/style.html for more information about styling.
 
     Args:
         df (pd.dataFrame): Pandas dataframe.

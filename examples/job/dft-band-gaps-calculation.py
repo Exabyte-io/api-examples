@@ -10,7 +10,7 @@
 # 
 # # Steps
 # 
-# We following the below steps:
+# We follow the below steps:
 # 
 # - Import materials from [materials project](https://materialsproject.org/)
 # 
@@ -214,19 +214,6 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 # ## Extract the results
 # 
-# The following function returns a material property extracted in the given unit of the job's subworkflow. 
-
-# In[38]:
-
-
-def get_property_by_subworkow_and_unit_indecies(property_name, job, subworkflow_index, unit_index):
-    """
-    Returns the property extracted in the given unit of the job's subworkflow. 
-    """
-    unit_flowchart_id = job["workflow"]["subworkflows"][subworkflow_index]["units"][unit_index]["flowchartId"]
-    return raw_property_endpoints.get_property(job["_id"], unit_flowchart_id, property_name)
-
-
 # For each material, extract final structure, pressure and band gaps. 
 # 
 # - Final structure and pressure are extracted from the first unit (vasp_relax with index 0) of the first job's subworkflow (volume-relaxation with index 0)
@@ -274,7 +261,7 @@ for result in results:
 # 
 # - **"INI"**: INITIAL
 # - **"FIN"**: FINAL
-# - **"NS"**: Number of Sites
+# - **"N-SITES"**: Number of Sites
 # - **"LAT"**: LATTICE
 
 # In[42]:

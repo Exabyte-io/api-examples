@@ -279,11 +279,6 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 # In[44]:
 
 
-headers = []
-keys = ["ID", "NAME", "TAGS", "N-SITES", "LAT-A", "LAT-B", "LAT-C", "LAT-ALPHA", "LAT-BETA", "LAT-GAMMA"]
-headers.extend(["-".join(("INI", key)) for key in keys])
-headers.extend(["-".join(("FIN", key)) for key in keys])
-headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 pd.set_option('display.max_colwidth', -1)
 pd.set_option('display.max_columns', 30)
 pd.DataFrame(data=table, columns=headers)

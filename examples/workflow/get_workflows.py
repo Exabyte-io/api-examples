@@ -26,11 +26,11 @@ from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 # 
 # - **limit**: Maximum number of results to return. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[9]:
+# In[2]:
 
 
 QUERY = {
-    "owner.slug": "demo"
+    "name": "Total Energy"
 }
 
 OPTIONS = {
@@ -42,7 +42,7 @@ OPTIONS = {
 # 
 # Initialize a helper class to interact with `WorkflowEndpoints`. This only has to be done once.
 
-# In[10]:
+# In[3]:
 
 
 endpoint = WorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
@@ -52,7 +52,7 @@ endpoint = WorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 # 
 # Contact the endpoint to list workflows according to the query above.
 
-# In[11]:
+# In[4]:
 
 
 workflows = endpoint.list(QUERY, OPTIONS)
@@ -62,7 +62,7 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # 
 # Print the list of workflows saved under the corresponding variable in pretty JSON below.
 
-# In[12]:
+# In[5]:
 
 
 print json.dumps(workflows, indent=4)

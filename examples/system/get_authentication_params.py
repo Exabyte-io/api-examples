@@ -11,13 +11,13 @@
 # 
 # ## Import packages
 
-# In[1]:
+# In[2]:
 
 
 import json
 
 from endpoints.login import LoginEndpoint
-from settings import HOST, PORT, USERNAME, PASSWORD, VERSION, SECURE
+from settings import HOST, PORT, VERSION, SECURE
 
 
 # ## Set Parameters
@@ -26,7 +26,7 @@ from settings import HOST, PORT, USERNAME, PASSWORD, VERSION, SECURE
 # 
 # - **PASSWORD**: Your Exabyte account password.
 
-# In[2]:
+# In[3]:
 
 
 USERNAME = "YOUR_USERNANE"
@@ -35,7 +35,7 @@ PASSWORD = "YOUR_PASSWORD"
 
 # ## Initialize the endpoint
 
-# In[ ]:
+# In[4]:
 
 
 endpoint = LoginEndpoint(HOST, PORT, USERNAME, PASSWORD, VERSION, SECURE)
@@ -46,7 +46,7 @@ auth_params = endpoint.login()
 # 
 # Print the authentication parameters in pretty JSON below. Update [settings](../settings.ipynb) with this parameters to be able to run other examples.
 
-# In[4]:
+# In[5]:
 
 
 print json.dumps(auth_params, indent=4)

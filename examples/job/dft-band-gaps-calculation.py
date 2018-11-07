@@ -46,13 +46,13 @@ import pandas as pd
 from IPython.display import IFrame
 
 from endpoints.jobs import JobEndpoints
-from utils import wait_for_jobs_to_finish
 from endpoints.utils import flatten_material
 from endpoints.projects import ProjectEndpoints
 from endpoints.materials import MaterialEndpoints
 from endpoints.bank_workflows import BankWorkflowEndpoints
 from endpoints.raw_properties import RawPropertiesEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
+from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE, MATERIALS_PROJECT_API_KEY
+from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
 
 
 # ## Setup parameters
@@ -61,7 +61,7 @@ from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 # 
 # > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
-# In[20]:
+# In[2]:
 
 
 ACCOUNT_SLUG = "exabyte"
@@ -74,7 +74,7 @@ ACCOUNT_SLUG = "exabyte"
 # - **MATERIALS_SET_NAME**: the name of the materials set
 # 
 
-# In[21]:
+# In[3]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
@@ -89,7 +89,7 @@ TAGS = ["tag1", "tag2"]
 # - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
 # 
 
-# In[22]:
+# In[4]:
 
 
 PROJECT_SLUG = ACCOUNT_SLUG + "-default"
@@ -99,7 +99,7 @@ JOBS_SET_NAME = "jobs-set"
 
 # This example is based on [this](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) bank workflow which is later copied to the account workflows collection.
 
-# In[23]:
+# In[5]:
 
 
 BANK_WORKFLOW_ID = "BEWfDREDFFL9g8Qpk"
@@ -113,7 +113,7 @@ BANK_WORKFLOW_ID = "BEWfDREDFFL9g8Qpk"
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
 # - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
-# In[33]:
+# In[6]:
 
 
 PPN = "1"
@@ -125,7 +125,7 @@ CLUSTER = "cluster-001"
 
 # ## Initialize the endpoints
 
-# In[25]:
+# In[7]:
 
 
 args = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]
@@ -142,7 +142,7 @@ bank_workflow_endpoints = BankWorkflowEndpoints(*args)
 # 
 # Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
-# In[26]:
+# In[8]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
@@ -153,7 +153,7 @@ project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT
 # 
 # Copy bank workflow to the account's workflows.
 
-# In[27]:
+# In[9]:
 
 
 workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
@@ -163,7 +163,7 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 # 
 # Import materials from materials project with the above tags.
 
-# In[28]:
+# In[12]:
 
 
 materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS)
@@ -171,7 +171,7 @@ materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_AP
 
 # Create a materials set and move the materials into it.
 
-# In[29]:
+# In[13]:
 
 
 materials_set = material_endpoints.create_set({"name": MATERIALS_SET_NAME, "owner": {"_id": owner_id}})
@@ -182,7 +182,7 @@ for material in materials: material_endpoints.move_to_set(material["_id"], "", m
 # 
 # Create jobs for the materials above.
 
-# In[34]:
+# In[14]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
@@ -191,7 +191,7 @@ jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id,
 
 # Create a jobs set and move the jobs into it.
 
-# In[35]:
+# In[15]:
 
 
 jobs_set = job_endpoints.create_set({"name": JOBS_SET_NAME, "projectId": project_id, "owner": {"_id": owner_id}})
@@ -200,7 +200,7 @@ for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 
 # Submit the jobs for execution.
 
-# In[36]:
+# In[16]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
@@ -208,7 +208,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[37]:
+# In[17]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -223,14 +223,14 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[39]:
+# In[21]:
 
 
 results = []
 for material in materials:
     job = next((job for job in jobs if job["_material"]["_id"] == material["_id"]))
-    final_structure = get_property_by_subworkow_and_unit_indicies("final_structure", job, 0, 0)["data"]
-    pressure = get_property_by_subworkow_and_unit_indicies("pressure", job, 0, 0)["data"]["value"]
+    final_structure = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "final_structure", job, 0, 0)["data"]
+    pressure = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "pressure", job, 0, 0)["data"]["value"]
     unit_flowchart_id = job["workflow"]["subworkflows"][1]["units"][1]["flowchartId"]
     band_gap_direct = raw_property_endpoints.get_direct_band_gap(job["_id"], unit_flowchart_id)
     band_gap_indirect = raw_property_endpoints.get_indirect_band_gap(job["_id"], unit_flowchart_id)
@@ -247,7 +247,7 @@ for material in materials:
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[41]:
+# In[22]:
 
 
 table = []
@@ -267,7 +267,7 @@ for result in results:
 # - **"N-SITES"**: Number of Sites
 # - **"LAT"**: LATTICE
 
-# In[42]:
+# In[23]:
 
 
 headers = []
@@ -279,10 +279,10 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 
 # Create and print the final table as Pandas dataFrame.
 
-# In[44]:
+# In[30]:
 
 
-pd.set_option('display.max_colwidth', -1)
-pd.set_option('display.max_columns', 30)
-pd.DataFrame(data=table, columns=headers)
+df = pd.DataFrame(data=table, columns=headers)
+html = dataframe_to_html(df)
+html
 

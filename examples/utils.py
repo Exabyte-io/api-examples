@@ -113,9 +113,9 @@ def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, su
 # In[ ]:
 
 
-def pretty_print_dataframe(df, text_align="center"):
+def dataframe_to_html(df, text_align="center"):
     """
-    Prints the Pandas dataframe.
+    Converts Pandas dataframe to HTML.
     See https://pandas.pydata.org/pandas-docs/stable/style.html for more information about styling.
 
     Args:
@@ -126,6 +126,5 @@ def pretty_print_dataframe(df, text_align="center"):
         dict(selector="th", props=[("text-align", text_align)]),
         dict(selector="td", props=[("text-align", text_align)])
     ]
-    html = (df.style.set_table_styles(styles))
-    html
+    return (df.style.set_table_styles(styles))
 

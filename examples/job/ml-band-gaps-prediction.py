@@ -3,7 +3,7 @@
 
 # # Overview
 # 
-# This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials (train materials) and use the ML model to predict the band gap of another set of materials (predict materials).
+# This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials (named train materials) and use the model to predict the band gap of another set (named predict materials).
 # 
 # 
 # 
@@ -11,15 +11,15 @@
 # 
 # We follow the below steps:
 # 
-# - Import train and predict materials from [materials project](https://materialsproject.org/)
+# - Import materials from [materials project](https://materialsproject.org/)
 # 
 # - Calculate band gap for the train materials
 # 
 # - Build ML Train model for the train materials
 # 
-# - Create and submit a job to predict band gap for the predict material
+# - Create and submit a job to predict band gap for the predict materials
 # 
-# - Extract band gap for predict material
+# - Extract band gap for predict materials
 # 
 # - Output the results as Pandas dataFrame
 # 
@@ -38,7 +38,7 @@
 # 
 # ## Import packages
 
-# In[19]:
+# In[1]:
 
 
 import time
@@ -62,7 +62,7 @@ from endpoints.raw_properties import RawPropertiesEndpoints
 # 
 # > <span style="color: orange">**NOTE**</span>: The above step is required!
 
-# In[20]:
+# In[2]:
 
 
 ACCOUNT_SLUG = "exabyte"
@@ -73,7 +73,7 @@ ACCOUNT_SLUG = "exabyte"
 # - **TRAIN_MATERIALS_PROJECT_IDS**: a list of train material IDs to be imported from materials project
 # - **PREDICT_MATERIALS_PROJECT_IDS**: a list of predict material IDs to be imported from materials project
 
-# In[21]:
+# In[3]:
 
 
 TRAIN_MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
@@ -86,7 +86,7 @@ PREDICT_MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
 # - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
 # 
 
-# In[22]:
+# In[4]:
 
 
 PROJECT_SLUG = ACCOUNT_SLUG + "-default"
@@ -101,7 +101,7 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
 # - **CLUSTER**: The full qualified domain name (FQDN) of the cluster to submit the jobs into.
 
-# In[33]:
+# In[17]:
 
 
 PPN = "1"
@@ -113,7 +113,7 @@ CLUSTER = "master-production-20160630-cluster-001.exabyte.io"
 
 # ## Initialize the endpoints
 
-# In[25]:
+# In[6]:
 
 
 job_endpoints = JobEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
@@ -130,7 +130,7 @@ raw_property_endpoints = RawPropertiesEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOK
 # 
 # Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
-# In[26]:
+# In[8]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
@@ -141,18 +141,18 @@ project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT
 # 
 # Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows.
 
-# In[27]:
+# In[11]:
 
 
-ml_train_workflow_id = copy_bank_workflow_by_system_name("exabyteml-ml-train-model". owner_id)
-band_gap_workflow_id = copy_bank_workflow_by_system_name("espresso-band-gap". owner_id)
+band_gap_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints, "espresso-band-gap", owner_id)
+ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints, "exabyteml-ml-train-model", owner_id)
 
 
 # ## Import materials
 # 
 # Import materials from materials project .
 
-# In[28]:
+# In[14]:
 
 
 train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id)
@@ -163,7 +163,7 @@ predict_materials = material_endpoints.import_from_materialsproject(MATERIALS_PR
 # 
 # Calculate band gap for the train materials.
 
-# In[34]:
+# In[18]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
@@ -172,7 +172,7 @@ jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, projec
 
 # Submit the jobs for execution.
 
-# In[36]:
+# In[19]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
@@ -180,7 +180,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[37]:
+# In[20]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -191,7 +191,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # Create ML Train job for the train materials.
 
-# In[34]:
+# In[21]:
 
 
 name = "-".join((JOB_NAME_PREFIX, "train"))
@@ -202,7 +202,7 @@ job = job_endpoints.create(config)
 
 # Submit the train job for execution.
 
-# In[36]:
+# In[22]:
 
 
 job_endpoints.submit(job["_id"])
@@ -210,7 +210,7 @@ job_endpoints.submit(job["_id"])
 
 # Monitor the job and print the status until it is done.
 
-# In[37]:
+# In[23]:
 
 
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
@@ -220,7 +220,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # 
 # The following function returns a material property extracted in the given unit of the job's subworkflow. 
 
-# In[38]:
+# In[24]:
 
 
 ml_predict_workflow_id = get_property_by_subworkow_and_unit_indecies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]["_id"]
@@ -230,7 +230,7 @@ ml_predict_workflow_id = get_property_by_subworkow_and_unit_indecies(raw_propert
 # 
 # Create ML Predict job for the predict materials.
 
-# In[34]:
+# In[25]:
 
 
 name = "-".join((JOB_NAME_PREFIX, "predict"))
@@ -241,7 +241,7 @@ job = job_endpoints.create(config)
 
 # Submit the train job for execution.
 
-# In[ ]:
+# In[26]:
 
 
 job_endpoints.submit(job["_id"])
@@ -249,7 +249,7 @@ job_endpoints.submit(job["_id"])
 
 # Monitor the job and print the status until its done.
 
-# In[37]:
+# In[27]:
 
 
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
@@ -263,7 +263,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # 
 # - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[ ]:
+# In[28]:
 
 
 
@@ -274,25 +274,25 @@ predicted_properties = get_property_by_subworkow_and_unit_indecies(raw_property_
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[41]:
+# In[34]:
 
 
 table = []
 for exabyte_id, properties in predicted_properties.iteritems():
-    material = next((m for in predict_material if m["exabyteId"] == exabyte_id))
+    material = next((m for m in predict_materials if m["exabyteId"] == exabyte_id))
     band_gaps = next((v for v in properties if v["name"] == "band_gaps"))
-    band_gap_direct = next((v for v in band_gaps["values"] if v["type"] == "direct"))["value"]
-    band_gap_indirect = next((v for v in band_gaps["values"] if v["type"] == "indirect"))["value"]
-    table.append([material["_id"], material["exabyteId"], band_gap_direct, band_gap_indirect])
+    direct_gap = next((v for v in band_gaps["values"] if v["type"] == "direct"))["value"]
+    indirect_gap = next((v for v in band_gaps["values"] if v["type"] == "indirect"))["value"]
+    table.append([material["_id"], material["name"], material["formula"], material["exabyteId"], direct_gap, indirect_gap])
 
 
 # ## Ouput the results
 # 
 # Create and print the final table as Pandas dataFrame.
 
-# In[44]:
+# In[35]:
 
 
-headers = ["ID", "EXABYTE-ID", "DIRECT-GAP", "INDIRECT-GAP"]
+headers = ["ID", "NAME", "FORMULA", "EXABYTE-ID", "DIRECT-GAP", "INDIRECT-GAP"]
 pd.DataFrame(data=table, columns=headers)
 

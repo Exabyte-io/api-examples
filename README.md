@@ -10,7 +10,7 @@ This repository contains examples for performing most-common tasks in the Exabyt
     git clone git@github.com:Exabyte-io/exabyte-api-examples.git
     ```
 
-2. Install [virtualenv](https://virtualenv.pypa.io/en/stable/) using [pip](https://pip.pypa.io/en/stable/):
+2. Install [virtualenv](https://virtualenv.pypa.io/en/stable/) using [pip](https://pip.pypa.io/en/stable/) if not already present.
 
     ```bash
     pip install virtualenv
@@ -47,7 +47,7 @@ If you would like to add new examples or adjust existing ones, please consider t
 
 1. Put examples into the corresponding directories by domain.
 
-2. Walk the readers through the examples by providing step-by-step explanation similar to our examples, e.g. [this](material/get_materials_by_formula.ipynb).
+2. Walk the readers through the examples by providing step-by-step explanation similar to our examples, e.g. [this](examples/material/get_materials_by_formula.ipynb).
 
 3. We use post-save hooks to automatically convert notebooks to python scripts. See [jupyter notebook config](config.py) for more information.
  

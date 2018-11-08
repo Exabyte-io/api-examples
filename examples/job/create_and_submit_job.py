@@ -14,6 +14,8 @@
 # In[14]:
 
 
+import json
+
 from endpoints.jobs import JobEndpoints
 from endpoints.materials import MaterialEndpoints
 from endpoints.workflows import WorkflowEndpoints

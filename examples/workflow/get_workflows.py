@@ -16,7 +16,7 @@
 
 import json
 
-from settings import ENDPOINT_ARGS
+from settings import ENDPOINT_ARGS, ACCOUNT_SLUG
 from endpoints.workflows import WorkflowEndpoints
 
 
@@ -30,7 +30,8 @@ from endpoints.workflows import WorkflowEndpoints
 
 
 QUERY = {
-    "name": "Total Energy"
+    "name": "Total Energy",
+    "owner.slug": ACCOUNT_SLUG
 }
 
 OPTIONS = {

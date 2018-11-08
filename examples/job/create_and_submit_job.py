@@ -16,8 +16,8 @@
 
 import json
 
-from settings import ENDPOINT_ARGS
 from endpoints.jobs import JobEndpoints
+from settings import ENDPOINT_ARGS, ACCOUNT_SLUG
 from endpoints.materials import MaterialEndpoints
 from endpoints.workflows import WorkflowEndpoints
 
@@ -34,15 +34,9 @@ workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 # ## Setup parameters
 # 
-# Set the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the steps will be executed below.
+# Set ACCOUNT_SLUG, the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed inside [settings](../settings.ipynb).
 # 
 # > <span style="color: orange">**NOTE**</span>: This step is mandatory!
-
-# In[16]:
-
-
-ACCOUNT_SLUG = "exabyte"
-
 
 # Set job name.
 

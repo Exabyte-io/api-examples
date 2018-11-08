@@ -16,7 +16,7 @@
 
 import json
 
-from settings import ENDPOINT_ARGS
+from settings import ENDPOINT_ARGS, ACCOUNT_SLUG
 from endpoints.materials import MaterialEndpoints
 
 
@@ -29,7 +29,7 @@ from endpoints.materials import MaterialEndpoints
 
 QUERY = {
     "formula": "Si",
-    "owner.slug": "demo"
+    "owner.slug": ACCOUNT_SLUG
 }
 
 

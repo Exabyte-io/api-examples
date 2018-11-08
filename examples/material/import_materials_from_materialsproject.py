@@ -30,7 +30,7 @@ from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 
 
 MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
-TAGS = ["phase-ii", "difficulty-1"]
+TAGS = ["tag1", "tag2"]
 
 
 # ## Import materials

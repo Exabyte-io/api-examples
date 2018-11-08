@@ -59,7 +59,7 @@ from utils import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for
 
 # ## Setup parameters
 # 
-# Set ACCOUNT_SLUG, the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed inside [settings](../settings.ipynb).
+# Set ACCOUNT_SLUG inside [settings](../settings.ipynb). It represents the computer-friendly name of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed.
 # 
 # > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
@@ -71,8 +71,8 @@ from utils import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for
 # In[4]:
 
 
-TRAIN_MATERIALS_PROJECT_IDS = ["mp-10694"]
-TARGET_MATERIALS_PROJECT_IDS = ["mp-29803"]
+TRAIN_MATERIALS_PROJECT_IDS = ["mp-149"] # Si
+TARGET_MATERIALS_PROJECT_IDS = ["mp-32"] # Ge
 
 
 # Set parameters for the jobs to be ran for the imported materials:

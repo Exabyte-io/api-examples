@@ -34,7 +34,7 @@ workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 # ## Setup parameters
 # 
-# Set ACCOUNT_SLUG, the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed inside [settings](../settings.ipynb).
+# Set ACCOUNT_SLUG inside [settings](../settings.ipynb). It represents the computer-friendly name of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed.
 # 
 # > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 

@@ -57,7 +57,7 @@ from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_in
 
 # ## Setup parameters
 # 
-# Set ACCOUNT_SLUG, the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed inside [settings](../settings.ipynb).
+# Set ACCOUNT_SLUG inside [settings](../settings.ipynb). It represents the computer-friendly name of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed.
 # 
 # > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
@@ -71,7 +71,7 @@ from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_in
 # In[3]:
 
 
-MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
+MATERIALS_PROJECT_IDS = ["mp-149", "mp-32"] # Si and Ge
 MATERIALS_SET_NAME = "materials-set"
 TAGS = ["tag1", "tag2"]
 

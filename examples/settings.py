@@ -3,7 +3,7 @@
 
 # # Overview
 # 
-# This file contains settings that are used inside the examples. Settings are imported inside the examples via [nbimporter](https://github.com/grst/nbimporter) package.
+# This file contains settings that are used inside the examples.
 # 
 # # Settings
 # 
@@ -19,10 +19,10 @@
 # - **SECURE**: Whether to use secure connection. Defaults to True.
 # 
 # 
-# - **ACCOUNT_ID**: Your account ID.
+# - **ACCOUNT_ID**: Your account ID. See [this](../system/get_authentication_params.ipynb) example to obtain RESTful API authentication parameters.
 # 
 # 
-# - **AUTH_TOKEN**: Your authentication token.
+# - **AUTH_TOKEN**: Your authentication token. See [this](../system/get_authentication_params.ipynb) example to obtain RESTful API authentication parameters.
 # 
 # 
 # - **MATERIALS_PROJECT_API_KEY**: Your materials project API key.

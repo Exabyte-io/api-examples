@@ -5,59 +5,97 @@
 # 
 # This example demonstrates how to create and submit a job via [Job](https://docs.exabyte.io/api/Job/put_jobs_create) endpoints.
 
-# 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
+# ## Import required packages# Execution
+# 
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# 
+# ## Import packages
 
 # In[2]:
 
 
-import json
-import argparse
-import nbimporter
-nbimporter.options['only_defs'] = False
-
-from settings import *
 from endpoints.jobs import JobEndpoints
+from endpoints.materials import MaterialEndpoints
+from endpoints.workflows import WorkflowEndpoints
+from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
-# 2. Create job config in JSON format. Adjust material ID, workflow ID and job name accordingly.
-#     - Use [this](../material/get_materials_by_formula.py) example to get the material from API and extract its ID.
-#     - Use [this](../workflow/get_workflows.ipynb) example to get the workflow from API and extract its ID.
-
-# In[4]:
-
-
-CONFIG = {
-    "_material": {
-        "_id": "tkmEX2KdrSzgo54km"
-    },
-    "workflow": {
-        "_id": "6bd94da34794abf42a697fe1"
-    },
-    "name": "TEST JOB"
-}
-
-
-# 3. Initialize `JobEndpoints` class and call `create` function to create the job.
+# ## Initialize the endpoints
 
 # In[6]:
 
 
-endpoint = JobEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-job = endpoint.create(CONFIG)
+args = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]
+job_endpoints = JobEndpoints(*args)
+material_endpoints = MaterialEndpoints(*args)
+workflow_endpoints = WorkflowEndpoints(*args)
 
 
-# 4. Submit job by its ID.
+# ## Setup parameters
+# 
+# Set the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the steps will be executed below.
+# 
+# > <span style="color: orange">**NOTE**</span>: This step is mandatory!
+
+# In[ ]:
+
+
+ACCOUNT_SLUG = "exabyte"
+
+
+# Set job name.
+
+# In[ ]:
+
+
+JOB_NAME = "TEST JOB"
+
+
+# ## Retrieve material and workflow IDs
+# 
+# Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different material and workflow.
+
+# In[ ]:
+
+
+material_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
+workflow_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
+
+
+# ## Create job config
+# 
+# The job belongs to user's default account and it is created inside the defauult account's project. 
+
+# In[4]:
+
+
+config = {
+    "_material": {
+        "_id": material_id
+    },
+    "workflow": {
+        "_id": workflow_id
+    },
+    "name": JOB_NAME
+}
+
+
+# ## Create and submit job
 
 # In[7]:
 
 
+job = endpoint.create(config)
 endpoint.submit(job['_id'])
 
 
-# 4. Print the job in pretty JSON below. Check `status` field to make sure job is submiited. 
+# ## Print the job
+# 
+# Print the job in pretty JSON below. Check `status` field to make sure job is submiited.
 
 # In[9]:
 
 
-print json.dumps(endpoint.get(job['_id']), indent=4)
+job = endpoint.get(job['_id'])
+print json.dumps(job, indent=4)
 

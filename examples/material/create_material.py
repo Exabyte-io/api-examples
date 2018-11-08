@@ -12,8 +12,6 @@
 
 import json
 import argparse
-import nbimporter
-nbimporter.options['only_defs'] = False
 
 from settings import *
 from endpoints.materials import MaterialEndpoints

@@ -16,10 +16,10 @@
 
 import json
 
+from settings import ENDPOINT_ARGS
 from endpoints.jobs import JobEndpoints
 from endpoints.materials import MaterialEndpoints
 from endpoints.workflows import WorkflowEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
 # ## Initialize the endpoints
@@ -27,10 +27,9 @@ from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 # In[15]:
 
 
-args = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]
-job_endpoints = JobEndpoints(*args)
-material_endpoints = MaterialEndpoints(*args)
-workflow_endpoints = WorkflowEndpoints(*args)
+job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
+material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
+workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 
 # ## Setup parameters

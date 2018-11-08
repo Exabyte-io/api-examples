@@ -16,8 +16,8 @@
 
 import json
 
+from settings import ENDPOINT_ARGS
 from endpoints.workflows import WorkflowEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
 # ## Set Parameters
@@ -45,7 +45,7 @@ OPTIONS = {
 # In[3]:
 
 
-endpoint = WorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 
 # ## List workflows

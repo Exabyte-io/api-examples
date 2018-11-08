@@ -16,8 +16,8 @@
 
 import json
 
+from settings import ENDPOINT_ARGS
 from endpoints.materials import MaterialEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
 # ## Set Parameters
@@ -43,7 +43,7 @@ content  = ""
 with open(POSCAR_PATH) as f:
     content = f.read()
 
-endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 material = endpoint.import_from_file(NAME, content)
 
 

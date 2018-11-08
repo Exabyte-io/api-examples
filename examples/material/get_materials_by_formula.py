@@ -16,8 +16,8 @@
 
 import json
 
+from settings import ENDPOINT_ARGS
 from endpoints.materials import MaterialEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
 
 
 # ## Set Parameters
@@ -38,7 +38,7 @@ QUERY = {
 # In[4]:
 
 
-endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 
 
 # ## List materials

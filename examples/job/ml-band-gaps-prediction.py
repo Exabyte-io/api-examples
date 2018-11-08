@@ -53,7 +53,7 @@ from endpoints.materials import MaterialEndpoints
 from endpoints.workflows import WorkflowEndpoints
 from endpoints.bank_workflows import BankWorkflowEndpoints
 from endpoints.raw_properties import RawPropertiesEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE, MATERIALS_PROJECT_API_KEY
+from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 from utils import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies
 
 
@@ -117,13 +117,12 @@ CLUSTER = "cluster-001"
 # In[7]:
 
 
-args = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]
-job_endpoints = JobEndpoints(*args)
-project_endpoints = ProjectEndpoints(*args)
-material_endpoints = MaterialEndpoints(*args)
-workflow_endpoints = WorkflowEndpoints(*args)
-bank_workflow_endpoints = BankWorkflowEndpoints(*args)
-raw_property_endpoints = RawPropertiesEndpoints(*args)
+job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
+project_endpoints = ProjectEndpoints(*ENDPOINT_ARGS)
+material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
+workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
+bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
+raw_property_endpoints = RawPropertiesEndpoints(*ENDPOINT_ARGS)
 
 
 # ## Retrieve owner and project IDs

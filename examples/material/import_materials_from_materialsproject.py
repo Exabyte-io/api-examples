@@ -17,7 +17,7 @@
 import json
 
 from endpoints.materials import MaterialEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE, MATERIALS_PROJECT_API_KEY
+from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 
 
 # ## Set Parameters
@@ -40,7 +40,7 @@ TAGS = ["phase-ii", "difficulty-1"]
 # In[5]:
 
 
-endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, tags=TAGS)
 
 

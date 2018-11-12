@@ -5,28 +5,33 @@
 # 
 # Inside this example we contact [Workflow](https://docs.exabyte.io/api/Workflows/get_workflows) endpoint to obtain a list of workflows that an account has access to.
 
-# 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
+# # Execution
+# 
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# 
+# ## Import packages
 
 # In[1]:
 
 
 import json
-import argparse
 
-from settings import *
+from settings import ENDPOINT_ARGS, ACCOUNT_SLUG
 from endpoints.workflows import WorkflowEndpoints
 
 
-# 2. Set Parameters:
-#     - **QUERY**: A query describing the documents to find. See [this](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information. 
-#     - **OPTIONS**:
-#         - **limit**: Maximum number of results to return. See [this](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
+# ## Set Parameters
+# 
+# - **QUERY**: A query describing the documents to find. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information. 
+# 
+# - **limit**: Maximum number of results to return. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[9]:
+# In[2]:
 
 
 QUERY = {
-    "owner.slug": "demo"
+    "name": "Total Energy",
+    "owner.slug": ACCOUNT_SLUG
 }
 
 OPTIONS = {
@@ -34,25 +39,31 @@ OPTIONS = {
 }
 
 
-# 3. Initialize a helper class to interact with `WorkflowEndpoints`. This only has to be done once.
+# ## Initialize the endpoint
+# 
+# Initialize a helper class to interact with `WorkflowEndpoints`. This only has to be done once.
 
-# In[10]:
+# In[3]:
 
 
-endpoint = WorkflowEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
+endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 
-# 4. Contact the endpoint to list workflows according to the query above.
+# ## List workflows
+# 
+# Contact the endpoint to list workflows according to the query above.
 
-# In[11]:
+# In[4]:
 
 
 workflows = endpoint.list(QUERY, OPTIONS)
 
 
-# 5. Print the list of workflows saved under the corresponding variable in pretty JSON below.
+# ## Print workflows
+# 
+# Print the list of workflows saved under the corresponding variable in pretty JSON below.
 
-# In[12]:
+# In[5]:
 
 
 print json.dumps(workflows, indent=4)

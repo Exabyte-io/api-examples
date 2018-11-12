@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Overview
+# # Run Simulations and Extract Properties
 # 
-# This example demonstrates how to use Exabyte RESTful API to create simulation [Jobs](https://docs.exabyte.io/jobs/overview/) programmatically for multiple [Materials](https://docs.exabyte.io/materials/overview/) at a time and extract the resulting [Properties](https://docs.exabyte.io/properties/overview/) forming a [Pandas](https://pandas.pydata.org/) dataframe.
+# This example demonstrates how to use Exabyte RESTful API to create simulation [Jobs](https://docs.exabyte.io/jobs/overview/) programmatically for multiple [Materials](https://docs.exabyte.io/materials/overview/) at once and extract the resulting [Properties](https://docs.exabyte.io/properties/overview/) forming a [Pandas](https://pandas.pydata.org/) dataframe.
 # 
-# This approach can work with any [Workflows](https://docs.exabyte.io/workflows/overview/) and multiple materials at once. For the demonstration purpose we use the Density Functional Theory and extract Electronic Band Gap as the property of interest.
+# This approach can work with any [Workflows](https://docs.exabyte.io/workflows/overview/). For the demonstration purpose we use the Density Functional Theory and extract Electronic Band Gap as the property of interest.
+# 
+# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io account with access to VASP (Vienna ab-initio simulations package) is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for Quantum ESPRESSO, for example) and adjust extraction of the results ("Extract results" section). RESTful API credentials shall be updated in [settings](../settings.ipynb).
 # 
 # 
-# # Steps
+# ## Steps
 # 
 # We follow the below steps:
 # 
@@ -24,7 +26,7 @@
 # 
 # - Output the results as Pandas dataFrame
 # 
-# # Pre-requisites
+# ## Pre-requisites
 # 
 # The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We outline these below and direct the reader to the original sources of information:
 # 
@@ -32,13 +34,12 @@
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
 # - [Creating and submitting jobs](../job/create_and_submit_job.ipynb)
 
-# # Execution
+# ## Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account with VASP access is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
 # 
-# ## Import packages
+# ### Import packages
 
-# In[19]:
+# In[1]:
 
 
 import time
@@ -46,50 +47,46 @@ import pandas as pd
 from IPython.display import IFrame
 
 from endpoints.jobs import JobEndpoints
-from utils import wait_for_jobs_to_finish
 from endpoints.utils import flatten_material
 from endpoints.projects import ProjectEndpoints
 from endpoints.materials import MaterialEndpoints
 from endpoints.bank_workflows import BankWorkflowEndpoints
 from endpoints.raw_properties import RawPropertiesEndpoints
-from settings import HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE
+from settings import ENDPOINT_ARGS, ACCOUNT_SLUG, MATERIALS_PROJECT_API_KEY
+from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
 
 
-# ## Setup parameters
+# ### Setup parameters
 # 
-# Set the slug of [account](https://docs.exabyte.io/accounts/overview/) under which all the steps will be executed below.
+# Set ACCOUNT_SLUG inside [settings](../settings.ipynb). It represents the computer-friendly name of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed.
 # 
 # > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
-# In[20]:
-
-
-ACCOUNT_SLUG = "exabyte"
-
-
-# Set parameters for the materials to be imported:
+# #### Materials
 #     
 # - **MATERIALS_PROJECT_IDS**: a list of material IDs to be imported from materials project
 # - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
 # - **MATERIALS_SET_NAME**: the name of the materials set
 # 
 
-# In[21]:
+# In[2]:
 
 
-MATERIALS_PROJECT_IDS = ["mp-10694", "mp-29803"]
+MATERIALS_PROJECT_IDS = ["mp-149", "mp-32"] # Si and Ge
 MATERIALS_SET_NAME = "materials-set"
 TAGS = ["tag1", "tag2"]
 
 
-# Set parameters for the jobs to be ran for the imported materials:
+# #### Jobs
+# 
+# Parameters for the jobs to be ran for the imported materials:
 # 
 # - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
 # - **JOBS_SET_NAME**: the name of the jobs set
 # - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
 # 
 
-# In[22]:
+# In[3]:
 
 
 PROJECT_SLUG = ACCOUNT_SLUG + "-default"
@@ -97,14 +94,26 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 JOBS_SET_NAME = "jobs-set"
 
 
+# #### Workflow
+# 
 # This example is based on [this](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) bank workflow which is later copied to the account workflows collection.
 
-# In[23]:
+# In[4]:
 
 
-BANK_WORKFLOW_ID = "BEWfDREDFFL9g8Qpk"
+BANK_WORKFLOW_ID = "houpmFK6PFK66qH48"
 
 
+# In[5]:
+
+
+# Visualize the bank workflow below
+# NOTE: might not be rendered on Github
+IFrame("https://platform.exabyte.io/analytics/workflows/{}".format(BANK_WORKFLOW_ID), width=900, height=650)
+
+
+# #### Compute
+# 
 # Setup compute parameters. See [this](https://docs.exabyte.io/infrastructure/compute-settings/ui) for more information about compute parameters.
 # 
 # - **NODES**: Number of nodes. Defaults to 1.
@@ -113,7 +122,7 @@ BANK_WORKFLOW_ID = "BEWfDREDFFL9g8Qpk"
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
 # - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
-# In[33]:
+# In[6]:
 
 
 PPN = "1"
@@ -123,47 +132,42 @@ TIME_LIMIT = "01:00:00"
 CLUSTER = "cluster-001"
 
 
-# ## Initialize the endpoints
+# ### Initialize endpoints
 
-# In[25]:
-
-
-args = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]
-job_endpoints = JobEndpoints(*args)
-project_endpoints = ProjectEndpoints(*args)
-material_endpoints = MaterialEndpoints(*args)
-raw_property_endpoints = RawPropertiesEndpoints(*args)
-bank_workflow_endpoints = BankWorkflowEndpoints(*args)
+# In[7]:
 
 
-# ## Retrieve owner and project IDs
-# 
-# Retrieve owner and project IDs as they are needed by the endpoints. 
-# 
-# Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
+job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
+project_endpoints = ProjectEndpoints(*ENDPOINT_ARGS)
+material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
+raw_property_endpoints = RawPropertiesEndpoints(*ENDPOINT_ARGS)
+bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
 
-# In[26]:
+
+# Next, we retrieve the owner and project IDs as they are needed by the endpoints. Account's default material is used to extract the owner ID. One can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
+
+# In[8]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
 project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
 
 
-# ## Create workflow
+# ### Create workflow
 # 
-# Copy bank workflow to the account's workflows.
+# Copy bank workflow (template) to the account's workflows collection.
 
-# In[27]:
+# In[9]:
 
 
 workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 
 
-# ## Import materials
+# ### Import materials
 # 
 # Import materials from materials project with the above tags.
 
-# In[28]:
+# In[10]:
 
 
 materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS)
@@ -171,18 +175,18 @@ materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_AP
 
 # Create a materials set and move the materials into it.
 
-# In[29]:
+# In[11]:
 
 
 materials_set = material_endpoints.create_set({"name": MATERIALS_SET_NAME, "owner": {"_id": owner_id}})
 for material in materials: material_endpoints.move_to_set(material["_id"], "", materials_set["_id"])
 
 
-# ## Create jobs
+# ### Create jobs
 # 
 # Create jobs for the materials above.
 
-# In[34]:
+# In[12]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
@@ -191,7 +195,7 @@ jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id,
 
 # Create a jobs set and move the jobs into it.
 
-# In[35]:
+# In[13]:
 
 
 jobs_set = job_endpoints.create_set({"name": JOBS_SET_NAME, "projectId": project_id, "owner": {"_id": owner_id}})
@@ -200,7 +204,7 @@ for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 
 # Submit the jobs for execution.
 
-# In[36]:
+# In[14]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
@@ -208,14 +212,14 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[37]:
+# In[15]:
 
 
 job_ids = [job["_id"] for job in jobs]
 wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 
-# ## Extract the results
+# ### Extract results
 # 
 # For each material, simulaion job, final structure, pressure and band gaps are extracted. 
 # 
@@ -223,14 +227,14 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[39]:
+# In[16]:
 
 
 results = []
 for material in materials:
     job = next((job for job in jobs if job["_material"]["_id"] == material["_id"]))
-    final_structure = get_property_by_subworkow_and_unit_indicies("final_structure", job, 0, 0)["data"]
-    pressure = get_property_by_subworkow_and_unit_indicies("pressure", job, 0, 0)["data"]["value"]
+    final_structure = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "final_structure", job, 0, 0)["data"]
+    pressure = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "pressure", job, 0, 0)["data"]["value"]
     unit_flowchart_id = job["workflow"]["subworkflows"][1]["units"][1]["flowchartId"]
     band_gap_direct = raw_property_endpoints.get_direct_band_gap(job["_id"], unit_flowchart_id)
     band_gap_indirect = raw_property_endpoints.get_indirect_band_gap(job["_id"], unit_flowchart_id)
@@ -243,11 +247,11 @@ for material in materials:
     })
 
 
-# ## Flatten the results
+# ### Flatten results
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[41]:
+# In[17]:
 
 
 table = []
@@ -258,7 +262,7 @@ for result in results:
     table.append(data)
 
 
-# ## Ouput the results
+# ### Output results
 # 
 # Form the Pandas dataFrame headers according to the table generated above with the following abbreviations:
 # 
@@ -267,7 +271,7 @@ for result in results:
 # - **"N-SITES"**: Number of Sites
 # - **"LAT"**: LATTICE
 
-# In[42]:
+# In[18]:
 
 
 headers = []
@@ -279,10 +283,10 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 
 # Create and print the final table as Pandas dataFrame.
 
-# In[44]:
+# In[19]:
 
 
-pd.set_option('display.max_colwidth', -1)
-pd.set_option('display.max_columns', 30)
-pd.DataFrame(data=table, columns=headers)
+df = pd.DataFrame(data=table, columns=headers)
+html = dataframe_to_html(df)
+html
 

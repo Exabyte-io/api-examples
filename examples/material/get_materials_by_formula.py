@@ -5,48 +5,57 @@
 # 
 # Inside this example we contact [Material](https://docs.exabyte.io/api/Material/get_materials) endpoint to obtain a list materials that an account has access to. We use chemical formula to filter the list.
 
-# 1. Import required packages. Adjust [settings](../settings.ipynb) as necessary.
+# # Execution
+# 
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# 
+# ## Import packages
+
+# In[2]:
+
+
+import json
+
+from settings import ENDPOINT_ARGS, ACCOUNT_SLUG
+from endpoints.materials import MaterialEndpoints
+
+
+# ## Set Parameters
+# 
+# - **QUERY**: A query describing the documents to find. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
+
+# In[3]:
+
+
+QUERY = {
+    "formula": "Si",
+    "owner.slug": ACCOUNT_SLUG
+}
+
+
+# ## Initialize the endpoint
 
 # In[4]:
 
 
-import json
-import argparse
-
-from settings import *
-from endpoints.materials import MaterialEndpoints
+endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 
 
-# 2. Set QUERY in [MongoDB](https://docs.mongodb.com/manual/tutorial/query-documents/) format. 
+# ## List materials
+# 
+# Contact the endpoint to list materials according to the query above.
 
 # In[5]:
-
-
-QUERY = {
-    "formula": "SiGe",
-    "owner.slug": "demo"
-}
-
-
-# 3. Initialize a helper class to interact with `MaterialEndpoints`. This only has to be done once.
-
-# In[6]:
-
-
-endpoint = MaterialEndpoints(HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE)
-
-
-# 4. Contact the endpoint to list materials according to the query above.
-
-# In[7]:
 
 
 materials = endpoint.list(QUERY)
 
 
-# 5. Print the list of materials saved under the corresponding variable in pretty JSON below.
+# ## Print materials
+# 
+# Print the list of materials saved under the corresponding variable in pretty JSON below.
 
-# In[8]:
+# In[6]:
 
 
 print json.dumps(materials, indent=4)

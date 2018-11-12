@@ -1,6 +1,6 @@
 # Exabyte API Examples
 
-This repository explains how to perform some of the most common tasks in the Exabyte.io platform through its RESTful application programming interface (REST API) [[1](#links)] by virtue of examples. Examples are grouped together by domain (eg. "materials") and are presented in a self-documented format inside Jupyter notebooks [[2](#links)]. In order to view the content online[Navigate](examples/) to a notebook page inside this repository.
+This repository explains how to perform some of the most common tasks in the Exabyte.io platform through its RESTful application programming interface (REST API) [[1](#links)] by virtue of examples. Examples are grouped together by domain (eg. "materials") and are presented in a self-documented format inside Jupyter notebooks [[2](#links)]. In order to view the content online, [navigate](examples/) to a notebook page inside this repository.
 
 ## Setup
 
@@ -57,10 +57,11 @@ If you would like to add new examples or adjust existing ones, please consider t
 
 2. Walk the readers through the examples by providing step-by-step explanation similar to our examples, e.g. [this](examples/material/get_materials_by_formula.ipynb).
 
-> NOTE: We use post-save hooks to automatically convert notebooks to python scripts. See [jupyter notebook config](config.py) for more information. As it is difficult to review the notebooks on GitHub we [automatically](.gitattributes) add iPython notebooks to [Git LFS](https://git-lfs.github.com/).
+> NOTE: We use post-save hooks to automatically convert notebooks to python scripts. See [config](config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[4](#links)].
 
 ## Links
 
 1. Exabyte.io RESTful API, description in the online documentation: [link](https://docs.exabyte.io/rest-api/overview/)
 2. Jupyter.org, official website: [link](http://jupyter.org/)
 3. GitHub Standard Fork & Pull Request Workflow, online explanation: [link](https://gist.github.com/Chaser324/ce0505fbed06b947d962) 
+4. Git Large File Storage, official website: [link](https://git-lfs.github.com/)

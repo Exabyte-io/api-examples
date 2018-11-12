@@ -39,7 +39,7 @@
 # 
 # ### Import packages
 
-# In[37]:
+# In[57]:
 
 
 import time
@@ -69,7 +69,7 @@ from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_in
 # - **MATERIALS_SET_NAME**: the name of the materials set
 # 
 
-# In[38]:
+# In[58]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-149", "mp-32"] # Si and Ge
@@ -86,7 +86,7 @@ TAGS = ["tag1", "tag2"]
 # - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
 # 
 
-# In[39]:
+# In[59]:
 
 
 PROJECT_SLUG = ACCOUNT_SLUG + "-default"
@@ -98,17 +98,17 @@ JOBS_SET_NAME = "jobs-set"
 # 
 # This example is based on [this](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) bank workflow which is later copied to the account workflows collection.
 
-# In[40]:
+# In[60]:
 
 
 BANK_WORKFLOW_ID = "houpmFK6PFK66qH48"
 
 
-# In[55]:
+# In[61]:
 
 
 # Visualize the bank workflow below
-from IPython.display import IFrame
+# NOTE: might not be rendered on Github
 IFrame("https://platform.exabyte.io/analytics/workflows/{}".format(BANK_WORKFLOW_ID), width=900, height=650)
 
 
@@ -122,7 +122,7 @@ IFrame("https://platform.exabyte.io/analytics/workflows/{}".format(BANK_WORKFLOW
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
 # - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
-# In[41]:
+# In[62]:
 
 
 PPN = "1"
@@ -134,7 +134,7 @@ CLUSTER = "cluster-001"
 
 # ### Initialize endpoints
 
-# In[42]:
+# In[63]:
 
 
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
@@ -146,7 +146,7 @@ bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
 
 # Next, we retrieve the owner and project IDs as they are needed by the endpoints. Account's default material is used to extract the owner ID. One can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
-# In[43]:
+# In[64]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
@@ -157,7 +157,7 @@ project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT
 # 
 # Copy bank workflow (template) to the account's workflows collection.
 
-# In[44]:
+# In[65]:
 
 
 workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
@@ -167,7 +167,7 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 # 
 # Import materials from materials project with the above tags.
 
-# In[45]:
+# In[66]:
 
 
 materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS)
@@ -175,7 +175,7 @@ materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_AP
 
 # Create a materials set and move the materials into it.
 
-# In[46]:
+# In[67]:
 
 
 materials_set = material_endpoints.create_set({"name": MATERIALS_SET_NAME, "owner": {"_id": owner_id}})
@@ -186,7 +186,7 @@ for material in materials: material_endpoints.move_to_set(material["_id"], "", m
 # 
 # Create jobs for the materials above.
 
-# In[47]:
+# In[68]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
@@ -195,7 +195,7 @@ jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id,
 
 # Create a jobs set and move the jobs into it.
 
-# In[48]:
+# In[69]:
 
 
 jobs_set = job_endpoints.create_set({"name": JOBS_SET_NAME, "projectId": project_id, "owner": {"_id": owner_id}})
@@ -204,7 +204,7 @@ for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 
 # Submit the jobs for execution.
 
-# In[49]:
+# In[70]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
@@ -212,7 +212,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[50]:
+# In[71]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -227,7 +227,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[51]:
+# In[72]:
 
 
 results = []
@@ -251,7 +251,7 @@ for material in materials:
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[52]:
+# In[73]:
 
 
 table = []
@@ -271,7 +271,7 @@ for result in results:
 # - **"N-SITES"**: Number of Sites
 # - **"LAT"**: LATTICE
 
-# In[53]:
+# In[74]:
 
 
 headers = []
@@ -283,7 +283,7 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 
 # Create and print the final table as Pandas dataFrame.
 
-# In[54]:
+# In[75]:
 
 
 df = pd.DataFrame(data=table, columns=headers)

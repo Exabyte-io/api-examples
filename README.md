@@ -1,16 +1,18 @@
-# Exabyte RESTful API Examples
+# Exabyte API Examples
 
-This repository contains examples for performing most-common tasks in the Exabyte.io platform through its RESTful API. Examples are presented in [Jupyter Notebook](http://jupyter.org/) format.
+This repository contains examples for performing most common tasks in the Exabyte.io platform through its RESTful application programming interface (REST API). Examples are grouped together by domain (eg. "materials") and are presented in a self-documented format inside [Jupyter](http://jupyter.org/). [Navigate](examples/) to a notebook page inside this repository to view its content online.
 
-# Setup
+## Setup
 
-1. Clone the repository.
+Follow the steps below in order to setup and view the Jupyter notebooks:
+
+1. Clone repository:
     
     ```bash
     git clone git@github.com:Exabyte-io/exabyte-api-examples.git
     ```
 
-2. Install [virtualenv](https://virtualenv.pypa.io/en/stable/) using [pip](https://pip.pypa.io/en/stable/) if not already present.
+2. Install [virtualenv](https://virtualenv.pypa.io/en/stable/) using [pip](https://pip.pypa.io/en/stable/) if not already present:
 
     ```bash
     pip install virtualenv
@@ -25,30 +27,36 @@ This repository contains examples for performing most-common tasks in the Exabyt
     pip install -r requirements.txt
     ```
 
-4. Run Jupyter. This will open a notebook in your browser:
+4. Run Jupyter and open a notebook in a browser:
 
     ```bash
     cd examples
     jupyter notebook --config=config.py
     ```
 
-# Usage
+## Usage
 
-1. Examples require an existing account with Exabyte.io platform. Register [here](https://platform.exabyte.io/register) to obtain one.
+In order to run or edit the examples:
 
-2. Open [settings](examples/settings.ipynb) and adjust it to provide authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) for how to obtain the authentication parameters with your username and password.
+1. Assert an existing Exabyte.io account. Examples require an account to run. New users can register [here](https://platform.exabyte.io/register) to obtain one.
 
-3. Open the desired example notebook, adjust it as necessary and run it.
+2. Open [settings](examples/settings.ipynb) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
+
+3. Open the desired example notebook, adjust it as necessary and run.
 
 
-# Contribute
+## Contribute
 
-If you would like to add new examples or adjust existing ones, please consider the following points.
+This is an open-source repository and we welcome contributions for other use cases. The original set of examples is only meant to demonstrate the capabilities and can be extended.
+ 
+If you would like to add new examples or adjust existing ones, please consider the following points:
 
 1. Put examples into the corresponding directories by domain.
 
 2. Walk the readers through the examples by providing step-by-step explanation similar to our examples, e.g. [this](examples/material/get_materials_by_formula.ipynb).
 
-3. We use post-save hooks to automatically convert notebooks to python scripts. See [jupyter notebook config](config.py) for more information.
- 
-4. As it is difficult to review the notebooks on GitHub we [automatically](.gitattributes) add iPython notebooks to [Git LFS](https://git-lfs.github.com/).
+> NOTE: We use post-save hooks to automatically convert notebooks to python scripts. See [jupyter notebook config](config.py) for more information. As it is difficult to review the notebooks on GitHub we [automatically](.gitattributes) add iPython notebooks to [Git LFS](https://git-lfs.github.com/).
+
+## Links
+
+1. Exabyte.io RESTful API, description in the online documentation: [link](https://docs.exabyte.io/rest-api/overview/)

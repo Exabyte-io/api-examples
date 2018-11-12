@@ -49,15 +49,15 @@ In order to run or edit the examples:
 
 This is an open-source repository and we welcome contributions for other use cases. The original set of examples is only meant to demonstrate the capabilities and can be extended.
 
-We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on Github. This process is explained in more details online [[3](#links)], for example.
+We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on Github. This process is explained in more details elsewhere online [[3](#links)].
  
-If you would like to add new examples or adjust existing ones, please consider the following points:
+If you would like to add new examples or adjust existing ones, please consider the following:
 
 1. Put examples into the corresponding directories by domain.
 
-2. Walk the readers through the examples by providing step-by-step explanation similar to our examples, e.g. [this](examples/material/get_materials_by_formula.ipynb).
+2. Walk the readers through the examples by providing step-by-step explanation similar to [this](examples/material/get_materials_by_formula.ipynb).
 
-> NOTE: We use post-save hooks to automatically convert notebooks to python scripts. See [config](config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[4](#links)].
+3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[4](#links)]. Please follow this convention.
 
 ## Links
 

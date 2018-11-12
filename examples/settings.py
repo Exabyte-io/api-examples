@@ -34,16 +34,15 @@
 # In[ ]:
 
 
-# Account settings. Need a one-time adjustments for examples to work.
+# Account settings. Need a one-time adjustment for examples to work.
 
 ACCOUNT_SLUG = "ACCOUNT_SLUG"
-
 ACCOUNT_ID = "ACCOUNT_ID"
 AUTH_TOKEN = "AUTH_TOKEN"
 
 MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"
 
-# Advanced settings. Should not need adjustments
+# Advanced settings. Should not need adjustments.
 
 PORT = 443
 SECURE = True

@@ -212,7 +212,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[ ]:
+# In[15]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -227,7 +227,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[ ]:
+# In[16]:
 
 
 results = []
@@ -251,7 +251,7 @@ for material in materials:
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[ ]:
+# In[17]:
 
 
 table = []
@@ -271,7 +271,7 @@ for result in results:
 # - **"N-SITES"**: Number of Sites
 # - **"LAT"**: LATTICE
 
-# In[ ]:
+# In[18]:
 
 
 headers = []
@@ -283,7 +283,7 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 
 # Create and print the final table as Pandas dataFrame.
 
-# In[ ]:
+# In[19]:
 
 
 df = pd.DataFrame(data=table, columns=headers)

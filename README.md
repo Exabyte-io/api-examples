@@ -48,6 +48,8 @@ In order to run or edit the examples:
 ## Contribute
 
 This is an open-source repository and we welcome contributions for other use cases. The original set of examples is only meant to demonstrate the capabilities and can be extended.
+
+We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on Github. This process is explained in more details online [here](https://gist.github.com/Chaser324/ce0505fbed06b947d962), for example.
  
 If you would like to add new examples or adjust existing ones, please consider the following points:
 

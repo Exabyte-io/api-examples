@@ -3,27 +3,22 @@
 
 # # Overview
 # 
-# This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials called "train materials" and use the model to predict Electronic Band Gap of another set called "target materials".
+# This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials called "train materials" and use the model to predict properties of another set called "target materials". The general approach can work for multiple properties, we use the Electronic Band Gap in this example.
 # 
 # 
 # 
-# # Steps
+# ## Steps
 # 
 # We follow the below steps:
 # 
 # - Import materials from [materials project](https://materialsproject.org/)
-# 
 # - Calculate band gap for the "train materials"
-# 
 # - Build ML Train model based on the "train materials"
-# 
 # - Create and submit a job to predict band gap for the "target materials"
-# 
 # - Extract band gap for "target materials"
-# 
 # - Output the results as Pandas dataFrame
 # 
-# # Pre-requisites
+# ## Pre-requisites
 # 
 # The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We outline these below and direct the reader to the original sources of information:
 # 
@@ -32,11 +27,11 @@
 # - [Creating and submitting jobs](./create_and_submit_job.ipynb)
 # - [Running DFT calculations](./dft-band-gaps-calculation.ipynb)
 
-# # Execution
+# ## Execution
 # 
 # > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
 # 
-# ## Import packages
+# ### Import packages
 
 # In[1]:
 
@@ -57,12 +52,14 @@ from settings import ENDPOINT_ARGS, ACCOUNT_SLUG, MATERIALS_PROJECT_API_KEY
 from utils import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies
 
 
-# ## Setup parameters
+# ### Setup parameters
 # 
 # Set ACCOUNT_SLUG inside [settings](../settings.ipynb). It represents the computer-friendly name of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed.
 # 
 # > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
+# #### Materials
+# 
 # Set parameters for the materials to be imported:
 #     
 # - **TRAIN_MATERIALS_PROJECT_IDS**: a list of material IDs to train ML model based on
@@ -75,6 +72,8 @@ TRAIN_MATERIALS_PROJECT_IDS = ["mp-149", "mp-978534"] # Si, SiGe
 TARGET_MATERIALS_PROJECT_IDS = ["mp-32"] # Ge
 
 
+# #### Jobs
+# 
 # Set parameters for the jobs to be ran for the imported materials:
 # 
 # - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
@@ -88,6 +87,8 @@ PROJECT_SLUG = ACCOUNT_SLUG + "-default"
 JOB_NAME_PREFIX = "Job Name Prefix"
 
 
+# #### Compute
+# 
 # Setup compute parameters. See [this](https://docs.exabyte.io/infrastructure/compute-settings/ui) for more information about compute parameters.
 # 
 # - **NODES**: Number of nodes. Defaults to 1.
@@ -106,7 +107,7 @@ TIME_LIMIT = "01:00:00"
 CLUSTER = "cluster-001"
 
 
-# ## Initialize the endpoints
+# ### Initialize the endpoints
 
 # In[5]:
 
@@ -119,11 +120,7 @@ bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
 raw_property_endpoints = RawPropertiesEndpoints(*ENDPOINT_ARGS)
 
 
-# ## Retrieve owner and project IDs
-# 
-# Retrieve owner and project IDs as they are needed by the endpoints. 
-# 
-# Account's default material is used to extract the owner ID. You can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
+# Retrieve the owner and project IDs as they are needed by the endpoints. The default material is used to extract the owner ID. One can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
 # In[6]:
 
@@ -132,7 +129,7 @@ owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLU
 project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
 
 
-# ## Create workflows
+# ### Create workflows
 # 
 # Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows. We use exabyte bank workflows which are identified by "systemName" field. The below can be adjusted to get the bank workflows by ID.
 
@@ -143,7 +140,7 @@ band_gap_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints
 ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints, "exabyteml-ml-train-model", owner_id)
 
 
-# ## Import materials
+# ### Import materials
 # 
 # Import materials from materials project.
 
@@ -154,9 +151,9 @@ train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJ
 target_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TARGET_MATERIALS_PROJECT_IDS, owner_id)
 
 
-# ## Calculate band gap for train materials
+# ### Calculate Properties for "train materials"
 # 
-# Create jobs for the train materials.
+# Create jobs for the "train materials".
 
 # In[9]:
 
@@ -182,7 +179,7 @@ job_ids = [job["_id"] for job in jobs]
 wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 
-# ## Build ML Train model
+# ### Build ML Train model
 # 
 # Create ML Train job for the train materials.
 
@@ -211,9 +208,9 @@ job_endpoints.submit(job["_id"])
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 
-# ## Extract ML predict workflow
+# ### Extract ML model as workflow
 # 
-# Predict workflow is extracted from the last unit (train with index 4) of the first job's subworkflow (ML: Train Model with index 0).
+# The resulting trained model is extracted from the last unit (train with index 4) of the first job's subworkflow (ML: Train Model with index 0) and is further referred to as "ML predict workflow".
 
 # In[15]:
 
@@ -230,7 +227,7 @@ ml_predict_workflow_id = ml_predict_workflow["_id"]
 print json.dumps(ml_predict_workflow, indent=4)
 
 
-# ## Create ML Predict job
+# ### Predict property using the model
 # 
 # Create ML Predict job for the predict materials.
 
@@ -259,7 +256,7 @@ job_endpoints.submit(job["_id"])
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 
-# ## Extract predicted properties
+# ### Extract predicted properties
 # 
 # Predicted properties are extracted from the last unit (score with index 3) of the first job's subworkflow (ml_predict_subworkflow with index 0).
 
@@ -270,7 +267,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 predicted_properties = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "predicted_properties", job, 0, 3)["data"]["values"]
 
 
-# ## Flatten the results
+# ### Flatten results
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
@@ -286,7 +283,7 @@ for exabyte_id, properties in predicted_properties.iteritems():
     table.append([material["_id"], material["name"], material["formula"], material["exabyteId"], direct_gap, indirect_gap])
 
 
-# ## Ouput the results
+# ### Ouput results
 # 
 # Create and print the final table as Pandas dataFrame.
 

@@ -1,6 +1,6 @@
 # Exabyte API Examples
 
-This repository contains examples for performing most common tasks in the Exabyte.io platform through its RESTful application programming interface (REST API). Examples are grouped together by domain (eg. "materials") and are presented in a self-documented format inside [Jupyter](http://jupyter.org/). [Navigate](examples/) to a notebook page inside this repository to view its content online.
+This repository explains how to perform some of the most common tasks in the Exabyte.io platform through its RESTful application programming interface (REST API) [[1](#links)] by virtue of examples. Examples are grouped together by domain (eg. "materials") and are presented in a self-documented format inside Jupyter notebooks [[2](#links)]. In order to view the content online[Navigate](examples/) to a notebook page inside this repository.
 
 ## Setup
 
@@ -49,7 +49,7 @@ In order to run or edit the examples:
 
 This is an open-source repository and we welcome contributions for other use cases. The original set of examples is only meant to demonstrate the capabilities and can be extended.
 
-We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on Github. This process is explained in more details online [here](https://gist.github.com/Chaser324/ce0505fbed06b947d962), for example.
+We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on Github. This process is explained in more details online [[3](#links)], for example.
  
 If you would like to add new examples or adjust existing ones, please consider the following points:
 
@@ -62,3 +62,5 @@ If you would like to add new examples or adjust existing ones, please consider t
 ## Links
 
 1. Exabyte.io RESTful API, description in the online documentation: [link](https://docs.exabyte.io/rest-api/overview/)
+2. Jupyter.org, official website: [link](http://jupyter.org/)
+3. GitHub Standard Fork & Pull Request Workflow, online explanation: [link](https://gist.github.com/Chaser324/ce0505fbed06b947d962) 

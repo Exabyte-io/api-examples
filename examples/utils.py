@@ -1,27 +1,10 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Overview
-# 
-# This module defines a set of common functions which are used in other examples. 
-# 
-# Add the function into corresponding section with proper docstring and save the changes. When the file is saved a post-save [hook](https://jupyter-notebook.readthedocs.io/en/stable/extending/savehooks.html) is triggered to create the script (utils.py) which should be symlinked from within the example directories as notebook does not support importing from the other directories.
-# 
-# > <span style="color: orange">**NOTE**</span>: Jupyter may need to be reloaded on changes to load the latest code.
-# 
-
-# In[ ]:
-
-
+# This module defines a set of common functions which are used in other examples.
 import time
+import datetime
 from tabulate import tabulate
-from IPython.display import HTML
 
 
-# # Job
-
-# In[2]:
-
+# JOB
 
 def get_jobs_statuses_by_ids(endpoint, job_ids):
     """
@@ -38,7 +21,7 @@ def get_jobs_statuses_by_ids(endpoint, job_ids):
     return [job["status"] for job in jobs]
 
 
-def wait_for_jobs_to_finish(endpoint, job_ids, pulling_interval=60):
+def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=5):
     """
     Waits for jobs to finish and prints their statuses.
     A job is considered finished if it is not in "pre-submission", "submitted", or, "active" status.
@@ -46,7 +29,7 @@ def wait_for_jobs_to_finish(endpoint, job_ids, pulling_interval=60):
     Args:
         endpoint (endpoints.jobs.JobEndpoints): an instance of JobEndpoints class
         job_ids (list): list of job IDs to wait for
-        pulling_interval (int): job pulling interval in seconds. Defaults to 60.
+        poll_interval (int): poll interval for job information in seconds. Defaults to 60.
     """
     while True:
         statuses = get_jobs_statuses_by_ids(endpoint, job_ids)
@@ -56,18 +39,16 @@ def wait_for_jobs_to_finish(endpoint, job_ids, pulling_interval=60):
         finished_jobs = len([status for status in statuses if status == "finished"])
         submitted_jobs = len([status for status in statuses if status == "submitted"])
 
-        headers = ["SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
-        row = [submitted_jobs, active_jobs, finished_jobs, errored_jobs]
+        headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
+        now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        row = [now, submitted_jobs, active_jobs, finished_jobs, errored_jobs]
         print tabulate([row], headers, tablefmt='grid', stralign='center')
 
         if all([status not in ["pre-submission", "submitted", "active"] for status in statuses]): break
-        time.sleep(pulling_interval)
+        time.sleep(poll_interval)
 
 
-# # Workflow
-
-# In[4]:
-
+# WORKFLOW
 
 def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
     """
@@ -85,10 +66,7 @@ def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
     return endpoint.copy(bank_workflow_id, account_id)["_id"]
 
 
-# # Property
-
-# In[ ]:
-
+# PROPERTY
 
 def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, subworkflow_index, unit_index):
     """
@@ -108,10 +86,7 @@ def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, su
     return endpoint.get_property(job["_id"], unit_flowchart_id, property_name)
 
 
-# # General
-
-# In[ ]:
-
+# GENERAL
 
 def dataframe_to_html(df, text_align="center"):
     """
@@ -127,4 +102,3 @@ def dataframe_to_html(df, text_align="center"):
         dict(selector="td", props=[("text-align", text_align)])
     ]
     return (df.style.set_table_styles(styles))
-

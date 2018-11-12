@@ -21,7 +21,7 @@ def get_jobs_statuses_by_ids(endpoint, job_ids):
     return [job["status"] for job in jobs]
 
 
-def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=5):
+def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=10):
     """
     Waits for jobs to finish and prints their statuses.
     A job is considered finished if it is not in "pre-submission", "submitted", or, "active" status.
@@ -29,8 +29,9 @@ def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=5):
     Args:
         endpoint (endpoints.jobs.JobEndpoints): an instance of JobEndpoints class
         job_ids (list): list of job IDs to wait for
-        poll_interval (int): poll interval for job information in seconds. Defaults to 60.
+        poll_interval (int): poll interval for job information in seconds. Defaults to 10.
     """
+    print("Wait for jobs to finish, poll interval: {0} sec".format(poll_interval))
     while True:
         statuses = get_jobs_statuses_by_ids(endpoint, job_ids)
 

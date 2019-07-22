@@ -44,7 +44,7 @@ In order to run or edit the examples:
 
 1. Assert an existing Exabyte.io account. Examples require an account to run. New users can register [here](https://platform.exabyte.io/register) to obtain one.
 
-2. Open [settings](examples/settings.ipynb) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
+2. Open [settings](examples/settings.py) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
 
 3. Open the desired example notebook, adjust it as necessary and run.
 

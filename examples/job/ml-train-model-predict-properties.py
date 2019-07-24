@@ -29,7 +29,7 @@
 
 # ## Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
 # 
 # ### Import packages
 
@@ -48,15 +48,9 @@ from endpoints.materials import MaterialEndpoints
 from endpoints.workflows import WorkflowEndpoints
 from endpoints.bank_workflows import BankWorkflowEndpoints
 from endpoints.raw_properties import RawPropertiesEndpoints
-from settings import ENDPOINT_ARGS, ACCOUNT_SLUG, MATERIALS_PROJECT_API_KEY
+from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
 from utils import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies
 
-
-# ### Setup parameters
-# 
-# Set ACCOUNT_SLUG inside [settings](../settings.ipynb). It represents the computer-friendly name of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed.
-# 
-# > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
 # #### Materials
 # 
@@ -77,13 +71,10 @@ TARGET_MATERIALS_PROJECT_IDS = ["mp-32"] # Ge
 # Set parameters for the jobs to be ran for the imported materials:
 # 
 # - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
-# - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
-# 
 
 # In[3]:
 
 
-PROJECT_SLUG = ACCOUNT_SLUG + "-default"
 JOB_NAME_PREFIX = "Job Name Prefix"
 
 
@@ -125,8 +116,8 @@ raw_property_endpoints = RawPropertiesEndpoints(*ENDPOINT_ARGS)
 # In[6]:
 
 
-owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
-project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
+owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["owner"]["_id"]
+project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["_id"]
 
 
 # ### Create workflows

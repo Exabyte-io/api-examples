@@ -17,7 +17,7 @@
 import json
 
 from settings import ENDPOINT_ARGS
-from endpoints.materials import MaterialEndpoints
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
 # ## Set Parameters

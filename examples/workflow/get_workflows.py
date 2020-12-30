@@ -17,7 +17,7 @@
 import json
 
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from endpoints.workflows import WorkflowEndpoints
+from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 
 
 # ## Set Parameters

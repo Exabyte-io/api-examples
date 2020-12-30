@@ -16,7 +16,7 @@
 
 import json
 
-from endpoints.login import LoginEndpoint
+from exabyte_api_client.endpoints.login import LoginEndpoint
 from settings import HOST, PORT, VERSION, SECURE
 
 

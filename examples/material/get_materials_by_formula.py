@@ -16,7 +16,7 @@
 
 import json
 
-from settings import ENDPOINT_ARGS, ACCOUNT_ID
+from .settings import ENDPOINT_ARGS, ACCOUNT_ID
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 

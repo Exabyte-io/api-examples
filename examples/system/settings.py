@@ -1,1 +1,1 @@
-../settings.py
+from ..settings import HOST, PORT, VERSION, SECURE

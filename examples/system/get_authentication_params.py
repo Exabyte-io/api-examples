@@ -49,5 +49,5 @@ auth_params = endpoint.login()
 # In[5]:
 
 
-print json.dumps(auth_params, indent=4)
+print(json.dumps(auth_params, indent=4))
 

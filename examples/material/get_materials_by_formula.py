@@ -58,5 +58,5 @@ materials = endpoint.list(QUERY)
 # In[6]:
 
 
-print json.dumps(materials, indent=4)
+print(json.dumps(materials, indent=4))
 

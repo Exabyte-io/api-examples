@@ -93,5 +93,5 @@ job_endpoints.submit(job['_id'])
 
 
 job = job_endpoints.get(job['_id'])
-print json.dumps(job, indent=4)
+print(json.dumps(job, indent=4))
 

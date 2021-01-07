@@ -42,7 +42,7 @@ import pandas as pd
 from IPython.display import IFrame
 
 from exabyte_api_client.endpoints.jobs import JobEndpoints
-from exabyte_api_client.endpoints.utils import flatten_material # Todo: Find where this lives
+from exabyte_api_client.utils.materials import flatten_material
 from exabyte_api_client.endpoints.projects import ProjectEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
@@ -215,7 +215,7 @@ ml_predict_workflow_id = ml_predict_workflow["_id"]
 # In[16]:
 
 
-print json.dumps(ml_predict_workflow, indent=4)
+print(json.dumps(ml_predict_workflow, indent=4))
 
 
 # ### Predict property using the model

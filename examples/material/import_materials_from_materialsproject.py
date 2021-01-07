@@ -51,5 +51,5 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # In[6]:
 
 
-print json.dumps(materials, indent=4)
+print(json.dumps(materials, indent=4))
 

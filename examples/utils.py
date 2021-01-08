@@ -43,7 +43,7 @@ def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=10):
         headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
         now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
         row = [now, submitted_jobs, active_jobs, finished_jobs, errored_jobs]
-        print tabulate([row], headers, tablefmt='grid', stralign='center')
+        print(tabulate([row], headers, tablefmt='grid', stralign='center'))
 
         if all([status not in ["pre-submission", "submitted", "active"] for status in statuses]): break
         time.sleep(poll_interval)

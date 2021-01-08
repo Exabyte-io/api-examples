@@ -7,19 +7,24 @@
 
 # # Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
 # 
 # ## Import packages
 
-# In[14]:
+# In[2]:
 
 
 import json
 
-from endpoints.jobs import JobEndpoints
-from settings import ENDPOINT_ARGS, ACCOUNT_SLUG
-from endpoints.materials import MaterialEndpoints
-from endpoints.workflows import WorkflowEndpoints
+from exabyte_api_client.endpoints.jobs import JobEndpoints
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
+from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
+
+# Import settings file
+import os,sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
+from settings import ENDPOINT_ARGS, ACCOUNT_ID
 
 
 # ## Initialize the endpoints
@@ -31,12 +36,6 @@ job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
 material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
 workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
-
-# ## Setup parameters
-# 
-# Set ACCOUNT_SLUG inside [settings](../settings.ipynb). It represents the computer-friendly name of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed.
-# 
-# > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
 # Set job name.
 
@@ -53,8 +52,8 @@ JOB_NAME = "TEST JOB"
 # In[18]:
 
 
-default_material = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]
-default_workflow = workflow_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]
+default_material = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
+default_workflow = workflow_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
 
 material_id = default_material["_id"]
 workflow_id = default_workflow["_id"]
@@ -99,5 +98,5 @@ job_endpoints.submit(job['_id'])
 
 
 job = job_endpoints.get(job['_id'])
-print json.dumps(job, indent=4)
+print(json.dumps(job, indent=4))
 

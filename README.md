@@ -4,15 +4,27 @@ This repository explains how to perform some of the most common tasks in the Exa
 
 ## Setup
 
+NOTE: tested with python version 3.8.6, please assert that the virtual environment is created with it.
+
 Follow the steps below in order to setup and view the Jupyter notebooks:
 
 0. [Install git-lfs](https://help.github.com/articles/installing-git-large-file-storage/) [[3](#links)] in order to get access to the source code and notebook files.
 
 1. Clone repository:
+
+    Mac / Unix:
     
     ```bash
     git clone git@github.com:Exabyte-io/exabyte-api-examples.git
     ```
+   
+   Windows:
+   
+   On windows machines (including the CygWin shell), symlinks are not cloned by default. Thus, the following command must be used:
+   
+   ```powershell
+   git clone -c core.symlinks=True git@github.com:Exabyte-io/exabyte-api-examples.git
+   ```
 
     In case for some reason git-lfs was not installed at the time of cloning, the files can be pulled after subsequent installation later, through `git lfs pull`.
 
@@ -44,7 +56,7 @@ In order to run or edit the examples:
 
 1. Assert an existing Exabyte.io account. Examples require an account to run. New users can register [here](https://platform.exabyte.io/register) to obtain one.
 
-2. Open [settings](examples/settings.ipynb) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
+2. Open [settings](examples/settings.py) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
 
 3. Open the desired example notebook, adjust it as necessary and run.
 

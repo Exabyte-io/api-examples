@@ -7,7 +7,7 @@
 
 # # Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.ipynb). The generation of the credentials is also explained therein.
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
 # 
 # ## Import packages
 
@@ -16,7 +16,12 @@
 
 import json
 
-from endpoints.materials import MaterialEndpoints
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
+
+# Import settings file
+import os,sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 
 
@@ -51,5 +56,5 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # In[6]:
 
 
-print json.dumps(materials, indent=4)
+print(json.dumps(materials, indent=4))
 

@@ -7,7 +7,7 @@
 # 
 # This approach can work with any [Workflows](https://docs.exabyte.io/workflows/overview/). For the demonstration purpose we use the Density Functional Theory and extract Electronic Band Gap as the property of interest.
 # 
-# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io account with access to VASP (Vienna ab-initio simulations package) is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for Quantum ESPRESSO, for example) and adjust extraction of the results ("Extract results" section). RESTful API credentials shall be updated in [settings](../settings.ipynb).
+# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io account with access to VASP (Vienna ab-initio simulations package) is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for Quantum ESPRESSO, for example) and adjust extraction of the results ("Extract results" section). RESTful API credentials shall be updated in [settings](../settings.py).
 # 
 # 
 # ## Steps
@@ -46,21 +46,20 @@ import time
 import pandas as pd
 from IPython.display import IFrame
 
-from endpoints.jobs import JobEndpoints
-from endpoints.utils import flatten_material
-from endpoints.projects import ProjectEndpoints
-from endpoints.materials import MaterialEndpoints
-from endpoints.bank_workflows import BankWorkflowEndpoints
-from endpoints.raw_properties import RawPropertiesEndpoints
-from settings import ENDPOINT_ARGS, ACCOUNT_SLUG, MATERIALS_PROJECT_API_KEY
+from exabyte_api_client.endpoints.jobs import JobEndpoints
+from exabyte_api_client.utils.materials import flatten_material
+from exabyte_api_client.endpoints.projects import ProjectEndpoints
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
+from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
+from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
+
+# Import settings file and utils file
+import os,sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
+from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
 from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
 
-
-# ### Setup parameters
-# 
-# Set ACCOUNT_SLUG inside [settings](../settings.ipynb). It represents the computer-friendly name of [account](https://docs.exabyte.io/accounts/overview/) under which all the below steps will be executed.
-# 
-# > <span style="color: orange">**NOTE**</span>: This step is mandatory!
 
 # #### Materials
 #     
@@ -83,13 +82,10 @@ TAGS = ["tag1", "tag2"]
 # 
 # - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
 # - **JOBS_SET_NAME**: the name of the jobs set
-# - **PROJECT_SLUG**: slug of the [project](https://docs.exabyte.io/jobs/projects/) that the jobs will be created in. Below the default project ("Default") is used
-# 
 
 # In[3]:
 
 
-PROJECT_SLUG = ACCOUNT_SLUG + "-default"
 JOB_NAME_PREFIX = "Job Name Prefix"
 JOBS_SET_NAME = "jobs-set"
 
@@ -149,8 +145,8 @@ bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
 # In[8]:
 
 
-owner_id = material_endpoints.list({"isDefault": True, "owner.slug": ACCOUNT_SLUG})[0]["owner"]["_id"]
-project_id = project_endpoints.list({"slug": PROJECT_SLUG, "owner.slug": ACCOUNT_SLUG})[0]["_id"]
+owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["owner"]["_id"]
+project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["_id"]
 
 
 # ### Create workflow

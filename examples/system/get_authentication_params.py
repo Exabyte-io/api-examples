@@ -17,6 +17,11 @@
 import json
 
 from exabyte_api_client.endpoints.login import LoginEndpoint
+
+# Import settings file
+import os,sys
+parent_dir = os.path.dirname(os.path.dirname(__file__))
+sys.path.insert(0, parent_dir) # Insert at first entry to ensure settings.py and utils.py aren't shadowed
 from settings import HOST, PORT, VERSION, SECURE
 
 

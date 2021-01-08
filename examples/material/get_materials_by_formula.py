@@ -16,8 +16,13 @@
 
 import json
 
-from settings import ENDPOINT_ARGS, ACCOUNT_ID
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
+
+# Import settings file
+import os,sys
+parent_dir = os.path.dirname(os.path.dirname(__file__))
+sys.path.insert(0, parent_dir) # Insert at first entry to ensure settings.py and utils.py aren't shadowed
+from settings import ENDPOINT_ARGS, ACCOUNT_ID
 
 
 # ## Set Parameters

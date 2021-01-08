@@ -11,7 +11,7 @@
 # 
 # ## Import packages
 
-# In[14]:
+# In[2]:
 
 
 import json
@@ -22,8 +22,8 @@ from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 
 # Import settings file
 import os,sys
-parent_dir = os.path.dirname(os.path.dirname(__file__))
-sys.path.insert(0, parent_dir) # Insert at first entry to ensure settings.py and utils.py aren't shadowed
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
 
 

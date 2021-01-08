@@ -20,8 +20,8 @@ from exabyte_api_client.endpoints.login import LoginEndpoint
 
 # Import settings file
 import os,sys
-parent_dir = os.path.dirname(os.path.dirname(__file__))
-sys.path.insert(0, parent_dir) # Insert at first entry to ensure settings.py and utils.py aren't shadowed
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
 from settings import HOST, PORT, VERSION, SECURE
 
 

@@ -16,7 +16,12 @@
 
 import json
 
-from endpoints.login import LoginEndpoint
+from exabyte_api_client.endpoints.login import LoginEndpoint
+
+# Import settings file
+import os,sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
 from settings import HOST, PORT, VERSION, SECURE
 
 
@@ -49,5 +54,5 @@ auth_params = endpoint.login()
 # In[5]:
 
 
-print json.dumps(auth_params, indent=4)
+print(json.dumps(auth_params, indent=4))
 

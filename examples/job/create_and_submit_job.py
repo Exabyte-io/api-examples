@@ -11,15 +11,20 @@
 # 
 # ## Import packages
 
-# In[14]:
+# In[2]:
 
 
 import json
 
-from endpoints.jobs import JobEndpoints
+from exabyte_api_client.endpoints.jobs import JobEndpoints
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
+from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
+
+# Import settings file
+import os,sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from endpoints.materials import MaterialEndpoints
-from endpoints.workflows import WorkflowEndpoints
 
 
 # ## Initialize the endpoints
@@ -93,5 +98,5 @@ job_endpoints.submit(job['_id'])
 
 
 job = job_endpoints.get(job['_id'])
-print json.dumps(job, indent=4)
+print(json.dumps(job, indent=4))
 

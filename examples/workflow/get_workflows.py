@@ -16,8 +16,13 @@
 
 import json
 
+from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
+
+# Import settings file
+import os,sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from endpoints.workflows import WorkflowEndpoints
 
 
 # ## Set Parameters
@@ -66,5 +71,5 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # In[5]:
 
 
-print json.dumps(workflows, indent=4)
+print(json.dumps(workflows, indent=4))
 

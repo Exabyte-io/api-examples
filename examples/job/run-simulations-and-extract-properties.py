@@ -46,12 +46,17 @@ import time
 import pandas as pd
 from IPython.display import IFrame
 
-from endpoints.jobs import JobEndpoints
-from endpoints.utils import flatten_material
-from endpoints.projects import ProjectEndpoints
-from endpoints.materials import MaterialEndpoints
-from endpoints.bank_workflows import BankWorkflowEndpoints
-from endpoints.raw_properties import RawPropertiesEndpoints
+from exabyte_api_client.endpoints.jobs import JobEndpoints
+from exabyte_api_client.utils.materials import flatten_material
+from exabyte_api_client.endpoints.projects import ProjectEndpoints
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
+from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
+from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
+
+# Import settings file and utils file
+import os,sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
 from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
 

@@ -11,13 +11,18 @@
 # 
 # ## Import packages
 
-# In[2]:
+# In[1]:
 
 
 import json
 
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
+
+# Import settings file
+import os,sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from endpoints.materials import MaterialEndpoints
 
 
 # ## Set Parameters
@@ -58,5 +63,5 @@ materials = endpoint.list(QUERY)
 # In[6]:
 
 
-print json.dumps(materials, indent=4)
+print(json.dumps(materials, indent=4))
 

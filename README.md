@@ -4,7 +4,7 @@ This repository explains how to perform some of the most common tasks in the Exa
 
 ## Setup
 
-NOTE: testied with python version 3.8.6.
+NOTE: tested with python version 3.8.6, please assert that the virtual environment is created with it.
 
 Follow the steps below in order to setup and view the Jupyter notebooks:
 

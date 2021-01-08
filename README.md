@@ -9,10 +9,20 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 0. [Install git-lfs](https://help.github.com/articles/installing-git-large-file-storage/) [[3](#links)] in order to get access to the source code and notebook files.
 
 1. Clone repository:
+
+    Mac / Unix:
     
     ```bash
     git clone git@github.com:Exabyte-io/exabyte-api-examples.git
     ```
+   
+   Windows:
+   
+   On windows machines (including the CygWin shell), symlinks are not cloned by default. Thus, the following command must be used:
+   
+   ```powershell
+   git clone -c core.symlinks=True git@github.com:Exabyte-io/exabyte-api-examples.git
+   ```
 
     In case for some reason git-lfs was not installed at the time of cloning, the files can be pulled after subsequent installation later, through `git lfs pull`.
 

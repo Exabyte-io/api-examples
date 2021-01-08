@@ -17,10 +17,9 @@
 import json
 
 from exabyte_api_client.endpoints.jobs import JobEndpoints
-from .settings import ENDPOINT_ARGS, ACCOUNT_ID
+from settings import ENDPOINT_ARGS, ACCOUNT_ID
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
-
 
 # ## Initialize the endpoints
 

@@ -52,8 +52,8 @@ from exabyte_api_client.endpoints.projects import ProjectEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
-from .settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from .utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
+from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
+from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
 
 
 # #### Materials

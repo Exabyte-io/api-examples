@@ -1,1 +1,1 @@
-from ..settings import ENDPOINT_ARGS, ACCOUNT_ID
+../settings.py

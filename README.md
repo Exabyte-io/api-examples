@@ -4,6 +4,8 @@ This repository explains how to perform some of the most common tasks in the Exa
 
 ## Setup
 
+NOTE: testied with python version 3.8.6.
+
 Follow the steps below in order to setup and view the Jupyter notebooks:
 
 0. [Install git-lfs](https://help.github.com/articles/installing-git-large-file-storage/) [[3](#links)] in order to get access to the source code and notebook files.

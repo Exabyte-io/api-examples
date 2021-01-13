@@ -92,12 +92,12 @@ JOBS_SET_NAME = "jobs-set"
 
 # #### Workflow
 # 
-# This example is based on [this](https://platform.exabyte.io/analytics/workflows/BEWfDREDFFL9g8Qpk) bank workflow which is later copied to the account workflows collection.
+# This example is based on [this](https://platform.exabyte.io/analytics/workflows/56xDyXsPMNJ7cF9nv) bank workflow which is later copied to the account workflows collection.
 
 # In[4]:
 
 
-BANK_WORKFLOW_ID = "houpmFK6PFK66qH48"
+BANK_WORKFLOW_ID = "56xDyXsPMNJ7cF9nv"
 
 
 # In[5]:

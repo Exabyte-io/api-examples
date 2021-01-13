@@ -39,7 +39,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 
     ```bash
     cd examples
-    jupyter notebook --config=config.py
+    jupyter lab --config=config.py
     ```
 
 ## Usage

@@ -14,7 +14,7 @@
 # In[1]:
 
 
-import json
+from IPython.display import JSON
 import os
 import sys
 
@@ -142,5 +142,11 @@ material = endpoint.create(CONFIG)
 # In[4]:
 
 
-print(json.dumps(material, indent=4))
+JSON(material)
+
+
+# In[ ]:
+
+
+
 

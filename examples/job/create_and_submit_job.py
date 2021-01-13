@@ -14,7 +14,7 @@
 # In[1]:
 
 
-import json
+from IPython.display import JSON
 import os
 import sys
 
@@ -50,7 +50,7 @@ from settings import ENDPOINT_ARGS, ACCOUNT_ID
 
 # ## Initialize the endpoints
 
-# In[15]:
+# In[2]:
 
 
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
@@ -60,7 +60,7 @@ workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 # Set job name.
 
-# In[17]:
+# In[3]:
 
 
 JOB_NAME = "TEST JOB"
@@ -70,7 +70,7 @@ JOB_NAME = "TEST JOB"
 # 
 # Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different material and workflow.
 
-# In[18]:
+# In[4]:
 
 
 default_material = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
@@ -85,7 +85,7 @@ owner_id = default_material["owner"]["_id"]
 # 
 # The job belongs to user's default account and it is created inside the defauult account's project. 
 
-# In[19]:
+# In[5]:
 
 
 config = {
@@ -104,7 +104,7 @@ config = {
 
 # ## Create and submit job
 
-# In[20]:
+# In[6]:
 
 
 job = job_endpoints.create(config)
@@ -115,9 +115,15 @@ job_endpoints.submit(job['_id'])
 # 
 # Print the job in pretty JSON below. Check `status` field to make sure job is submiited.
 
-# In[22]:
+# In[7]:
 
 
 job = job_endpoints.get(job['_id'])
-print(json.dumps(job, indent=4))
+JSON(job)
+
+
+# In[ ]:
+
+
+
 

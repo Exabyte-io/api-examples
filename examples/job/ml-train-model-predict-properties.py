@@ -39,7 +39,7 @@
 
 
 import time
-import json
+from IPython.display import JSON
 import os
 import sys
 from IPython.display import IFrame
@@ -69,6 +69,7 @@ module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
 from utils import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies
+from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
     
 # Import relevant portions of the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints
@@ -243,7 +244,7 @@ ml_predict_workflow_id = ml_predict_workflow["_id"]
 # In[16]:
 
 
-print(json.dumps(ml_predict_workflow, indent=4))
+JSON(ml_predict_workflow)
 
 
 # ### Predict property using the model

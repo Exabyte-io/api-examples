@@ -14,7 +14,7 @@
 # In[1]:
 
 
-import json
+from IPython.display import JSON
 import os
 import sys
 
@@ -75,5 +75,5 @@ auth_params = endpoint.login()
 # In[5]:
 
 
-print(json.dumps(auth_params, indent=4))
+JSON(auth_params)
 

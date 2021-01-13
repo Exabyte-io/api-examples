@@ -14,9 +14,9 @@
 # In[1]:
 
 
-import json
 import os
 import sys
+from IPython.display import JSON
 
 # Install Pandas if it isn't present
 try:
@@ -92,5 +92,11 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # In[5]:
 
 
-print(json.dumps(workflows, indent=4))
+JSON(workflows)
+
+
+# In[ ]:
+
+
+
 

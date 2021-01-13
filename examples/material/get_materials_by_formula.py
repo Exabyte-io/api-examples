@@ -14,9 +14,9 @@
 # In[1]:
 
 
-import json
 import os
 import sys
+from IPython.display import JSON
 
 # Install Pandas if it isn't present
 try:
@@ -50,7 +50,7 @@ from settings import ENDPOINT_ARGS, ACCOUNT_ID
 # 
 # - **QUERY**: A query describing the documents to find. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[ ]:
+# In[2]:
 
 
 QUERY = {
@@ -61,7 +61,7 @@ QUERY = {
 
 # ## Initialize the endpoint
 
-# In[4]:
+# In[3]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -71,7 +71,7 @@ endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 # 
 # Contact the endpoint to list materials according to the query above.
 
-# In[5]:
+# In[4]:
 
 
 materials = endpoint.list(QUERY)
@@ -81,8 +81,14 @@ materials = endpoint.list(QUERY)
 # 
 # Print the list of materials saved under the corresponding variable in pretty JSON below.
 
-# In[6]:
+# In[8]:
 
 
-print(json.dumps(materials, indent=4))
+JSON(materials)
+
+
+# In[ ]:
+
+
+
 

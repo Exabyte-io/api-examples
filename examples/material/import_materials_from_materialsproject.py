@@ -11,12 +11,12 @@
 # 
 # ## Import packages
 
-# In[2]:
+# In[1]:
 
 
-import json
 import os
 import sys
+from IPython.display import JSON
 
 # Install Pandas if it isn't present
 try:
@@ -52,7 +52,7 @@ from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 # 
 # - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
 
-# In[3]:
+# In[2]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
@@ -63,7 +63,7 @@ TAGS = ["tag1", "tag2"]
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_materialsproject` function to import materials.
 
-# In[5]:
+# In[3]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -77,5 +77,11 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # In[6]:
 
 
-print(json.dumps(materials, indent=4))
+JSON(materials)
+
+
+# In[ ]:
+
+
+
 

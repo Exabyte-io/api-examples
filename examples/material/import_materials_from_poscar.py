@@ -11,10 +11,10 @@
 # 
 # ## Import packages
 
-# In[4]:
+# In[1]:
 
 
-import json
+from IPython.display import JSON
 import os
 import sys
 
@@ -51,7 +51,7 @@ from settings import ENDPOINT_ARGS
 # - **NAME**: material name
 # - **POSCAR_PATH**: absolute path to the POSCAR file
 
-# In[5]:
+# In[2]:
 
 
 NAME = "My Material"
@@ -62,7 +62,7 @@ POSCAR_PATH = "mp-978534.poscar"
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_file` function to import the material.
 
-# In[6]:
+# In[3]:
 
 
 content  = ""
@@ -77,8 +77,14 @@ material = endpoint.import_from_file(NAME, content)
 # 
 # Print the list of imported materials in pretty JSON below.
 
-# In[7]:
+# In[5]:
 
 
-print(json.dumps(material, indent=4))
+JSON(material)
+
+
+# In[ ]:
+
+
+
 

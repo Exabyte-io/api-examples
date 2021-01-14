@@ -23,9 +23,9 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import HOST, PORT, VERSION, SECURE
-from utils import ensure_installed
+from utils import ensure_packages_are_installed
 
-ensure_installed("exabyte_api_client")
+ensure_packages_are_installed("exabyte_api_client")
 from exabyte_api_client.endpoints.login import LoginEndpoint
 
 

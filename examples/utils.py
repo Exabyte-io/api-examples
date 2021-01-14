@@ -6,7 +6,7 @@ import importlib.util
 
 
 # IMPORTS
-def ensure_installed(*names):
+def ensure_packages_are_installed(*names):
     """
     Ensures a package is installed on the system, by installing it if it does not exist currently.
 
@@ -54,7 +54,7 @@ def install_package(name, version=None):
     #   https://docs.python.org/3/library/importlib.html#importlib.invalidate_caches
     importlib.invalidate_caches()
 
-ensure_installed("tabulate")
+ensure_packages_are_installed("tabulate", "pandas", "exabyte_api_client")
 from tabulate import tabulate
 
 # JOB

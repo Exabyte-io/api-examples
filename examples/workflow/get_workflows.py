@@ -22,9 +22,9 @@ from IPython.display import JSON
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from utils import ensure_installed
+from utils import ensure_packages_are_installed
 
-ensure_installed("exabyte_api_client")
+ensure_packages_are_installed("exabyte_api_client")
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 
 

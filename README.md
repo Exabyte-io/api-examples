@@ -12,21 +12,13 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 
 1. Clone repository:
 
-    Mac / Unix:
-    
     ```bash
     git clone git@github.com:Exabyte-io/exabyte-api-examples.git
     ```
-   
-   Windows:
-   
-   On windows machines (including the CygWin shell), symlinks are not cloned by default. Thus, the following command must be used:
-   
-   ```powershell
-   git clone -c core.symlinks=True git@github.com:Exabyte-io/exabyte-api-examples.git
-   ```
 
-    In case for some reason git-lfs was not installed at the time of cloning, the files can be pulled after subsequent installation later, through `git lfs pull`.
+    In case for some reason git-lfs was not installed at the time of cloning, the files can be pulled after installing git-lfs, through `git lfs pull`.
+
+    Related to this, please be aware that as the `.ipynb` and `.poscar` files are stored on git-lfs, they are not part of the zip archive downloaded through GitHub's web interface.
 
 2. Install [virtualenv](https://virtualenv.pypa.io/en/stable/) using [pip](https://pip.pypa.io/en/stable/) if not already present:
 
@@ -47,7 +39,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 
     ```bash
     cd examples
-    jupyter notebook --config=config.py
+    jupyter lab --config=config.py
     ```
 
 ## Usage

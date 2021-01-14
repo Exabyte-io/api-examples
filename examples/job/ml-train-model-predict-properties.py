@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# > <span style="color: red">**NOTE**</span>: This example utilizes features that are currently under maintenance, and may not work fully as-intended. For your convenience, please refer to the cached content of each calculation cell.
+#
 # # Overview
 # 
 # This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials called "train materials" and use the model to predict properties of another set called "target materials". The general approach can work for multiple properties, we use the Electronic Band Gap in this example.

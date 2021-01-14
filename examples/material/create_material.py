@@ -11,25 +11,28 @@
 # 
 # ## Import packages
 
-# In[1]:
+# In[]:
 
 
-import json
+from IPython.display import JSON
+import os
+import sys
 
-from exabyte_api_client.endpoints.materials import MaterialEndpoints
-
-# Import settings file
-import os,sys
+# Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS
+from utils import ensure_packages_are_installed
+ensure_packages_are_installed()
+
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
 # ## Create material config
 # 
 # Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
 
-# In[2]:
+# In[]:
 
 
 CONFIG = {
@@ -109,7 +112,7 @@ CONFIG = {
 # 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
 
-# In[3]:
+# In[]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -118,8 +121,8 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
-# In[4]:
+# In[]:
 
 
-print(json.dumps(material, indent=4))
+JSON(material)
 

@@ -11,25 +11,28 @@
 # 
 # ## Import packages
 
-# In[1]:
+# In[]:
 
 
-import json
+import os
+import sys
+from IPython.display import JSON
 
-from exabyte_api_client.endpoints.materials import MaterialEndpoints
-
-# Import settings file
-import os,sys
+# Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
+from utils import ensure_packages_are_installed
+ensure_packages_are_installed()
+
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
 # ## Set Parameters
 # 
 # - **QUERY**: A query describing the documents to find. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[ ]:
+# In[]:
 
 
 QUERY = {
@@ -40,7 +43,7 @@ QUERY = {
 
 # ## Initialize the endpoint
 
-# In[4]:
+# In[]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -50,7 +53,7 @@ endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 # 
 # Contact the endpoint to list materials according to the query above.
 
-# In[5]:
+# In[]:
 
 
 materials = endpoint.list(QUERY)
@@ -60,8 +63,8 @@ materials = endpoint.list(QUERY)
 # 
 # Print the list of materials saved under the corresponding variable in pretty JSON below.
 
-# In[6]:
+# In[]:
 
 
-print(json.dumps(materials, indent=4))
+JSON(materials)
 

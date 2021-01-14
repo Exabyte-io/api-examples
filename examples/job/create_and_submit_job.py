@@ -11,25 +11,28 @@
 # 
 # ## Import packages
 
-# In[2]:
+# In[]:
 
 
-import json
+from IPython.display import JSON
+import os
+import sys
+
+# Import settings and utils file
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
+from settings import ENDPOINT_ARGS, ACCOUNT_ID
+from utils import ensure_packages_are_installed
+ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 
-# Import settings file
-import os,sys
-module_path = os.path.abspath(os.path.join('..'))
-if module_path not in sys.path: sys.path.append(module_path)
-from settings import ENDPOINT_ARGS, ACCOUNT_ID
-
 
 # ## Initialize the endpoints
 
-# In[15]:
+# In[]:
 
 
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
@@ -39,7 +42,7 @@ workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 # Set job name.
 
-# In[17]:
+# In[]:
 
 
 JOB_NAME = "TEST JOB"
@@ -49,7 +52,7 @@ JOB_NAME = "TEST JOB"
 # 
 # Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different material and workflow.
 
-# In[18]:
+# In[]:
 
 
 default_material = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
@@ -64,7 +67,7 @@ owner_id = default_material["owner"]["_id"]
 # 
 # The job belongs to user's default account and it is created inside the defauult account's project. 
 
-# In[19]:
+# In[]:
 
 
 config = {
@@ -83,7 +86,7 @@ config = {
 
 # ## Create and submit job
 
-# In[20]:
+# In[]:
 
 
 job = job_endpoints.create(config)
@@ -94,9 +97,9 @@ job_endpoints.submit(job['_id'])
 # 
 # Print the job in pretty JSON below. Check `status` field to make sure job is submiited.
 
-# In[22]:
+# In[]:
 
 
 job = job_endpoints.get(job['_id'])
-print(json.dumps(job, indent=4))
+JSON(job)
 

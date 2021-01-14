@@ -11,18 +11,21 @@
 # 
 # ## Import packages
 
-# In[4]:
+# In[]:
 
 
-import json
+from IPython.display import JSON
+import os
+import sys
 
-from exabyte_api_client.endpoints.materials import MaterialEndpoints
-
-# Import settings file
-import os,sys
+# Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS
+from utils import ensure_packages_are_installed
+ensure_packages_are_installed()
+
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
 # ## Set Parameters
@@ -30,7 +33,7 @@ from settings import ENDPOINT_ARGS
 # - **NAME**: material name
 # - **POSCAR_PATH**: absolute path to the POSCAR file
 
-# In[5]:
+# In[]:
 
 
 NAME = "My Material"
@@ -41,7 +44,7 @@ POSCAR_PATH = "mp-978534.poscar"
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_file` function to import the material.
 
-# In[6]:
+# In[]:
 
 
 content  = ""
@@ -56,8 +59,8 @@ material = endpoint.import_from_file(NAME, content)
 # 
 # Print the list of imported materials in pretty JSON below.
 
-# In[7]:
+# In[]:
 
 
-print(json.dumps(material, indent=4))
+JSON(material)
 

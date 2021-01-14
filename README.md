@@ -1,6 +1,22 @@
 # Exabyte API Examples
 
-This repository explains how to perform some of the most common tasks in the Exabyte.io platform through its RESTful application programming interface (REST API) [[1](#links)] by virtue of examples. Examples are grouped together by domain (eg. "materials") and are presented in a self-documented format inside Jupyter notebooks [[2](#links)]. In order to view the content online, [navigate](examples/) to a notebook page inside this repository.
+## Contents of this Repository
+
+Below, we list the contents of this repository, in roughly the order that a user might want to go through it in order to learn how our API works.
+
+| Folder            | Notebook                                | Description |
+| ------------------|-----------------------------------------| ----------- |
+| [Examples/System](examples/system/)     | [Get Authentication Params](examples/system/get_authentication_params.ipynb)               | Demonstrates how to programatically find your user ID and access token, which is to [authenticate](https://docs.exabyte.io/rest-api/authentication/) for many portions of the Exabyte API.
+| [Examples/Workflow](examples/workflow/) | [Get Workflows](examples/workflow/get_workflows.ipynb)                           | Walks through how to [query](https://docs.exabyte.io/rest-api/query-structure/) the Exabyte API to programatically search for workflows. In this example, we search for workflows that calculate the total energy of a material.
+| [Examples/Material](examples/material/) | [Get Materials by Formula](examples/material/get_materials_by_formula.ipynb)                | Shows how [queries](https://docs.exabyte.io/rest-api/query-structure/) can be made to search for materials stored on your account by their formula. In this example, we search for a system containing Si.
+| [Examples/Material](examples/material/) | [Create Material](examples/material/create_material.ipynb)                         | Gives an overview of how materials can be generated in [JSON format](https://docs.exabyte.io/materials/data/) and uploaded to your user account. In this example, we create an FCC Si crystal and upload it.
+| [Examples/Material](examples/material/) | [Import Materials from Materials Project](examples/material/import_materials_from_materialsproject.ipynb) | Demonstrates how materials can be imported from [Materials Project](https://materialsproject.org/about), if their Materials Project ID is known. In this example, we import monoclinic and hexagonal SiGe cells.
+| [Examples/Material](examples/material/) | [Import Materials from Poscar](examples/material/import_materials_from_poscar.ipynb)            | Provides an example of how materials can be imported directly from Poscar files (a common chemical file format best-known [for its use in VASP](https://cms.mpi.univie.ac.at/vasp/guide/node59.html)). In this example, we import the unit cell of SiGe.
+| [Examples/Job](examples/job/)            | [Create and Submit Job](examples/job/create_and_submit_job.ipynb)                   | Shows how to use the Exabyte API to [create jobs](https://docs.exabyte.io/jobs/data/) and run them on our cluster. In this example, we run a DFT calculation to get the total energy of an FCC Si unit cell using Quantum Espresso.
+| [Examples/Job](examples/job/)            | [Run Simulations and Extract Properties](examples/job/run-simulations-and-exctract-properties.ipynb)  | Leads you through the process of copying a [bank workflow](https://docs.exabyte.io/workflows/bank/) to your account and using it to automatically calculate the [properties](https://docs.exabyte.io/properties/overview/) of multiple materials. In this example, we determine the [band gap](https://docs.exabyte.io/properties-directory/non-scalar/band-gaps/) of Si and Ge.
+| [Examples/Job](examples/job/)            | [ML - Train Model Predict Properties](examples/job/ml-train-model-predict-properties.ipynb)     | Walks you through automated dataset generation and the training/prediction of material properties using [machine learning](https://docs.exabyte.io/software-directory/overview/#machine-learning). In this example, we calculate the band gaps of Si and SiGe, and using various materials properties as descriptors, train a model to predict their band gaps. Finally, we use this trained model to predict the band gap of Ge.
+
+
 
 ## Setup
 

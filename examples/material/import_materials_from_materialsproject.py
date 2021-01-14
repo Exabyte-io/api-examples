@@ -11,18 +11,21 @@
 # 
 # ## Import packages
 
-# In[2]:
+# In[]:
 
 
-import json
+import os
+import sys
+from IPython.display import JSON
 
-from exabyte_api_client.endpoints.materials import MaterialEndpoints
-
-# Import settings file
-import os,sys
+# Import settings file and utils
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
+from utils import ensure_packages_are_installed
+ensure_packages_are_installed()
+
+from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
 # ## Set Parameters
@@ -31,7 +34,7 @@ from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 # 
 # - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
 
-# In[3]:
+# In[]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
@@ -42,7 +45,7 @@ TAGS = ["tag1", "tag2"]
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_materialsproject` function to import materials.
 
-# In[5]:
+# In[]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -53,8 +56,8 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # 
 # Print the list of imported materials in pretty JSON below.
 
-# In[6]:
+# In[]:
 
 
-print(json.dumps(materials, indent=4))
+JSON(materials)
 

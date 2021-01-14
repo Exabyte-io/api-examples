@@ -11,18 +11,21 @@
 # 
 # ## Import packages
 
-# In[1]:
+# In[]:
 
 
-import json
+import os
+import sys
+from IPython.display import JSON
 
-from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
-
-# Import settings file
-import os,sys
+# Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
+from utils import ensure_packages_are_installed
+ensure_packages_are_installed()
+
+from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 
 
 # ## Set Parameters
@@ -31,7 +34,7 @@ from settings import ENDPOINT_ARGS, ACCOUNT_ID
 # 
 # - **limit**: Maximum number of results to return. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[2]:
+# In[]:
 
 
 QUERY = {
@@ -48,7 +51,7 @@ OPTIONS = {
 # 
 # Initialize a helper class to interact with `WorkflowEndpoints`. This only has to be done once.
 
-# In[3]:
+# In[]:
 
 
 endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
@@ -58,7 +61,7 @@ endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
 # 
 # Contact the endpoint to list workflows according to the query above.
 
-# In[4]:
+# In[]:
 
 
 workflows = endpoint.list(QUERY, OPTIONS)
@@ -68,8 +71,8 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # 
 # Print the list of workflows saved under the corresponding variable in pretty JSON below.
 
-# In[5]:
+# In[]:
 
 
-print(json.dumps(workflows, indent=4))
+JSON(workflows)
 

@@ -18,32 +18,15 @@ from IPython.display import JSON
 import os
 import sys
 
-# Install Pandas if it isn't present
-try:
-    import pandas as pd
-except ModuleNotFoundError:
-    import subprocess, sys
-    subprocess.call([sys.executable,'-m','pip','install','pandas==1.1.4'])
-    import pandas as pd
-# Install Tabulate if it isn't present
-try:
-    import tabulate
-except ModuleNotFoundError:
-    import subprocess, sys
-    subprocess.call([sys.executable,'-m','pip','install','tabulate==0.8.2'])
-    import tabulate
-# Install the API Client if it isn't present
-try:
-    import exabyte_api_client
-except ModuleNotFoundError:
-    import subprocess, sys
-    subprocess.call([sys.executable,'-m','pip','install','exabyte_api_client==2020.10.19'])
-from exabyte_api_client.endpoints.login import LoginEndpoint
 
-# Import settings file
+# Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import HOST, PORT, VERSION, SECURE
+from utils import ensure_installed
+
+ensure_installed("exabyte_api_client")
+from exabyte_api_client.endpoints.login import LoginEndpoint
 
 
 # ## Set Parameters

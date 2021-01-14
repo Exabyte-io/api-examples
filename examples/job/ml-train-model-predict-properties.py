@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# > <span style="color: red">**NOTE**</span>: This example utilizes features that are currently under maintenance, and may not work fully as-intended. For your convenience, please refer to the cached content of each calculation cell.
-# 
 # # Overview
 # 
 # This example demonstrates how to use Exabyte RESTful API to build a machine learning (ML) model for a set of materials called "train materials" and use the model to predict properties of another set called "target materials". The general approach can work for multiple properties, we use the Electronic Band Gap in this example.
@@ -44,33 +42,16 @@ import os
 import sys
 from IPython.display import IFrame
 
-# Install Pandas if it isn't present
-try:
-    import pandas as pd
-except ModuleNotFoundError:
-    import subprocess, sys
-    subprocess.call([sys.executable,'-m','pip','install','pandas==1.1.4'])
-    import pandas as pd
-# Install Tabulate if it isn't present
-try:
-    import tabulate
-except ModuleNotFoundError:
-    import subprocess, sys
-    subprocess.call([sys.executable,'-m','pip','install','tabulate==0.8.2'])
-    import tabulate
-# Install the API Client if it isn't present
-try:
-    import exabyte_api_client
-except ModuleNotFoundError:
-    import subprocess, sys
-    subprocess.call([sys.executable,'-m','pip','install','exabyte_api_client==2020.10.19'])
 # Import settings file and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from utils import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies
+from utils import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, ensure_installed
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-    
+
+ensure_installed("pandas", "exabyte_api_client")
+import pandas as pd
+
 # Import relevant portions of the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 from exabyte_api_client.utils.materials import flatten_material
@@ -291,11 +272,11 @@ predicted_properties = get_property_by_subworkow_and_unit_indicies(raw_property_
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[21]:
+# In[23]:
 
 
 table = []
-for exabyte_id, properties in predicted_properties.iteritems():
+for exabyte_id, properties in predicted_properties.items():
     material = next((m for m in target_materials if m["exabyteId"] == exabyte_id))
     band_gaps = next((v for v in properties if v["name"] == "band_gaps"))
     direct_gap = next((v for v in band_gaps["values"] if v["type"] == "direct"))["value"]
@@ -307,7 +288,7 @@ for exabyte_id, properties in predicted_properties.iteritems():
 # 
 # Create and print the final table as Pandas dataFrame.
 
-# In[22]:
+# In[24]:
 
 
 headers = ["ID", "NAME", "FORMULA", "EXABYTE-ID", "DIRECT-GAP", "INDIRECT-GAP"]

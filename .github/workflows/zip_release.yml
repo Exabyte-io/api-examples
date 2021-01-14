@@ -19,8 +19,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
-      - name: Zip Folder
-        run: zip -r release.zip . -x ".git/*" ".github/*"
-      - name: Release to GitHub
-        run: echo "Release"
+      - uses: actions/checkout@master
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: 'release.zip'
+          exclusions: '*.git* /*noe_modules/* .editorconfig'
+      - name: Upload Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "releasel.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}

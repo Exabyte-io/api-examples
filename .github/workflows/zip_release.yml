@@ -17,8 +17,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
+        with:
+          lfs: true
+      
+      - name: Checkout LFS Objects
+        run: git lfs checkout
         
       - name: Zip Files
         run: zip -r release.zip . -x ".git/*" ".github/*"

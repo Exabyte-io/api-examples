@@ -11,7 +11,7 @@
 # 
 # ## Import packages
 
-# In[2]:
+# In[]:
 
 
 from IPython.display import JSON
@@ -33,7 +33,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # - **NAME**: material name
 # - **POSCAR_PATH**: absolute path to the POSCAR file
 
-# In[3]:
+# In[]:
 
 
 NAME = "My Material"
@@ -44,7 +44,7 @@ POSCAR_PATH = "mp-978534.poscar"
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_file` function to import the material.
 
-# In[4]:
+# In[]:
 
 
 content  = ""
@@ -59,7 +59,7 @@ material = endpoint.import_from_file(NAME, content)
 # 
 # Print the list of imported materials in pretty JSON below.
 
-# In[5]:
+# In[]:
 
 
 JSON(material)

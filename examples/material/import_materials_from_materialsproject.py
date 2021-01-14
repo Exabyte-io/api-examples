@@ -11,7 +11,7 @@
 # 
 # ## Import packages
 
-# In[9]:
+# In[]:
 
 
 import os
@@ -34,7 +34,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
 
-# In[10]:
+# In[]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
@@ -45,7 +45,7 @@ TAGS = ["tag1", "tag2"]
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_materialsproject` function to import materials.
 
-# In[11]:
+# In[]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -56,7 +56,7 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # 
 # Print the list of imported materials in pretty JSON below.
 
-# In[12]:
+# In[]:
 
 
 JSON(materials)

@@ -11,7 +11,7 @@
 # 
 # ## Import packages
 
-# In[1]:
+# In[]:
 
 
 from IPython.display import JSON
@@ -35,7 +35,7 @@ from exabyte_api_client.endpoints.login import LoginEndpoint
 # 
 # - **PASSWORD**: Your Exabyte account password.
 
-# In[3]:
+# In[]:
 
 
 USERNAME = "YOUR_USERNANE"
@@ -44,7 +44,7 @@ PASSWORD = "YOUR_PASSWORD"
 
 # ## Initialize the endpoint
 
-# In[4]:
+# In[]:
 
 
 endpoint = LoginEndpoint(HOST, PORT, USERNAME, PASSWORD, VERSION, SECURE)
@@ -55,7 +55,7 @@ auth_params = endpoint.login()
 # 
 # Print the authentication parameters in pretty JSON below. Update [settings](../settings.py) with this parameters to be able to run other examples.
 
-# In[5]:
+# In[]:
 
 
 JSON(auth_params)

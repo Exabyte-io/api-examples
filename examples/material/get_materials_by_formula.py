@@ -11,7 +11,7 @@
 # 
 # ## Import packages
 
-# In[6]:
+# In[]:
 
 
 import os
@@ -32,7 +32,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # - **QUERY**: A query describing the documents to find. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[7]:
+# In[]:
 
 
 QUERY = {
@@ -43,7 +43,7 @@ QUERY = {
 
 # ## Initialize the endpoint
 
-# In[8]:
+# In[]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -53,7 +53,7 @@ endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 # 
 # Contact the endpoint to list materials according to the query above.
 
-# In[9]:
+# In[]:
 
 
 materials = endpoint.list(QUERY)
@@ -63,7 +63,7 @@ materials = endpoint.list(QUERY)
 # 
 # Print the list of materials saved under the corresponding variable in pretty JSON below.
 
-# In[10]:
+# In[]:
 
 
 JSON(materials)

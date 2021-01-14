@@ -1,6 +1,5 @@
 import io
 import os
-import re
 
 from notebook.utils import to_api_path
 

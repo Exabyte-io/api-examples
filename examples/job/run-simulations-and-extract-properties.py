@@ -52,8 +52,8 @@ module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
 from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, ensure_packages_are_installed
+ensure_packages_are_installed()
 
-ensure_packages_are_installed("pandas", "exabyte_api_client")
 import pandas as pd
 
 # Relevant functions from the API client
@@ -289,10 +289,4 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 df = pd.DataFrame(data=table, columns=headers)
 html = dataframe_to_html(df)
 html
-
-
-# In[ ]:
-
-
-
 

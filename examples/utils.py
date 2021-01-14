@@ -73,7 +73,9 @@ def ensure_packages_are_installed(*names):
                         install_package(name, version)
 
 
-ensure_packages_are_installed("tabulate", "pandas", "exabyte_api_client")
+ensure_packages_are_installed("tabulate")
+
+# Needs to go here, to ensure it's installed before we import
 from tabulate import tabulate
 
 

@@ -23,8 +23,8 @@ module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 from utils import ensure_packages_are_installed
+ensure_packages_are_installed()
 
-ensure_packages_are_installed("exabyte_api_client")
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 

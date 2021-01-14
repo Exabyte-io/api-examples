@@ -4,9 +4,9 @@ name: zip_release
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ feature/SOF-4231 ]
+    branches: [ master ]
   pull_request:
-    branches: [ feature/SOF-4231 ]
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: Zip Archive, ${{ github.ref }}
           draft: true
           prerelease: false
           

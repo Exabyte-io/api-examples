@@ -1,6 +1,81 @@
 # This module defines a set of common functions which are used in other examples.
 import time
 import datetime
+import os
+import importlib.util
+
+
+# IMPORTS
+def install_package(name, version=None):
+    """
+    Installs a package via Pip. If a version is supplied, will attempt to install that specific version.
+    If one is not supplied, requirements.txt will be searched to find a version.
+    If a version is still not found, the latest version of the package will be installed.
+
+    Args:
+        name (str): the name of the module (e.g. pandas, numpy, etc)
+        version (str): the specific version (if any) to import (e.g. 0.1.5, 1.0.0, etc).
+
+    Returns:
+        None
+    """
+    # Check requiements.txt for current version, if one wasn't supplied
+    if version is None:
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../requirements.txt"))
+        with open(reqs_file, "r") as reqs:
+            for line in reqs:
+                if name in line:
+                    version = line.strip().split("==")[1]
+
+    # Add version if one was found or specified
+    if version is not None:
+        pip_name = f"{name}=={version}"
+    else:
+        pip_name = name
+
+    # Install the modules
+    import sys, subprocess
+    subprocess.call([sys.executable, "-m", "pip", "install", pip_name])
+    # Invalidate module cache based on import_lib doc recommendation:
+    #   https://docs.python.org/3/library/importlib.html#importlib.invalidate_caches
+    importlib.invalidate_caches()
+
+
+def ensure_packages_are_installed(*names):
+    """
+    Ensures a package is installed on the system, by installing it if it does not exist currently.
+    If nothing is passed as the argument, packages specified in requirements.txt are installed.
+
+    Args:
+        names (str): the names of the package to be checked (e.g. pandas, numpy, etc)
+
+    Returns:
+        None
+    """
+    # Install packages passed in to names
+    if len(names) > 0:
+        for name in names:
+            if importlib.util.find_spec(name) is None:
+                install_package(name)
+
+    # Install requirements.txt if nothing was passed in
+    else:
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../requirements.txt"))
+        with open(reqs_file, "r") as reqs:
+            for line in reqs:
+                # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
+                if "jupyterlab" in line:
+                    pass
+                # Check if packages exist, and install if they don't
+                else:
+                    name, version = line.strip().split("==")
+                    if importlib.util.find_spec(name) is None:
+                        install_package(name, version)
+
+
+ensure_packages_are_installed("tabulate")
+
+# Needs to go here, to ensure it's installed before we import
 from tabulate import tabulate
 
 

@@ -39,26 +39,30 @@
 # 
 # ### Import packages
 
-# In[1]:
+# In[]:
 
 
 import time
-import pandas as pd
 from IPython.display import IFrame
+import os
+import sys
 
+# Import settings file and utils file
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path: sys.path.append(module_path)
+from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
+from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, ensure_packages_are_installed
+ensure_packages_are_installed()
+
+import pandas as pd
+
+# Relevant functions from the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 from exabyte_api_client.utils.materials import flatten_material
 from exabyte_api_client.endpoints.projects import ProjectEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
-
-# Import settings file and utils file
-import os,sys
-module_path = os.path.abspath(os.path.join('..'))
-if module_path not in sys.path: sys.path.append(module_path)
-from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
 
 
 # #### Materials
@@ -68,7 +72,7 @@ from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_in
 # - **MATERIALS_SET_NAME**: the name of the materials set
 # 
 
-# In[2]:
+# In[]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-149", "mp-32"] # Si and Ge
@@ -83,7 +87,7 @@ TAGS = ["tag1", "tag2"]
 # - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
 # - **JOBS_SET_NAME**: the name of the jobs set
 
-# In[3]:
+# In[]:
 
 
 JOB_NAME_PREFIX = "Job Name Prefix"
@@ -94,13 +98,13 @@ JOBS_SET_NAME = "jobs-set"
 # 
 # This example is based on [this](https://platform.exabyte.io/analytics/workflows/56xDyXsPMNJ7cF9nv) bank workflow which is later copied to the account workflows collection. The workflow is named "D3-GGA-BS-BG-DOS-ALL" and utilizes the logic explained in https://arxiv.org/pdf/1808.05325.pdf, for example (see section "Methodology", Table I). "D3" indicates the difficulty level 3 per the table convention. BS, BG, DOS indicate the properties extracted - Band Structure, Band Gap, Density of States. The workflow is utilizing VASP simulation engine at version 5.4.4.
 
-# In[4]:
+# In[]:
 
 
 BANK_WORKFLOW_ID = "56xDyXsPMNJ7cF9nv"
 
 
-# In[5]:
+# In[]:
 
 
 # Visualize the bank workflow below
@@ -118,7 +122,7 @@ IFrame("https://platform.exabyte.io/analytics/workflows/{}".format(BANK_WORKFLOW
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
 # - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
-# In[6]:
+# In[]:
 
 
 PPN = "1"
@@ -130,7 +134,7 @@ CLUSTER = "cluster-001"
 
 # ### Initialize endpoints
 
-# In[7]:
+# In[]:
 
 
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
@@ -142,7 +146,7 @@ bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
 
 # Next, we retrieve the owner and project IDs as they are needed by the endpoints. Account's default material is used to extract the owner ID. One can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
 
-# In[8]:
+# In[]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["owner"]["_id"]
@@ -153,7 +157,7 @@ project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID}
 # 
 # Copy bank workflow (template) to the account's workflows collection.
 
-# In[9]:
+# In[]:
 
 
 workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
@@ -163,7 +167,7 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 # 
 # Import materials from materials project with the above tags.
 
-# In[10]:
+# In[]:
 
 
 materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS)
@@ -171,7 +175,7 @@ materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_AP
 
 # Create a materials set and move the materials into it.
 
-# In[11]:
+# In[]:
 
 
 materials_set = material_endpoints.create_set({"name": MATERIALS_SET_NAME, "owner": {"_id": owner_id}})
@@ -182,7 +186,7 @@ for material in materials: material_endpoints.move_to_set(material["_id"], "", m
 # 
 # Create jobs for the materials above.
 
-# In[12]:
+# In[]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
@@ -191,7 +195,7 @@ jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id,
 
 # Create a jobs set and move the jobs into it.
 
-# In[13]:
+# In[]:
 
 
 jobs_set = job_endpoints.create_set({"name": JOBS_SET_NAME, "projectId": project_id, "owner": {"_id": owner_id}})
@@ -200,7 +204,7 @@ for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 
 # Submit the jobs for execution.
 
-# In[14]:
+# In[]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
@@ -208,7 +212,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[15]:
+# In[]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -223,7 +227,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[16]:
+# In[]:
 
 
 results = []
@@ -247,7 +251,7 @@ for material in materials:
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[17]:
+# In[]:
 
 
 table = []
@@ -267,7 +271,7 @@ for result in results:
 # - **"N-SITES"**: Number of Sites
 # - **"LAT"**: LATTICE
 
-# In[18]:
+# In[]:
 
 
 headers = []
@@ -279,7 +283,7 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 
 # Create and print the final table as Pandas dataFrame.
 
-# In[19]:
+# In[]:
 
 
 df = pd.DataFrame(data=table, columns=headers)

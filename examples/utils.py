@@ -6,20 +6,6 @@ import importlib.util
 
 
 # IMPORTS
-def ensure_packages_are_installed(*names):
-    """
-    Ensures a package is installed on the system, by installing it if it does not exist currently.
-
-    Args:
-        names (str): the names of the package to be checked (e.g. pandas, numpy, etc)
-
-    Returns:
-        None
-    """
-    for name in names:
-        if importlib.util.find_spec(name) is None:
-            install_package(name)
-
 def install_package(name, version=None):
     """
     Installs a package via Pip. If a version is supplied, will attempt to install that specific version.
@@ -54,8 +40,42 @@ def install_package(name, version=None):
     #   https://docs.python.org/3/library/importlib.html#importlib.invalidate_caches
     importlib.invalidate_caches()
 
+
+def ensure_packages_are_installed(*names):
+    """
+    Ensures a package is installed on the system, by installing it if it does not exist currently.
+    If nothing is passed as the argument, packages specified in requirements.txt are installed.
+
+    Args:
+        names (str): the names of the package to be checked (e.g. pandas, numpy, etc)
+
+    Returns:
+        None
+    """
+    # Install packages passed in to names
+    if len(names) > 0:
+        for name in names:
+            if importlib.util.find_spec(name) is None:
+                install_package(name)
+
+    # Install requirements.txt if nothing was passed in
+    else:
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../requirements.txt"))
+        with open(reqs_file, "r") as reqs:
+            for line in reqs:
+                # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
+                if "jupyterlab" in line:
+                    pass
+                # Check if packages exist, and install if they don't
+                else:
+                    name, version = line.strip().split("==")
+                    if importlib.util.find_spec(name) is None:
+                        install_package(name, version)
+
+
 ensure_packages_are_installed("tabulate", "pandas", "exabyte_api_client")
 from tabulate import tabulate
+
 
 # JOB
 

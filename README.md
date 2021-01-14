@@ -2,6 +2,24 @@
 
 This repository explains how to perform some of the most common tasks in the Exabyte.io platform through its RESTful application programming interface (REST API) [[1](#links)] by virtue of examples. Examples are grouped together by domain (eg. "materials") and are presented in a self-documented format inside Jupyter notebooks [[2](#links)]. In order to view the content online, [navigate](examples/) to a notebook page inside this repository.
 
+## Contents of this Repository
+
+Below, we list the contents of this repository, in roughly the order that a user might want to go through it in order to learn how our API works.
+
+| Folder            | Notebook                                | Description |
+| ------------------|-----------------------------------------| ----------- |
+| Examples/System   | Get Authentication Params               | Demonstrates how to programatically find your user ID and access token, which is needed for many portions of the Exabyte API.
+| Examples/Workflow | Get Workflows                           | Walks through how to query the Exabyte API to programatically search for workflows. In this example, we search for workflows that calculate the total energy of a material.
+| Examples/Material | Get Materials by Formula                | Shows how queries can be made to search for materials stored on your account by their formula. In this example, we search for a system containing Si.
+| Examples/Material | Create Material                         | Gives an overview of how materials can be generated in JSON format and uploaded to your user account. In this example, we create an FCC Si crystal and upload it.
+| Examples/Material | Import Materials from Materials Project | Demonstrates how materials can be imported from Materials Project, if their Materials Project ID is known. In this example, we import monoclinic and hexagonal SiGe cells.
+| Examples/Material | Import Materials from Poscar            | Provides an example of how materials can be imported directly from Poscar files (a common chemical file format best-known for its use in VASP). In this example, we import the unit cell of SiGe.
+| Examples/Job      | Create and Submit Job                   | Shows how to use the Exabyte API to create jobs and run them on our cluster. In this example, we run a DFT calculation to get the total energy of an FCC Si unit cell using Quantum Espresso.
+| Examples/Job      | Run Simulations and Extract Properties  | Leads you through the process of copying a bank workflow to your account and using it to automatically caclulate the properties of multiple materials. In this example, we determine the band gap of Si and Ge.
+| Examples/Job      | ML - Train Model Predict Properties     | Walks you through automated dataset generation, the training of a model, and the prediction of materials properties. In this example, we calculate the band gaps of Si and SiGe, and using various materials properties as descriptors, train a model to predict their band gaps. Finally, we use this trained model to predict the band gap of Ge.
+
+
+
 ## Setup
 
 NOTE: tested with python version 3.8.6, please assert that the virtual environment is created with it.

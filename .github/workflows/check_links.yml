@@ -3,13 +3,13 @@ name: check_links
 on: [push, pull_request]
 
 jobs:
-  check-links:
+  linkChecker:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v1
-    - name: Link Checker
-      id: lc
-      uses: peter-evans/link-checker@v1
-    - name: Fail if there were link errors
-      run: exit ${{ steps.lc.outputs.exit_code }}
+      - uses: actions/checkout@v2
+      - name: Link Checker
+        id: lc
+        uses: lycheeverse/lychee-action@v1
+      - name: Fail if there were link errors
+        run: exit ${{ steps.lc.outputs.exit_code }}

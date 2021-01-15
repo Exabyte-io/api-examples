@@ -3,19 +3,13 @@ name: check_links
 on: [push, pull_request]
 
 jobs:
-  linkChecker:
+  check-links:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - name: Extract Github URL Information
-        shell: bash
-        run: echo "##[set-output name=base_url;]$(echo $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-      - name: Link Checker
-        id: lc
-        uses: lycheeverse/lychee-action@v1
-        with:
-          args:  -b ${{ steps.extract_branch.outputs.base_url }} --github-token ${{ secrets.GITHUB_TOKEN }} -v README.md
-      - name: Fail if there were link errors
-        run: exit ${{ steps.lc.outputs.exit_code }}
+    - uses: actions/checkout@v1
+    - name: Link Checker
+      id: lc
+      uses: peter-evans/link-checker@v1
+    - name: Fail if there were link errors
+      run: exit ${{ steps.lc.outputs.exit_code }}

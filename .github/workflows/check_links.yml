@@ -10,12 +10,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Extract Github URL Information
         shell: bash
-        run: echo "##[set-output name=base_url;]$(echo $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/${GITHUB_REF#refs/heads/})"
+        run: echo "##[set-output name=base_url;]$(echo $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/${GITHUB_REF#refs/heads/})"
         id: extract_branch
       - name: Link Checker
         id: lc
         uses: lycheeverse/lychee-action@v1
         with:
-          args: -b ${{ steps.extract_branch.outputs.base_url }} -v README.md
+          args:  -b ${{ steps.extract_branch.outputs.base_url }} --github-token ${{ secrets.GITHUB_TOKEN }} -v README.md
       - name: Fail if there were link errors
         run: exit ${{ steps.lc.outputs.exit_code }}

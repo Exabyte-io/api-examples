@@ -8,8 +8,14 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
+      - name: Extract Branch Name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Link Checker
         id: lc
         uses: lycheeverse/lychee-action@v1
+        with:
+          args: -b $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/${{ steps.extract_branch.outputs.branch }} -v README.md
       - name: Fail if there were link errors
         run: exit ${{ steps.lc.outputs.exit_code }}

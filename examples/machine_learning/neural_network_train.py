@@ -58,10 +58,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sklearn.model_selection
-
+import subprocess
 import tensorflow as tf
+import IPython
 from tensorflow.keras.layers import Dense, BatchNormalization, InputLayer
 from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
+
+
+# In[]:
+
+
+# Check if GraphViz is installed; used to plot the NN architecture later on.
+rc = subprocess.call(['dot', '-v'])
+if rc == 0:
+    dot_exists = True
+else:
+    dot_exists = False
 
 
 # In[]:
@@ -191,7 +203,13 @@ print("\nDetailed Information:")
 print(best_model.summary())
 
 print("\nArchitecture:")
-tf.keras.utils.plot_model(best_model, show_shapes=True, to_file="architecture.png")
+if dot_exists:
+    arch_filename = "architecture.png"
+    tf.keras.utils.plot_model(best_model, show_shapes=True, to_file=arch_filename)
+    image = IPython.display.Image(filename=arch_filename)
+    IPython.display.display(image)
+else:
+    print("dot is not found in the System path, but was needed to draw the architecture.")
 
 
 # ## Final Training

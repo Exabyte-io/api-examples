@@ -97,6 +97,8 @@ x_cols = ["CE_Local_eV", "ChemPot_eV", "MADS_eV"]
 train_x = df[x_cols]
 train_y = df[y_cols]
 
+IPython.display.display(df)
+
 
 # ## Hyperparameter Optimization
 # 

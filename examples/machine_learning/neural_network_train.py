@@ -228,10 +228,10 @@ print(best_model.summary())
 # Draw a graph of the architecture below (this is a useful feature for drafting paper/presentation figures!)
 print("\nArchitecture:")
 # GraphViz (specifically, its executable named "dot") does need to be in the system path for this to work. Here, we check that it's installed.
-rc = subprocess.call(['dot', '-v'])
-if rc == 0:
+try:
+    subprocess.call(['dot', '-v'])
     dot_exists = True
-else:
+except FileNotFoundError:
     dot_exists = False
 # Now that we know whether it exists, we might draw the network.
 # Note that this will create a new file named "architecture.png" (or whatever arch_filename is assigned to) in the current working directory
@@ -360,4 +360,3 @@ plt.close()
 # For a model that's simple like ours, avoiding retraining isn't a huge concern, but for larger networks that might be resource-intensive to train, this could be an important final step.
 print(best_params)
 best_model.save("best_model.mdl")
-

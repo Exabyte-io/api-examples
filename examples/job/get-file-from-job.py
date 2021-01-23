@@ -56,6 +56,10 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 
 
 # ### Create and submit the job
+# 
+# For this job, we'll use the workflow located [here](https://platform.exabyte.io/analytics/workflows/84DAjE9YyTFndx6z3).
+# This workflow is a single-point total energy calculation using Density-Functional Energy as-implemented in Quantum Espresso version 5.4.0.
+# The PBE functional is used in conjunction with an ultrasoft pseudopotential and a planewave basis.
 
 # In[]:
 

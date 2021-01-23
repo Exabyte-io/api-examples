@@ -58,8 +58,12 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # ### Create and submit the job
 # 
 # For this job, we'll use the workflow located [here](https://platform.exabyte.io/analytics/workflows/84DAjE9YyTFndx6z3).
+# 
 # This workflow is a single-point total energy calculation using Density-Functional Energy as-implemented in Quantum Espresso version 5.4.0.
-# The PBE functional is used in conjunction with an ultrasoft pseudopotential and a planewave basis.
+# 
+# The PBE functional is used in conjunction with an ultrasoft pseudopotential and a planewave basis set.
+# 
+# The material we will investigate is elemental [Silicon](https://materialsproject.org/materials/mp-149/), as-is from Materials Project.
 
 # In[]:
 
@@ -77,7 +81,7 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 
 # Get materials for the job
 material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
-material_project_id = ["mp-32"] # The importer expects a list
+material_project_id = ["mp-149"] # The importer expects a list
 materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, material_project_id, owner_id)
 
 # Create the job

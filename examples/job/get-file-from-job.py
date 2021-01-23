@@ -64,6 +64,8 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # The PBE functional is used in conjunction with an ultrasoft pseudopotential and a planewave basis set.
 # 
 # The material we will investigate is elemental [Silicon](https://materialsproject.org/materials/mp-149/), as-is from Materials Project.
+# 
+# > <span style="color: orange">Not sure what's going on?</span>: This cell uses our API to copy the unit cell of silicon from Materials Project into your account. It then copies a workflow to get the total energy of a system using Quantum Espresso to your account. Finally, a job is created using the Quantum Espresso workflow for silico For more information, please refer to our [run-simulation-and-extract-properties](./run-simulations-and-extract-properties.ipynb) notebook, located in this directory.
 
 # In[]:
 

@@ -18,11 +18,12 @@ from IPython.display import JSON
 import os
 import sys
 
+
 # Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, visualize_json
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
@@ -124,5 +125,5 @@ material = endpoint.create(CONFIG)
 # In[]:
 
 
-JSON(material)
+visualize_json(material)
 

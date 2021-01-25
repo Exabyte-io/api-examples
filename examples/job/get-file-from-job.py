@@ -17,7 +17,7 @@
 # 
 # After working through this notebook, you will be able to:
 # 
-# 1. Import the structure of cubic Ge from Materials Project
+# 1. Import [the structure of Si](https://materialsproject.org/materials/mp-149/) from Materials Project
 # 2. Set up and run a single-point calculation using Quantum Espresso.
 # 3. List files currently in the job's directory
 # 4. Check metadata for every file (modification date, size, etc)

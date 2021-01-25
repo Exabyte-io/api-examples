@@ -176,15 +176,15 @@ input_file_bytes = server_response.read()
 # In[]:
 
 
-# Let's write the inp¬ut file to disk. Note that we get files as a bytes string from the server, which is convenient for binaries, images, and other non-human-readable data.
+# Let's write the input file to disk. Note that we get files as a bytes string from the server, which is convenient for binaries, images, and other non-human-readable data.
 # Although we could decode before writing to disk, we can just write it directly with the "wb" (write bytes) file mode.
-with open(input_file_metadata['name'], 'wb') as outp:
-    outp.write(input_file_bytes)
+with open(input_file_metadata['name'], 'wb') as file_descriptor:
+    file_descriptor.write(input_file_bytes)
 
 
 # In[]:
 
 
 # Now, let's write our output file to the disk. Note that because we already decoded it, we can just use the 'w' file mode.
-with open(output_file_metadata['name'], 'w') as outp:
-    outp.write(output_file)
+with open(output_file_metadata['name'], 'w') as file_descriptor:
+    file_descriptor.write(output_file)

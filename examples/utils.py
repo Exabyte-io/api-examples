@@ -179,37 +179,3 @@ def dataframe_to_html(df, text_align="center"):
         dict(selector="td", props=[("text-align", text_align)])
     ]
     return (df.style.set_table_styles(styles))
-
-def visualize_json(iterable, level : int = 0):
-    """
-    Recursively visualizes a dictionary supplied to it.
-    
-    Args:
-        json (dict): The JSON to be visualized
-        level (int): Indentation level; incremented as the call stack grows/shrinks
-    """
-    indentation = "\t" * level
-    # Case: dictionary
-    if isinstance(iterable, dict):
-        for key, value in iterable.items():
-            # Base case: Non-dict, non-iterable value
-            if not isinstance(value, Iterable) or isinstance(value, str):
-                print(f"{indentation}{key} : {value}")
-            # Recursive case: A dictionary or non-string iterable
-            else:
-                print(f"{indentation}{key} :")
-                visualize_json(value, level+1)
-    # Case: All other iterables
-    else:
-        for count,item in enumerate(iterable):
-            # Base case: Non-dict, non-iterable vaules
-            if not isinstance(item, Iterable) or isinstance(item, str):
-                print(f"{indentation}{count} : {item}")
-            # Recursive case: dictionaries
-            elif isinstance(item, dict):
-                print(f"{indentation}{count} :")
-                visualize_json(item, level+1)
-            # Recursive case: all other non-string iterables
-            else:
-                print(f"{indentation}{count} :")
-                visualize_json(item, level+1)

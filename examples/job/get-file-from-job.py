@@ -45,6 +45,7 @@ from IPython.display import JSON, display
 import os
 import sys
 import urllib
+import json
 
 # Import settings file and utils file
 module_path = os.path.abspath(os.path.join('..'))
@@ -61,6 +62,9 @@ from exabyte_api_client.endpoints.projects import ProjectEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
+
+# Set interactive_JSON to True if running this as a live notebook, to receive an interactive JSON viewer 
+interactive_JSON = False
 
 # ### Create and submit the job
 # 
@@ -147,7 +151,10 @@ for path in paths:
 for file in files:
     if file['name'] == 'pw_scf.out':
         output_file_metadata = file
-JSON(output_file_metadata)
+if interactive_JSON:
+    display(JSON(output_file_metadata))
+else:
+    print(json.dumps(output_file_metadata, indent=4))
 
 # ### Display file contents to console
 # 

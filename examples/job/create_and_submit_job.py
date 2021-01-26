@@ -17,25 +17,20 @@
 # In[]:
 
 
-from IPython.display import JSON, display
 import os
 import sys
-import json
 
 # Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
 
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
-
-# Set interactive_JSON to True if running this as a live notebook, to receive an interactive JSON viewer 
-interactive_JSON = False
 
 # ## Initialize the endpoints
 
@@ -104,7 +99,4 @@ job_endpoints.submit(job['_id'])
 
 
 job = job_endpoints.get(job['_id'])
-if interactive_JSON:
-    display(JSON(job))
-else:
-    print(json.dumps(job, indent=4))
+display_JSON(job)

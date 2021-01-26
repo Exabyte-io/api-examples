@@ -19,21 +19,16 @@
 
 import os
 import sys
-from IPython.display import JSON, display
-import json
 
 # Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
 
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
-
-# Set interactive_JSON to True if running this as a live notebook, to receive an interactive JSON viewer 
-interactive_JSON = False
 
 # ## Set Parameters
 # 
@@ -80,7 +75,5 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # In[]:
 
 
-if interactive_JSON:
-    display(JSON(workflows))
-else:
-    print(json.dumps(workflows, indent=4))
+display_JSON(workflows,
+             interactive_viewer=False)  # Change interactive_viewer to True for an interactive JSON experience

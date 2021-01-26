@@ -15,23 +15,18 @@
 # In[]:
 
 
-from IPython.display import JSON, display
 import os
 import sys
-import json
 
 # Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import HOST, PORT, VERSION, SECURE
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
 
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.login import LoginEndpoint
-
-# Set interactive_JSON to True if running this as a live notebook, to receive an interactive JSON viewer 
-interactive_JSON = False
 
 # ## Set Parameters
 # 
@@ -61,7 +56,5 @@ auth_params = endpoint.login()
 # In[]:
 
 
-if interactive_JSON:
-    display(JSON(auth_params))
-else:
-    print(json.dumps(auth_params, indent=4))
+display_JSON(auth_params,
+             interactive_viewer=False)  # Change interactive_viewer to True for an interactive JSON experience

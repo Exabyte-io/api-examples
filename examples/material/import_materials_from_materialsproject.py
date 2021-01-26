@@ -19,21 +19,16 @@
 
 import os
 import sys
-from IPython.display import JSON, display
-import json
 
 # Import settings file and utils
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
 
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
-
-# Set interactive_JSON to True if running this as a live notebook, to receive an interactive JSON viewer 
-interactive_JSON = False
 
 # ## Set Parameters
 # 
@@ -64,7 +59,5 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # In[]:
 
 
-if interactive_JSON:
-    display(JSON(materials))
-else:
-    print(json.dumps(materials, indent=4))
+display_JSON(materials,
+             interactive_viewer=False)  # Change interactive_viewer to True for an interactive JSON experience

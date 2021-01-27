@@ -1,8 +1,9 @@
 import io
 import os
 import re
-
 from notebook.utils import to_api_path
+from black import format_str, FileMode
+import textwrap
 
 _script_exporter = None
 
@@ -37,6 +38,18 @@ def script_post_save(model, os_path, contents_manager, **kwargs):
     """
     script = re.sub(pattern, "", script, flags = re.MULTILINE | re.VERBOSE)
 
+    # Format the script to pep8
+    script = format_str(script, mode=FileMode())
+
+    # Wrap comments around
+    wrapper = textwrap.TextWrapper(width=128)
+    lines = script.split("\n")
+    for index, line in enumerate(lines):
+        # Only wrap whole-line comments
+        if re.match("^\s*#", line):
+            formatted_line = "\n# ".join(wrapper.wrap(line))
+            lines[index] = formatted_line
+    script = "\n".join(lines)
 
 
     with io.open(script_fname, 'w', encoding='utf-8') as f:

@@ -16,7 +16,7 @@
 
 import os
 import sys
-from IPython.display import JSON
+from IPython.display import JSON, display
 
 # Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
@@ -74,5 +74,5 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # In[]:
 
 
-JSON(workflows)
+display(JSON(workflows))
 

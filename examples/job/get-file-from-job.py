@@ -2,45 +2,38 @@
 # coding: utf-8
 
 # # Get-File-From-Job
-#
-# This example demonstrates how to use Exabyte RESTful API to check for and acquire files from jobs which have been run. This
-# example assumes that the user is already familiar with the [creation and submission of jobs](create_and_submit_jobs.ipynb) using
-# our API.
-#
-# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io account is
-# required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for VASP, for example)
-# and adjust extraction of the results ("Viewing job files" section). RESTful API credentials shall be updated in
-# [settings](../settings.py).
-#
-#
+# 
+# This example demonstrates how to use Exabyte RESTful API to check for and acquire files from jobs which have been run. This example assumes that the user is already familiar with the [creation and submission of jobs](create_and_submit_jobs.ipynb) using our API.
+# 
+# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io account is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for VASP, for example) and adjust extraction of the results ("Viewing job files" section). RESTful API credentials shall be updated in [settings](../settings.py).
+# 
+# 
 # ## Steps
-#
+# 
 # After working through this notebook, you will be able to:
-#
+# 
 # 1. Import [the structure of Si](https://materialsproject.org/materials/mp-149/) from Materials Project
 # 2. Set up and run a single-point calculation using Quantum Espresso.
 # 3. List files currently in the job's directory
 # 4. Check metadata for every file (modification date, size, etc)
 # 5. Access file contents directly and print them to console
 # 6. Download files to your local machine
-#
+# 
 # ## Pre-requisites
-#
-# The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We
-# outline these below and direct the reader to the original sources of information:
-#
+# 
+# The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We outline these below and direct the reader to the original sources of information:
+# 
 # - [Generating RESTful API authentication parameters](../system/get_authentication_params.ipynb)
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
 # - [Creating and submitting jobs](../job/create_and_submit_job.ipynb)
 
 # ## Execution
-#
-#
+# 
+# 
 # ### Import packages
 
 # In[]:
-
-
+# get_ipython().run_line_magic('load_ext', 'lab_black')
 import os
 import sys
 import urllib
@@ -69,22 +62,16 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 
 
 # ### Create and submit the job
-#
+# 
 # For this job, we'll use the workflow located [here](https://platform.exabyte.io/analytics/workflows/84DAjE9YyTFndx6z3).
-#
-# This workflow is a single-point total energy calculation using Density-Functional Energy as-implemented in Quantum Espresso
-# version 5.4.0.
-#
+# 
+# This workflow is a single-point total energy calculation using Density-Functional Energy as-implemented in Quantum Espresso version 5.4.0.
+# 
 # The PBE functional is used in conjunction with an ultrasoft pseudopotential and a planewave basis set.
-#
-# The material we will investigate is elemental [Silicon](https://materialsproject.org/materials/mp-149/), as-is from Materials
-# Project.
-#
-# > <span style="color: orange">Note</span>: This cell uses our API to copy the unit cell of silicon from Materials Project into
-# your account. It then copies a workflow to get the total energy of a system using Quantum Espresso to your account. Finally, a
-# job is created using the Quantum Espresso workflow for the silicon unit cell, and the job is submitted to the cluster. For more
-# information, please refer to our [run-simulation-and-extract-properties](./run-simulations-and-extract-properties.ipynb)
-# notebook, located in this directory.
+# 
+# The material we will investigate is elemental [Silicon](https://materialsproject.org/materials/mp-149/), as-is from Materials Project.
+# 
+# > <span style="color: orange">Note</span>: This cell uses our API to copy the unit cell of silicon from Materials Project into your account. It then copies a workflow to get the total energy of a system using Quantum Espresso to your account. Finally, a job is created using the Quantum Espresso workflow for the silicon unit cell, and the job is submitted to the cluster. For more information, please refer to our [run-simulation-and-extract-properties](./run-simulations-and-extract-properties.ipynb) notebook, located in this directory.
 
 # In[]:
 
@@ -128,7 +115,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 # ## Viewing job files
 # ### Retreive a list of job files
-#
+# 
 # Here, we'll get a list of all files that belong to the job.
 
 # In[]:
@@ -142,9 +129,8 @@ for path in paths:
 
 
 # ### Get metadata for the Output File
-# The .out file is where Quantum Espresso shows its work and prints its results, so you most likely will want to view this
-# files. Let's print out some of its metadata.
-#
+# The .out file is where Quantum Espresso shows its work and prints its results, so you most likely will want to view this files. Let's print out some of its metadata.
+# 
 # You'll find that we get a lot of data describing the file and its providence. Brief explanations of each entry are:
 # - Key - Path to the file on the cluster
 # - size - Size of the file, in bytes.
@@ -165,9 +151,8 @@ display_JSON(output_file_metadata)
 
 
 # ### Display file contents to console
-#
-# The signedUrl gives us a place to access the file and download it. Let's read it into memory, and print out the last few lines
-# of our job.
+# 
+# The signedUrl gives us a place to access the file and download it. Let's read it into memory, and print out the last few lines of our job.
 
 # In[]:
 
@@ -175,8 +160,7 @@ display_JSON(output_file_metadata)
 server_response = urllib.request.urlopen(output_file_metadata["signedUrl"])
 output_file_bytes = server_response.read()
 
-# The server returns us a bytes-string. That's useful for things like binaries or other non-human-readable data, but this should
-# be decoded if we're planning to write to console.
+# The server returns us a bytes-string. That's useful for things like binaries or other non-human-readable data, but this should be decoded if we're planning to write to console.
 # Because this is a human-readable text file, we'll decode it to UTF-8.
 output_file = output_file_bytes.decode(encoding="UTF-8")
 
@@ -187,7 +171,7 @@ for line in lines[-90:]:
 
 
 # ### Save the input file and output file to disk.
-#
+# 
 # Now that we've verified the job is done, let's go ahead and save it and its input to disk.
 
 # In[]:
@@ -204,8 +188,7 @@ input_file_bytes = server_response.read()
 # In[]:
 
 
-# Let's write the input file to disk. Note that we get files as a bytes string from the server, which is convenient for
-# binaries, images, and other non-human-readable data.
+# Let's write the input file to disk. Note that we get files as a bytes string from the server, which is convenient for binaries, images, and other non-human-readable data.
 # Although we could decode before writing to disk, we can just write it directly with the "wb" (write bytes) file mode.
 with open(input_file_metadata["name"], "wb") as file_descriptor:
     file_descriptor.write(input_file_bytes)
@@ -217,3 +200,4 @@ with open(input_file_metadata["name"], "wb") as file_descriptor:
 # Now, let's write our output file to the disk. Note that because we already decoded it, we can just use the 'w' file mode.
 with open(output_file_metadata["name"], "w") as file_descriptor:
     file_descriptor.write(output_file)
+

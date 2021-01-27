@@ -2,20 +2,17 @@
 # coding: utf-8
 
 # # Overview
-#
-# In this example we create a material from a JSON config with [tags](https://docs.exabyte.io/entities-general/data/#tags) to
-# identify the material.
+# 
+# In this example we create a material from a JSON config with [tags](https://docs.exabyte.io/entities-general/data/#tags) to identify the material.
 
 # # Execution
-#
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful
-# API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
-#
+# 
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
+# 
 # ## Import packages
 
 # In[]:
-
-
+# get_ipython().run_line_magic('load_ext', 'lab_black')
 import os
 import sys
 
@@ -33,9 +30,8 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
 # ## Create material config
-#
-# Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for
-# more information about material config format.
+# 
+# Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
 
 # In[]:
 
@@ -74,7 +70,7 @@ CONFIG = {
 
 
 # ## Create material
-#
+# 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
 
 # In[]:
@@ -92,3 +88,4 @@ material = endpoint.create(CONFIG)
 display_JSON(
     material, interactive_viewer=False
 )  # Change interactive_viewer to True for an interactive JSON experience
+

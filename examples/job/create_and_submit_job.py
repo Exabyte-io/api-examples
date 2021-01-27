@@ -2,19 +2,17 @@
 # coding: utf-8
 
 # # Overview
-#
+# 
 # This example demonstrates how to create and submit a job via [Job](https://docs.exabyte.io/api/Job/put_jobs_create) endpoints.
 
 # # Execution
-#
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful
-# API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
-#
+# 
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
+# 
 # ## Import packages
 
 # In[]:
-
-
+# get_ipython().run_line_magic('load_ext', 'lab_black')
 import os
 import sys
 
@@ -51,9 +49,8 @@ JOB_NAME = "TEST JOB"
 
 
 # ## Retrieve IDs
-#
-# Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different
-# material and workflow.
+# 
+# Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different material and workflow.
 
 # In[]:
 
@@ -71,8 +68,8 @@ owner_id = default_material["owner"]["_id"]
 
 
 # ## Create job config
-#
-# The job belongs to user's default account and it is created inside the defauult account's project.
+# 
+# The job belongs to user's default account and it is created inside the defauult account's project. 
 
 # In[]:
 
@@ -95,7 +92,7 @@ job_endpoints.submit(job["_id"])
 
 
 # ## Print the job
-#
+# 
 # Print the job in pretty JSON below. Check `status` field to make sure job is submiited.
 
 # In[]:
@@ -103,3 +100,4 @@ job_endpoints.submit(job["_id"])
 
 job = job_endpoints.get(job["_id"])
 display_JSON(job)
+

@@ -1,9 +1,8 @@
 import io
 import os
 import re
+
 from notebook.utils import to_api_path
-from black import format_str, FileMode
-import textwrap
 
 _script_exporter = None
 
@@ -31,25 +30,17 @@ def script_post_save(model, os_path, contents_manager, **kwargs):
     log.info("Saving script /%s", to_api_path(script_fname, contents_manager.root_dir))
 
     # Remove notebook numberings from auto-generated .py files
-    pattern = """
+    numbering_pattern = """
     (?<=^\#\sIn\[)   # Lookbehind to ensure we get the "# In[" bits notebooks put at the start of these lines
     (\d+)           # 1 or more digits, since we don't care about changing "[]" portions
     (?=\]:)         # Lookahead to get to the closing "]:" at the end of the line
     """
-    script = re.sub(pattern, "", script, flags = re.MULTILINE | re.VERBOSE)
+    script = re.sub(numbering_pattern, "", script, flags = re.MULTILINE | re.VERBOSE)
 
-    # Format the script to pep8
-    script = format_str(script, mode=FileMode())
+    # Remove the get_ipython calls generated in the .py files
+    get_ipython_pattern = "^\s*(get_ipython)(?=\(\).run_line_magic)"
+    script = re.sub(get_ipython_pattern, "# get_ipython", script, flags = re.MULTILINE)
 
-    # Wrap comments around
-    wrapper = textwrap.TextWrapper(width=128)
-    lines = script.split("\n")
-    for index, line in enumerate(lines):
-        # Only wrap whole-line comments
-        if re.match("^\s*#", line):
-            formatted_line = "\n# ".join(wrapper.wrap(line))
-            lines[index] = formatted_line
-    script = "\n".join(lines)
 
 
     with io.open(script_fname, 'w', encoding='utf-8') as f:

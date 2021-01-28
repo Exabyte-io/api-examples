@@ -1,0 +1,3 @@
+I am a dummy file. I exist to ensure the directory skeleton gets created.
+
+If you're reading this, then I've done my job. Go me!

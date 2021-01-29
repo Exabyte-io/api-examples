@@ -5,7 +5,7 @@ import os
 import importlib.util
 import json
 from IPython.display import display, JSON
-
+import settings
 
 # IMPORTS
 def install_package(name, version=None):
@@ -182,7 +182,7 @@ def dataframe_to_html(df, text_align="center"):
     return (df.style.set_table_styles(styles))
 
 
-def display_JSON(obj, interactive_viewer=False):
+def display_JSON(obj, interactive_viewer=settings.use_interactive_JSON_viewer):
     """
     Displays JSON, either interactively or via a text dump to Stdout
 

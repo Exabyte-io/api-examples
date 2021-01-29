@@ -3,14 +3,11 @@
 
 # # Overview
 # 
-# In this example we create a material from a JSON config with [tags](https://docs.exabyte.io/entities-general/data/#tags)
-# to identify the material.
+# In this example we create a material from a JSON config with [tags](https://docs.exabyte.io/entities-general/data/#tags) to identify the material.
 
 # # Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required.
-# RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also
-# explained therein.
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
 # 
 # ## Import packages
 
@@ -20,20 +17,20 @@
 import os
 import sys
 
+
 # Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS
 from utils import ensure_packages_are_installed, display_JSON
-
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
+
 # ## Create material config
 # 
-# Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint
-# for more information about material config format.
+# Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
 
 # In[]:
 
@@ -110,6 +107,7 @@ CONFIG = {
     ]
 }
 
+
 # ## Create material
 # 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
@@ -120,10 +118,12 @@ CONFIG = {
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 material = endpoint.create(CONFIG)
 
+
 # ## Print new material
 
 # In[]:
 
 
 display_JSON(material,
-             interactive_viewer=False)  # Change interactive_viewer to True for an interactive JSON experience
+             interactive_viewer=False) #Change interactive_viewer to True for an interactive JSON experience
+

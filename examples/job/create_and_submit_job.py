@@ -3,14 +3,11 @@
 
 # # Overview
 # 
-# This example demonstrates how to create and submit a job via [Job](https://docs.exabyte.io/api/Job/put_jobs_create)
-# endpoints.
+# This example demonstrates how to create and submit a job via [Job](https://docs.exabyte.io/api/Job/put_jobs_create) endpoints.
 
 # # Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required.
-# RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also
-# explained therein.
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
 # 
 # ## Import packages
 
@@ -25,12 +22,12 @@ module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
 from utils import ensure_packages_are_installed, display_JSON
-
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
+
 
 # ## Initialize the endpoints
 
@@ -41,6 +38,7 @@ job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
 material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
 workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
+
 # Set job name.
 
 # In[]:
@@ -48,10 +46,10 @@ workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 JOB_NAME = "TEST JOB"
 
+
 # ## Retrieve IDs
 # 
-# Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different
-# material and workflow.
+# Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different material and workflow.
 
 # In[]:
 
@@ -62,6 +60,7 @@ default_workflow = workflow_endpoints.list({"isDefault": True, "owner._id": ACCO
 material_id = default_material["_id"]
 workflow_id = default_workflow["_id"]
 owner_id = default_material["owner"]["_id"]
+
 
 # ## Create job config
 # 
@@ -83,6 +82,7 @@ config = {
     "name": JOB_NAME
 }
 
+
 # ## Create and submit job
 
 # In[]:
@@ -90,6 +90,7 @@ config = {
 
 job = job_endpoints.create(config)
 job_endpoints.submit(job['_id'])
+
 
 # ## Print the job
 # 
@@ -100,3 +101,4 @@ job_endpoints.submit(job['_id'])
 
 job = job_endpoints.get(job['_id'])
 display_JSON(job)
+

@@ -83,7 +83,7 @@ random.seed(1234)
 
 
 # Load data into a Pandas dataframe for convenience
-df = pd.read_csv("Data.csv", sep=",")
+df = pd.read_csv("../assets/sci_adv_dean_data.csv", sep=",")
 y_cols = ["PBE_BE_eV"]
 x_cols = ["CE_Local_eV", "ChemPot_eV", "MADS_eV"]
 
@@ -360,3 +360,4 @@ plt.close()
 # For a model that's simple like ours, avoiding retraining isn't a huge concern, but for larger networks that might be resource-intensive to train, this could be an important final step.
 print(best_params)
 best_model.save("best_model.mdl")
+

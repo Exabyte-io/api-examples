@@ -16,13 +16,12 @@
 
 import os
 import sys
-from IPython.display import JSON
 
 # Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
@@ -74,5 +73,5 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # In[]:
 
 
-JSON(workflows)
+display_JSON(workflows)
 

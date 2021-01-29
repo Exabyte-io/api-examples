@@ -16,13 +16,12 @@
 
 import os
 import sys
-from IPython.display import JSON
 
 # Import settings file and utils
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
@@ -59,5 +58,5 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # In[]:
 
 
-JSON(materials)
+display_JSON(materials)
 

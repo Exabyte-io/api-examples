@@ -96,7 +96,7 @@ JOBS_SET_NAME = "jobs-set"
 
 # #### Workflow
 # 
-# This example is based on [this](https://platform.exabyte.io/analytics/workflows/56xDyXsPMNJ7cF9nv) bank workflow which is later copied to the account workflows collection. The workflow is named "D3-GGA-BS-BG-DOS-ALL" and utilizes the logic explained in https://arxiv.org/pdf/1808.05325.pdf, for example (see section "Methodology", Table I). "D3" indicates the difficulty level 3 per the table convention. BS, BG, DOS indicate the properties extracted - Band Structure, Band Gap, Density of States. The workflow is utilizing VASP simulation engine at version 5.4.4.
+# This example is based on [this](https://platform.exabyte.io/analytics/workflows/56xDyXsPMNJ7cF9nv) bank workflow which is later copied to the account workflows collection.  The workflow is named "D3-GGA-BS-BG-DOS-ALL" and utilizes the logic explained in https://arxiv.org/pdf/1808.05325.pdf, for example (see section "Methodology", Table I). "D3" indicates the difficulty level 3 per the table convention. BS, BG, DOS indicate the properties extracted - Band Structure, Band Gap, Density of States. The workflow is utilizing VASP simulation engine at version 5.4.4.
 
 # In[]:
 

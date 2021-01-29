@@ -3,7 +3,9 @@ import time
 import datetime
 import os
 import importlib.util
-
+import settings
+from IPython.display import display, JSON
+import json
 
 # IMPORTS
 def install_package(name, version=None):
@@ -178,3 +180,15 @@ def dataframe_to_html(df, text_align="center"):
         dict(selector="td", props=[("text-align", text_align)])
     ]
     return (df.style.set_table_styles(styles))
+
+def display_JSON(obj, interactive_viewer=settings.use_interactive_JSON_viewer):
+    """
+    Displays JSON, either interactively or via a text dump to Stdout
+    Args:
+        obj (dict): Object to display as nicely-formatted JSON
+        interactive (bool): Whether to use the interactive viewer or not
+    """
+    if interactive_viewer:
+        display(JSON(obj))
+    else:
+        print(json.dumps(obj, indent=4))

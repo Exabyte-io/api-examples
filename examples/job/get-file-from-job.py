@@ -3,14 +3,9 @@
 
 # # Get-File-From-Job
 # 
-# This example demonstrates how to use Exabyte RESTful API to check for and acquire files from jobs which have been run.
-# This example assumes that the user is already familiar with the [creation and submission of jobs](
-# create_and_submit_jobs.ipynb) using our API.
+# This example demonstrates how to use Exabyte RESTful API to check for and acquire files from jobs which have been run. This example assumes that the user is already familiar with the [creation and submission of jobs](create_and_submit_jobs.ipynb) using our API.
 # 
-# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io
-# account is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for
-# VASP, for example) and adjust extraction of the results ("Viewing job files" section). RESTful API credentials shall be
-# updated in [settings](../settings.py).
+# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io account is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for VASP, for example) and adjust extraction of the results ("Viewing job files" section). RESTful API credentials shall be updated in [settings](../settings.py).
 # 
 # 
 # ## Steps
@@ -26,8 +21,7 @@
 # 
 # ## Pre-requisites
 # 
-# The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We
-# outline these below and direct the reader to the original sources of information:
+# The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We outline these below and direct the reader to the original sources of information:
 # 
 # - [Generating RESTful API authentication parameters](../system/get_authentication_params.ipynb)
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
@@ -41,7 +35,6 @@
 # In[]:
 
 
-from IPython.display import JSON, display
 import os
 import sys
 import urllib
@@ -50,9 +43,7 @@ import urllib
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, \
-    ensure_packages_are_installed
-
+from utils import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, ensure_packages_are_installed, display_JSON
 ensure_packages_are_installed()
 
 # Relevant functions from the API client
@@ -62,23 +53,18 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 
+
 # ### Create and submit the job
 # 
 # For this job, we'll use the workflow located [here](https://platform.exabyte.io/analytics/workflows/84DAjE9YyTFndx6z3).
 # 
-# This workflow is a single-point total energy calculation using Density-Functional Energy as-implemented in Quantum
-# Espresso version 5.4.0.
+# This workflow is a single-point total energy calculation using Density-Functional Energy as-implemented in Quantum Espresso version 5.4.0.
 # 
 # The PBE functional is used in conjunction with an ultrasoft pseudopotential and a planewave basis set.
 # 
-# The material we will investigate is elemental [Silicon](https://materialsproject.org/materials/mp-149/), as-is from
-# Materials Project.
+# The material we will investigate is elemental [Silicon](https://materialsproject.org/materials/mp-149/), as-is from Materials Project.
 # 
-# > <span style="color: orange">Note</span>: This cell uses our API to copy the unit cell of silicon from Materials Project
-# into your account. It then copies a workflow to get the total energy of a system using Quantum Espresso to your account.
-# Finally, a job is created using the Quantum Espresso workflow for the silicon unit cell, and the job is submitted to the
-# cluster. For more information, please refer to our [run-simulation-and-extract-properties](
-# ./run-simulations-and-extract-properties.ipynb) notebook, located in this directory.
+# > <span style="color: orange">Note</span>: This cell uses our API to copy the unit cell of silicon from Materials Project into your account. It then copies a workflow to get the total energy of a system using Quantum Espresso to your account. Finally, a job is created using the Quantum Espresso workflow for the silicon unit cell, and the job is submitted to the cluster. For more information, please refer to our [run-simulation-and-extract-properties](./run-simulations-and-extract-properties.ipynb) notebook, located in this directory.
 
 # In[]:
 
@@ -96,20 +82,21 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 
 # Get materials for the job
 material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
-material_project_id = ["mp-149"]  # The importer expects a list
+material_project_id = ["mp-149"] # The importer expects a list
 materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, material_project_id, owner_id)
 
 # Create the job
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
-job = job_endpoints.create_by_ids(materials=materials,
-                                  workflow_id=workflow_id,
-                                  project_id=project_id,
-                                  owner_id=owner_id,
-                                  prefix="Test_Job_Output")[0]
+job = job_endpoints.create_by_ids(materials = materials,
+                                   workflow_id = workflow_id,
+                                   project_id = project_id,
+                                   owner_id = owner_id,
+                                   prefix = "Test_Job_Output")[0]
 
 # Submit the job
 job_endpoints.submit(job['_id'])
 wait_for_jobs_to_finish(job_endpoints, [job['_id']])
+
 
 # Monitor the jobs and print the status until they are all finished.
 
@@ -127,9 +114,9 @@ for path in paths:
     if 'outdir' not in path:
         print(path)
 
+
 # ### Get metadata for the Output File
-# The .out file is where Quantum Espresso shows its work and prints its results, so you most likely will want to view this
-# files. Let's print out some of its metadata.
+# The .out file is where Quantum Espresso shows its work and prints its results, so you most likely will want to view this files. Let's print out some of its metadata.
 # 
 # You'll find that we get a lot of data describing the file and its providence. Brief explanations of each entry are:
 # - Key - Path to the file on the cluster
@@ -147,12 +134,12 @@ for path in paths:
 for file in files:
     if file['name'] == 'pw_scf.out':
         output_file_metadata = file
-JSON(output_file_metadata)
+display_JSON(output_file_metadata)
+
 
 # ### Display file contents to console
 # 
-# The signedUrl gives us a place to access the file and download it. Let's read it into memory, and print out the last few
-# lines of our job.
+# The signedUrl gives us a place to access the file and download it. Let's read it into memory, and print out the last few lines of our job.
 
 # In[]:
 
@@ -160,8 +147,7 @@ JSON(output_file_metadata)
 server_response = urllib.request.urlopen(output_file_metadata['signedUrl'])
 output_file_bytes = server_response.read()
 
-# The server returns us a bytes-string. That's useful for things like binaries or other non-human-readable data,
-# but this should be decoded if we're planning to write to console.
+# The server returns us a bytes-string. That's useful for things like binaries or other non-human-readable data, but this should be decoded if we're planning to write to console.
 # Because this is a human-readable text file, we'll decode it to UTF-8.
 output_file = output_file_bytes.decode(encoding="UTF-8")
 
@@ -169,6 +155,7 @@ output_file = output_file_bytes.decode(encoding="UTF-8")
 lines = output_file.split("\n")
 for line in lines[-90:]:
     print(line)
+
 
 # ### Save the input file and output file to disk.
 # 
@@ -180,18 +167,19 @@ for line in lines[-90:]:
 # We've already got an output file, so et's grab the input file we sent to Quantum Espresso
 for file in files:
     if 'pw_scf.in' == file['name']:
-        input_file_metadata = file
+        input_file_metadata = file     
 server_response = urllib.request.urlopen(input_file_metadata['signedUrl'])
 input_file_bytes = server_response.read()
+
 
 # In[]:
 
 
-# Let's write the input file to disk. Note that we get files as a bytes string from the server, which is convenient for
-# binaries, images, and other non-human-readable data.
+# Let's write the input file to disk. Note that we get files as a bytes string from the server, which is convenient for binaries, images, and other non-human-readable data.
 # Although we could decode before writing to disk, we can just write it directly with the "wb" (write bytes) file mode.
 with open(input_file_metadata['name'], 'wb') as file_descriptor:
     file_descriptor.write(input_file_bytes)
+
 
 # In[]:
 
@@ -199,3 +187,4 @@ with open(input_file_metadata['name'], 'wb') as file_descriptor:
 # Now, let's write our output file to the disk. Note that because we already decoded it, we can just use the 'w' file mode.
 with open(output_file_metadata['name'], 'w') as file_descriptor:
     file_descriptor.write(output_file)
+

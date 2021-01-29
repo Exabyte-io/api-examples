@@ -3,11 +3,14 @@
 
 # # Overview
 # 
-# Inside this example we contact [Workflow](https://docs.exabyte.io/api/Workflows/get_workflows) endpoint to obtain a list of workflows that an account has access to.
+# Inside this example we contact [Workflow](https://docs.exabyte.io/api/Workflows/get_workflows) endpoint to obtain a list
+# of workflows that an account has access to.
 
 # # Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required.
+# RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also
+# explained therein.
 # 
 # ## Import packages
 
@@ -16,23 +19,24 @@
 
 import os
 import sys
-from IPython.display import JSON, display
 
 # Import settings and utils file
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
+
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 
-
 # ## Set Parameters
 # 
-# - **QUERY**: A query describing the documents to find. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information. 
+# - **QUERY**: A query describing the documents to find. See [Meteor collection](
+# https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 # 
-# - **limit**: Maximum number of results to return. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
+# - **limit**: Maximum number of results to return. See [Meteor collection](
+# https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
 # In[]:
 
@@ -46,7 +50,6 @@ OPTIONS = {
     "limit": 2
 }
 
-
 # ## Initialize the endpoint
 # 
 # Initialize a helper class to interact with `WorkflowEndpoints`. This only has to be done once.
@@ -55,7 +58,6 @@ OPTIONS = {
 
 
 endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
-
 
 # ## List workflows
 # 
@@ -66,7 +68,6 @@ endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 workflows = endpoint.list(QUERY, OPTIONS)
 
-
 # ## Print workflows
 # 
 # Print the list of workflows saved under the corresponding variable in pretty JSON below.
@@ -74,5 +75,5 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # In[]:
 
 
-display(JSON(workflows))
-
+display_JSON(workflows,
+             interactive_viewer=False)  # Change interactive_viewer to True for an interactive JSON experience

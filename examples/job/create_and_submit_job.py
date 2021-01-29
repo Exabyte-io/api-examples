@@ -14,7 +14,6 @@
 # In[]:
 
 
-from IPython.display import JSON
 import os
 import sys
 
@@ -22,7 +21,7 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.jobs import JobEndpoints
@@ -101,5 +100,5 @@ job_endpoints.submit(job['_id'])
 
 
 job = job_endpoints.get(job['_id'])
-JSON(job)
+display_JSON(job)
 

@@ -14,7 +14,6 @@
 # In[]:
 
 
-from IPython.display import JSON
 import os
 import sys
 
@@ -23,7 +22,7 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import HOST, PORT, VERSION, SECURE
-from utils import ensure_packages_are_installed
+from utils import ensure_packages_are_installed, display_JSON
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.login import LoginEndpoint
@@ -58,5 +57,5 @@ auth_params = endpoint.login()
 # In[]:
 
 
-JSON(auth_params)
+display_JSON(auth_params)
 

@@ -2,6 +2,11 @@
 # This file contains common variables that are used inside the examples.
 #
 
+# Jupyter notebook settings
+    # use_interactive_JSON_viewer: Whether to display typical Python JSON formatting, or to use an interactive viewer.
+
+use_interactive_JSON_viewer = False
+
 # Account settings. Need a one-time adjustment for examples to work.
 
     # ACCOUNT_ID: Account ID. See get_authentication_params.ipynb example for more information.

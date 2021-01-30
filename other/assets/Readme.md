@@ -1,6 +1,6 @@
 # ML Datasets
 
-This folder contains datasets which are used in our [machine learning examples](other/machine_learning).
+This folder contains datasets which are used in our [machine learning examples](..//machine_learning).
 
 ## Sci_Adv_Dean_Data.csv
 

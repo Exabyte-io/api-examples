@@ -49,7 +49,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
     cd exabyte-api-examples
     virtualenv .env
     source .env/bin/activate
-    pip install -r requirements.txt
+    pip install --no-deps -r requirements.txt
     ```
 
 4. Run Jupyter and open a notebook in a browser:

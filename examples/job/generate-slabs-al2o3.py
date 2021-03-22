@@ -11,6 +11,8 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
 # 
+# In addition, this notebook demonstrates the use of an "Organization ID," which allows multiple users who are part of the same organization to collaborate.
+# 
 # ## Import packages
 
 # In[]:
@@ -225,7 +227,7 @@ al2o3_materials_set = exabyte_materials_endpoint.create_set({"name" : "Webinar_S
 
 # And finally, we will upload all of the slabs to the platform
 
-# In[ ]:
+# In[]:
 
 
 for miller_index, term_dict in al2o3_slabs.items():
@@ -240,12 +242,7 @@ for miller_index, term_dict in al2o3_slabs.items():
         # Import the material to Exabyte, and place it in the correct material set
         with open(filename, "r") as inp:
             content = inp.read()
-        material_json = exabyte_materials_endpoint.import_from_file(name=material_name, content=content)
+        material_json = exabyte_materials_endpoint.import_from_file(name=material_name, content=content,
+                                                                    owner_id=ORGANIZATION_ID)
         exabyte_materials_endpoint.move_to_set(material_json["_id"], "", al2o3_materials_set["_id"])
-
-
-# In[ ]:
-
-
-
 

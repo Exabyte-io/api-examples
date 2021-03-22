@@ -17,6 +17,7 @@ use_interactive_JSON_viewer = False
 ACCOUNT_ID = "ACCOUNT_ID"
 AUTH_TOKEN = "AUTH_TOKEN"
 MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"
+ORGANIZATION_ID = "ORGANIZATION_ID"
 
 # Advanced settings. Should not need adjustments.
 

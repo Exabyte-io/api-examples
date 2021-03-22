@@ -18,21 +18,15 @@
 # In[]:
 
 
-import json
-from typing import Dict, Tuple
 import urllib
 import os, sys
 
 import ase.io
-import ase.constraints
 import ase.build.tools
 import ase.cluster
 from ase.visualize import view
 
-import pymatgen.ext.matproj
-import pymatgen.io.ase
 import pymatgen.symmetry.analyzer
-import numpy as np
 
 # Import settings file and utils
 module_path = os.path.abspath(os.path.join('..'))
@@ -40,8 +34,8 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 from utils import ensure_packages_are_installed, display_JSON
 ensure_packages_are_installed()
-from material_utils import is_symmetric, get_all_slabs_and_terms, get_bulk_bottom_and_top_frac_coords, freeze_center_bulk
-from settings import ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID
+from material_utils import get_all_slabs_and_terms, freeze_center_bulk
+from settings import ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints

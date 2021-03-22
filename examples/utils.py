@@ -7,7 +7,8 @@ import settings
 from IPython.display import display, JSON
 import json
 
-# IMPORTS
+# IMPORT UTILITIES
+
 def install_package(name, version=None):
     """
     Installs a package via Pip. If a version is supplied, will attempt to install that specific version.
@@ -81,7 +82,7 @@ ensure_packages_are_installed("tabulate")
 from tabulate import tabulate
 
 
-# JOB
+# JOB UTILITIES
 
 def get_jobs_statuses_by_ids(endpoint, job_ids):
     """
@@ -164,7 +165,7 @@ def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, su
     return endpoint.get_property(job["_id"], unit_flowchart_id, property_name)
 
 
-# GENERAL
+# DISPLAY UTILITIES
 
 def dataframe_to_html(df, text_align="center"):
     """
@@ -192,3 +193,4 @@ def display_JSON(obj, interactive_viewer=settings.use_interactive_JSON_viewer):
         display(JSON(obj))
     else:
         print(json.dumps(obj, indent=4))
+

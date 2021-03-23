@@ -1,10 +1,14 @@
+from typing import Tuple, Union, Dict, Any, Type
+import urllib.request
+
 import pymatgen.core.surface
 import pymatgen.io.ase
 import pymatgen.symmetry.analyzer
 import ase.build
 import ase.constraints
+import numpy as np
 
-from typing import Tuple, Union, Dict, Any
+from exabyte_api_client.endpoints.jobs import JobEndpoints
 
 
 # Pymatgen
@@ -108,3 +112,59 @@ def freeze_center_bulk(slab: ase.Atoms) -> None:
     frozen_atoms_indices = [atom.index for atom in frozen_atoms]
     fix_atoms_constraint = ase.constraints.FixAtoms(indices=frozen_atoms_indices)
     slab.set_constraint(fix_atoms_constraint)
+
+
+def get_vasp_total_energy(job_id: str, jobs_endpoint: Type[JobEndpoints]) -> float:
+    """
+    This function takes in a VASP Job ID, reads the OUTCAR, and returns the final energy reported in the run.
+
+    Args:
+        job_id (str): The ID of the job of interest
+        jobs_endpoint (JobEndpoints): A job endpoint for interacting with the Exabyte platform
+
+    Returns:
+        The electronic energy reported by the VASP job
+    """
+    # Get the URL for the OUTCAR
+    files = jobs_endpoint.list_files(job_id)
+    file_metadata = None
+    for file in files:
+        if file["name"] == "OUTCAR":
+            file_metadata = file
+
+    # Get a download URL for each CONTCAR
+    cell_outcar_signed_url = file_metadata['signedUrl']
+
+    # Download the outcar to memory
+    cell_response = urllib.request.urlopen(cell_outcar_signed_url)
+
+    # And iterate through it, finding the last electronic energy reported
+    outcar = cell_response.read().decode("utf-8")
+    outcar = outcar.split("\n")
+    unit_cell_energy = None
+    for line in outcar:
+        if "sigma->0" in line:
+            unit_cell_energy = float(line.strip().split()[-1])
+    return unit_cell_energy
+
+def get_surface_energy(e_slab: float, e_bulk: float,
+                       n_slab: float, n_bulk: float,
+                       a: float):
+    """
+    Calculates the slab energy according to the following formula:
+    (E_Slab - E_bulk * (N_Slab / N_Bulk)) / (2A)
+    """
+    surface_energy = (e_slab - e_bulk * (n_slab / n_bulk)) / (2 * a)
+    return surface_energy
+
+def get_slab_area(a_vector: np.ndarray, b_vector: np.ndarray) -> float:
+    """
+    Gets the area of a slab defined by the two unit vectors.
+    The magnitude of the cross product of the vectors is the area of the parallelogram they enclose.
+
+    Args:
+        a_vector
+    """
+    crossprod = np.cross(a_vector, b_vector)
+    magnitude = np.linalg.norm(crossprod)
+    return magnitude

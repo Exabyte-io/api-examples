@@ -359,27 +359,27 @@ for miller_index, term_dict in cu_slabs.items():
 # 
 # We begin by extracting the total energy from the Cu unit cell
 
-# In[ ]:
+# In[]:
 
 
 cu_job_id = cu_job[0]["_id"]
-cu_bulk_energy = get_vasp_total_energy(cu_job_id)
+cu_bulk_energy = get_vasp_total_energy(cu_job_id, exabyte_jobs_endpoint)
 
 
 # Then, we extract the total energy from each of the slab runs
 
-# In[ ]:
+# In[]:
 
 
 for miller_index, term_dict in cu_slabs.items():
     for term, surface in term_dict.items():
-        surface["slab_energy"] = get_vasp_total_energy(surface["job_id"])
+        surface["slab_energy"] = get_vasp_total_energy(surface["job_id"], exabyte_jobs_endpoint)
 
 
 # # Calculate the Surface Energy
 # We'll define a function that calculates the surface energy
 
-# In[ ]:
+# In[]:
 
 
 for miller_index, term_dict in cu_slabs.items():
@@ -412,7 +412,7 @@ for miller_index, term_dict in cu_slabs.items():
 # 
 # Finally, now that we have a collection of surfaces and their energies, we can perform the Wulff Construction
 
-# In[ ]:
+# In[]:
 
 
 surfaces = []
@@ -428,7 +428,7 @@ for miller_index, term_dict in cu_slabs.items():
         best_term_energy = min(best_term_energy, surface["surface_energy"])
     energies.append(best_term_energy)
 
-cluster_size = 147
+cluster_size = 561
 wulff = ase.cluster.wulff_construction("Cu", surfaces=surfaces,
                                        energies=energies, size=cluster_size,
                                        structure = "fcc")
@@ -436,7 +436,7 @@ wulff = ase.cluster.wulff_construction("Cu", surfaces=surfaces,
 ase.io.write("Cu_Wulff.xyz", wulff)
 
 
-# In[ ]:
+# In[]:
 
 
 for surf, en in sorted(zip(surfaces, energies), key = lambda i: i[1]):

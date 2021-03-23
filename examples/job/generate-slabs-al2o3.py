@@ -168,7 +168,7 @@ with open("al2o3_relaxed.vasp", "wb") as outp:
     outp.write(al2o3_response.read())
 
 
-# The below code uses Pymatgen to find all unique planes in a crystal. It then generates slabs with every possible termination in that plane. Finally, asymmetric slabs are filtered out, and the slabs are saved to a dictionary. The dictionary's format is: `{miller-index: {termination: slab} }`. Note that here, to take advantage of several convenient functions in ASE, we have the function output ASE Atoms objects instead of PyMatGen objects.
+# The below code uses Pymatgen to find all unique planes in a crystal. It then generates slabs with every possible termination in that plane. Finally, asymmetric slabs are filtered out, and the slabs are saved to a dictionary. The dictionary's format is: `{miller-index: {termination: {"slab": slab} }`. Note that here, to take advantage of several convenient functions in ASE, we have the function output ASE Atoms objects instead of PyMatGen objects.
 
 # In[]:
 

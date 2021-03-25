@@ -91,7 +91,8 @@ with open(al2o3_poscar_filename, "r") as inp:
 # In[]:
 
 
-# Start by finding a unit cell optimization workflow on the Exabyte platform. The bank workflow ID can be found in the bank workflows URL
+# Start by finding a unit cell optimization workflow on the Exabyte platform.
+# The bank workflow ID can be found in the bank workflows URL
 exabyte_bank_workflows_endpoint = BankWorkflowEndpoints(*ENDPOINT_ARGS)
 bank_workflow_id = "NAdKjws8qieKWeYnL"
 al2o3_workflow = exabyte_bank_workflows_endpoint.copy(bank_workflow_id, account_id = ORGANIZATION_ID)
@@ -196,7 +197,8 @@ for miller_index, term_dict in al2o3_slabs.items():
         slab = ase.build.tools.sort(surface["slab"])
 
         # Center the slab's coordinates and adjust the vacuum to vacuum_size
-        # Note that the "vacuum" argument refers to the amount of vacuum on either side - so we divide by 2
+        # Note that the "vacuum" argument refers to the amount of vacuum on either side
+        # So, we divide by 2
         slab.center(vacuum=vacuum_size/2, axis=2)
 
         # Add a FixAtoms constraint to freeze the center layer of atoms
@@ -221,7 +223,7 @@ al2o3_materials_set = exabyte_materials_endpoint.create_set({"name" : "Webinar_S
 
 # And finally, we will upload all of the slabs to the platform
 
-# In[]:
+# In[ ]:
 
 
 for miller_index, term_dict in al2o3_slabs.items():
@@ -239,4 +241,10 @@ for miller_index, term_dict in al2o3_slabs.items():
         material_json = exabyte_materials_endpoint.import_from_file(name=material_name, content=content,
                                                                     owner_id=ORGANIZATION_ID)
         exabyte_materials_endpoint.move_to_set(material_json["_id"], "", al2o3_materials_set["_id"])
+
+
+# In[ ]:
+
+
+
 

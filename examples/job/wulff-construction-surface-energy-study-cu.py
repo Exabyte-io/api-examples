@@ -106,6 +106,12 @@ incar_content = ["EDIFF = 1e-6",
                  "NSW = 300",
                  "ENCUT = 400"]
 
+kpoints_content = ["Automatic mesh",
+                   "0",
+                   "Gamma",
+                   "8 8 8",
+                   "0 0 0"]
+
 
 # Create a workflow based on the Variable-cell Relaxation workflow available [here](https://platform.exabyte.io/analytics/workflows/NAdKjws8qieKWeYnL)
 
@@ -125,6 +131,8 @@ vasp_unit = cu_workflow["subworkflows"][0]["units"][0]
 for input_file in vasp_unit["input"]:
     if input_file["name"] == "INCAR":
         input_file['content'] = "\n".join(incar_content)
+    elif input_file["name"] == "KPOINTS":
+        input_file['content'] = "\n".join(kpoints_content)
 
 # Set the names to something easy to recognize, and upload
 cu_workflow['name'] = 'Copper_Cell_Relax'
@@ -285,6 +293,11 @@ incar_content = ["EDIFF = 1e-6",
                  "KPAR = 4",
                  "NSW = 300",
                  "ENCUT = 400"]
+kpoints_content = ["Automatic mesh",
+                   "0",
+                   "Gamma",
+                   "8 8 1",
+                   "0 0 0"]
 
 
 # Next, we'll create the surface relaxation jobs. We start by cloning in a fixed cell relaxation workflow and adjusting it to suit our purposes.
@@ -305,6 +318,8 @@ vasp_unit = workflow["subworkflows"][0]["units"][0]
 for input_file in vasp_unit["input"]:
     if input_file["name"] == "INCAR":
         input_file["content"] = "\n".join(incar_content)
+    elif input_file["name"] == "KPOINTS":
+        input_file["content"] = "\n".join(kpoints_content)
 
 # Set the names to something easy to recognize, and upload
 workflow['name'] = 'Copper_Slab_Relax'

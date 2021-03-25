@@ -10,16 +10,11 @@
 # In[]:
 
 
-import json
-from typing import Dict, Tuple
 import urllib
 import os, sys
 
 import ase.io
-import ase.constraints
-import ase.build.tools
 import ase.cluster
-from ase.visualize import view
 
 import pymatgen.ext.matproj
 import pymatgen.io.ase
@@ -30,11 +25,11 @@ import numpy as np
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from utils import ensure_packages_are_installed, display_JSON
+from utils import ensure_packages_are_installed
 ensure_packages_are_installed()
-from material_utils import is_symmetric, get_all_slabs_and_terms, get_bulk_bottom_and_top_frac_coords
-from material_utils import freeze_center_bulk, get_vasp_total_energy, get_slab_area, get_surface_energy
-from settings import ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID
+from material_utils import get_all_slabs_and_terms
+from material_utils import get_vasp_total_energy, get_slab_area, get_surface_energy
+from settings import MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints
@@ -392,7 +387,7 @@ for miller_index, term_dict in cu_slabs.items():
 
 
 # # Calculate the Surface Energy
-# We'll define a function that calculates the surface energy
+# We'll iterate over each slab and calculate the surface energy
 
 # In[]:
 
@@ -443,7 +438,7 @@ for miller_index, term_dict in cu_slabs.items():
         best_term_energy = min(best_term_energy, surface["surface_energy"])
     energies.append(best_term_energy)
 
-cluster_size = 561
+cluster_size = 147
 wulff = ase.cluster.wulff_construction("Cu", surfaces=surfaces,
                                        energies=energies, size=cluster_size,
                                        structure = "fcc")
@@ -455,7 +450,7 @@ ase.io.write("Cu_Wulff.xyz", wulff)
 
 
 for surf, en in sorted(zip(surfaces, energies), key = lambda i: i[1]):
-    print(surf, np.round(en,2))
+    print(surf, np.round(en,3))
 
 
 # In[ ]:

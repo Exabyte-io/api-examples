@@ -114,7 +114,7 @@ def freeze_center_bulk(slab: ase.Atoms) -> None:
     slab.set_constraint(fix_atoms_constraint)
 
 
-def get_vasp_total_energy(job_id: str, jobs_endpoint: Type[JobEndpoints]) -> float:
+def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
     """
     This function takes in a VASP Job ID, reads the OUTCAR, and returns the final energy reported in the run.
 

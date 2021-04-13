@@ -1,0 +1,139 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[]:
+
+
+import pandas
+import numpy as np
+import sklearn.preprocessing, sklearn.model_selection, sklearn.linear_model
+import matplotlib.pyplot as plt
+
+
+# # Load the Data
+# 
+# We begin by loading the data from the CSV using Pandas, and split it into the target and descriptors.
+
+# In[]:
+
+
+datafile = "data_to_train_with.csv"
+target_column_name = "PBE_BE_eV"
+
+data = pandas.read_csv(datafile)
+target = data.pop(target_column_name).to_numpy()
+target = target.reshape(-1, 1)  # Reshape array from a row vector into a column vector
+descriptors = data.to_numpy()
+
+
+# # Train/Test Split
+# 
+# Next, we perform an 80/20 train/test split on the dataset. 80% is kept for training, and 20% is kept for prediction.
+
+# In[]:
+
+
+percent_held_as_test = 0.2
+train_descriptors, test_descriptors, train_target, test_target = sklearn.model_selection.train_test_split(descriptors,
+                                                                                                          target,
+                                                                                                          test_size=percent_held_as_test)
+
+
+# # Standardize the Data
+# 
+# Next, we will scale the data such that it has a mean of 0 and a standard deviation of 1. We will also save the scaler, so that we can unscale our data at the end of the pipeline (for parity plot generation).
+
+# In[]:
+
+
+scaler = sklearn.preprocessing.StandardScaler
+descriptor_scaler = scaler()
+train_descriptors = descriptor_scaler.fit_transform(train_descriptors)
+test_descriptors = descriptor_scaler.transform(test_descriptors)
+
+target_scaler = scaler()
+train_target = target_scaler.fit_transform(train_target)
+test_target = target_scaler.transform(test_target)
+
+
+# # Ridge Regression
+# 
+# Next, we will perform ridge regression on the dataset.
+
+# In[]:
+
+
+train_target = train_target.flatten()
+test_target = test_target.flatten()
+
+# Initialize the model
+model = sklearn.linear_model.Ridge(alpha=1.0)
+
+# Train the model and save
+model.fit(train_descriptors, train_target)
+train_predictions = model.predict(train_descriptors)
+test_predictions = model.predict(test_descriptors)
+
+# Scale predictions so they have the same shape as the saved target
+train_predictions = train_predictions.reshape(-1, 1)
+test_predictions = test_predictions.reshape(-1, 1)
+
+test_target = test_target.reshape(-1, 1)
+y_true = target_scaler.inverse_transform(test_target)
+y_pred = target_scaler.inverse_transform(test_predictions)
+
+# RMSE
+mse = sklearn.metrics.mean_squared_error(y_true, y_pred)
+rmse = np.sqrt(mse)
+print(f"RMSE = {rmse}")
+
+
+# # Parity plot                               
+#                                                                    
+# Finally, we generate a parity plot of predicted versus actual values for the training and testing set.
+
+# In[]:
+
+
+# Un-transform the data
+train_target = target_scaler.inverse_transform(train_target)
+train_predictions = target_scaler.inverse_transform(train_predictions)
+test_target = target_scaler.inverse_transform(test_target)
+test_predictions = target_scaler.inverse_transform(test_predictions)
+
+# Plot the data
+plt.scatter(train_target, train_predictions, c="#203d78", label="Training Set")
+plt.scatter(test_target, test_predictions, c="#67ac5b", label="Testing Set")
+plt.xlabel("Actual Value")
+plt.ylabel("Predicted Value")
+
+# Scale the plot
+target_range = (min(min(train_target), min(test_target)),
+                max(max(train_target), max(test_target)))
+predictions_range = (min(min(train_predictions), min(test_predictions)),
+                     max(max(train_predictions), max(test_predictions)))
+
+limits = (min(min(target_range), min(target_range)),
+          max(max(predictions_range), max(predictions_range)))
+plt.xlim = (limits[0], limits[1])
+plt.ylim = (limits[0], limits[1])
+
+# Draw a parity line, as a guide to the eye
+plt.plot((limits[0], limits[1]), (limits[0], limits[1]), c="black", linestyle="dotted", label="Parity")
+plt.legend()
+
+# Save the figure
+plt.show()
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+

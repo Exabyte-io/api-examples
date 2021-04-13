@@ -9,6 +9,10 @@ import numpy as np
 import sklearn.preprocessing, sklearn.model_selection, sklearn.linear_model
 import matplotlib.pyplot as plt
 
+import sklearn.neural_network
+import sklearn.linear_model
+import sklearn.kernel_ridge 
+
 
 # # Load the Data
 # 
@@ -56,36 +60,55 @@ train_target = target_scaler.fit_transform(train_target)
 test_target = target_scaler.transform(test_target)
 
 
-# # Ridge Regression
+# # Model Selection and Regression
 # 
-# Next, we will perform ridge regression on the dataset.
+# Next, to demonstrate the programattic selection of models, we will choose between three types of model:
+# - Ridge Regression
+# - Kernelized Ridge Regression
+# - Neural Network
 
 # In[]:
+
 
 
 train_target = train_target.flatten()
 test_target = test_target.flatten()
 
 # Initialize the model
-model = sklearn.linear_model.Ridge(alpha=1.0)
+models = {"Neural Network" : sklearn.neural_network.MLPRegressor(hidden_layer_sizes=(100,)),
+          "Ridge Regression" : sklearn.linear_model.Ridge(alpha=1.0),
+          "Kernelized Ridge Regression": sklearn.kernel_ridge.KernelRidge(alpha=1.0,
+                                                                          kernel="linear")}
+best_name = None
+best_model = None
+best_rmse = np.inf
+for name, model in models.items():
+    # Train the model and save
+    model.fit(train_descriptors, train_target)
+    train_predictions = model.predict(train_descriptors)
+    test_predictions = model.predict(test_descriptors)
 
-# Train the model and save
-model.fit(train_descriptors, train_target)
-train_predictions = model.predict(train_descriptors)
-test_predictions = model.predict(test_descriptors)
+    # Scale predictions so they have the same shape as the saved target
+    train_predictions = train_predictions.reshape(-1, 1)
+    test_predictions = test_predictions.reshape(-1, 1)
 
-# Scale predictions so they have the same shape as the saved target
-train_predictions = train_predictions.reshape(-1, 1)
-test_predictions = test_predictions.reshape(-1, 1)
+    test_target = test_target.reshape(-1, 1)
+    y_true = target_scaler.inverse_transform(test_target)
+    y_pred = target_scaler.inverse_transform(test_predictions)
 
-test_target = test_target.reshape(-1, 1)
-y_true = target_scaler.inverse_transform(test_target)
-y_pred = target_scaler.inverse_transform(test_predictions)
+    # RMSE
+    mse = sklearn.metrics.mean_squared_error(y_true, y_pred)
+    rmse = np.sqrt(mse)
+    print(f"{name}: RMSE = {rmse}")
+    
+    if rmse < best_rmse:
+        best_name = name
+        best_model = model
+        best_rmse = rmse
+        
+print("Best Model: ", best_name)
 
-# RMSE
-mse = sklearn.metrics.mean_squared_error(y_true, y_pred)
-rmse = np.sqrt(mse)
-print(f"RMSE = {rmse}")
+model = best_model
 
 
 # # Parity plot                               

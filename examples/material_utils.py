@@ -10,6 +10,25 @@ import numpy as np
 
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 
+def download_contcar(job_id: str, job_endpoint: JobEndpoints, filename: str):
+    # Get a list of files for each
+    job_files = job_endpoint.list_files(job_id)
+
+    # Find the CONTCAR
+    for file in job_files:
+        if file["name"] == "CONTCAR":
+            contcar_metadata = file
+
+    # Get a download URL for the CONTCAR
+    contcar_signed_url = contcar_metadata['signedUrl']
+
+    # Download the contcar to memory
+    contcar_response = urllib.request.urlopen(contcar_signed_url)
+
+    # Write it to disk
+    with open(filename, "wb") as outp:
+        outp.write(contcar_response.read())
+
 
 # Pymatgen
 

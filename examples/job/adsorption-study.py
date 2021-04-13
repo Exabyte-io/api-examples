@@ -4,21 +4,13 @@
 # In[]:
 
 
-import urllib
 import os, sys
 import string
-from dataclasses import dataclass
-import itertools
 
 import ase.io
 import ase.neighborlist
 import ase.constraints
 
-import pymatgen.ext.matproj
-import pymatgen.io.ase
-import pymatgen.io.vasp
-import pymatgen.symmetry.analyzer
-import pymatgen.analysis.local_env
 import numpy as np
 
 # Import settings file and utils
@@ -28,7 +20,7 @@ if module_path not in sys.path:
 from utils import ensure_packages_are_installed
 ensure_packages_are_installed()
 from material_utils import download_contcar
-from settings import MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID, ACCOUNT_ID
+from settings import ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints
@@ -74,7 +66,6 @@ class JobData():
     def __repr__(self):
         return(str(self.name))
         
-# ToDo: We really should just get these from the material set...
 jobIds = (
     "tLvgnymbFi8SLNxgK",
     "5jLSJ6fJE2DPY9rqv",
@@ -169,7 +160,7 @@ def place_co_molecule(job, site):
     
 for job in jobs:
     job.adsorption_states = []
-    for site in job.sites:
+    for site in job.surface_indices:
         place_co_molecule(job, site)
 
 
@@ -245,7 +236,7 @@ for job in jobs:
 
 # ## Submit the Jobs
 
-# In[]:
+# In[ ]:
 
 
 projects_endpoint = ProjectEndpoints(*ENDPOINT_ARGS)
@@ -254,10 +245,12 @@ project_id = projects_endpoint.list({"isDefault": True,
         
 for job in jobs:
     job.job_ids = []
-    for jobname, material_id in zip(job.adsorption_state_names, job.material_ids):
+    for jobname, adsorption_state, material_id in zip(job.adsorption_state_names,
+                                                      job.adsorption_states,
+                                                      job.slab_ids):
                 # First, set up the compute parameters
         # Add an extra node if there are a lot of atoms in the cell
-        n_nodes = int(np.rint(len(surface["slab"])/16))
+        n_nodes = int(np.rint(len(adsorption_state)))
         # Restrict the nodes to at least 1, but no more than 2
         n_nodes = min(max(n_nodes, 1), 2)
 
@@ -266,7 +259,7 @@ for job in jobs:
                       "nodes": n_nodes,
                       "time_limit": "12:00:00",
                       "cluster": "cluster-007"}
-        compute = exabyte_jobs_endpoint.get_compute(**job_config)
+        compute = job.job_endpoint.get_compute(**job_config)
         
         workflow_id = workflow["_id"]
         material = material_endpoint.get(material_id)

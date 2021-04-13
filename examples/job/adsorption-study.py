@@ -18,7 +18,7 @@ module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
 from utils import ensure_packages_are_installed
-ensure_packages_are_installed()
+ensure_packages_are_installed() d
 from material_utils import download_contcar
 from settings import ENDPOINT_ARGS, ORGANIZATION_ID
 
@@ -90,7 +90,7 @@ jobs = [JobData(jobId, job_endpoint, material_endpoint) for jobId in jobIds]
 
 # # Download a Slab from the Platform
 # 
-# Now that we have our slab jobs, and a nice object to hold them, let's get them into PyMatGen.
+# Now that we have our slab jobs, and a nice object to hold them, let's get them into ASE.
 
 # ## Get an ASE oject
 
@@ -103,7 +103,7 @@ for job in jobs:
     job.structure = ase.io.read(job.filename)
 
 
-# ## Generate the PyMatGen Object
+# ## Generate the ASE Object
 
 # In[]:
 

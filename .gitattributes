@@ -1,3 +1,4 @@
 *.ipynb filter=lfs diff=lfs merge=lfs -text
 *.vasp filter=lfs diff=lfs merge=lfs -text
 *.poscar filter=lfs diff=lfs merge=lfs -text
+assets/* filter=lfs diff=lfs merge=lfs -text

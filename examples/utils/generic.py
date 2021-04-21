@@ -56,7 +56,7 @@ def install_package(name, version=None):
     """
     # Check requiements.txt for current version, if one wasn't supplied
     if version is None:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../requirements.txt"))
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 if name in line:
@@ -95,7 +95,7 @@ def ensure_packages_are_installed(*names):
 
     # Install requirements.txt if nothing was passed in
     else:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../requirements.txt"))
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 # Ignore Jupyterlab, since the user is probably running it already to view the notebooks

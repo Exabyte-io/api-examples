@@ -23,7 +23,7 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from utils import ensure_packages_are_installed, display_JSON
+from utils.generic import ensure_packages_are_installed, display_JSON
 ensure_packages_are_installed()
 from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 

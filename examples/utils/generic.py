@@ -4,10 +4,43 @@ import datetime
 import os
 import importlib.util
 import settings
+import urllib
 from IPython.display import display, JSON
 import json
 
-# IMPORTS
+
+# GENERIC UTILITIES
+
+def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
+    """
+    Saves a file to disk, overwriting any files with the same name as filename_on_disk
+
+    Args:
+        job_id (str): ID of the job
+        filename_on_cloud (str): Name of the file on the server
+        filename_on_disk (str): Name the file will be saved to
+
+    Returns:
+        None
+    """
+    files = job_endpoint.list_files(job_id)
+    for file in files:
+        if file["name"] == filename_on_cloud:
+            file_metadata = file
+
+    # Get a download URL for the CONTCAR
+    signed_url = file_metadata['signedUrl']
+
+    # Download the contcar to memory
+    server_response = urllib.request.urlopen(signed_url)
+
+    # Write it to disk
+    with open(filename_on_disk, "wb") as outp:
+        outp.write(server_response.read())
+
+
+# IMPORT UTILITIES
+
 def install_package(name, version=None):
     """
     Installs a package via Pip. If a version is supplied, will attempt to install that specific version.
@@ -23,7 +56,7 @@ def install_package(name, version=None):
     """
     # Check requiements.txt for current version, if one wasn't supplied
     if version is None:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../requirements.txt"))
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 if name in line:
@@ -62,7 +95,7 @@ def ensure_packages_are_installed(*names):
 
     # Install requirements.txt if nothing was passed in
     else:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../requirements.txt"))
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
@@ -81,7 +114,7 @@ ensure_packages_are_installed("tabulate")
 from tabulate import tabulate
 
 
-# JOB
+# JOB UTILITIES
 
 def get_jobs_statuses_by_ids(endpoint, job_ids):
     """
@@ -122,7 +155,8 @@ def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=10):
         row = [now, submitted_jobs, active_jobs, finished_jobs, errored_jobs]
         print(tabulate([row], headers, tablefmt='grid', stralign='center'))
 
-        if all([status not in ["pre-submission", "submitted", "active"] for status in statuses]): break
+        if all([status not in ["pre-submission", "submitted", "active"] for status in statuses]):
+            break
         time.sleep(poll_interval)
 
 
@@ -164,7 +198,7 @@ def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, su
     return endpoint.get_property(job["_id"], unit_flowchart_id, property_name)
 
 
-# GENERAL
+# DISPLAY UTILITIES
 
 def dataframe_to_html(df, text_align="center"):
     """
@@ -180,6 +214,7 @@ def dataframe_to_html(df, text_align="center"):
         dict(selector="td", props=[("text-align", text_align)])
     ]
     return (df.style.set_table_styles(styles))
+
 
 def display_JSON(obj, interactive_viewer=settings.use_interactive_JSON_viewer):
     """

@@ -2,17 +2,17 @@
 # coding: utf-8
 
 # # Overview
-# 
+#
 # This example has been created as part of our Advanced Topics Webinar, scheduled for March 26, 2021. This webinar focused on the high-throughput screening of surfaces using Exabyte.
-# 
+#
 # In this notebook, a structure for γ-Al2O3, an industrially-relevant material used in a variety of catalytic applications, both as a catalyst and as a a support. One such application is the [Claus Process](https://en.wikipedia.org/wiki/Claus_process), which is catalyzed by γ-Al2O3 and produced over 64-million tons of sulfur in 2005!
 
 # # Execution
-# 
+#
 # > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required. RESTful API credentials shall be updated in [settings](../settings.py). The generation of the credentials is also explained therein.
-# 
+#
 # In addition, this notebook demonstrates the use of an "Organization ID," which allows multiple users who are part of the same organization to collaborate.
-# 
+#
 # ## Import packages
 
 # In[]:
@@ -46,17 +46,17 @@ from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 
 
 # # Visualize the Unit Cell
-# 
+#
 # We begin by finding the following unit cell:
 # - Gamma Al2O3, whose unit cell is in a POSCAR we constructed based on Digne, M.; Sautet, P.; Raybaud, P.; Euzen, P.; Toulhoat, H. Use of DFT to achieve a rational understanding of acid-basic properties of γ-alumina surfaces. J Catal 2004, 226, 54-68.
-# 
+#
 # For this example, we have already taken the unit cell information from the literature and created a POSCAR file from it.
 
 # In[]:
 
 
 # Get gamma Al2O3 from the local disk
-al2o3_poscar_filename = "gamma_alumina_digne_et_al.poscar"
+al2o3_poscar_filename = "../assets/gamma_alumina_digne_et_al.poscar"
 al2o3_ase = ase.io.read(al2o3_poscar_filename)
 
 # View the crystal in ASE's built-in x3d viewer
@@ -67,7 +67,7 @@ view(al2o3_ase, viewer='x3d')
 # # Optimize the Unit Cells
 
 # The next few steps will focus on optimizing the unit cell with our chosen DFT methodology, before we cleave it.
-# 
+#
 # ## Create the Material
 # Now that we have a unit cell, we can upload it to the platform.
 
@@ -180,7 +180,7 @@ al2o3_slabs = get_all_slabs_and_terms(al2o3_relaxed_pymatgen, thickness=3, is_by
 
 
 # # Write the Slabs to Disk
-# 
+#
 # To finish preparing our structures for VASP, we do the following for both sets of slabs:
 # 1. Center the slab, and adjust the vacuum to 10Å
 # 2. Freeze the center layer of the slab to simulate the bulk
@@ -211,7 +211,7 @@ for miller_index, term_dict in al2o3_slabs.items():
 
 
 # # Upload POSCARS
-# 
+#
 # Now that we have a set of prepared POSCARs, we can upload them to our user account on Exabyte. Let's create a couple material sets to hold these.
 
 # In[]:

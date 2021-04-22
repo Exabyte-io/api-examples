@@ -21,7 +21,7 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
 from settings import ENDPOINT_ARGS
-from utils import ensure_packages_are_installed, display_JSON
+from utils.generic import ensure_packages_are_installed, display_JSON
 ensure_packages_are_installed()
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
@@ -36,7 +36,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
 NAME = "My Material"
-POSCAR_PATH = "mp-978534.poscar"
+POSCAR_PATH = "../assets/mp-978534.poscar"
 
 
 # ## Import material

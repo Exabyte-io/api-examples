@@ -32,9 +32,9 @@ import pymatgen.symmetry.analyzer
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from utils import ensure_packages_are_installed, display_JSON
+from utils.generic import ensure_packages_are_installed, display_JSON, save_files
 ensure_packages_are_installed()
-from material_utils import get_all_slabs_and_terms, freeze_center_bulk
+from utils.material import get_all_slabs_and_terms, freeze_center_bulk
 from settings import ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client
@@ -56,7 +56,7 @@ from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 
 
 # Get gamma Al2O3 from the local disk
-al2o3_poscar_filename = "gamma_alumina_digne_et_al.poscar"
+al2o3_poscar_filename = "../assets/gamma_alumina_digne_et_al.poscar"
 al2o3_ase = ase.io.read(al2o3_poscar_filename)
 
 # View the crystal in ASE's built-in x3d viewer
@@ -150,23 +150,7 @@ exabyte_jobs_endpoint.submit(al2o3_job[0]["_id"])
 # Extract job ID
 al2o3_job_id = al2o3_job[0]["_id"]
 
-# Get a list of files
-al2o3_files = exabyte_jobs_endpoint.list_files(al2o3_job_id)
-
-# Find the CONTCAR
-for file in al2o3_files:
-    if file["name"] == "CONTCAR":
-        al2o3_file_metadata = file
-
-# Get a download URL for the CONTCAR
-al2o3_contcar_signed_url = al2o3_file_metadata['signedUrl']
-
-# Download the contcar to memory
-al2o3_response = urllib.request.urlopen(al2o3_contcar_signed_url)
-
-# Write it to disk
-with open("al2o3_relaxed.vasp", "wb") as outp:
-    outp.write(al2o3_response.read())
+save_files(al2o3_job_id, exabyte_jobs_endpoint, "CONTCAR", "al2o3_relaxed.vasp")
 
 
 # The below code uses Pymatgen to find all unique planes in a crystal. It then generates slabs with every possible termination in that plane. Finally, asymmetric slabs are filtered out, and the slabs are saved to a dictionary. The dictionary's format is: `{miller-index: {termination: {"slab": slab} }`. Note that here, to take advantage of several convenient functions in ASE, we have the function output ASE Atoms objects instead of PyMatGen objects.

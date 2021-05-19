@@ -25,13 +25,11 @@ import rdkit.Chem.MolSurf as MolSurf
 
 import matplotlib.pyplot as plt
 
-print(sklearn.__file__)
-
 
 # In[]:
 
 
-data = pd.read_csv("logP_dataset.csv",header=None,names=["SMILES", "LogP"])
+data = pd.read_csv("../assets/logP_dataset.csv",header=None,names=["SMILES", "LogP"])
 data.head()
 
 

@@ -19,7 +19,13 @@
 # - RDKit: This is a cheminformatics package focused on molecules; it offers a wide range of descriptors and fingerprints for molecules.
 #     
 
-# In[ ]:
+# In[]:
+
+
+get_ipython().system('pip install numpy matplotlib pandas sklearn xgboost optuna imblearn rdkit_pypi')
+
+
+# In[]:
 
 
 import functools
@@ -53,11 +59,11 @@ import rdkit.Chem.Descriptors as Descriptors
 # 
 # We can see that the dataset contains comparable numbers of sweet/bitter molecules, along with several that have been labeled as either "tasteless" or "nonbitter"
 
-# In[ ]:
+# In[]:
 
 
 # Data is from https://www.kaggle.com/katyaarnold/bittersweet
-raw_data = pd.read_csv("../assets/bitter-sweet.csv")
+raw_data = pd.read_csv("bitter-sweet.csv")
 print(raw_data.Taste.value_counts())
 raw_data
 
@@ -69,7 +75,7 @@ raw_data
 # 
 # Finally, we'll drop any missing entries from the dataset, and we'll then drop any duplicate rows (judged either by the name or canonical simles).
 
-# In[ ]:
+# In[]:
 
 
 # Drop a few columns we don't want
@@ -102,7 +108,7 @@ data
 # 
 # Additionally, some of the SMILES strings in the dataset are incorrectly formatted (e.g. missing a closing character, or some other problem). To get around this, we'll surround the calculation of each descriptor in a try/except block. If we fail to calculate a descriptor, we'll just drop the row entirely.
 
-# In[ ]:
+# In[]:
 
 
 # Let's get a bunch of descriptors into the dataset
@@ -140,7 +146,7 @@ data = data.dropna()
 # 
 # Also, we do have a slightly imbalanced dataset; roughly 2x as many non-bitter (0) compounds are in the dataset as there are bitter (1) compounds. To get around this, we'll use the SMOTE algorithm to appropriately upsample our dataset. Specifically, we'll use a variation of SMOTE that uses k-means to direct where it samples from the minority class, which a recent paper indicates outperforms vanilla SMOTE: https://arxiv.org/abs/1711.00837
 
-# In[ ]:
+# In[]:
 
 
 print("Before Resample\n", data.Bitter.value_counts())
@@ -168,7 +174,7 @@ x_resample, y_resample = smote.fit_resample(x, y)
 # 
 # Second, we have an `objective` function. The function tests a set of possible parameters for the pipeline, and returns a score (in this case the area under the ROC curve). Optuna's goal, then, is the find a set of hyperparameters that maximize the score of the training set. To help guard against overfitting, we use cross-validation to determine the score. Finally, we'll set Optuna to use hyperband optimization, which has been shown to perform well when combined with the default sampler - https://tech.preferred.jp/en/blog/how-we-implement-hyperband-in-optuna/
 
-# In[ ]:
+# In[]:
 
 
 def create_pipeline(params):
@@ -207,10 +213,10 @@ study = optuna.create_study(direction="maximize", pruner=optuna.pruners.Hyperban
 # 
 # Optuna will then use Bayesian optimization to efficiently sample the hyperparameter search space. This is signiifcantly faster than the brute force method of testing all possible combinations of hyperparameters (Grid Search), and more-intelligently samples the hyperparameter space than a Random Search would.
 
-# In[ ]:
+# In[]:
 
 
-study.optimize(objective, n_trials=128, n_jobs=1)
+study.optimize(objective, n_trials=128, n_jobs=16)
 
 
 # # Fit the Model to the Entire Training Set
@@ -218,7 +224,7 @@ study.optimize(objective, n_trials=128, n_jobs=1)
 # 
 # We'll also recall the cross-validated ROC AUC from the hyperparameter optimization.
 
-# In[ ]:
+# In[]:
 
 
 pipeline = create_pipeline(study.best_params)
@@ -227,14 +233,14 @@ pipeline.fit(x,y)
 # We don't need to re-evaluate the eror, since Optuna kept track of it for us.
 cv_error = study.best_value
 
-print(f"4-CV ROC AUC: {cv_error}")
+print(f"4-CV LogLoss: {-cv_error}")
 
 
 # # Evaluate the model against the test set
 # 
 # Here, we'll take the model that was trained on the training set, and get the ROC AUC score for the test-set data.
 
-# In[ ]:
+# In[]:
 
 
 test_preds = pipeline.predict(data_test.drop(columns=["Name", "Canonical SMILES", "Bitter"]).to_numpy())
@@ -250,7 +256,7 @@ print(f"Test ROC AUC: {test_score}")
 # 
 # Next, we'll plot the ROC curve for the testing set, and we'll evaluate the AUC for it. AUC=1 is a a classifier that perfectly predicts the correct result, AUC=0 is a classifier that perfectly predicts the wrong result (e.g. correct predictions can be had by inverting its predictions), and AUC=0.5 is a classifier that is equally as good as random guessing.
 
-# In[ ]:
+# In[]:
 
 
 # Plot the curve
@@ -279,7 +285,7 @@ plt.show()
 # 
 # At this point, we've assessed that the cross-validated ROC AUC of the training set is good, and that the test-set ROC AUC doesn't indicate that we're overfitting by much. We can now train the model on the entire dataset, using cross-validation to get an error estimate of the model.
 
-# In[ ]:
+# In[]:
 
 
 # Now that we have a good idea of our error, let's retrain on the entire dataset
@@ -297,7 +303,7 @@ pipeline.fit(x_full_resample,y_full_resample)
 # 
 # Finally, we'll take an ROC curve for when we use the entire dataset as the training set.
 
-# In[ ]:
+# In[]:
 
 
 final_probs = pipeline.predict_proba(x_full)
@@ -333,18 +339,18 @@ plt.show()
 # Glycerine (aka Glycerol) is a relatively sweet substance, used to make a variety of products. For example, its nitration leads to the production of nitroglycerine.
 # 
 
-# In[ ]:
+# In[]:
 
 
 # Denatonium! Very bitter. It doesn't seem to be in the dataset.
 print(data[data.Name == "Denatonium"])
 print(data[data.Name == "Bitrex"])
 
-# Ethanol! Not very bitter (although it does taste like burning at higher concentrations). Definitely in the dataset.
+# Glycerol! Probably tastes kinda sweet
 print(data[data.Name == "Glycerol"])
 
 
-# In[ ]:
+# In[]:
 
 
 names = [
@@ -374,7 +380,7 @@ new_data
 # 
 # Without investigating the binding site of the protein itself (which would be a good idea if we wanted to study this further), we can check empirically whether a particular structural feature is important to whether a molecule will bind to the protein or not. This can give hints about how we might design a molecule that binds (or doesn't bind) to the receptors involved in determining bitterness.
 
-# In[ ]:
+# In[]:
 
 
 importances = pipeline["XGBoostClassifier"].feature_importances_

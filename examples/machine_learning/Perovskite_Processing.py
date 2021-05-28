@@ -214,7 +214,7 @@ model.fit(x, y)
 # Now, we'll print the best pipeline that was found. At the time this notebook was created (we used a random seed of 42 for the train/test split and the pipeline, so this should be reproducible), we find the following steps:
 # - Feature selection based on the Family-Wise Error rate. Specifically, Sklearn's implementation uses the [Bonferroni Criterion](https://en.wikipedia.org/wiki/Bonferroni_correction). Given a significance alpha, a feature is kept if its p-value (w.r.t. the target varible) is below alpha divided by the number of samples in the training set. In this case, alpha is chosen to be 0.02.
 # - Scaling each feature to be between 0 and 1, a fairly standard choice in ML work
-# - Linear Support Vector Regression, using squared epsilon insensitive loss (L2 loss) and an error tolerance (the error below-which errors are not penalized) of epsilon=1.0. Errors greater than epsilon are penalized by C * error, with C chosen to be 10.
+# - Linear Support Vector Regression
 # 
 # Overall, this is a very reasonable result for this type of regression problem, one that a human would believably choose to evaluate when looking at different potential models. We see the elements of a basic ML pipeline here: feature selection, followed by some scaling of the data, followed by a model.
 # 

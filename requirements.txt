@@ -80,6 +80,6 @@ testpath==0.4.4
 tornado==6.1
 traitlets==5.0.5
 uncertainties==3.1.5
-urllib3==1.24.3
+urllib3==1.26.5
 wcwidth==0.2.5
 webencodings==0.5.1

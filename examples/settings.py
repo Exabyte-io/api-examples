@@ -1,6 +1,12 @@
-# 
+#
 # This file contains common variables that are used inside the examples.
 #
+
+# General settings. For how the notebooks operate.
+
+    # use_interactive_JSON_viewer: Whether to use the IPython interactive viewer, or print in plaintext.
+
+use_interactive_JSON_viewer = False
 
 # Account settings. Need a one-time adjustment for examples to work.
 
@@ -11,6 +17,7 @@
 ACCOUNT_ID = "ACCOUNT_ID"
 AUTH_TOKEN = "AUTH_TOKEN"
 MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"
+ORGANIZATION_ID = "ORGANIZATION_ID"
 
 # Advanced settings. Should not need adjustments.
 

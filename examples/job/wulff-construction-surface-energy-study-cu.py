@@ -10,7 +10,6 @@
 # In[]:
 
 
-import urllib
 import os, sys
 
 import ase.io
@@ -25,10 +24,10 @@ import numpy as np
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from utils import ensure_packages_are_installed
+from utils.generic import ensure_packages_are_installed, save_files
 ensure_packages_are_installed()
-from material_utils import get_all_slabs_and_terms
-from material_utils import get_vasp_total_energy, get_slab_area, get_surface_energy
+from utils.material import get_all_slabs_and_terms
+from utils.material import get_vasp_total_energy, get_slab_area, get_surface_energy
 from settings import MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client
@@ -181,22 +180,8 @@ exabyte_jobs_endpoint.submit(cu_job[0]["_id"])
 
 # Get a list of files for each
 cu_job_id = cu_job[0]["_id"]
-cu_files = exabyte_jobs_endpoint.list_files(cu_job_id)
 
-# Find the CONTCAR
-for file in cu_files:
-    if file["name"] == "CONTCAR":
-        cu_file_metadata = file
-
-# Get a download URL for the CONTCAR
-cu_contcar_signed_url = cu_file_metadata['signedUrl']
-
-# Download the contcar to memory
-cu_response = urllib.request.urlopen(cu_contcar_signed_url)
-
-# Write it to disk
-with open("cu_relaxed.vasp", "wb") as outp:
-    outp.write(cu_response.read())
+save_files(cu_job_id, exabyte_jobs_endpoint, "CONTCAR", "cu_relaxed.vasp")
 
 
 # The below code uses Pymatgen to find all unique planes in a crystal. It then generates slabs with every possible termination in that plane. Finally, asymmetric slabs are filtered out, and the slabs are saved to a dictionary. The dictionary's format is: `{miller-index: {termination: {"slab": slab} }`. Note that here, to take advantage of several convenient functions in ASE, we have the function output ASE Atoms objects instead of PyMatGen objects.

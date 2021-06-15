@@ -18,7 +18,7 @@ module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
 from utils import ensure_packages_are_installed
-ensure_packages_are_installed()
+#ensure_packages_are_installed()
 from material_utils import download_contcar
 from settings import ENDPOINT_ARGS, ORGANIZATION_ID
 
@@ -65,25 +65,11 @@ class JobData():
         
     def __repr__(self):
         return(str(self.name))
-        
-jobIds = (
-    "tLvgnymbFi8SLNxgK",
-    "5jLSJ6fJE2DPY9rqv",
-    "QQbZ59P4BJnD6gRjY",
-    "bvLefeo2EnKY8Lr6y",
-    "wpBKynme2QGs4RqPF",
-    "LZwat95GwWc4FMLFg",
-    "QyYDbwjR5dhWoAvud",
-    "kWfKC5mCsCB2WsovL",
-    "YcuL2J4LSG56Zduqp",
-    "TLzz58xDnwcyu77fX",
-    "RxdryL4RJvLR5tRSF",
-    "uLDz8w9FG75WGtGfp",
-    "HcGbEt6ZqJvytfSac",
-)
-        
-# Loop over list of jobIds, and generate our slabData objects
-jobs = [JobData(jobId, job_endpoint, material_endpoint) for jobId in jobIds]
+
+# Here, we've stored all of our jobs in a specific set. We'll run a Mongo Query to find jobs
+# that are inside of this set.
+job_set_id = "WLBD7M9dZBaNH2mMX"
+jobs = [JobData(job["_id"], job_endpoint, material_endpoint) for job in job_endpoint.list({"inSet":{"$elemMatch":{"_id":job_set_id}}})]
 
 
 # # 

@@ -18,7 +18,7 @@ module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
 from utils import ensure_packages_are_installed
-ensure_packages_are_installed() d
+ensure_packages_are_installed()
 from material_utils import download_contcar
 from settings import ENDPOINT_ARGS, ORGANIZATION_ID
 

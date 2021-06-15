@@ -19,6 +19,14 @@ AUTH_TOKEN = "AUTH_TOKEN"
 MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"
 ORGANIZATION_ID = "ORGANIZATION_ID"
 
+from os import environ
+if environ.get("ACCOUNT_ID"):
+    ACCOUNT_ID = environ.get("ACCOUNT_ID")
+if environ.get("AUTH_TOKEN"):
+    AUTH_TOKEN = environ.get("AUTH_TOKEN")
+if environ.get("MATERIALS_PROJECT_API_KEY"):
+    MATERIALS_PROJECT_API_KEY = environ.get("MATERIALS_PROJECT_API_KEY")
+    
 # Advanced settings. Should not need adjustments.
 
     # HOST: Hostname of the RESTful API server. Defaults to platform.exabyte.io.

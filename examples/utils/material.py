@@ -1,5 +1,6 @@
 from typing import Tuple, Union, Dict, Any, Type
 import urllib.request
+import functools
 
 import pymatgen.core.surface
 import pymatgen.io.ase
@@ -10,24 +11,41 @@ import numpy as np
 
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 
-def download_contcar(job_id: str, job_endpoint: JobEndpoints, filename: str):
+
+def download_file_by_name(job_id: str, job_endpoint: JobEndpoints, target: str, pattern: str):
+    """
+    Downloads a file from S3 and writes it to the local disk.
+
+    Args:
+        job_id (str): The ID string for the job that the file is to be downloaded from.
+        job_endpoint (JobEndpoints): Job endpoint object from the Exabyte API Client
+        target (str): Target filename that the file will be written to.
+        pattern (str): The name of the file as it appears on the S3. For example, to download a file named
+                       "CONTCAR", the pattern would be provided as "CONTCAR"
+    Notes:
+        This function does not check whether the file specified in `target` exists or not, and will always
+        be overwritten it if the file is successfully downloaded.
+    """
     # Get a list of files for each
     job_files = job_endpoint.list_files(job_id)
 
-    # Find the CONTCAR
+    # Find the file
     for file in job_files:
-        if file["name"] == "CONTCAR":
-            contcar_metadata = file
+        if file["name"] == pattern:
+            file_metadata = file
 
-    # Get a download URL for the CONTCAR
-    contcar_signed_url = contcar_metadata['signedUrl']
+    # Get a download URL for the file
+    file_signed_url = file_metadata['signedUrl']
 
-    # Download the contcar to memory
-    contcar_response = urllib.request.urlopen(contcar_signed_url)
+    # Download the file to memory
+    server_response = urllib.request.urlopen(file_signed_url)
 
     # Write it to disk
-    with open(filename, "wb") as outp:
-        outp.write(contcar_response.read())
+    with open(target, "wb") as outp:
+        outp.write(server_response.read())
+
+
+download_contcar = functools.partial(download_file_by_name, pattern="CONTCAR")
 
 
 # Pymatgen
@@ -166,6 +184,7 @@ def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
             unit_cell_energy = float(line.strip().split()[-1])
     return unit_cell_energy
 
+
 def get_surface_energy(e_slab: float, e_bulk: float,
                        n_slab: float, n_bulk: float,
                        a: float):
@@ -175,6 +194,7 @@ def get_surface_energy(e_slab: float, e_bulk: float,
     """
     surface_energy = (e_slab - e_bulk * (n_slab / n_bulk)) / (2 * a)
     return surface_energy
+
 
 def get_slab_area(a_vector: np.ndarray, b_vector: np.ndarray) -> float:
     """

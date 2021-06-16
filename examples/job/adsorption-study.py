@@ -52,8 +52,21 @@ from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 job_endpoint = JobEndpoints(*ENDPOINT_ARGS)
 material_endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 
-# ToDo: Refactor class and add documentation
 class JobData():
+    """
+    Dataclass for the job. Holds references to endpoints, the JSON for the job, along with
+    other metadata such as the termination and miller index.
+    
+    Attributes:
+        job_endpoint (JobEndpoints): A reference to the job endpoint from the API
+        material_endpoint (MaterialEndpoints): A reference to the material endpoint from the API
+        jobId (str): The ID of the job associated with an instance of this class
+        job_json (dict): JSON data storing the job
+        termination (str): Termination number for the slab.
+        miller_index (str): Miller index that was used to cleave the slab.
+        symbol (str): Atomic symbol for the element comprising the slab.
+        material (dict): JSON data storing the material
+    """
     def __init__(self, jobId, job_endpoint, material_endpoint):
         self.job_endpoint = job_endpoint
         self.material_endpoint = material_endpoint

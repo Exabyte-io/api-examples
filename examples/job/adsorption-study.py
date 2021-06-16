@@ -65,7 +65,6 @@ class JobData():
         termination (str): Termination number for the slab.
         miller_index (str): Miller index that was used to cleave the slab.
         symbol (str): Atomic symbol for the element comprising the slab.
-        material (dict): JSON data storing the material
     """
     def __init__(self, jobId, job_endpoint, material_endpoint):
         self.job_endpoint = job_endpoint
@@ -83,10 +82,6 @@ class JobData():
         self.termination = int("".join([char if char in string.digits else "" for char in termination_string]))
         self.miller_index = [int(index) for index in miller_index]
         self.symbol = symbol
-        
-        # Get the job's material
-        material_id = self.job_json["_material"]["_id"]
-        self.material = self.material_endpoint.get(material_id)
         
     def __repr__(self):
         return(str(self.name))

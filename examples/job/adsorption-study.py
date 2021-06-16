@@ -166,7 +166,20 @@ for job in jobs:
 
 # # Adsorption Study
 # 
-# Eads=Ecomplex-(Eslab+Emolecule)
+# Conventionally, the adsorption energy is defined as an energetic comparison between the following two states:
+# 1. The two species separated at an infinite distance.
+# 2. The two species interacting with one another in some _complex_.
+# 
+# At an infinite distance (state 1), there is no interaction between the two species. As a result, the energy of the system is simply the sum of the energies of the two isolated systems. In our case (a molecule which has adsorbed to a slab), the isolated systems are the bare slab and the gas-phase molecule. 
+# When the two species are combined (state 2), they interact with one another. The energetic quantification of this interaction (E_ads) is what we seek to determine.
+# 
+# Overall, the result is that we must perform three calculations: the gas-phase molecule (E_molecule), the bare slab (E_slab), and the adsorbed state (E_complex). The adsorption energy (E_ads) can then be calculated via the following equation.
+
+# In[]:
+
+
+get_ipython().run_cell_magic('latex', '', '\n\\begin{align}\nE_{ads}=E_{complex}-(E_{slab}+E_{molecule})\n\\end{align}')
+
 
 # In[]:
 
@@ -259,10 +272,4 @@ for job in jobs:
 
     for job_id in job.job_ids:
         job.job_endpoint.submit(job_id)
-
-
-# In[ ]:
-
-
-
 

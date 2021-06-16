@@ -148,15 +148,3 @@ plt.legend()
 # Save the figure
 plt.show()
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-

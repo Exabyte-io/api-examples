@@ -1,6 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# # Predict Adsorption Energies with Machine Learning
+# 
+# This notebook was created to facilitate our April 2021 webinar, which detailed the creation of a simple model of CO adsorption. The video can be found in the following link:
+# 
+# https://www.youtube.com/watch?v=wOrqnR8UAbQ
+# 
+# The descriptors and dataset used in the machine learning portion of this notebook are based on the following work:
+# 
+# Dean, J.; Taylor, M. G.; Mpourmpakis, G. Unfolding Adsorption on Metal Nanoparticles: Connecting Stability with catalysis. Sci Adv 2019, 5 (9), eaax5101. DOI: doi.org/10.1126/sciadv.aax5101
+# 
+# In this notebook example, we automate the placement of CO molecules to several Cu slabs. We then submit all of these adsorbed states to the cluster as DFT geometry optimization calculations using VASP.
+
 # In[]:
 
 

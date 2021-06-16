@@ -62,7 +62,7 @@ test_target = target_scaler.transform(test_target)
 
 # # Model Selection and Regression
 # 
-# Next, to demonstrate the programattic selection of models, we will choose between three types of model:
+# Next, to demonstrate the programmatic selection of models, we will choose between three types of model:
 # - Ridge Regression
 # - Kernelized Ridge Regression
 # - Neural Network

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # SMILES Markov Chains
+# # De Novo Generation of Bitter Molecules
+# 
+# In this webinar, we train a [Hidden Markov Model](https://en.wikipedia.org/wiki/Hidden_Markov_model) on a large corpus of SMILES strings, and use it to generate new SMILES strings. Finally, taking things one step further, we combine our newly-trained generative model with the bitterness classifier trained in the previous webinar. The end result of this generate->filter approach is a pipeline that generates new possibly-bitter molecules.
 
 # In[]:
 
@@ -33,6 +35,10 @@ import functools
 
 
 # # Read in our corpus of SMILES strings
+# 
+# We have acquired a large datase of SMILES strings from the following repository: https://github.com/GLambard/Molecules_Dataset_Collection
+# 
+# For convenience, a portion of the dataset is incorporated into this repository. We'll iterate over each file, and read in all of the SMILES strings we can find. In addition, for the purposes of keeping things simple in the webinar, we'll remove SMILES strings containing a colon (used for denoting the conjugated pi-bonds present in aromatic systems). This makes the problem a bit easier for our model to learn.
 
 # In[]:
 
@@ -56,6 +62,8 @@ for count,smile in enumerate(all_smiles):
 
 
 # # Import the SMILES Tokenizer from DeepChem
+# 
+# Next, we'll take advantage of the work of DeepChem, an open-source machine learning library focused on science. One of the tools that DeepChem provides is a SMILES tokenizer. This is used to convert a SMILES string into a list of individual pieces, or "tokens." For example, a single carbon atom may be a token, an opening parenthesis may be a token, etc. This is slightly different than simply separating by character, as tokens are allowed to contain multiple characters (e.g. \[Na+\] may be a token).
 
 # In[]:
 
@@ -65,15 +73,17 @@ import re, importlib
 deepchem_root_path=importlib.util.find_spec('deepchem').origin
 smiles_tokenizer_path = os.path.join(os.path.dirname(deepchem_root_path), "feat", "smiles_tokenizer.py")
 with open(smiles_tokenizer_path, "r") as inp:
-  file_contents = inp.read()
+    file_contents = inp.read()
 with open(smiles_tokenizer_path, "w") as outp:
-  for line in file_contents.split("\n"):
-    outp.write(re.sub("max_len(\s|$)", "model_max_length", line) + "\n")
+    for line in file_contents.split("\n"):
+        outp.write(re.sub("max_len(\s|$)", "model_max_length", line) + "\n")
     
 from deepchem.feat.smiles_tokenizer import SmilesTokenizer
 
 
 # # Tokenize the Strings
+# 
+# The other important feature of the SMILES tokenizer is that it can also encode our tokenized SMILES strings. After we have tokenized our strings, we need to convert the individual tokens into numbers (for example, we may replace "C" with a "10" every time we see it, a "(" may become a "2", etc) for our ML algorithm to be able to use it. This process of taking a list of tokens, and mapping the strings to integers, is called "encoding."
 
 # In[]:
 
@@ -122,6 +132,8 @@ np.random.shuffle(encoded)
 
 
 # # Tune the Hidden Markov Model
+# 
+# As a first-order guess, we'll check a few number of hidden states for the Hidden Markov Model (HMM). We just do a gridsearch over models with 1-4 hidden states, and record the average log likelihood of the model when trained on a random subsample of the data. We train on a random subsample instead of the full dataset here primarily as a convenience for the purposes of demonstration, because the model may take a while to train as the dataset grows larger. To help get a better idea of the error, we repeat this process of randomly subsampling, training, and assessing with log-likelihood several times.
 
 # In[]:
 
@@ -162,6 +174,10 @@ plt.close()
 
 
 # # Train the Hidden Markov Model
+# 
+# Next, we'll take whichever number of hidden states made a model with the best log-likelihood. As we might expect, a more-complex HMM (more hidden states) captures the data a bit better - so we select 4 states.
+# 
+# Next, we'll train the model on the full dataset, until the error is either below 0.01 (the default in HMMlearn), or 1024 training steps have run.
 
 # In[]:
 
@@ -185,6 +201,8 @@ with open("../assets/smiles_markov_model.pkl", "wb") as outp:
 
 
 # # Create a Molecule Pipeline
+# 
+# We'll then wrap our HMM into a generator function. This is an initial filter we place over the model, giving users the ability to filter generated models by the number of atoms.
 
 # In[]:
 
@@ -219,6 +237,8 @@ img
 
 
 # # Screen for Bitterness
+# 
+# Finally, we'll add one more filter to our model. Now that we have a set of knobs to turn for the molecule's complexity (number of atoms), we'll also add a filter for bitterness. Taking advantage of our trained model from the last webinar, we'll repeatedly generate models swith the generator, continuing until we have some user-defined set of potentially-bitter molecules.
 
 # In[]:
 

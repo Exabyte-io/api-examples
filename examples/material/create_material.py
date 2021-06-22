@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4400-skinny-req/examples/material/create_material.ipynb)
-
+# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4400-skinny-req/examples/material/create_material.ipynb)
 
 # # Overview
 # 

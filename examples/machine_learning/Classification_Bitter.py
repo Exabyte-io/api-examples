@@ -262,25 +262,27 @@ print(f"Test ROC AUC: {test_score}")
 
 
 # Plot the curve
-fig, ax = plt.subplots(dpi=300)
-points = np.array([fpr, tpr]).T.reshape(-1, 1, 2)
+def draw_roc_curve(fpr, tpr, threshes, title):
+    fig, ax = plt.subplots(dpi=300)
+    points = np.array([fpr, tpr]).T.reshape(-1, 1, 2)
 
-segments = np.concatenate([points[:-1], points[1:]], axis=1)
-norm = plt.Normalize(threshes.min(), threshes.max())
+    segments = np.concatenate([points[:-1], points[1:]], axis=1)
+    norm = plt.Normalize(threshes.min(), threshes.max())
 
-lc = matplotlib.collections.LineCollection(segments, cmap='jet', norm=norm, linewidths=2)
-lc.set_array(threshes)
-line = ax.add_collection(lc)
-fig.colorbar(line, ax=ax).set_label('Threshold')
+    lc = matplotlib.collections.LineCollection(segments, cmap='jet', norm=norm, linewidths=2)
+    lc.set_array(threshes)
+    line = ax.add_collection(lc)
+    fig.colorbar(line, ax=ax).set_label('Threshold')
 
-# Padding to ensure we see the line
-ax.margins(0.01)
+    # Padding to ensure we see the line
+    ax.margins(0.01)
 
-# plt.plot(false_positive_rate, true_positive_rate, c=colors, label=f"ROC2 Cure, AUC={roc_auc}")
-plt.title(f"Test Set ROC curve, AUC={np.round(test_score,3)}")
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.show()
+    # plt.plot(false_positive_rate, true_positive_rate, c=colors, label=f"ROC2 Cure, AUC={roc_auc}")
+    plt.title(title)
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.show()
+draw_roc_curve(fpr, tpr, threshes, f"Test Set ROC curve, AUC={np.round(test_score,3)}")
 
 
 # # Fit the Model to the Entire Dataset
@@ -312,25 +314,7 @@ final_probs = pipeline.predict_proba(x_full)
 final_score = sklearn.metrics.roc_auc_score(y_true=y_full, y_score=final_probs[:,1])
 fpr, tpr, threshes = sklearn.metrics.roc_curve(y_true=y_full, y_score=final_probs[:,1])
 threshes[0] -= 1
-
-# Plot the curve
-fig, ax = plt.subplots(dpi=300)
-points = np.array([fpr, tpr]).T.reshape(-1, 1, 2)
-segments = np.concatenate([points[:-1], points[1:]], axis=1)
-norm = plt.Normalize(threshes.min(), threshes.max())
-lc = matplotlib.collections.LineCollection(segments, cmap='jet', norm=norm, linewidths=2)
-lc.set_array(threshes)
-line = ax.add_collection(lc)
-fig.colorbar(line, ax=ax).set_label('Threshold')
-
-# Padding to ensure we see the line
-ax.margins(0.01)
-
-# plt.plot(false_positive_rate, true_positive_rate, c=colors, label=f"ROC2 Cure, AUC={roc_auc}")
-plt.title(f"Full Dataset Set ROC curve, AUC={np.round(final_score,3)}")
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.show()
+draw_roc_curve(fpr, tpr, threshes, f"Full Dataset Set ROC curve, AUC={np.round(final_score,3)}")
 
 
 # # Checking Specific Cases
@@ -348,7 +332,7 @@ plt.show()
 print(data[data.Name == "Denatonium"])
 print(data[data.Name == "Bitrex"])
 
-# Glycerol! Probably tastes kinda sweet
+# Glycerol! Probably tastes kinda sweet, but most certainly not bitter.
 print(data[data.Name == "Glycerol"])
 
 

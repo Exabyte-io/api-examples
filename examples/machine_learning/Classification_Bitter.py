@@ -48,6 +48,10 @@ from rdkit.Chem import MolFromSmiles, Lipinski
 import rdkit.Chem.Descriptors as Descriptors
 
 
+from rdkit import RDLogger
+RDLogger.DisableLog('rdApp.*')
+
+
 # # Read the Dataset
 # Let's begin by reading in the dataset. We have gently cleaned the CSV file, retaining only a few columns:
 # 
@@ -63,7 +67,7 @@ import rdkit.Chem.Descriptors as Descriptors
 
 
 # Data is from https://www.kaggle.com/katyaarnold/bittersweet
-raw_data = pd.read_csv("bitter-sweet.csv")
+raw_data = pd.read_csv("../assets/bitter-sweet.csv")
 print(raw_data.Taste.value_counts())
 raw_data
 
@@ -137,8 +141,6 @@ for descriptor, name in descriptors:
 # And finally, we'll drop rows that didn't make it through the featurization
 data = data.dropna()
 
-
-# 
 
 # # Train/Test Split
 # 

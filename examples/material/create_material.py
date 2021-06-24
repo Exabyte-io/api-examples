@@ -18,36 +18,22 @@
 ACCOUNT_ID = "" #@param {type:"string"}
 AUTH_TOKEN = "" #@param {type:"string"}
 MATERIALS_PROJECT_API_KEY = "" #@param {type:"string"}
+ORGANIZATION_ID = ""#@param {type:"string"}
 
-import os
+import os, glob
 
 if 'google.colab' in str(get_ipython()):
-  print('Running on CoLab')
+  from google.colab import _message
+  notebook_name = _message.blocking_request('get_ipynb')['ipynb']['metadata']['colab']['name']
+  get_ipython().system('git clone -b feature/SOF-4400-skinny-req https://github.com/Exabyte-io/exabyte-api-examples.git    ')
+  notebook_path = glob.glob('**/'+notebook_name, recursive=True)[0][0:-len(notebook_name)]
+  os.chdir(notebook_path)
+  get_ipython().system('pip install --no-deps -r ../../requirements-colab.txt')
   os.environ['notebook_environment'] = "Colab"
 elif 'ZMQInteractiveShell'  in str(get_ipython()):
-  print('Running in Jupyter')
   os.environ['notebook_environment'] = "Jupyter"
 else:
-  print('Unknown Environment')
   os.environ['notebook_environment'] = ""
-    
-if os.environ['notebook_environment'] == "Colab":
-    get_ipython().system('git clone -b feature/SOF-4400-skinny-req https://github.com/Exabyte-io/exabyte-api-examples.git')
-    get_ipython().run_line_magic('cd', '/content/exabyte-api-examples/examples/material')
-    get_ipython().system('pip install --no-deps -r ../../requirements-colab.txt')
-
-with open('../settings.py') as settings:
-    settings_filelines = settings.readlines()
-with open('../settings.py', "w") as settings:
-    for line in settings_filelines:
-        if 'ACCOUNT_ID = ' in line:
-            settings.write('%s "%s"\n' % ("ACCOUNT_ID =", ACCOUNT_ID))
-        elif 'AUTH_TOKEN = ' in line:
-            settings.write('%s "%s"\n' % ("AUTH_TOKEN =", AUTH_TOKEN))
-        elif 'MATERIALS_PROJECT_API_KEY = ' in line:
-            settings.write('%s "%s"\n' % ("MATERIALS_PROJECT_API_KEY =", MATERIALS_PROJECT_API_KEY))
-        else:
-            settings.write(line)
 
 
 # # Imports
@@ -55,11 +41,14 @@ with open('../settings.py', "w") as settings:
 # In[ ]:
 
 
-import sys
+import sys, importlib
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
+from utils.generic import display_JSON, update_settings_with_users_authorization_info
+update_settings_with_users_authorization_info(ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, ORGANIZATION_ID)
+
+import settings; importlib.reload(settings)
 from settings import ENDPOINT_ARGS
-from utils.generic import display_JSON
 
 if os.environ['notebook_environment'] == "Jupyter":
     from utils.generic import ensure_packages_are_installed
@@ -165,10 +154,4 @@ material = endpoint.create(CONFIG)
 
 
 display_JSON(material)
-
-
-# In[ ]:
-
-
-
 

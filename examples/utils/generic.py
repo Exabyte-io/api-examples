@@ -11,6 +11,38 @@ import json
 
 # GENERIC UTILITIES
 
+def update_settings_with_users_authorization_info(ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, ORGANIZATION_ID):
+    """
+    This function updates settings.py with the users authorization info.
+    It assumes 'settings.py' is located in the folder above this file's location.
+    Ex) '../settings.py'
+
+    Args:
+        ACCOUNT_ID (str): Users' ACCOUNT_ID
+        AUTH_TOKEN (str): Users' AUTH_TOKEN
+        MATERIALS_PROJECT_API_KEY (str): Users' MATERIALS_PROJECT_API_KEY
+        ORGANIZATION_ID (str): Users' ORGANIZATION_ID
+
+    Returns:
+        None
+    """
+
+    with open('../settings.py') as settings:
+        settings_filelines = settings.readlines()
+    with open('../settings.py', "w") as settings:
+        for line in settings_filelines:
+            if 'ACCOUNT_ID = ' in line:
+                settings.write('%s "%s"\n' % ("ACCOUNT_ID =", ACCOUNT_ID))
+            elif 'AUTH_TOKEN = ' in line:
+                settings.write('%s "%s"\n' % ("AUTH_TOKEN =", AUTH_TOKEN))
+            elif 'MATERIALS_PROJECT_API_KEY = ' in line:
+                settings.write('%s "%s"\n' % ("MATERIALS_PROJECT_API_KEY =", MATERIALS_PROJECT_API_KEY))
+            elif 'ORGANIZATION_ID = ' in line:
+                settings.write('%s "%s"\n' % ("ORGANIZATION_ID =", ORGANIZATION_ID))
+            else:
+                settings.write(line)
+
+
 def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
     """
     Saves a file to disk, overwriting any files with the same name as filename_on_disk

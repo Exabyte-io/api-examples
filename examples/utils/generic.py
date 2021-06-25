@@ -8,6 +8,7 @@ import settings
 import urllib
 from IPython.display import display, JSON
 import json
+from tabulate import tabulate
 
 
 # GENERIC UTILITIES
@@ -161,12 +162,6 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
                         name, version = line.strip().split("==")
                         if importlib.util.find_spec(name) is None:
                             install_package(name, version, notebook_environment)
-
-
-#ensure_packages_are_installed("tabulate")
-
-# Needs to go here, to ensure it's installed before we import
-#from tabulate import tabulate
 
 
 # JOB UTILITIES

@@ -2,6 +2,7 @@
 import time
 import datetime
 import os
+import re
 import importlib.util
 import settings
 import urllib
@@ -11,42 +12,111 @@ import json
 
 # GENERIC UTILITIES
 
-def update_settings_with_users_authorization_info(ACCOUNT_ID='ACCOUNT_ID', 
-                                                  AUTH_TOKEN='AUTH_TOKEN', 
-                                                  MATERIALS_PROJECT_API_KEY='MATERIALS_PROJECT_API_KEY', 
-                                                  ORGANIZATION_ID='ORGANIZATION_ID'):
+def update_users_authorization_info(notebook_environment="Jupyter", **kwargs):
     """
-    This function updates settings.py with the users authorization info.
-    It assumes 'settings.py' is located in the folder above this file's location.
-    Ex) '../settings.py'
-
+    This function makes function calls that tries to update settings.json and 
+    settings.py with a users' authorization info.
+    
     Args:
-        ACCOUNT_ID (str): Users' ACCOUNT_ID
-        AUTH_TOKEN (str): Users' AUTH_TOKEN
-        MATERIALS_PROJECT_API_KEY (str): Users' MATERIALS_PROJECT_API_KEY
-        ORGANIZATION_ID (str): Users' ORGANIZATION_ID
-        settings_filepath (str): Path to settings.py
+        **kwargs (dict): A dict of keyword arguments
+            Ex)
+              ACCOUNT_ID (str): Users' ACCOUNT_ID
+              AUTH_TOKEN (str): Users' AUTH_TOKEN
+              MATERIALS_PROJECT_API_KEY (str): Users' MATERIALS_PROJECT_API_KEY
+              ORGANIZATION_ID (str): Users' ORGANIZATION_ID
 
     Returns:
         None
     """
+
+    # If the notebook environment is Colab, then we must progrmatically update settings.json
+    # If the notebook environment is Jupyter, then we must manually update settings.json
+    if notebook_environment == "Colab":
+        update_settings_json_with_users_authorization_info(**kwargs)
     
-    assert os.path.isfile('../settings.py')
+    # In all notebook environments, we make a call to try and update settings.py 
+    # with the info in settings.json
+    update_settings_py_with_users_authorization_info()
+
+
+def update_settings_json_with_users_authorization_info(**kwargs):
+    """
+    This function may or may not update settings.json with a users' 
+    authorization info. It assumes 'settings.json' is located in the 
+    folder above this file's location.
+    Ex) '../settings.json'
+
+    Args:
+        **kwargs (dict): A dict of keyword arguments
+            Ex)
+              ACCOUNT_ID (str): Users' ACCOUNT_ID
+              AUTH_TOKEN (str): Users' AUTH_TOKEN
+              MATERIALS_PROJECT_API_KEY (str): Users' MATERIALS_PROJECT_API_KEY
+              ORGANIZATION_ID (str): Users' ORGANIZATION_ID
+
+    Returns:
+        None
+    """
+
+    # 1. Declare the relative path to seetings.json and assert it is there
+    relative_path_to_settings_json_file = '../settings.json'
+    assert os.path.isfile(relative_path_to_settings_json_file)
+
+    # 2. Load settings.json with its default values
+    with open(relative_path_to_settings_json_file) as settings_json_file:
+        default_authorization_info = json.load(settings_json_file)
+
+    # 3. If users' authorization info is different from default settings.json, update settings.json   
+    # 3a. Update users' authorization info
+    updated_users_authorization_info = {**default_authorization_info, **kwargs}
     
-    with open('../settings.py') as settings:
-        settings_filelines = settings.readlines()
-    with open('../settings.py', "w") as settings:
-        for line in settings_filelines:
-            if 'ACCOUNT_ID = ' in line:
-                settings.write('%s "%s"\n' % ("ACCOUNT_ID =", ACCOUNT_ID))
-            elif 'AUTH_TOKEN = ' in line:
-                settings.write('%s "%s"\n' % ("AUTH_TOKEN =", AUTH_TOKEN))
-            elif 'MATERIALS_PROJECT_API_KEY = ' in line:
-                settings.write('%s "%s"\n' % ("MATERIALS_PROJECT_API_KEY =", MATERIALS_PROJECT_API_KEY))
-            elif 'ORGANIZATION_ID = ' in line:
-                settings.write('%s "%s"\n' % ("ORGANIZATION_ID =", ORGANIZATION_ID))
-            else:
-                settings.write(line)
+    # 3b. Update settings.json if users' authorization info is different from default settings.json
+    if updated_users_authorization_info != default_authorization_info:
+        with open(relative_path_to_settings_json_file, 'w') as settings_json_file:
+            json.dump(updated_users_authorization_info, settings_json_file, indent=4)
+
+
+def update_settings_py_with_users_authorization_info():
+    """
+    This function updates settings.py with the users authorization info in settings.json.
+    It assumes 'settings.json' and 'settings.py' is located in the folder above this file's location.
+    Ex) '../settings.py'
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
+    # 1. Declare the relative path to seetings.py and assert it is there
+    relative_path_to_settings_py_file = '../settings.py'
+    relative_path_to_settings_json_file = '../settings.json'
+    assert os.path.isfile(relative_path_to_settings_py_file)
+    assert os.path.isfile(relative_path_to_settings_json_file)
+
+    # 2. Read settings.py with its default values
+    with open(relative_path_to_settings_py_file) as settings_py_file:
+        settings_py_filelines = settings_py_file.readlines()
+
+    # 3. Load settings.json with its values (may be modified or not)
+    with open(relative_path_to_settings_json_file) as settings_json_file:
+        user_authorization_info = json.load(settings_json_file)
+
+    # 4. Update the users' authorization info in settings.py if changes were made to settings.json
+    # 4a. If users' authorization info in settings.json is different from settings.py,
+    #     make change to settings_py_filelines and change detect_changes to True
+    detect_changes = False
+    for index, line in enumerate(settings_py_filelines):
+        for key, value in user_authorization_info.items():
+            if '{}'.format(key+" = ") in line and line.split()[2] != '"{}"'.format(value):
+                settings_py_filelines[index] = settings_py_filelines[index].replace(line.split()[2], '"{}"'.format(value))
+                detect_changes = True
+
+    # 4b. If changes were detected, update settings.py
+    if detect_changes:
+        with open(relative_path_to_settings_py_file, 'w') as settings_py_file:
+            for line in settings_py_filelines:
+                settings_py_file.write(line)
 
 
 def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
@@ -79,7 +149,7 @@ def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
 
 # IMPORT UTILITIES
 
-def install_package(name, version=None):
+def install_package(name, version=None, notebook_environment="Jupyter"):
     """
     Installs a package via Pip. If a version is supplied, will attempt to install that specific version.
     If one is not supplied, requirements.txt will be searched to find a version.
@@ -88,13 +158,18 @@ def install_package(name, version=None):
     Args:
         name (str): the name of the module (e.g. pandas, numpy, etc)
         version (str): the specific version (if any) to import (e.g. 0.1.5, 1.0.0, etc).
+        notebook_environment (str): the environment of our notebook.
+            Ex) "Jupyter", "Colab", etc.
 
     Returns:
         None
     """
     # Check requiements.txt for current version, if one wasn't supplied
     if version is None:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
+        if notebook_environment == "Colab":
+            reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
+        else:
+            reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 if name in line:
@@ -108,18 +183,21 @@ def install_package(name, version=None):
 
     # Install the modules
     import sys, subprocess
-    subprocess.call([sys.executable, "-m", "pip", "install", pip_name])
+    #subprocess.call([sys.executable, "-m", "pip", "install", pip_name])
+    os.system('pip install {}'.format(pip_name))
     # Invalidate module cache based on import_lib doc recommendation:
     #   https://docs.python.org/3/library/importlib.html#importlib.invalidate_caches
     importlib.invalidate_caches()
 
 
-def ensure_packages_are_installed(*names):
+def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
     """
     Ensures a package is installed on the system, by installing it if it does not exist currently.
     If nothing is passed as the argument, packages specified in requirements.txt are installed.
 
     Args:
+        notebook_environment (str): the environment of our notebook.
+            Ex) "Jupyter", "Colab", etc.
         names (str): the names of the package to be checked (e.g. pandas, numpy, etc)
 
     Returns:
@@ -129,11 +207,14 @@ def ensure_packages_are_installed(*names):
     if len(names) > 0:
         for name in names:
             if importlib.util.find_spec(name) is None:
-                install_package(name)
+                install_package(name, notebook_environment)
 
     # Install requirements.txt if nothing was passed in
     else:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
+        if notebook_environment == "Colab":
+            reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
+        else:
+            reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
@@ -141,9 +222,12 @@ def ensure_packages_are_installed(*names):
                     pass
                 # Check if packages exist, and install if they don't
                 else:
-                    name, version = line.strip().split("==")
-                    if importlib.util.find_spec(name) is None:
-                        install_package(name, version)
+                    # If we want to add comments to requirements.txt files, we must
+                    # consider only lines in the file with '=='
+                    if '==' in line:
+                        name, version = line.strip().split("==")
+                        if importlib.util.find_spec(name) is None:
+                            install_package(name, version, notebook_environment)
 
 
 ensure_packages_are_installed("tabulate")

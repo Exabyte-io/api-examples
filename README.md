@@ -52,7 +52,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
     pip install --no-deps -r requirements.txt
     ```
 
-4. Run Jupyter and open a notebook in a browser:
+4. Run Jupyter and open a notebook in a browser. In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`, which is the `examples` folder shown below:
 
     ```bash
     cd examples
@@ -68,18 +68,6 @@ In order to run or edit the examples:
 2. Open [settings](examples/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
 
 3. Open the desired example notebook, adjust it as necessary and run.
-
-
-## Running Notebooks
-
-1. For running notebooks, one follows a similar approach mentioned in the 'Setup' and 'Usage' sections. After the user has created their virtual environment (step3 in the 'Setup' section), navigate to the `examples/` folder and launch the Jupyter Notebook environment. These steps are shown below. Note: In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`.
-
-    ```bash
-    cd examples
-    jupyter lab --config=config.py
-    ```
-
-Once the Jupyter Notebook environment is initialized, one can navigate within it to the desired example notebook.
 
 
 ## Contribute

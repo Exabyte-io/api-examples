@@ -31,7 +31,6 @@ if 'google.colab' in str(get_ipython()):
   get_ipython().system('pip install --no-deps -r ../../requirements-colab.txt    ')
 elif 'ZMQInteractiveShell' in str(get_ipython()):
   os.environ['notebook_environment'] = "Jupyter"
-
 else:
   os.environ['notebook_environment'] = ""
 

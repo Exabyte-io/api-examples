@@ -65,9 +65,21 @@ In order to run or edit the examples:
 
 1. Assert an existing Exabyte.io account. Examples require an account to run. New users can register [here](https://platform.exabyte.io/register) to obtain one.
 
-2. Open [settings](examples/settings.py) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
+2. Open [settings](examples/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
 
 3. Open the desired example notebook, adjust it as necessary and run.
+
+
+## Running Notebooks
+
+1. For running notebooks, one follows a similar approach mentioned in the 'Setup' and 'Usage' sections. After the user has created their virtual environment (step3 in the 'Setup' section), navigate to the `examples/` folder and launch the Jupyter Notebook environment. These steps are shown below. Note: In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`.
+
+    ```bash
+    cd examples
+    jupyter lab --config=config.py
+    ```
+
+Once the Jupyter Notebook environment is initialized, one can navigate within it to the desired example notebook.
 
 
 ## Contribute
@@ -82,11 +94,7 @@ If you would like to add new examples or adjust existing ones, please consider t
 
 2. Walk the readers through the examples by providing step-by-step explanation similar to [this](examples/material/get_materials_by_formula.ipynb).
 
-3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](examples/config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[3](#links)]. Please follow this convention. In order to use the post-save hooks, one must load the notebook from the folder containing 'config.py'. The notebooks should be loaded as follows:
-
-    ```bash
-    jupyter notebook --config=config.py
-    ```
+3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](examples/config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[3](#links)]. Please follow this convention.
 
 ## Links
 

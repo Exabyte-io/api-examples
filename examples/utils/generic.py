@@ -82,6 +82,27 @@ def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
 
 # IMPORT UTILITIES
 
+def get_requirements_filepath(notebook_environment):
+    """
+    This function gives a user the path to a specific requirements.txt depending on
+    a users' notebook environment.
+
+    Args:
+        notebook_environment (str): the environment of our notebook.
+            Ex) "Jupyter", "Colab", etc.
+
+    Returns:
+        requirements_filepath (str): the path to a specific requirements.txt
+    """
+
+    if notebook_environment == "Colab":
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
+    else:
+        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
+
+    return reqs_file
+
+
 def install_package(name, notebook_environment="Jupyter", version=None):
     """
     Installs a package via Pip. If a version is supplied, will attempt to install that specific version.
@@ -99,10 +120,7 @@ def install_package(name, notebook_environment="Jupyter", version=None):
     """
     # Check requiements.txt for current version, if one wasn't supplied
     if version is None:
-        if notebook_environment == "Colab":
-            reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
-        else:
-            reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
+        reqs_file = get_requirements_filepath(notebook_environment)
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 if name in line:
@@ -143,10 +161,7 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
 
     # Install requirements.txt if nothing was passed in
     else:
-        if notebook_environment == "Colab":
-            reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
-        else:
-            reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
+        reqs_file = get_requirements_filepath(notebook_environment)
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
@@ -154,9 +169,9 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
                     pass
                 # Check if packages exist, and install if they don't
                 else:
-                    # If we want to add comments to requirements.txt files, we must
-                    # consider only lines in the file with '=='
-                    if '==' in line:
+                    # Because of how we read the lines, blank lines are represented as '\n'.
+                    # The following condition treats blank lines given as '\n' as well as '==' in comments.
+                    if '==' in line and '#' not in line:
                         name, version = line.strip().split("==")
                         if importlib.util.find_spec(name) is None:
                             install_package(name, notebook_environment, version)

@@ -22,17 +22,17 @@ ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
 import os, glob, sys, importlib
 
 if 'google.colab' in str(get_ipython()):
-  os.environ['notebook_environment'] = "Colab"
-  get_ipython().system('git clone -b feature/SOF-4400-skinny-req https://github.com/Exabyte-io/exabyte-api-examples.git')
-  from google.colab import _message
-  notebook_name = _message.blocking_request('get_ipynb')['ipynb']['metadata']['colab']['name'] 
-  notebook_path = glob.glob('**/'+notebook_name, recursive=True)[0][0:-len(notebook_name)]
-  os.chdir(notebook_path)
-  get_ipython().system('pip install --no-deps -r ../../requirements-colab.txt    ')
+    os.environ['notebook_environment'] = "Colab"
+    get_ipython().system('git clone -b feature/SOF-4400-skinny-req https://github.com/Exabyte-io/exabyte-api-examples.git')
+    from google.colab import _message
+    notebook_name = _message.blocking_request('get_ipynb')['ipynb']['metadata']['colab']['name']
+    notebook_path = glob.glob('**/'+notebook_name, recursive=True)[0][0:-len(notebook_name)]
+    os.chdir(notebook_path) # go to the folder in the repo where one would be if this was in local Jupyter
+    get_ipython().system('pip install --no-deps -r ../../requirements-colab.txt ')
 elif 'ZMQInteractiveShell' in str(get_ipython()):
-  os.environ['notebook_environment'] = "Jupyter"
+    os.environ['notebook_environment'] = "Jupyter"
 else:
-  os.environ['notebook_environment'] = ""
+    os.environ['notebook_environment'] = ""
 
 
 # # Imports

@@ -16,14 +16,14 @@ use_interactive_JSON_viewer = False
 
 # Load variables from the settings.json file
 import json, os
-relative_path_to_settings_json_file = os.path.join(os.path.dirname(__file__), 'settings.json')
-with open(relative_path_to_settings_json_file) as settings_json_file:
-    variables_info = json.load(settings_json_file)
+absolute_path_to_settings_json_file = os.path.join(os.path.dirname(__file__), 'settings.json')
+with open(absolute_path_to_settings_json_file) as settings_json_file:
+    settings_json_config = json.load(settings_json_file)
 
-ACCOUNT_ID = variables_info.get("ACCOUNT_ID")
-AUTH_TOKEN = variables_info.get("AUTH_TOKEN")
-MATERIALS_PROJECT_API_KEY = variables_info.get("MATERIALS_PROJECT_API_KEY")
-ORGANIZATION_ID = variables_info.get("ORGANIZATION_ID")
+ACCOUNT_ID = settings_json_config.get("ACCOUNT_ID")
+AUTH_TOKEN = settings_json_config.get("AUTH_TOKEN")
+MATERIALS_PROJECT_API_KEY = settings_json_config.get("MATERIALS_PROJECT_API_KEY")
+ORGANIZATION_ID = settings_json_config.get("ORGANIZATION_ID")
 
 # Advanced settings. Should not need adjustments.
 

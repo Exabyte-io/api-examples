@@ -9,51 +9,47 @@
 
 # # Complete Authorization Form and Initialize Settings
 # 
-# This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial. If google drive, we will have some extra steps to do.
+# This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial.
 
-# In[ ]:
 
 
 #@title Authorization Form
-ACCOUNT_ID = "" #@param {type:"string"}
-AUTH_TOKEN = "" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "" #@param {type:"string"}
-ORGANIZATION_ID = ""#@param {type:"string"}
+ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
+ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
 
-import os, glob
+import os, glob, sys, importlib
 
 if 'google.colab' in str(get_ipython()):
+  os.environ['notebook_environment'] = "Colab"
+  get_ipython().system('git clone -b feature/SOF-4400-skinny-req https://github.com/Exabyte-io/exabyte-api-examples.git')
   from google.colab import _message
-  notebook_name = _message.blocking_request('get_ipynb')['ipynb']['metadata']['colab']['name']
-  get_ipython().system('git clone -b feature/SOF-4400-skinny-req https://github.com/Exabyte-io/exabyte-api-examples.git    ')
+  notebook_name = _message.blocking_request('get_ipynb')['ipynb']['metadata']['colab']['name'] 
   notebook_path = glob.glob('**/'+notebook_name, recursive=True)[0][0:-len(notebook_name)]
   os.chdir(notebook_path)
-  get_ipython().system('pip install --no-deps -r ../../requirements-colab.txt')
-  os.environ['notebook_environment'] = "Colab"
-elif 'ZMQInteractiveShell'  in str(get_ipython()):
+  get_ipython().system('pip install --no-deps -r ../../requirements-colab.txt    ')
+elif 'ZMQInteractiveShell' in str(get_ipython()):
   os.environ['notebook_environment'] = "Jupyter"
+
 else:
   os.environ['notebook_environment'] = ""
 
 
 # # Imports
 
-# In[ ]:
 
 
-import sys, importlib
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
-from utils.generic import display_JSON, update_settings_with_users_authorization_info
-update_settings_with_users_authorization_info(ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, ORGANIZATION_ID)
-
-import settings; importlib.reload(settings)
-from settings import ENDPOINT_ARGS
-
-if os.environ['notebook_environment'] == "Jupyter":
-    from utils.generic import ensure_packages_are_installed
-    ensure_packages_are_installed()
-
+from utils.generic import ensure_packages_are_installed, update_settings_json_with_additional_variables, display_JSON
+ensure_packages_are_installed(os.environ['notebook_environment'])
+update_settings_json_with_additional_variables(os.environ['notebook_environment'],
+                                ACCOUNT_ID=ACCOUNT_ID,
+                                AUTH_TOKEN=AUTH_TOKEN,
+                                MATERIALS_PROJECT_API_KEY=MATERIALS_PROJECT_API_KEY,
+                                ORGANIZATION_ID=ORGANIZATION_ID)
+import settings; importlib.reload(settings); from settings import ENDPOINT_ARGS
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
@@ -61,7 +57,6 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
 
-# In[ ]:
 
 
 CONFIG = {
@@ -141,7 +136,6 @@ CONFIG = {
 # 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
 
-# In[ ]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -150,7 +144,6 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
-# In[ ]:
 
 
 display_JSON(material)

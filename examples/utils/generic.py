@@ -40,16 +40,16 @@ def update_settings_json_with_additional_variables(notebook_environment="Jupyter
 
         # 2. Load settings.json with its default values
         with open(relative_path_to_settings_json_file) as settings_json_file:
-            default_authorization_info = json.load(settings_json_file)
+            additional_variables = json.load(settings_json_file)
 
         # 3. If users' authorization info is different from default settings.json, update settings.json
         # 3a. Update users' authorization info
-        updated_users_authorization_info = {**default_authorization_info, **kwargs}
+        updated_additional_variables = {**additional_variables, **kwargs}
     
         # 3b. Update settings.json if users' authorization info is different from default settings.json
-        if updated_users_authorization_info != default_authorization_info:
+        if updated_additional_variables != additional_variables:
             with open(relative_path_to_settings_json_file, 'w') as settings_json_file:
-                json.dump(updated_users_authorization_info, settings_json_file, indent=4)
+                json.dump(updated_additional_variables, settings_json_file, indent=4)
 
 
 def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):

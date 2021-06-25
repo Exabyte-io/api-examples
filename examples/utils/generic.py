@@ -2,7 +2,6 @@
 import time
 import datetime
 import os
-import re
 import importlib.util
 import settings
 import urllib

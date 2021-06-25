@@ -12,14 +12,15 @@ from tabulate import tabulate
 
 # GENERIC UTILITIES
 
-def update_settings_json_with_additional_variables(notebook_environment="Jupyter", **kwargs):
+def update_json_file_kwargs(path_to_json_file='../settings.json', notebook_environment="Jupyter", **kwargs):
     """
-    This function may or may not update settings.json with a users' 
-    given variables. It assumes 'settings.json' is located in the
-    folder above this file's location.
-    Ex) '../settings.json'
+    This function may or may not update settings.json for a given kwargs.
+    Such updating also depends on the parameter 'notebook_environment'
 
     Args:
+        path_to_json_file (str): the path to the json file to be updated
+        notebook_environment (str): the environment of our notebook
+            Ex) "Jupyter", "Colab", etc.
         **kwargs (dict): A dict of keyword arguments
             Ex)
               ACCOUNT_ID (str): Users' ACCOUNT_ID
@@ -35,11 +36,10 @@ def update_settings_json_with_additional_variables(notebook_environment="Jupyter
     if notebook_environment == "Colab":
 
         # 1. Declare the relative path to seetings.json and assert it is there
-        relative_path_to_settings_json_file = '../settings.json'
-        assert os.path.isfile(relative_path_to_settings_json_file)
+        assert os.path.isfile(path_to_json_file)
 
         # 2. Load settings.json with its default values
-        with open(relative_path_to_settings_json_file) as settings_json_file:
+        with open(path_to_json_file) as settings_json_file:
             additional_variables = json.load(settings_json_file)
 
         # 3. If users' authorization info is different from default settings.json, update settings.json
@@ -48,7 +48,7 @@ def update_settings_json_with_additional_variables(notebook_environment="Jupyter
     
         # 3b. Update settings.json if users' authorization info is different from default settings.json
         if updated_additional_variables != additional_variables:
-            with open(relative_path_to_settings_json_file, 'w') as settings_json_file:
+            with open(path_to_json_file, 'w') as settings_json_file:
                 json.dump(updated_additional_variables, settings_json_file, indent=4)
 
 

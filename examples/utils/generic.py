@@ -12,37 +12,10 @@ import json
 
 # GENERIC UTILITIES
 
-def update_users_authorization_info(notebook_environment="Jupyter", **kwargs):
-    """
-    This function makes function calls that tries to update settings.json and 
-    settings.py with a users' authorization info.
-    
-    Args:
-        **kwargs (dict): A dict of keyword arguments
-            Ex)
-              ACCOUNT_ID (str): Users' ACCOUNT_ID
-              AUTH_TOKEN (str): Users' AUTH_TOKEN
-              MATERIALS_PROJECT_API_KEY (str): Users' MATERIALS_PROJECT_API_KEY
-              ORGANIZATION_ID (str): Users' ORGANIZATION_ID
-
-    Returns:
-        None
-    """
-
-    # If the notebook environment is Colab, then we must progrmatically update settings.json
-    # If the notebook environment is Jupyter, then we must manually update settings.json
-    if notebook_environment == "Colab":
-        update_settings_json_with_users_authorization_info(**kwargs)
-    
-    # In all notebook environments, we make a call to try and update settings.py 
-    # with the info in settings.json
-    update_settings_py_with_users_authorization_info()
-
-
-def update_settings_json_with_users_authorization_info(**kwargs):
+def update_settings_json_with_additional_variables(notebook_environment="Jupyter", **kwargs):
     """
     This function may or may not update settings.json with a users' 
-    authorization info. It assumes 'settings.json' is located in the 
+    given variables. It assumes 'settings.json' is located in the
     folder above this file's location.
     Ex) '../settings.json'
 
@@ -53,70 +26,30 @@ def update_settings_json_with_users_authorization_info(**kwargs):
               AUTH_TOKEN (str): Users' AUTH_TOKEN
               MATERIALS_PROJECT_API_KEY (str): Users' MATERIALS_PROJECT_API_KEY
               ORGANIZATION_ID (str): Users' ORGANIZATION_ID
+              etc.
 
     Returns:
         None
     """
 
-    # 1. Declare the relative path to seetings.json and assert it is there
-    relative_path_to_settings_json_file = '../settings.json'
-    assert os.path.isfile(relative_path_to_settings_json_file)
+    if notebook_environment == "Colab":
 
-    # 2. Load settings.json with its default values
-    with open(relative_path_to_settings_json_file) as settings_json_file:
-        default_authorization_info = json.load(settings_json_file)
+        # 1. Declare the relative path to seetings.json and assert it is there
+        relative_path_to_settings_json_file = '../settings.json'
+        assert os.path.isfile(relative_path_to_settings_json_file)
 
-    # 3. If users' authorization info is different from default settings.json, update settings.json   
-    # 3a. Update users' authorization info
-    updated_users_authorization_info = {**default_authorization_info, **kwargs}
+        # 2. Load settings.json with its default values
+        with open(relative_path_to_settings_json_file) as settings_json_file:
+            default_authorization_info = json.load(settings_json_file)
+
+        # 3. If users' authorization info is different from default settings.json, update settings.json
+        # 3a. Update users' authorization info
+        updated_users_authorization_info = {**default_authorization_info, **kwargs}
     
-    # 3b. Update settings.json if users' authorization info is different from default settings.json
-    if updated_users_authorization_info != default_authorization_info:
-        with open(relative_path_to_settings_json_file, 'w') as settings_json_file:
-            json.dump(updated_users_authorization_info, settings_json_file, indent=4)
-
-
-def update_settings_py_with_users_authorization_info():
-    """
-    This function updates settings.py with the users authorization info in settings.json.
-    It assumes 'settings.json' and 'settings.py' is located in the folder above this file's location.
-    Ex) '../settings.py'
-    Args:
-        None
-
-    Returns:
-        None
-    """
-
-    # 1. Declare the relative path to seetings.py and assert it is there
-    relative_path_to_settings_py_file = '../settings.py'
-    relative_path_to_settings_json_file = '../settings.json'
-    assert os.path.isfile(relative_path_to_settings_py_file)
-    assert os.path.isfile(relative_path_to_settings_json_file)
-
-    # 2. Read settings.py with its default values
-    with open(relative_path_to_settings_py_file) as settings_py_file:
-        settings_py_filelines = settings_py_file.readlines()
-
-    # 3. Load settings.json with its values (may be modified or not)
-    with open(relative_path_to_settings_json_file) as settings_json_file:
-        user_authorization_info = json.load(settings_json_file)
-
-    # 4. Update the users' authorization info in settings.py if changes were made to settings.json
-    # 4a. If users' authorization info in settings.json is different from settings.py,
-    #     make change to settings_py_filelines and change detect_changes to True
-    detect_changes = False
-    for index, line in enumerate(settings_py_filelines):
-        for key, value in user_authorization_info.items():
-            if '{}'.format(key+" = ") in line and line.split()[2] != '"{}"'.format(value):
-                settings_py_filelines[index] = settings_py_filelines[index].replace(line.split()[2], '"{}"'.format(value))
-                detect_changes = True
-
-    # 4b. If changes were detected, update settings.py
-    if detect_changes:
-        with open(relative_path_to_settings_py_file, 'w') as settings_py_file:
-            for line in settings_py_filelines:
-                settings_py_file.write(line)
+        # 3b. Update settings.json if users' authorization info is different from default settings.json
+        if updated_users_authorization_info != default_authorization_info:
+            with open(relative_path_to_settings_json_file, 'w') as settings_json_file:
+                json.dump(updated_users_authorization_info, settings_json_file, indent=4)
 
 
 def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
@@ -230,10 +163,10 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
                             install_package(name, version, notebook_environment)
 
 
-ensure_packages_are_installed("tabulate")
+#ensure_packages_are_installed("tabulate")
 
 # Needs to go here, to ensure it's installed before we import
-from tabulate import tabulate
+#from tabulate import tabulate
 
 
 # JOB UTILITIES

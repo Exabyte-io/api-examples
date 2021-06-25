@@ -82,7 +82,7 @@ def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
 
 # IMPORT UTILITIES
 
-def install_package(name, version=None, notebook_environment="Jupyter"):
+def install_package(name, notebook_environment="Jupyter", version=None):
     """
     Installs a package via Pip. If a version is supplied, will attempt to install that specific version.
     If one is not supplied, requirements.txt will be searched to find a version.
@@ -90,9 +90,9 @@ def install_package(name, version=None, notebook_environment="Jupyter"):
 
     Args:
         name (str): the name of the module (e.g. pandas, numpy, etc)
-        version (str): the specific version (if any) to import (e.g. 0.1.5, 1.0.0, etc).
         notebook_environment (str): the environment of our notebook.
             Ex) "Jupyter", "Colab", etc.
+        version (str): the specific version (if any) to import (e.g. 0.1.5, 1.0.0, etc).
 
     Returns:
         None
@@ -116,8 +116,7 @@ def install_package(name, version=None, notebook_environment="Jupyter"):
 
     # Install the modules
     import sys, subprocess
-    #subprocess.call([sys.executable, "-m", "pip", "install", pip_name])
-    os.system('pip install {}'.format(pip_name))
+    subprocess.call([sys.executable, "-m", "pip", "install", pip_name])
     # Invalidate module cache based on import_lib doc recommendation:
     #   https://docs.python.org/3/library/importlib.html#importlib.invalidate_caches
     importlib.invalidate_caches()
@@ -160,7 +159,7 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
                     if '==' in line:
                         name, version = line.strip().split("==")
                         if importlib.util.find_spec(name) is None:
-                            install_package(name, version, notebook_environment)
+                            install_package(name, notebook_environment, version)
 
 
 # JOB UTILITIES

@@ -14,7 +14,6 @@ use_interactive_JSON_viewer = False
     # AUTH_TOKEN: Account authentication token. See get_authentication_params.ipynb for more information.
     # MATERIALS_PROJECT_API_KEY: Materials project API key. See https://materialsproject.org/open for more information.
 
-
 # Load variables from the settings.json file
 import json, os
 relative_path_to_settings_json_file = os.path.join(os.path.dirname(__file__), 'settings.json')

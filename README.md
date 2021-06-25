@@ -82,7 +82,11 @@ If you would like to add new examples or adjust existing ones, please consider t
 
 2. Walk the readers through the examples by providing step-by-step explanation similar to [this](examples/material/get_materials_by_formula.ipynb).
 
-3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](examples/config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[3](#links)]. Please follow this convention.
+3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](examples/config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[3](#links)]. Please follow this convention. In order to use the post-save hooks, one must load the notebook from the folder containing 'config.py'. The notebooks should be loaded as follows:
+
+    ```bash
+    jupyter notebook --config=config.py
+    ```
 
 ## Links
 

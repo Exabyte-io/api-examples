@@ -41,13 +41,14 @@ else:
 
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path: sys.path.append(module_path)
-from utils.generic import ensure_packages_are_installed, update_settings_json_with_additional_variables, display_JSON
+from utils.generic import ensure_packages_are_installed, update_json_file_kwargs, display_JSON
 ensure_packages_are_installed(os.environ['notebook_environment'])
-update_settings_json_with_additional_variables(os.environ['notebook_environment'],
-                                ACCOUNT_ID=ACCOUNT_ID,
-                                AUTH_TOKEN=AUTH_TOKEN,
-                                MATERIALS_PROJECT_API_KEY=MATERIALS_PROJECT_API_KEY,
-                                ORGANIZATION_ID=ORGANIZATION_ID)
+update_json_file_kwargs('../settings.json',
+                        os.environ['notebook_environment'],
+                        ACCOUNT_ID=ACCOUNT_ID,
+                        AUTH_TOKEN=AUTH_TOKEN,
+                        MATERIALS_PROJECT_API_KEY=MATERIALS_PROJECT_API_KEY,
+                        ORGANIZATION_ID=ORGANIZATION_ID)
 import settings; importlib.reload(settings); from settings import ENDPOINT_ARGS
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 

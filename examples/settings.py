@@ -17,6 +17,7 @@ use_interactive_JSON_viewer = False
 # Load variables from the settings.json file
 import json, os
 absolute_path_to_settings_json_file = os.path.join(os.path.dirname(__file__), 'settings.json')
+assert(absolute_path_to_settings_json_file)
 with open(absolute_path_to_settings_json_file) as settings_json_file:
     settings_json_config = json.load(settings_json_file)
 

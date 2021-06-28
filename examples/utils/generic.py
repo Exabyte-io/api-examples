@@ -12,44 +12,31 @@ from tabulate import tabulate
 
 # GENERIC UTILITIES
 
-def update_json_file_kwargs(path_to_json_file='../settings.json', notebook_environment="Jupyter", **kwargs):
+def update_json_file_kwargs(path_to_json_file='../settings.json', **kwargs):
     """
-    This function may or may not update settings.json for a given kwargs.
-    Such updating also depends on the parameter 'notebook_environment'
+    This function updates settings.json for a given kwargs if kwargs
+    contains variables different from those already in json
 
     Args:
         path_to_json_file (str): the path to the json file to be updated
-        notebook_environment (str): the environment of our notebook
-            Ex) "Jupyter", "Colab", etc.
         **kwargs (dict): A dict of keyword arguments
-            Ex)
-              ACCOUNT_ID (str): Users' ACCOUNT_ID
-              AUTH_TOKEN (str): Users' AUTH_TOKEN
-              MATERIALS_PROJECT_API_KEY (str): Users' MATERIALS_PROJECT_API_KEY
-              ORGANIZATION_ID (str): Users' ORGANIZATION_ID
-              etc.
 
     Returns:
         None
     """
 
-    if notebook_environment == "Colab":
+    # 1. Assert the json file is where we think it is
+    assert os.path.isfile(path_to_json_file)
 
-        # 1. Declare the relative path to seetings.json and assert it is there
-        assert os.path.isfile(path_to_json_file)
+    # 2. Load settings.json
+    with open(path_to_json_file) as settings_json_file:
+        variables = json.load(settings_json_file)
 
-        # 2. Load settings.json with its default values
-        with open(path_to_json_file) as settings_json_file:
-            additional_variables = json.load(settings_json_file)
-
-        # 3. If users' authorization info is different from default settings.json, update settings.json
-        # 3a. Update users' authorization info
-        updated_additional_variables = {**additional_variables, **kwargs}
-    
-        # 3b. Update settings.json if users' authorization info is different from default settings.json
-        if updated_additional_variables != additional_variables:
-            with open(path_to_json_file, 'w') as settings_json_file:
-                json.dump(updated_additional_variables, settings_json_file, indent=4)
+    # 3. Update json file if kwargs contains new variables
+    if kwargs != variables:
+        updated_variables = {**variables, **kwargs}
+        with open(path_to_json_file, 'w') as settings_json_file:
+            json.dump(updated_variables, settings_json_file, indent=4)
 
 
 def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):

@@ -1,4 +1,4 @@
-from generic import ensure_packages_installed, update_json_file_kwargs
+from .generic import ensure_packages_installed, update_json_file_kwargs
 
 def setup_colab_runtime_environment(environment_variables_config):
     """

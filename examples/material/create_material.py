@@ -11,7 +11,6 @@
 # 
 # This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial.
 
-# In[]:
 
 
 #@title Authorization Form
@@ -27,7 +26,6 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 # # Imports
 
-# In[ ]:
 
 
 from utils.generic import display_JSON
@@ -39,7 +37,6 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
 
-# In[ ]:
 
 
 CONFIG = {
@@ -119,7 +116,6 @@ CONFIG = {
 # 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
 
-# In[ ]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -128,7 +124,6 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
-# In[ ]:
 
 
 display_JSON(material)

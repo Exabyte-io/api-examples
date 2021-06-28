@@ -12,6 +12,6 @@ def setup_colab_runtime_environment(environment_variables_config):
     Returns
         None
     """
-    ensure_packages_installed(environment_variables_config)
+    ensure_packages_are_installed(environment_variables_config)
     kwargs = {key: environment_variables_config[key] for key in ["ACCOUNT_ID", "AUTH_TOKEN", "MATERIALS_PROJECT_API_KEY", "ORGANIZATION_ID"]}
     update_json_file_kwargs(**kwargs)

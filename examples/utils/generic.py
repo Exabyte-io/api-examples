@@ -8,6 +8,7 @@ import urllib
 from IPython.display import display, JSON
 import json
 from tabulate import tabulate
+import re
 
 
 # GENERIC UTILITIES
@@ -156,9 +157,8 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
                     pass
                 # Check if packages exist, and install if they don't
                 else:
-                    # Because of how we read the lines, blank lines are represented as '\n'.
-                    # The following condition treats blank lines given as '\n' as well as '==' in comments.
-                    if '==' in line and '#' not in line:
+                    # If the line does not start or a line break, get the name and version of package.
+                    if not re.match("(^#)|(^\n)", line):
                         name, version = line.strip().split("==")
                         if importlib.util.find_spec(name) is None:
                             install_package(name, notebook_environment, version)

@@ -21,7 +21,7 @@ ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/feature/SOF-4400-skinny-req/examples/utils/notebooks-executables.py').read())
+exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/feature/SOF-4400-skinny-req/examples/utils/executable_for_notebook_runtimes.py').read())
 
 
 # # Imports
@@ -124,6 +124,7 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
+# In[]:
 
 
 display_JSON(material)

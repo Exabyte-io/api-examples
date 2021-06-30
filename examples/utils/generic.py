@@ -9,9 +9,11 @@ from IPython.display import display, JSON
 import json
 from tabulate import tabulate
 import re
-
+import sys
+import subprocess
 
 # GENERIC UTILITIES
+
 
 def update_json_file_kwargs(path_to_json_file='../settings.json', **kwargs):
     """
@@ -84,11 +86,11 @@ def get_requirements_filepath(notebook_environment):
     """
 
     if notebook_environment == "Colab":
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
+        requirements_filepath = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
     else:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
+        requirements_filepath = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
 
-    return reqs_file
+    return requirements_filepath
 
 
 def install_package(name, notebook_environment="Jupyter", version=None):
@@ -106,7 +108,7 @@ def install_package(name, notebook_environment="Jupyter", version=None):
     Returns:
         None
     """
-    # Check requiements.txt for current version, if one wasn't supplied
+    # Check requirements.txt for current version, if one wasn't supplied
     if version is None:
         reqs_file = get_requirements_filepath(notebook_environment)
         with open(reqs_file, "r") as reqs:
@@ -120,8 +122,6 @@ def install_package(name, notebook_environment="Jupyter", version=None):
     else:
         pip_name = name
 
-    # Install the modules
-    import sys, subprocess
     subprocess.call([sys.executable, "-m", "pip", "install", pip_name])
     # Invalidate module cache based on import_lib doc recommendation:
     #   https://docs.python.org/3/library/importlib.html#importlib.invalidate_caches
@@ -141,27 +141,36 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
     Returns:
         None
     """
-    # Install packages passed in to names
-    if len(names) > 0:
-        for name in names:
-            if importlib.util.find_spec(name) is None:
-                install_package(name, notebook_environment)
 
-    # Install requirements.txt if nothing was passed in
+    requirements_filepath = get_requirements_filepath(notebook_environment)
+
+    # If we are in Colab, we want to avoid installing packages 1 by 1, so let's
+    # call to pip install requirements-colab here:
+    if notebook_environment == 'Colab':
+        assert ('colab' in requirements_filepath)
+        subprocess.call([sys.executable, "-m", "pip", "install", "-r", requirements_filepath])
+
     else:
-        reqs_file = get_requirements_filepath(notebook_environment)
-        with open(reqs_file, "r") as reqs:
-            for line in reqs:
-                # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
-                if "jupyterlab" in line:
-                    pass
-                # Check if packages exist, and install if they don't
-                else:
-                    # If the line does not start or a line break, get the name and version of package.
-                    if not re.match("(^#)|(^\n)", line):
-                        name, version = line.strip().split("==")
-                        if importlib.util.find_spec(name) is None:
-                            install_package(name, notebook_environment, version)
+        # Install packages passed in to names
+        if len(names) > 0:
+            for name in names:
+                if importlib.util.find_spec(name) is None:
+                    install_package(name, notebook_environment)
+
+        # Install requirements.txt if nothing was passed in
+        else:
+            with open(requirements_filepath, "r") as reqs:
+                for line in reqs:
+                    # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
+                    if "jupyterlab" in line:
+                        pass
+                    # Check if packages exist, and install if they don't
+                    else:
+                        # If the line does not start or a line break, get the name and version of package.
+                        if not re.match("(^#)|(^\n)", line):
+                            name, version = line.strip().split("==")
+                            if importlib.util.find_spec(name) is None:
+                                install_package(name, notebook_environment, version)
 
 
 # JOB UTILITIES

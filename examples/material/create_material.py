@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4400-skinny-req/examples/material/create_material.ipynb)
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4400-skinny-req/examples/material/create_material.ipynb" target="_blank">Open in Google Colab</a>
 
 # # Overview
 # 
@@ -9,7 +9,7 @@
 
 # # Complete Authorization Form and Initialize Settings
 # 
-# This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial.
+# This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial. NOTE: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file 'settings.json' if you need to use these variables.
 
 
 
@@ -124,8 +124,6 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
-# In[]:
 
 
 display_JSON(material)
-

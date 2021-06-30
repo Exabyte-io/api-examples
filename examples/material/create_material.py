@@ -10,6 +10,8 @@
 # # Complete Authorization Form and Initialize Settings
 # 
 # This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial. NOTE: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file 'settings.json' if you need to use these variables.
+# 
+# To obtain your API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
 
 
 

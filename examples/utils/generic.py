@@ -14,7 +14,6 @@ import subprocess
 
 # GENERIC UTILITIES
 
-
 def update_json_file_kwargs(path_to_json_file='../settings.json', **kwargs):
     """
     This function updates settings.json for a given kwargs if kwargs

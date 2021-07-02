@@ -7,9 +7,39 @@ import settings
 import urllib
 from IPython.display import display, JSON
 import json
-
+from tabulate import tabulate
+import re
+import sys
+import subprocess
 
 # GENERIC UTILITIES
+
+def update_json_file_kwargs(path_to_json_file='../settings.json', **kwargs):
+    """
+    This function updates settings.json for a given kwargs if kwargs
+    contains variables different from those already in json
+
+    Args:
+        path_to_json_file (str): the path to the json file to be updated
+        **kwargs (dict): A dict of keyword arguments
+
+    Returns:
+        None
+    """
+
+    # 1. Assert the json file is where we think it is
+    assert os.path.isfile(path_to_json_file)
+
+    # 2. Load settings.json
+    with open(path_to_json_file) as settings_json_file:
+        variables = json.load(settings_json_file)
+
+    # 3. Update json file if kwargs contains new variables
+    if kwargs != variables:
+        updated_variables = {**variables, **kwargs}
+        with open(path_to_json_file, 'w') as settings_json_file:
+            json.dump(updated_variables, settings_json_file, indent=4)
+
 
 def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
     """
@@ -41,7 +71,28 @@ def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
 
 # IMPORT UTILITIES
 
-def install_package(name, version=None):
+def get_requirements_filepath(notebook_environment):
+    """
+    This function gives a user the path to a specific requirements.txt depending on
+    a users' notebook environment.
+
+    Args:
+        notebook_environment (str): the environment of our notebook.
+            Ex) "Jupyter", "Colab", etc.
+
+    Returns:
+        requirements_filepath (str): the path to a specific requirements.txt
+    """
+
+    if notebook_environment == "Colab":
+        requirements_filepath = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
+    else:
+        requirements_filepath = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
+
+    return requirements_filepath
+
+
+def install_package(name, notebook_environment="Jupyter", version=None):
     """
     Installs a package via Pip. If a version is supplied, will attempt to install that specific version.
     If one is not supplied, requirements.txt will be searched to find a version.
@@ -49,14 +100,16 @@ def install_package(name, version=None):
 
     Args:
         name (str): the name of the module (e.g. pandas, numpy, etc)
+        notebook_environment (str): the environment of our notebook.
+            Ex) "Jupyter", "Colab", etc.
         version (str): the specific version (if any) to import (e.g. 0.1.5, 1.0.0, etc).
 
     Returns:
         None
     """
-    # Check requiements.txt for current version, if one wasn't supplied
+    # Check requirements.txt for current version, if one wasn't supplied
     if version is None:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
+        reqs_file = get_requirements_filepath(notebook_environment)
         with open(reqs_file, "r") as reqs:
             for line in reqs:
                 if name in line:
@@ -68,50 +121,55 @@ def install_package(name, version=None):
     else:
         pip_name = name
 
-    # Install the modules
-    import sys, subprocess
     subprocess.call([sys.executable, "-m", "pip", "install", pip_name])
     # Invalidate module cache based on import_lib doc recommendation:
     #   https://docs.python.org/3/library/importlib.html#importlib.invalidate_caches
     importlib.invalidate_caches()
 
 
-def ensure_packages_are_installed(*names):
+def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
     """
     Ensures a package is installed on the system, by installing it if it does not exist currently.
     If nothing is passed as the argument, packages specified in requirements.txt are installed.
 
     Args:
+        notebook_environment (str): the environment of our notebook.
+            Ex) "Jupyter", "Colab", etc.
         names (str): the names of the package to be checked (e.g. pandas, numpy, etc)
 
     Returns:
         None
     """
-    # Install packages passed in to names
-    if len(names) > 0:
-        for name in names:
-            if importlib.util.find_spec(name) is None:
-                install_package(name)
 
-    # Install requirements.txt if nothing was passed in
+    requirements_filepath = get_requirements_filepath(notebook_environment)
+
+    # If we are in Colab, we want to avoid installing packages 1 by 1, so let's
+    # call to pip install requirements-colab here:
+    if notebook_environment == 'Colab':
+        assert ('colab' in requirements_filepath)
+        subprocess.call([sys.executable, "-m", "pip", "install", "-r", requirements_filepath])
+
     else:
-        reqs_file = os.path.realpath(os.path.join(__file__, "../../../requirements.txt"))
-        with open(reqs_file, "r") as reqs:
-            for line in reqs:
-                # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
-                if "jupyterlab" in line:
-                    pass
-                # Check if packages exist, and install if they don't
-                else:
-                    name, version = line.strip().split("==")
-                    if importlib.util.find_spec(name) is None:
-                        install_package(name, version)
+        # Install packages passed in to names
+        if len(names) > 0:
+            for name in names:
+                if importlib.util.find_spec(name) is None:
+                    install_package(name, notebook_environment)
 
-
-ensure_packages_are_installed("tabulate")
-
-# Needs to go here, to ensure it's installed before we import
-from tabulate import tabulate
+        # Install requirements.txt if nothing was passed in
+        else:
+            with open(requirements_filepath, "r") as reqs:
+                for line in reqs:
+                    # Ignore Jupyterlab, since the user is probably running it already to view the notebooks
+                    if "jupyterlab" in line:
+                        pass
+                    # Check if packages exist, and install if they don't
+                    else:
+                        # If the line does not start or a line break, get the name and version of package.
+                        if not re.match("(^#)|(^\n)", line):
+                            name, version = line.strip().split("==")
+                            if importlib.util.find_spec(name) is None:
+                                install_package(name, notebook_environment, version)
 
 
 # JOB UTILITIES

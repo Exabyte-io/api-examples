@@ -8,16 +8,23 @@
 
 use_interactive_JSON_viewer = False
 
-# Account settings. Need a one-time adjustment for examples to work.
+# Account settings. Need a one-time adjustment for examples to work. These should be set in settings.json
 
     # ACCOUNT_ID: Account ID. See get_authentication_params.ipynb example for more information.
     # AUTH_TOKEN: Account authentication token. See get_authentication_params.ipynb for more information.
     # MATERIALS_PROJECT_API_KEY: Materials project API key. See https://materialsproject.org/open for more information.
 
-ACCOUNT_ID = "ACCOUNT_ID"
-AUTH_TOKEN = "AUTH_TOKEN"
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"
-ORGANIZATION_ID = "ORGANIZATION_ID"
+# Load variables from the settings.json file
+import json, os
+absolute_path_to_settings_json_file = os.path.join(os.path.dirname(__file__), 'settings.json')
+assert(absolute_path_to_settings_json_file)
+with open(absolute_path_to_settings_json_file) as settings_json_file:
+    settings_json_config = json.load(settings_json_file)
+
+ACCOUNT_ID = settings_json_config.get("ACCOUNT_ID")
+AUTH_TOKEN = settings_json_config.get("AUTH_TOKEN")
+MATERIALS_PROJECT_API_KEY = settings_json_config.get("MATERIALS_PROJECT_API_KEY")
+ORGANIZATION_ID = settings_json_config.get("ORGANIZATION_ID")
 
 # Advanced settings. Should not need adjustments.
 

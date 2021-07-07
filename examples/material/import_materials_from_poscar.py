@@ -37,8 +37,8 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 
 from utils.generic import display_JSON
+import settings; importlib.reload(settings)
 from settings import ENDPOINT_ARGS
-
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 

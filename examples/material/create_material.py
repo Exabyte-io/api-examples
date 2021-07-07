@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/fe/examples/material/create_material.ipynb" target="_blank">Open in Google Colab</a>
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/dev/examples/material/create_material.ipynb" target="_blank">Open in Google Colab</a>
 
 # # Overview
 # 
@@ -29,7 +29,7 @@ ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/blob/dev/examples/utils/initialize_settings.py').read())
 
 
 # # Imports
@@ -38,7 +38,6 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 from utils.generic import display_JSON
 import settings; importlib.reload(settings); from settings import ENDPOINT_ARGS
-
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 

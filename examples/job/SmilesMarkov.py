@@ -38,7 +38,13 @@ import functools
 # 
 # We have acquired a large datase of SMILES strings from the following repository: https://github.com/GLambard/Molecules_Dataset_Collection
 # 
-# For convenience, a portion of the dataset is incorporated into this repository. We'll iterate over each file, and read in all of the SMILES strings we can find. In addition, for the purposes of keeping things simple in the webinar, we'll remove SMILES strings containing a colon (used for denoting the conjugated pi-bonds present in aromatic systems). This makes the problem a bit easier for our model to learn.
+# We'll git clone, iterate over each file, and read in all of the SMILES strings we can find. In addition, for the purposes of keeping things simple in the webinar, we'll remove SMILES strings containing a colon (used for denoting the conjugated pi-bonds present in aromatic systems). This makes the problem a bit easier for our model to learn.
+
+# In[]:
+
+
+get_ipython().system('git clone https://github.com/Exabyte-io/Molecules_Dataset_Collection.git ../assets/Molecules_Dataset_Collection')
+
 
 # In[]:
 

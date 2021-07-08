@@ -104,3 +104,6 @@ venv.bak/
 .mypy_cache/
 
 .idea
+
+# Miscellaneous
+examples/assets/Molecules_Dataset_Collection

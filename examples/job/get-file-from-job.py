@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4618/examples/job/get-file-from-job.ipynb" target="_blank">Open in Google Colab</a>
+
 # # Get-File-From-Job
 # 
 # This example demonstrates how to use Exabyte RESTful API to check for and acquire files from jobs which have been run. This example assumes that the user is already familiar with the [creation and submission of jobs](create_and_submit_jobs.ipynb) using our API.
@@ -27,24 +29,39 @@
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
 # - [Creating and submitting jobs](../job/create_and_submit_job.ipynb)
 
-# ## Execution
+# # Complete Authorization Form and Initialize Settings
 # 
+# This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial.
 # 
-# ### Import packages
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
+# 
+# MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
+# 
+# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.exabyte.io/collaboration/organizations/overview/
+# 
+# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
 
-# In[]:
 
 
-import os
-import sys
-import urllib
+#@title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
+ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+import os, glob, sys, importlib, urllib
+
+# The below execution sets up runtime using code stored remotely in a url
+exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+
+
+# ## Imports
+
+
 
 # Import settings file and utils file
-module_path = os.path.abspath(os.path.join('..'))
-if module_path not in sys.path: sys.path.append(module_path)
+import settings; importlib.reload(settings)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, ensure_packages_are_installed, display_JSON
-ensure_packages_are_installed()
+from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, display_JSON
 
 # Relevant functions from the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints
@@ -66,7 +83,6 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # 
 # > <span style="color: orange">Note</span>: This cell uses our API to copy the unit cell of silicon from Materials Project into your account. It then copies a workflow to get the total energy of a system using Quantum Espresso to your account. Finally, a job is created using the Quantum Espresso workflow for the silicon unit cell, and the job is submitted to the cluster. For more information, please refer to our [run-simulation-and-extract-properties](./run-simulations-and-extract-properties.ipynb) notebook, located in this directory.
 
-# In[]:
 
 
 # Get some account information
@@ -105,7 +121,6 @@ wait_for_jobs_to_finish(job_endpoints, [job['_id']])
 # 
 # Here, we'll get a list of all files that belong to the job.
 
-# In[]:
 
 
 files = job_endpoints.list_files(job['_id'])
@@ -128,7 +143,6 @@ for path in paths:
 # - name - The filename.
 # - signedUrl - This is a link which can be used to download the file for a short amount of time.
 
-# In[]:
 
 
 for file in files:
@@ -141,7 +155,6 @@ display_JSON(output_file_metadata)
 # 
 # The signedUrl gives us a place to access the file and download it. Let's read it into memory, and print out the last few lines of our job.
 
-# In[]:
 
 
 server_response = urllib.request.urlopen(output_file_metadata['signedUrl'])
@@ -161,7 +174,6 @@ for line in lines[-90:]:
 # 
 # Now that we've verified the job is done, let's go ahead and save it and its input to disk.
 
-# In[]:
 
 
 # We've already got an output file, so et's grab the input file we sent to Quantum Espresso
@@ -172,7 +184,6 @@ server_response = urllib.request.urlopen(input_file_metadata['signedUrl'])
 input_file_bytes = server_response.read()
 
 
-# In[]:
 
 
 # Let's write the input file to disk. Note that we get files as a bytes string from the server, which is convenient for binaries, images, and other non-human-readable data.
@@ -181,10 +192,8 @@ with open(input_file_metadata['name'], 'wb') as file_descriptor:
     file_descriptor.write(input_file_bytes)
 
 
-# In[]:
 
 
 # Now, let's write our output file to the disk. Note that because we already decoded it, we can just use the 'w' file mode.
 with open(output_file_metadata['name'], 'w') as file_descriptor:
     file_descriptor.write(output_file)
-

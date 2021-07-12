@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4618/examples/job/run-simulations-and-extract-properties.ipynb" target="_blank">Open in Google Colab</a>
+
 # # Run Simulations and Extract Properties
 # 
 # This example demonstrates how to use Exabyte RESTful API to create simulation [Jobs](https://docs.exabyte.io/jobs/overview/) programmatically for multiple [Materials](https://docs.exabyte.io/materials/overview/) at once and extract the resulting [Properties](https://docs.exabyte.io/properties/overview/) forming a [Pandas](https://pandas.pydata.org/) dataframe.
@@ -34,9 +36,32 @@
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
 # - [Creating and submitting jobs](../job/create_and_submit_job.ipynb)
 
-# ## Execution
+# # Complete Authorization Form and Initialize Settings
 # 
+# This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial.
 # 
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
+# 
+# MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
+# 
+# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.exabyte.io/collaboration/organizations/overview/
+# 
+# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
+
+# In[]:
+
+
+#@title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
+ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+import os, glob, sys, importlib, urllib.request
+
+# The below execution sets up runtime using code stored remotely in a url
+exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+
+
 # ### Import packages
 
 # In[]:
@@ -44,15 +69,11 @@
 
 import time
 from IPython.display import IFrame
-import os
-import sys
 
 # Import settings file and utils file
-module_path = os.path.abspath(os.path.join('..'))
-if module_path not in sys.path: sys.path.append(module_path)
+import settings; importlib.reload(settings)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, ensure_packages_are_installed
-ensure_packages_are_installed()
+from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
 
 import pandas as pd
 
@@ -66,7 +87,7 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 
 
 # #### Materials
-#     
+# 
 # - **MATERIALS_PROJECT_IDS**: a list of material IDs to be imported from materials project
 # - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
 # - **MATERIALS_SET_NAME**: the name of the materials set
@@ -212,7 +233,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[]:
+# In[ ]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -221,13 +242,13 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 # ### Extract results
 # 
-# For each material, simulaion job, final structure, pressure and band gaps are extracted. 
+# For each material, simulaion job, final structure, pressure and band gaps are extracted.
 # 
 # - Final structure and pressure are extracted from the first unit (vasp_relax with index 0) of the first job's subworkflow (volume-relaxation with index 0)
 # 
 # - Band gaps are extracted from the second unit (vasp-bands with index 1) of the second job's subworkflow (SCF-BS-BG-DOS with index 1).
 
-# In[]:
+# In[ ]:
 
 
 results = []
@@ -251,7 +272,7 @@ for material in materials:
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[]:
+# In[ ]:
 
 
 table = []
@@ -271,7 +292,7 @@ for result in results:
 # - **"N-SITES"**: Number of Sites
 # - **"LAT"**: LATTICE
 
-# In[]:
+# In[ ]:
 
 
 headers = []
@@ -283,7 +304,7 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 
 # Create and print the final table as Pandas dataFrame.
 
-# In[]:
+# In[ ]:
 
 
 df = pd.DataFrame(data=table, columns=headers)

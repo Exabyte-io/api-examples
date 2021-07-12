@@ -48,7 +48,7 @@ ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
 AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
 MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
 ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
-import os, glob, sys, importlib, urllib
+import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
 exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())

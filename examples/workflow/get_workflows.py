@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4618/examples/workflow/get_workflows.ipynb" target="_blank">Open in Google Colab</a>
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/SOF/4618/examples/workflow/get_workflows.ipynb" target="_blank">Open in Google Colab</a>
 
 # # Overview
 # 
@@ -19,6 +19,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
 
+# In[]:
 
 
 #@title Authorization Form
@@ -34,6 +35,7 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 # ## Imports
 
+# In[]:
 
 
 import settings; importlib.reload(settings)
@@ -49,6 +51,7 @@ from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 # 
 # - **limit**: Maximum number of results to return. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
+# In[]:
 
 
 QUERY = {
@@ -65,6 +68,7 @@ OPTIONS = {
 # 
 # Initialize a helper class to interact with `WorkflowEndpoints`. This only has to be done once.
 
+# In[]:
 
 
 endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
@@ -74,6 +78,7 @@ endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
 # 
 # Contact the endpoint to list workflows according to the query above.
 
+# In[]:
 
 
 workflows = endpoint.list(QUERY, OPTIONS)
@@ -83,6 +88,8 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # 
 # Print the list of workflows saved under the corresponding variable in pretty JSON below.
 
+# In[]:
 
 
 display_JSON(workflows)
+

@@ -19,6 +19,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
 
+# In[]:
 
 
 #@title Authorization Form
@@ -34,6 +35,7 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 # # Imports
 
+# In[]:
 
 
 from utils.generic import display_JSON
@@ -49,6 +51,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
 
+# In[]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
@@ -59,6 +62,7 @@ TAGS = ["tag1", "tag2"]
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_materialsproject` function to import materials.
 
+# In[]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -69,6 +73,7 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # 
 # Print the list of imported materials in pretty JSON below.
 
+# In[]:
 
 
 display_JSON(materials)

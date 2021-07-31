@@ -19,6 +19,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
 
+# In[]:
 
 
 #@title Authorization Form
@@ -32,6 +33,7 @@ import os, glob, sys, importlib, urllib.request
 exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
 
 
+# In[]:
 
 
 import settings; importlib.reload(settings)
@@ -45,6 +47,7 @@ from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 
 # ## Initialize the endpoints
 
+# In[]:
 
 
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
@@ -54,6 +57,7 @@ workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 # Set job name.
 
+# In[]:
 
 
 JOB_NAME = "TEST JOB"
@@ -63,6 +67,7 @@ JOB_NAME = "TEST JOB"
 # 
 # Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different material and workflow.
 
+# In[]:
 
 
 default_material = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
@@ -77,6 +82,7 @@ owner_id = default_material["owner"]["_id"]
 # 
 # The job belongs to user's default account and it is created inside the defauult account's project. 
 
+# In[]:
 
 
 config = {
@@ -95,6 +101,7 @@ config = {
 
 # ## Create and submit job
 
+# In[]:
 
 
 job = job_endpoints.create(config)
@@ -105,6 +112,7 @@ job_endpoints.submit(job['_id'])
 # 
 # Print the job in pretty JSON below. Check `status` field to make sure job is submiited.
 
+# In[]:
 
 
 job = job_endpoints.get(job['_id'])

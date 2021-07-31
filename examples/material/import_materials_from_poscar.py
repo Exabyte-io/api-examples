@@ -19,6 +19,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
 
+# In[]:
 
 
 #@title Authorization Form
@@ -39,6 +40,7 @@ if environment_variables_config['notebook_environment'] == 'Colab':
 
 # # Imports
 
+# In[]:
 
 
 from utils.generic import display_JSON
@@ -53,6 +55,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # - **NAME**: material name
 # - **POSCAR_PATH**: absolute path to the POSCAR file
 
+# In[]:
 
 
 NAME = "My Material"
@@ -63,6 +66,7 @@ POSCAR_PATH = "../assets/mp-978534.poscar"
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_file` function to import the material.
 
+# In[]:
 
 
 content  = ""
@@ -77,6 +81,7 @@ material = endpoint.import_from_file(NAME, content)
 # 
 # Print the list of imported materials in pretty JSON below.
 
+# In[]:
 
 
 display_JSON(material)

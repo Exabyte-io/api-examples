@@ -41,6 +41,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
 
+# In[]:
 
 
 #@title Authorization Form
@@ -56,6 +57,7 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 # ## Imports
 
+# In[]:
 
 
 # Import settings file and utils file
@@ -83,6 +85,7 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # 
 # > <span style="color: orange">Note</span>: This cell uses our API to copy the unit cell of silicon from Materials Project into your account. It then copies a workflow to get the total energy of a system using Quantum Espresso to your account. Finally, a job is created using the Quantum Espresso workflow for the silicon unit cell, and the job is submitted to the cluster. For more information, please refer to our [run-simulation-and-extract-properties](./run-simulations-and-extract-properties.ipynb) notebook, located in this directory.
 
+# In[]:
 
 
 # Get some account information
@@ -121,6 +124,7 @@ wait_for_jobs_to_finish(job_endpoints, [job['_id']])
 # 
 # Here, we'll get a list of all files that belong to the job.
 
+# In[]:
 
 
 files = job_endpoints.list_files(job['_id'])
@@ -143,6 +147,7 @@ for path in paths:
 # - name - The filename.
 # - signedUrl - This is a link which can be used to download the file for a short amount of time.
 
+# In[]:
 
 
 for file in files:
@@ -155,6 +160,7 @@ display_JSON(output_file_metadata)
 # 
 # The signedUrl gives us a place to access the file and download it. Let's read it into memory, and print out the last few lines of our job.
 
+# In[]:
 
 
 server_response = urllib.request.urlopen(output_file_metadata['signedUrl'])
@@ -174,6 +180,7 @@ for line in lines[-90:]:
 # 
 # Now that we've verified the job is done, let's go ahead and save it and its input to disk.
 
+# In[]:
 
 
 # We've already got an output file, so et's grab the input file we sent to Quantum Espresso
@@ -184,6 +191,7 @@ server_response = urllib.request.urlopen(input_file_metadata['signedUrl'])
 input_file_bytes = server_response.read()
 
 
+# In[]:
 
 
 # Let's write the input file to disk. Note that we get files as a bytes string from the server, which is convenient for binaries, images, and other non-human-readable data.
@@ -192,6 +200,7 @@ with open(input_file_metadata['name'], 'wb') as file_descriptor:
     file_descriptor.write(input_file_bytes)
 
 
+# In[]:
 
 
 # Now, let's write our output file to the disk. Note that because we already decoded it, we can just use the 'w' file mode.

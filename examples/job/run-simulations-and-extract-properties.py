@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/dev/examples/job/run-simulations-and-extract-properties.ipynb" target="_blank">Open in Google Colab</a>
+
 # # Run Simulations and Extract Properties
 # 
 # This example demonstrates how to use Exabyte RESTful API to create simulation [Jobs](https://docs.exabyte.io/jobs/overview/) programmatically for multiple [Materials](https://docs.exabyte.io/materials/overview/) at once and extract the resulting [Properties](https://docs.exabyte.io/properties/overview/) forming a [Pandas](https://pandas.pydata.org/) dataframe.
@@ -34,9 +36,32 @@
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
 # - [Creating and submitting jobs](../job/create_and_submit_job.ipynb)
 
-# ## Execution
+# # Complete Authorization Form and Initialize Settings
 # 
+# This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial.
 # 
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
+# 
+# MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
+# 
+# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.exabyte.io/collaboration/organizations/overview/
+# 
+# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
+
+# In[]:
+
+
+#@title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
+ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+import os, glob, sys, importlib, urllib.request
+
+# The below execution sets up runtime using code stored remotely in a url
+exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+
+
 # ### Import packages
 
 # In[]:
@@ -44,15 +69,11 @@
 
 import time
 from IPython.display import IFrame
-import os
-import sys
 
 # Import settings file and utils file
-module_path = os.path.abspath(os.path.join('..'))
-if module_path not in sys.path: sys.path.append(module_path)
+import settings; importlib.reload(settings)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, ensure_packages_are_installed
-ensure_packages_are_installed()
+from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
 
 import pandas as pd
 
@@ -66,7 +87,7 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 
 
 # #### Materials
-#     
+# 
 # - **MATERIALS_PROJECT_IDS**: a list of material IDs to be imported from materials project
 # - **TAGS**: a list of [tags](https://docs.exabyte.io/entities-general/data/#tags) to assign to imported materials
 # - **MATERIALS_SET_NAME**: the name of the materials set
@@ -121,6 +142,10 @@ IFrame("https://platform.exabyte.io/analytics/workflows/{}".format(BANK_WORKFLOW
 # - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
 # - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
+# 
+# explain in the notebook that the job might run out of the limit of memory so it is clear, (2) suggest using OR queue to avoid memory limitations
+# 
+# > <span style="color: orange">**NOTE**</span>: Although here we set the QUEUE to be debug, it is possible the job might run out of memory, and result in an Errored-Jobs status. If this happens, we suggest you switch from `QUEUE = D` to `QUEUE = OR` to avoid memory limitations.
 
 # In[]:
 
@@ -221,7 +246,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 # ### Extract results
 # 
-# For each material, simulaion job, final structure, pressure and band gaps are extracted. 
+# For each material, simulaion job, final structure, pressure and band gaps are extracted.
 # 
 # - Final structure and pressure are extracted from the first unit (vasp_relax with index 0) of the first job's subworkflow (volume-relaxation with index 0)
 # 
@@ -289,4 +314,3 @@ headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])
 df = pd.DataFrame(data=table, columns=headers)
 html = dataframe_to_html(df)
 html
-

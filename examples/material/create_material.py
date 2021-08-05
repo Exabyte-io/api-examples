@@ -19,6 +19,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
 
+# In[]:
 
 
 #@title Authorization Form
@@ -29,11 +30,12 @@ ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/blob/dev/examples/utils/initialize_settings.py').read())
+exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
 
 
 # # Imports
 
+# In[]:
 
 
 from utils.generic import display_JSON
@@ -45,6 +47,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
 
+# In[]:
 
 
 CONFIG = {
@@ -124,6 +127,7 @@ CONFIG = {
 # 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
 
+# In[]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -132,6 +136,7 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
+# In[]:
 
 
 display_JSON(material)

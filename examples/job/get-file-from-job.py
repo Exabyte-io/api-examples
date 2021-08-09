@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4685/examples/job/get-file-from-job.ipynb" target="_blank">Open in Google Colab</a>
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4685/examples/job/get-file-from-job.ipynb" target="_parent">
+# <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
+# </a>
 
 # # Get-File-From-Job
 # 

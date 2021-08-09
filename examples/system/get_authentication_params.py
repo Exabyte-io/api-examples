@@ -45,8 +45,8 @@ from exabyte_api_client.endpoints.login import LoginEndpoint
 # In[]:
 
 
-USERNAME = "USERNAME"
-PASSWORD = "PASSWORD"
+USERNAME = "YOUR_USERNANE"
+PASSWORD = "YOUR_PASSWORD"
 
 
 # ## Initialize the endpoint

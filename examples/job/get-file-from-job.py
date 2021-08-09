@@ -187,7 +187,7 @@ for line in lines[-90:]:
 # In[]:
 
 
-# We've already got an output file, so et's grab the input file we sent to Quantum Espresso
+# We've already got an output file, so let's grab the input file we sent to Quantum Espresso
 for file in files:
     if 'pw_scf.in' == file['name']:
         input_file_metadata = file     

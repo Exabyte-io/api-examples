@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <button>
 # <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4685/examples/material/api_interoperability_showcase.ipynb" target="_blank">
 # <img alt="Open in Google Colab" src="https://drive.google.com/uc?id=1hULRfnrwYTJFxcwEIOaRtN6uZsr8FICb" width="150" border="0">
 # </a>
-# </button>
 
 # # Overview
 # 

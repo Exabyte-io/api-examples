@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/dev/examples/system/get_authentication_params.ipynb" target="_blank">Open in Google Colab</a>
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/feature/SOF-4685/examples/system/get_authentication_params.ipynb" target="_blank">Open in Google Colab</a>
 
 # # Overview
 # 
@@ -9,14 +9,16 @@
 # 
 # Here, we execute a remote URL to set our notebook environment. Do not edit the following cell's contents.
 
-# In[ ]:
+# In[]:
 
 
 ACCOUNT_ID = AUTH_TOKEN = MATERIALS_PROJECT_API_KEY = ORGANIZATION_ID = ''
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+if 'isExecuted' not in globals():
+    exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+    isExecuted = True
 
 
 # # Execution
@@ -25,7 +27,7 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 # ## Import packages
 
-# In[ ]:
+# In[]:
 
 
 from settings import HOST, PORT, VERSION, SECURE
@@ -40,16 +42,16 @@ from exabyte_api_client.endpoints.login import LoginEndpoint
 # 
 # - **PASSWORD**: Your Exabyte account password.
 
-# In[ ]:
+# In[]:
 
 
-USERNAME = "YOUR_USERNANE"
-PASSWORD = "YOUR_PASSWORD"
+USERNAME = "USERNAME"
+PASSWORD = "PASSWORD"
 
 
 # ## Initialize the endpoint
 
-# In[ ]:
+# In[]:
 
 
 endpoint = LoginEndpoint(HOST, PORT, USERNAME, PASSWORD, VERSION, SECURE)

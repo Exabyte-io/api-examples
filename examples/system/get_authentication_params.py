@@ -18,9 +18,7 @@ ACCOUNT_ID = AUTH_TOKEN = MATERIALS_PROJECT_API_KEY = ORGANIZATION_ID = ''
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-if 'isExecuted' not in globals():
-    exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
-    isExecuted = True
+exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/feature/SOF-4685/examples/utils/initialize_settings.py').read())
 
 
 # # Execution
@@ -64,7 +62,7 @@ auth_params = endpoint.login()
 # 
 # Print the authentication parameters in pretty JSON below. Update [settings](../settings.py) with this parameters to be able to run other examples.
 
-# In[ ]:
+# In[]:
 
 
 display_JSON(auth_params)

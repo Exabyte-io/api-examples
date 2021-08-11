@@ -5,7 +5,6 @@
 #
 # If using Jupyter, these variables can be left to their default values in the code cell, but the user
 # should change these values in the settings.json file located in the examples folder.
-import os
 
 environment_variables_config = {'ACCOUNT_ID': ACCOUNT_ID,
                                 'AUTH_TOKEN': AUTH_TOKEN,

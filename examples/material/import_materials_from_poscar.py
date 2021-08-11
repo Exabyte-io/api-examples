@@ -35,7 +35,7 @@ import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
 exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/feature/SOF-4685/examples/utils/initialize_settings.py').read())
-    
+
 # For this particular notebook example, we need to take an extra step if we are using colab
 if environment_variables_config['notebook_environment'] == 'Colab':
     get_ipython().system('sudo apt-get install git-lfs')

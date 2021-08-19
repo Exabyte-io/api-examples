@@ -11,7 +11,7 @@
 # 
 # Here, we execute a remote URL to set our notebook environment. Do not edit the following cell's contents.
 
-# In[]:
+# In[ ]:
 
 
 ACCOUNT_ID = AUTH_TOKEN = MATERIALS_PROJECT_API_KEY = ORGANIZATION_ID = ''
@@ -27,7 +27,7 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 # ## Import packages
 
-# In[]:
+# In[ ]:
 
 
 from settings import HOST, PORT, VERSION, SECURE
@@ -42,7 +42,7 @@ from exabyte_api_client.endpoints.login import LoginEndpoint
 # 
 # - **PASSWORD**: Your Exabyte account password.
 
-# In[]:
+# In[ ]:
 
 
 USERNAME = "YOUR_USERNANE"
@@ -51,7 +51,7 @@ PASSWORD = "YOUR_PASSWORD"
 
 # ## Initialize the endpoint
 
-# In[]:
+# In[ ]:
 
 
 endpoint = LoginEndpoint(HOST, PORT, USERNAME, PASSWORD, VERSION, SECURE)

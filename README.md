@@ -62,6 +62,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 5. Optional [Autoformatting](https://jupyterlab-code-formatter.readthedocs.io/en/latest/index.html) for jupyter notebooks using jupyter lab:
 
     ```bash
+    pip install jupyterlab_code_formatter
     pip install black
     cd examples
     jupyter lab --config=config.py

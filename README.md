@@ -59,6 +59,35 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
     jupyter lab --config=config.py
     ```
 
+5. Optional [Autoformatting](https://jupyterlab-code-formatter.readthedocs.io/en/latest/index.html) for jupyter notebooks using jupyter lab:
+
+    ```bash
+    pip install black
+    cd examples
+    jupyter lab --config=config.py
+    Settings < Advanced Settings Editor < Jupyterlab Code Formatter
+    ```
+
+    Two panels should open up. The first (left) panel will be 'System Defaults' and the second (right) panel will be 'User Preferences'.
+
+    Paste the following in User Preferences:
+
+    ```
+    {
+        "formatOnSave": true,
+
+        "preferences": {
+            "default_formatter": {
+                "python": "black",
+                "R": "styler"
+            }
+        }
+    }
+    ```
+
+    The autoformatting feature will be triggered each time a .ipynb notebook is saved.
+
+
 ## Usage
 
 In order to run or edit the examples:

@@ -28,15 +28,19 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 
 # # Imports
@@ -45,7 +49,9 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 
 from utils.generic import display_JSON
-import settings; importlib.reload(settings)
+import settings
+
+importlib.reload(settings)
 from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 
 import ase.io
@@ -78,7 +84,7 @@ print(iron_oxides_ids)
 # In[]:
 
 
-#As a demonstration, take the first 10 iron oxides
+# As a demonstration, take the first 10 iron oxides
 some_iron_oxides = iron_oxides_ids[:10]
 print(some_iron_oxides)
 
@@ -92,7 +98,9 @@ print(some_iron_oxides)
 
 # Upload the first 10 iron oxides found to our account
 exabyte_materials_api = MaterialEndpoints(*ENDPOINT_ARGS)
-materials = exabyte_materials_api.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, some_iron_oxides)
+materials = exabyte_materials_api.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, some_iron_oxides
+)
 
 
 # Finally, it is always useful to stay organized. Materials sets make this convenient, acting as a folder to keep a group of related materials in. This would be especially helpful if, in the future, we wanted run a calculation over all the oxides we found in this example.
@@ -101,6 +109,6 @@ materials = exabyte_materials_api.import_from_materialsproject(MATERIALS_PROJECT
 
 
 # Move the iron oxides to a materials set, just for this example
-materials_set = exabyte_materials_api.create_set({"name" : "Some Iron Oxides"})
+materials_set = exabyte_materials_api.create_set({"name": "Some Iron Oxides"})
 for material in materials:
     exabyte_materials_api.move_to_set(material["_id"], "", materials_set["_id"])

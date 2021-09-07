@@ -43,20 +43,22 @@ def execute():
         None
     """
 
-    if 'google.colab' in str(get_ipython()):
-        environment_variables_config.update({'notebook_environment': 'Colab'})
-        get_ipython().system('git clone https://github.com/Exabyte-io/exabyte-api-examples.git')
-        from google.colab import _message
-        notebook_name = _message.blocking_request('get_ipynb')['ipynb']['metadata']['colab']['name']
-        notebook_path = glob.glob('**/'+notebook_name, recursive=True)[0][0:-len(notebook_name)]
-        os.chdir(notebook_path) # go to the folder in the repo where one would be if this was in local Jupyter
-    elif 'ZMQInteractiveShell' in str(get_ipython()):
-        environment_variables_config.update({'notebook_environment': 'Jupyter'})
-    else:
-        environment_variables_config.update({'notebook_environment': ''})
+    if 'is_setup_executed' not in os.environ:
+        if 'google.colab' in str(get_ipython()):
+            environment_variables_config.update({'notebook_environment': 'Colab'})
+            get_ipython().system('git clone https://github.com/Exabyte-io/exabyte-api-examples.git')
+            from google.colab import _message
+            notebook_name = _message.blocking_request('get_ipynb')['ipynb']['metadata']['colab']['name']
+            notebook_path = glob.glob('**/'+notebook_name, recursive=True)[0][0:-len(notebook_name)]
+            os.chdir(notebook_path) # go to the folder in the repo where one would be if this was in local Jupyter
+        elif 'ZMQInteractiveShell' in str(get_ipython()):
+            environment_variables_config.update({'notebook_environment': 'Jupyter'})
+        else:
+            environment_variables_config.update({'notebook_environment': ''})
 
-    module_path = os.path.abspath(os.path.join('..'))
-    if module_path not in sys.path: sys.path.append(module_path)
-    set_notebook_environment(environment_variables_config)
+        module_path = os.path.abspath(os.path.join('..'))
+        if module_path not in sys.path: sys.path.append(module_path)
+        set_notebook_environment(environment_variables_config)
 
 execute()
+os.environ.update({'is_setup_executed': 'True'})

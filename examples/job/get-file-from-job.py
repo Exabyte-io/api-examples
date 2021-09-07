@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/dev/examples/job/get-file-from-job.ipynb" target="_blank">Open in Google Colab</a>
+# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/dev/examples/job/get-file-from-job.ipynb" target="_parent">
+# <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
+# </a>
 
 # # Get-File-From-Job
 # 
@@ -32,6 +34,8 @@
 # # Complete Authorization Form and Initialize Settings
 # 
 # This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial.
+# 
+# If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
 # 
 # ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
 # 
@@ -183,7 +187,7 @@ for line in lines[-90:]:
 # In[]:
 
 
-# We've already got an output file, so et's grab the input file we sent to Quantum Espresso
+# We've already got an output file, so let's grab the input file we sent to Quantum Espresso
 for file in files:
     if 'pw_scf.in' == file['name']:
         input_file_metadata = file     

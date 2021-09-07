@@ -55,15 +55,19 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 
 # ### Import packages
@@ -75,9 +79,15 @@ import time
 from IPython.display import IFrame
 
 # Import settings file and utils file
-import settings; importlib.reload(settings)
+import settings
+
+importlib.reload(settings)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
+from utils.generic import (
+    wait_for_jobs_to_finish,
+    get_property_by_subworkow_and_unit_indicies,
+    dataframe_to_html,
+)
 
 import pandas as pd
 
@@ -100,7 +110,7 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # In[]:
 
 
-MATERIALS_PROJECT_IDS = ["mp-149", "mp-32"] # Si and Ge
+MATERIALS_PROJECT_IDS = ["mp-149", "mp-32"]  # Si and Ge
 MATERIALS_SET_NAME = "materials-set"
 TAGS = ["tag1", "tag2"]
 
@@ -134,7 +144,11 @@ BANK_WORKFLOW_ID = "56xDyXsPMNJ7cF9nv"
 
 # Visualize the bank workflow below
 # NOTE: might not be rendered on Github
-IFrame("https://platform.exabyte.io/analytics/workflows/{}".format(BANK_WORKFLOW_ID), width=900, height=650)
+IFrame(
+    "https://platform.exabyte.io/analytics/workflows/{}".format(BANK_WORKFLOW_ID),
+    width=900,
+    height=650,
+)
 
 
 # #### Compute
@@ -178,8 +192,12 @@ bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
 # In[]:
 
 
-owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["owner"]["_id"]
-project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["_id"]
+owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0][
+    "owner"
+]["_id"]
+project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0][
+    "_id"
+]
 
 
 # ### Create workflow
@@ -199,7 +217,9 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 # In[]:
 
 
-materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS)
+materials = material_endpoints.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS
+)
 
 
 # Create a materials set and move the materials into it.
@@ -207,8 +227,11 @@ materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_AP
 # In[]:
 
 
-materials_set = material_endpoints.create_set({"name": MATERIALS_SET_NAME, "owner": {"_id": owner_id}})
-for material in materials: material_endpoints.move_to_set(material["_id"], "", materials_set["_id"])
+materials_set = material_endpoints.create_set(
+    {"name": MATERIALS_SET_NAME, "owner": {"_id": owner_id}}
+)
+for material in materials:
+    material_endpoints.move_to_set(material["_id"], "", materials_set["_id"])
 
 
 # ### Create jobs
@@ -219,7 +242,9 @@ for material in materials: material_endpoints.move_to_set(material["_id"], "", m
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
-jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id, JOB_NAME_PREFIX, compute)
+jobs = job_endpoints.create_by_ids(
+    materials, workflow_id, project_id, owner_id, JOB_NAME_PREFIX, compute
+)
 
 
 # Create a jobs set and move the jobs into it.
@@ -227,8 +252,11 @@ jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id,
 # In[]:
 
 
-jobs_set = job_endpoints.create_set({"name": JOBS_SET_NAME, "projectId": project_id, "owner": {"_id": owner_id}})
-for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
+jobs_set = job_endpoints.create_set(
+    {"name": JOBS_SET_NAME, "projectId": project_id, "owner": {"_id": owner_id}}
+)
+for job in jobs:
+    job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 
 
 # Submit the jobs for execution.
@@ -236,7 +264,8 @@ for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 # In[]:
 
 
-for job in jobs: job_endpoints.submit(job["_id"])
+for job in jobs:
+    job_endpoints.submit(job["_id"])
 
 
 # Monitor the jobs and print the status until they are all finished.
@@ -262,18 +291,28 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 results = []
 for material in materials:
     job = next((job for job in jobs if job["_material"]["_id"] == material["_id"]))
-    final_structure = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "final_structure", job, 0, 0)["data"]
-    pressure = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "pressure", job, 0, 0)["data"]["value"]
+    final_structure = get_property_by_subworkow_and_unit_indicies(
+        raw_property_endpoints, "final_structure", job, 0, 0
+    )["data"]
+    pressure = get_property_by_subworkow_and_unit_indicies(
+        raw_property_endpoints, "pressure", job, 0, 0
+    )["data"]["value"]
     unit_flowchart_id = job["workflow"]["subworkflows"][1]["units"][1]["flowchartId"]
-    band_gap_direct = raw_property_endpoints.get_direct_band_gap(job["_id"], unit_flowchart_id)
-    band_gap_indirect = raw_property_endpoints.get_indirect_band_gap(job["_id"], unit_flowchart_id)
-    results.append({
-        "initial_structure": material,
-        "final_structure": final_structure,
-        "pressure": pressure,
-        "band_gap_direct": band_gap_direct,
-        "band_gap_indirect": band_gap_indirect,
-    })
+    band_gap_direct = raw_property_endpoints.get_direct_band_gap(
+        job["_id"], unit_flowchart_id
+    )
+    band_gap_indirect = raw_property_endpoints.get_indirect_band_gap(
+        job["_id"], unit_flowchart_id
+    )
+    results.append(
+        {
+            "initial_structure": material,
+            "final_structure": final_structure,
+            "pressure": pressure,
+            "band_gap_direct": band_gap_direct,
+            "band_gap_indirect": band_gap_indirect,
+        }
+    )
 
 
 # ### Flatten results
@@ -287,7 +326,9 @@ table = []
 for result in results:
     data = flatten_material(result["initial_structure"])
     data.extend(flatten_material(result["initial_structure"]))
-    data.extend([result["pressure"], result["band_gap_direct"], result["band_gap_indirect"]])
+    data.extend(
+        [result["pressure"], result["band_gap_direct"], result["band_gap_indirect"]]
+    )
     table.append(data)
 
 
@@ -304,7 +345,18 @@ for result in results:
 
 
 headers = []
-keys = ["ID", "NAME", "TAGS", "NS", "LAT-A", "LAT-B", "LAT-C", "LAT-ALPHA", "LAT-BETA", "LAT-GAMMA"]
+keys = [
+    "ID",
+    "NAME",
+    "TAGS",
+    "NS",
+    "LAT-A",
+    "LAT-B",
+    "LAT-C",
+    "LAT-ALPHA",
+    "LAT-BETA",
+    "LAT-GAMMA",
+]
 headers.extend(["-".join(("INI", key)) for key in keys])
 headers.extend(["-".join(("FIN", key)) for key in keys])
 headers.extend(["PRESSURE", "DIRECT-GAP", "INDIRECT-GAP"])

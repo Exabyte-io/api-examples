@@ -26,21 +26,27 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 
 # In[]:
 
 
-import settings; importlib.reload(settings)
+import settings
+
+importlib.reload(settings)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
 from utils.generic import display_JSON
 
@@ -74,8 +80,12 @@ JOB_NAME = "TEST JOB"
 # In[]:
 
 
-default_material = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
-default_workflow = workflow_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
+default_material = material_endpoints.list(
+    {"isDefault": True, "owner._id": ACCOUNT_ID}
+)[0]
+default_workflow = workflow_endpoints.list(
+    {"isDefault": True, "owner._id": ACCOUNT_ID}
+)[0]
 
 material_id = default_material["_id"]
 workflow_id = default_workflow["_id"]
@@ -90,16 +100,10 @@ owner_id = default_material["owner"]["_id"]
 
 
 config = {
-    "owner": {
-        "_id": owner_id
-    },
-    "_material": {
-        "_id": material_id
-    },
-    "workflow": {
-        "_id": workflow_id
-    },
-    "name": JOB_NAME
+    "owner": {"_id": owner_id},
+    "_material": {"_id": material_id},
+    "workflow": {"_id": workflow_id},
+    "name": JOB_NAME,
 }
 
 
@@ -109,7 +113,7 @@ config = {
 
 
 job = job_endpoints.create(config)
-job_endpoints.submit(job['_id'])
+job_endpoints.submit(job["_id"])
 
 
 # ## Print the job
@@ -119,5 +123,5 @@ job_endpoints.submit(job['_id'])
 # In[]:
 
 
-job = job_endpoints.get(job['_id'])
+job = job_endpoints.get(job["_id"])
 display_JSON(job)

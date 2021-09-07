@@ -48,15 +48,19 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 
 # # Imports
@@ -68,9 +72,17 @@ import time
 from IPython.display import IFrame
 
 # Import settings file and utils file
-import settings; importlib.reload(settings)
+import settings
+
+importlib.reload(settings)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils.generic import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, display_JSON
+from utils.generic import (
+    dataframe_to_html,
+    copy_bank_workflow_by_system_name,
+    wait_for_jobs_to_finish,
+    get_property_by_subworkow_and_unit_indicies,
+    display_JSON,
+)
 
 import pandas as pd
 
@@ -94,8 +106,8 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # In[]:
 
 
-TRAIN_MATERIALS_PROJECT_IDS = ["mp-149", "mp-978534"] # Si, SiGe
-TARGET_MATERIALS_PROJECT_IDS = ["mp-32"] # Ge
+TRAIN_MATERIALS_PROJECT_IDS = ["mp-149", "mp-978534"]  # Si, SiGe
+TARGET_MATERIALS_PROJECT_IDS = ["mp-32"]  # Ge
 
 
 # #### Jobs
@@ -148,8 +160,12 @@ raw_property_endpoints = RawPropertiesEndpoints(*ENDPOINT_ARGS)
 # In[]:
 
 
-owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["owner"]["_id"]
-project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["_id"]
+owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0][
+    "owner"
+]["_id"]
+project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0][
+    "_id"
+]
 
 
 # ### Create workflows
@@ -159,8 +175,12 @@ project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID}
 # In[]:
 
 
-band_gap_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints, "espresso-band-gap", owner_id)
-ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints, "exabyteml-ml-train-model", owner_id)
+band_gap_workflow_id = copy_bank_workflow_by_system_name(
+    bank_workflow_endpoints, "espresso-band-gap", owner_id
+)
+ml_train_workflow_id = copy_bank_workflow_by_system_name(
+    bank_workflow_endpoints, "exabyteml-ml-train-model", owner_id
+)
 
 
 # ### Import materials
@@ -170,8 +190,12 @@ ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints
 # In[]:
 
 
-train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id)
-target_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TARGET_MATERIALS_PROJECT_IDS, owner_id)
+train_materials = material_endpoints.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id
+)
+target_materials = material_endpoints.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, TARGET_MATERIALS_PROJECT_IDS, owner_id
+)
 
 
 # ### Calculate Properties for "train materials"
@@ -182,7 +206,14 @@ target_materials = material_endpoints.import_from_materialsproject(MATERIALS_PRO
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
-jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, project_id, owner_id, JOB_NAME_PREFIX, compute)
+jobs = job_endpoints.create_by_ids(
+    train_materials,
+    band_gap_workflow_id,
+    project_id,
+    owner_id,
+    JOB_NAME_PREFIX,
+    compute,
+)
 
 
 # Submit the jobs for execution.
@@ -190,7 +221,8 @@ jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, projec
 # In[]:
 
 
-for job in jobs: job_endpoints.submit(job["_id"])
+for job in jobs:
+    job_endpoints.submit(job["_id"])
 
 
 # Monitor the jobs and print the status until they are all finished.
@@ -211,7 +243,9 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 name = "-".join((JOB_NAME_PREFIX, "train"))
 material_ids = [m["_id"] for m in train_materials]
-config = job_endpoints.get_config(material_ids, ml_train_workflow_id, project_id, owner_id, name, compute, True)
+config = job_endpoints.get_config(
+    material_ids, ml_train_workflow_id, project_id, owner_id, name, compute, True
+)
 job = job_endpoints.create(config)
 
 
@@ -238,7 +272,9 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # In[]:
 
 
-ml_predict_workflow = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]
+ml_predict_workflow = get_property_by_subworkow_and_unit_indicies(
+    raw_property_endpoints, "workflow:ml_predict", job, 0, 4
+)["data"]
 ml_predict_workflow_id = ml_predict_workflow["_id"]
 
 
@@ -259,7 +295,9 @@ display_JSON(ml_predict_workflow)
 
 name = "-".join((JOB_NAME_PREFIX, "predict"))
 material_ids = [m["_id"] for m in target_materials]
-config = job_endpoints.get_config(material_ids, ml_predict_workflow_id, project_id, owner_id, name, compute, True)
+config = job_endpoints.get_config(
+    material_ids, ml_predict_workflow_id, project_id, owner_id, name, compute, True
+)
 job = job_endpoints.create(config)
 
 
@@ -286,8 +324,9 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # In[]:
 
 
-
-predicted_properties = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "predicted_properties", job, 0, 3)["data"]["values"]
+predicted_properties = get_property_by_subworkow_and_unit_indicies(
+    raw_property_endpoints, "predicted_properties", job, 0, 3
+)["data"]["values"]
 
 
 # ### Flatten results
@@ -301,9 +340,22 @@ table = []
 for exabyte_id, properties in predicted_properties.items():
     material = next((m for m in target_materials if m["exabyteId"] == exabyte_id))
     band_gaps = next((v for v in properties if v["name"] == "band_gaps"))
-    direct_gap = next((v for v in band_gaps["values"] if v["type"] == "direct"))["value"]
-    indirect_gap = next((v for v in band_gaps["values"] if v["type"] == "indirect"))["value"]
-    table.append([material["_id"], material["name"], material["formula"], material["exabyteId"], direct_gap, indirect_gap])
+    direct_gap = next((v for v in band_gaps["values"] if v["type"] == "direct"))[
+        "value"
+    ]
+    indirect_gap = next((v for v in band_gaps["values"] if v["type"] == "indirect"))[
+        "value"
+    ]
+    table.append(
+        [
+            material["_id"],
+            material["name"],
+            material["formula"],
+            material["exabyteId"],
+            direct_gap,
+            indirect_gap,
+        ]
+    )
 
 
 # ### Ouput results

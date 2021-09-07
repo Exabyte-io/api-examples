@@ -48,15 +48,19 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 
 # ## Imports
@@ -65,9 +69,16 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 
 # Import settings file and utils file
-import settings; importlib.reload(settings)
+import settings
+
+importlib.reload(settings)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, display_JSON
+from utils.generic import (
+    wait_for_jobs_to_finish,
+    get_property_by_subworkow_and_unit_indicies,
+    dataframe_to_html,
+    display_JSON,
+)
 
 # Relevant functions from the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints
@@ -94,9 +105,11 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 
 # Get some account information
 project_endpoints = ProjectEndpoints(*ENDPOINT_ARGS)
-project_metadata = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
-project_id = project_metadata['_id']
-owner_id = project_metadata['owner']['_id']
+project_metadata = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[
+    0
+]
+project_id = project_metadata["_id"]
+owner_id = project_metadata["owner"]["_id"]
 
 # Get a workflow for the job from the bank, and copy it to our account
 bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
@@ -105,20 +118,24 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 
 # Get materials for the job
 material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
-material_project_id = ["mp-149"] # The importer expects a list
-materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, material_project_id, owner_id)
+material_project_id = ["mp-149"]  # The importer expects a list
+materials = material_endpoints.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, material_project_id, owner_id
+)
 
 # Create the job
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
-job = job_endpoints.create_by_ids(materials = materials,
-                                   workflow_id = workflow_id,
-                                   project_id = project_id,
-                                   owner_id = owner_id,
-                                   prefix = "Test_Job_Output")[0]
+job = job_endpoints.create_by_ids(
+    materials=materials,
+    workflow_id=workflow_id,
+    project_id=project_id,
+    owner_id=owner_id,
+    prefix="Test_Job_Output",
+)[0]
 
 # Submit the job
-job_endpoints.submit(job['_id'])
-wait_for_jobs_to_finish(job_endpoints, [job['_id']])
+job_endpoints.submit(job["_id"])
+wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 
 # Monitor the jobs and print the status until they are all finished.
@@ -131,10 +148,10 @@ wait_for_jobs_to_finish(job_endpoints, [job['_id']])
 # In[]:
 
 
-files = job_endpoints.list_files(job['_id'])
-paths = [file['key'] for file in files]
+files = job_endpoints.list_files(job["_id"])
+paths = [file["key"] for file in files]
 for path in paths:
-    if 'outdir' not in path:
+    if "outdir" not in path:
         print(path)
 
 
@@ -155,7 +172,7 @@ for path in paths:
 
 
 for file in files:
-    if file['name'] == 'pw_scf.out':
+    if file["name"] == "pw_scf.out":
         output_file_metadata = file
 display_JSON(output_file_metadata)
 
@@ -167,7 +184,7 @@ display_JSON(output_file_metadata)
 # In[]:
 
 
-server_response = urllib.request.urlopen(output_file_metadata['signedUrl'])
+server_response = urllib.request.urlopen(output_file_metadata["signedUrl"])
 output_file_bytes = server_response.read()
 
 # The server returns us a bytes-string. That's useful for things like binaries or other non-human-readable data, but this should be decoded if we're planning to write to console.
@@ -189,9 +206,9 @@ for line in lines[-90:]:
 
 # We've already got an output file, so let's grab the input file we sent to Quantum Espresso
 for file in files:
-    if 'pw_scf.in' == file['name']:
-        input_file_metadata = file     
-server_response = urllib.request.urlopen(input_file_metadata['signedUrl'])
+    if "pw_scf.in" == file["name"]:
+        input_file_metadata = file
+server_response = urllib.request.urlopen(input_file_metadata["signedUrl"])
 input_file_bytes = server_response.read()
 
 
@@ -200,7 +217,7 @@ input_file_bytes = server_response.read()
 
 # Let's write the input file to disk. Note that we get files as a bytes string from the server, which is convenient for binaries, images, and other non-human-readable data.
 # Although we could decode before writing to disk, we can just write it directly with the "wb" (write bytes) file mode.
-with open(input_file_metadata['name'], 'wb') as file_descriptor:
+with open(input_file_metadata["name"], "wb") as file_descriptor:
     file_descriptor.write(input_file_bytes)
 
 
@@ -208,5 +225,5 @@ with open(input_file_metadata['name'], 'wb') as file_descriptor:
 
 
 # Now, let's write our output file to the disk. Note that because we already decoded it, we can just use the 'w' file mode.
-with open(output_file_metadata['name'], 'w') as file_descriptor:
+with open(output_file_metadata["name"], "w") as file_descriptor:
     file_descriptor.write(output_file)

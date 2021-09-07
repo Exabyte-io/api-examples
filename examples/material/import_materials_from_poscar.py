@@ -26,15 +26,19 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 # For this particular notebook example, we need to take an extra step if we are using colab
 if environment_variables_config['notebook_environment'] == 'Colab':
@@ -48,7 +52,9 @@ if environment_variables_config['notebook_environment'] == 'Colab':
 
 
 from utils.generic import display_JSON
-import settings; importlib.reload(settings)
+import settings
+
+importlib.reload(settings)
 from settings import ENDPOINT_ARGS
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
@@ -73,7 +79,7 @@ POSCAR_PATH = "../assets/mp-978534.poscar"
 # In[]:
 
 
-content  = ""
+content = ""
 with open(POSCAR_PATH) as f:
     content = f.read()
 

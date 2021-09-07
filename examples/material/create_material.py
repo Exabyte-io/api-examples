@@ -26,15 +26,19 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 
 # # Imports
@@ -43,7 +47,10 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 
 from utils.generic import display_JSON
-import settings; importlib.reload(settings); from settings import ENDPOINT_ARGS
+import settings
+
+importlib.reload(settings)
+from settings import ENDPOINT_ARGS
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
@@ -57,36 +64,13 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 CONFIG = {
     "name": "TEST MATERIAL",
     "basis": {
-        "elements": [
-            {
-                "id": 1,
-                "value": "Si"
-            },
-            {
-                "id": 2,
-                "value": "Si"
-            }
-        ],
+        "elements": [{"id": 1, "value": "Si"}, {"id": 2, "value": "Si"}],
         "coordinates": [
-            {
-                "id": 1,
-                "value": [
-                    0,
-                    0,
-                    0
-                ]
-            },
-            {
-                "id": 2,
-                "value": [
-                    0.25,
-                    0.25,
-                    0.25
-                ]
-            }
+            {"id": 1, "value": [0, 0, 0]},
+            {"id": 2, "value": [0.25, 0.25, 0.25]},
         ],
         "units": "crystal",
-        "name": "basis"
+        "name": "basis",
     },
     "lattice": {
         "type": "FCC",
@@ -96,34 +80,17 @@ CONFIG = {
         "alpha": 60,
         "beta": 60,
         "gamma": 60,
-        "units": {
-            "length": "angstrom",
-            "angle": "degree"
-        },
+        "units": {"length": "angstrom", "angle": "degree"},
         "vectors": {
-            "a": [
-                3.867,
-                0,
-                0
-            ],
-            "b": [
-                1.9335000000000004,
-                3.348920236434424,
-                0
-            ],
-            "c": [
-                1.9335000000000004,
-                1.1163067454781415,
-                3.1573922784475164
-            ],
+            "a": [3.867, 0, 0],
+            "b": [1.9335000000000004, 3.348920236434424, 0],
+            "c": [1.9335000000000004, 1.1163067454781415, 3.1573922784475164],
             "name": "lattice vectors",
             "alat": 1,
-            "units": "angstrom"
-        }
+            "units": "angstrom",
+        },
     },
-    "tags": [
-        "REST API"
-    ]
+    "tags": ["REST API"],
 }
 
 

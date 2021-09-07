@@ -26,15 +26,19 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 
 # # Imports
@@ -43,7 +47,9 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 
 
 from utils.generic import display_JSON
-import settings; importlib.reload(settings)
+import settings
+
+importlib.reload(settings)
 from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
@@ -70,7 +76,9 @@ TAGS = ["tag1", "tag2"]
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
-materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, tags=TAGS)
+materials = endpoint.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, tags=TAGS
+)
 
 
 # ## Print imported materials

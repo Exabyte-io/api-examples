@@ -26,15 +26,19 @@
 # In[]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 import os, glob, sys, importlib, urllib.request
 
 # The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+exec(
+    urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py"
+    ).read()
+)
 
 
 # ## Imports
@@ -42,7 +46,9 @@ exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyt
 # In[]:
 
 
-import settings; importlib.reload(settings)
+import settings
+
+importlib.reload(settings)
 from settings import ENDPOINT_ARGS, ACCOUNT_ID
 from utils.generic import display_JSON
 
@@ -58,14 +64,9 @@ from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 # In[]:
 
 
-QUERY = {
-    "name": "Total Energy",
-    "owner._id": ACCOUNT_ID
-}
+QUERY = {"name": "Total Energy", "owner._id": ACCOUNT_ID}
 
-OPTIONS = {
-    "limit": 2
-}
+OPTIONS = {"limit": 2}
 
 
 # ## Initialize the endpoint

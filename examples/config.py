@@ -37,8 +37,6 @@ def script_post_save(model, os_path, contents_manager, **kwargs):
     """
     script = re.sub(pattern, "", script, flags = re.MULTILINE | re.VERBOSE)
 
-
-
     with io.open(script_fname, 'w', encoding='utf-8') as f:
         f.write(script)
 

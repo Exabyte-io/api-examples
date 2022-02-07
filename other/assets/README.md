@@ -2,6 +2,9 @@
 
 This folder contains datasets which are used in our [machine learning examples](..//machine_learning).
 
+## bitter-sweet.csv
+This dataset contains a slightly modified version of the dataset from https://www.kaggle.com/katyaarnold/bittersweet. We have dropped the `In Bitter Domain` and `Bitter` columns and retained the `Taste` column.
+
 ## Sci_Adv_Dean_Data.csv
 
 This dataset comes from a recent publication by Dean et al in [Science Advances](https://advances.sciencemag.org/content/5/9/eaax5101.abstract). This work was motivated by the need to predict the adsorption energetics of molecular species to heterogeneous catalysts. Understanding this physical property is important, as catalytic activity is [often a function](https://en.wikipedia.org/wiki/Sabatier_principle) of the adsorption strength of key intermediates, and tuning a catalysts's adsorption strength can be a key part of optimizing its catalytic activity. Typically, one calculates adsorption energy by performing three separate Density-Functional Theory (DFT) calculations:

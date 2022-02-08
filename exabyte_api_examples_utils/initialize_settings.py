@@ -5,31 +5,33 @@
 #
 # If using Jupyter, these variables can be left to their default values in the code cell, but the user
 # should change these values in the settings.json file located in the examples folder.
+import os
+import sys
+import glob
 
 environment_variables_config = {'ACCOUNT_ID': ACCOUNT_ID,
                                 'AUTH_TOKEN': AUTH_TOKEN,
                                 'MATERIALS_PROJECT_API_KEY': MATERIALS_PROJECT_API_KEY,
                                 'ORGANIZATION_ID': ORGANIZATION_ID}
 
+
 def set_notebook_environment(environment_variables_config):
     """
     This function sets the notebook environment by calling to install the needed packages
     and setting the variables in settings.json (if needed)
+
     Args:
         environment_variables_config (dict): contains key value pairs needed to set up a
             certain notebook (or frontend) runtime.
             Ex) environment_variables_config['ACCOUNT_ID'] = ACCOUNT_ID
                 environment_variables_config[notebook_environment] = "Jupyter"
-
-    Return:
-        None
     """
     notebook_environment = environment_variables_config['notebook_environment']
     if notebook_environment == 'Colab':
-        from utils.colab import setup_colab_runtime_environment
+        from exabyte_api_examples_utils.colab import setup_colab_runtime_environment
         setup_colab_runtime_environment(environment_variables_config)
     else:
-        from utils.generic import ensure_packages_are_installed
+        from exabyte_api_examples_utils.generic import ensure_packages_are_installed
         ensure_packages_are_installed(notebook_environment)
 
 
@@ -37,10 +39,6 @@ def execute():
     """
     Main execution function. This function determines and sets the runtime environment
     for a given notebook frontend, such as Jupyter Notebooks or Google Colab.
-    Args:
-        None
-    Return:
-        None
     """
 
     if 'is_setup_executed' not in os.environ:

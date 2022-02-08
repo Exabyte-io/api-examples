@@ -3,7 +3,6 @@ import time
 import datetime
 import os
 import importlib.util
-import settings
 import urllib
 from IPython.display import display, JSON
 import json
@@ -12,8 +11,8 @@ import re
 import sys
 import subprocess
 
-# GENERIC UTILITIES
 
+# GENERIC UTILITIES
 def update_json_file_kwargs(path_to_json_file='../settings.json', **kwargs):
     """
     This function updates settings.json for a given kwargs if kwargs
@@ -26,7 +25,6 @@ def update_json_file_kwargs(path_to_json_file='../settings.json', **kwargs):
     Returns:
         None
     """
-
     # 1. Assert the json file is where we think it is
     assert os.path.isfile(path_to_json_file)
 
@@ -70,7 +68,6 @@ def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
 
 
 # IMPORT UTILITIES
-
 def get_requirements_filepath(notebook_environment):
     """
     This function gives a user the path to a specific requirements.txt depending on
@@ -83,7 +80,6 @@ def get_requirements_filepath(notebook_environment):
     Returns:
         requirements_filepath (str): the path to a specific requirements.txt
     """
-
     if notebook_environment == "Colab":
         requirements_filepath = os.path.realpath(os.path.join(__file__, "../../../requirements-colab.txt"))
     else:
@@ -122,6 +118,7 @@ def install_package(name, notebook_environment="Jupyter", version=None):
         pip_name = name
 
     subprocess.call([sys.executable, "-m", "pip", "install", pip_name])
+
     # Invalidate module cache based on import_lib doc recommendation:
     #   https://docs.python.org/3/library/importlib.html#importlib.invalidate_caches
     importlib.invalidate_caches()
@@ -140,7 +137,6 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
     Returns:
         None
     """
-
     requirements_filepath = get_requirements_filepath(notebook_environment)
 
     # If we are in Colab, we want to avoid installing packages 1 by 1, so let's
@@ -148,14 +144,12 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
     if notebook_environment == 'Colab':
         assert ('colab' in requirements_filepath)
         subprocess.call([sys.executable, "-m", "pip", "install", "-r", requirements_filepath])
-
     else:
         # Install packages passed in to names
         if len(names) > 0:
             for name in names:
                 if importlib.util.find_spec(name) is None:
                     install_package(name, notebook_environment)
-
         # Install requirements.txt if nothing was passed in
         else:
             with open(requirements_filepath, "r") as reqs:
@@ -173,7 +167,6 @@ def ensure_packages_are_installed(notebook_environment="Jupyter", *names):
 
 
 # JOB UTILITIES
-
 def get_jobs_statuses_by_ids(endpoint, job_ids):
     """
     Gets jobs statues by their IDs.
@@ -181,7 +174,6 @@ def get_jobs_statuses_by_ids(endpoint, job_ids):
     Args:
         endpoint (endpoints.jobs.JobEndpoints): an instance of JobEndpoints class
         job_ids (list): list of job IDs to get the status for
-
     Returns:
         list: list of job statuses
     """
@@ -219,7 +211,6 @@ def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=10):
 
 
 # WORKFLOW
-
 def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
     """
     Copies a bank workflow with given ID into the account's workflows.
@@ -237,7 +228,6 @@ def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
 
 
 # PROPERTY
-
 def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, subworkflow_index, unit_index):
     """
     Returns the property extracted in the given unit of the job's subworkflow.
@@ -257,7 +247,6 @@ def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, su
 
 
 # DISPLAY UTILITIES
-
 def dataframe_to_html(df, text_align="center"):
     """
     Converts Pandas dataframe to HTML.
@@ -274,9 +263,10 @@ def dataframe_to_html(df, text_align="center"):
     return (df.style.set_table_styles(styles))
 
 
-def display_JSON(obj, interactive_viewer=settings.use_interactive_JSON_viewer):
+def display_JSON(obj, interactive_viewer=None):
     """
     Displays JSON, either interactively or via a text dump to Stdout
+
     Args:
         obj (dict): Object to display as nicely-formatted JSON
         interactive (bool): Whether to use the interactive viewer or not

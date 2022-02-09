@@ -28,6 +28,9 @@ setup(
     install_requires=[
         "tabulate",
         "pymatgen",
+        "ase",
+        "numpy",
+
     ],
     extras_require={
         "test": ["pytest", "pytest-cov"],

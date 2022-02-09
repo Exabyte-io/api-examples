@@ -12,7 +12,7 @@ setup(
     packages=find_namespace_packages(include=["exabyte_api_examples_utils*"]),
     # packages=['exabyte_api_examples_utils'],
     # package_dir={'exabyte_api_examples_utils': 'utils'},
-    package_data={"": ["**/*.poscar"]},
+    package_data={"": ["**/*.poscar", "requirements.txt"]},
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -27,6 +27,7 @@ setup(
     ],
     install_requires=[
         "tabulate",
+        "pymatgen",
     ],
     extras_require={
         "test": ["pytest", "pytest-cov"],

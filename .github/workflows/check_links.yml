@@ -4,12 +4,13 @@ on: [push, pull_request]
 
 jobs:
   check-links:
+    # Do not run this check if a PR is created from the same repo.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v1
-    - name: Link Checker
-      id: lc
-      uses: peter-evans/link-checker@v1
-    - name: Fail if there were link errors
-      run: exit ${{ steps.lc.outputs.exit_code }}
+      - uses: actions/checkout@v3
+      - name: Link Checker
+        uses: lycheeverse/lychee-action@v1.8.0
+        with:
+          fail: true

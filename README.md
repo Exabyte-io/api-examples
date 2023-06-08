@@ -69,6 +69,8 @@ In order to run or edit the examples:
 
 3. Open the desired example notebook, adjust it as necessary and run. One can speed up the notebooks execution after running the [Get Authentication Params](examples/system/get_authentication_params.ipynb) one by reusing the kernel from the first notebook.
 
+  <img src="images/reusable-kernel.png" width="250px" />
+
 NOTE: The Materials Project API key should be obtained from https://legacy.materialsproject.org/open.
 
 

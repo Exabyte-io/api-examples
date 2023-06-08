@@ -23,8 +23,8 @@ with open(absolute_path_to_settings_json_file) as settings_json_file:
 
 ACCOUNT_ID = settings_json_config.get("ACCOUNT_ID")
 AUTH_TOKEN = settings_json_config.get("AUTH_TOKEN")
-MATERIALS_PROJECT_API_KEY = settings_json_config.get("MATERIALS_PROJECT_API_KEY")
-ORGANIZATION_ID = settings_json_config.get("ORGANIZATION_ID")
+# MATERIALS_PROJECT_API_KEY = settings_json_config.get("MATERIALS_PROJECT_API_KEY")
+# ORGANIZATION_ID = settings_json_config.get("ORGANIZATION_ID")
 
 # Advanced settings. Should not need adjustments.
 

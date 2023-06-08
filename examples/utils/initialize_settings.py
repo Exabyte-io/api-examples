@@ -74,7 +74,7 @@ def execute():
         if "google.colab" in str(ip):
             branch = os.getenv("GIT_BRANCH", "dev")  # a way to inject a branch of interest from Colab if run via a PR.
             environment_variables_config.update({"notebook_environment": "Colab"})
-            ip.system(f"git clone --single-branch -b {branch} https://github.com/Exabyte-io/exabyte-api-examples.git")
+            ip.system(f"git clone --single-branch -b {branch} https://github.com/Exabyte-io/api-examples.git")
             notebook_name = get_notebook_name()
             notebook_path = glob.glob(f"**/{notebook_name}", recursive=True)[0][0 : -len(notebook_name)]
             os.chdir(notebook_path)  # go to the folder in the repo where one would be if this was in local Jupyter

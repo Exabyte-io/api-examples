@@ -36,5 +36,5 @@ ORGANIZATION_ID = settings_json_config.get("ORGANIZATION_ID")
 PORT = 443
 SECURE = True
 VERSION = "2018-10-01"
-HOST = "platform.exabyte.io"
+HOST = "platform.mat3ra.com"
 ENDPOINT_ARGS = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]

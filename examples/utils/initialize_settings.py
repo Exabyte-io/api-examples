@@ -6,10 +6,10 @@
 # If using Jupyter, these variables can be left to their default values in the code cell, but the user
 # should change these values in the settings.json file located in the examples folder.
 
-import glob
 import os
-import socket
+import re
 import sys
+from urllib.parse import unquote, urlparse
 
 import requests
 from IPython import get_ipython
@@ -46,7 +46,7 @@ def set_notebook_environment(environment_variables_config):
         ensure_packages_are_installed(notebook_environment)
 
 
-def get_notebook_name():
+def get_notebook_info():
     """
     Get the name of a currently running notebook in Google Colab.
     Args:
@@ -54,9 +54,23 @@ def get_notebook_name():
     Return:
         filename
     """
-    ip = socket.gethostbyname(socket.gethostname())  # 172.28.0.12
-    filename = requests.get(f"http://{ip}:9000/api/sessions").json()[0]["name"]
-    return filename
+    # ip = socket.gethostbyname(socket.gethostname())  # 172.28.0.12
+    ip = os.getenv("COLAB_JUPYTER_IP")
+    response = requests.get(f"http://{ip}:9000/api/sessions").json()[0]
+
+    notebook_name = response["name"]
+    path = urlparse(unquote(response["path"]).split("=")[1]).path
+    parsed = re.findall("(.*)/blob/(.*)/examples/(.*)", path)[0]
+    github_org_repo = parsed[0][1:]  # remove leading /
+    branch_name = parsed[1]
+    notebook_path = f"examples/{parsed[2]}"
+
+    return dict(
+        notebook_name=notebook_name,
+        notebook_path=notebook_path,
+        branch_name=branch_name,
+        github_org_repo=github_org_repo,
+    )
 
 
 def execute():
@@ -72,12 +86,17 @@ def execute():
     if "is_setup_executed" not in os.environ:
         ip = get_ipython()
         if "google.colab" in str(ip):
-            branch = os.getenv("GIT_BRANCH", "dev")  # a way to inject a branch of interest from Colab if run via a PR.
             environment_variables_config.update({"notebook_environment": "Colab"})
-            ip.system(f"git clone --depth=1 --single-branch -b {branch} https://github.com/Exabyte-io/api-examples.git")
-            notebook_name = get_notebook_name()
-            notebook_path = glob.glob(f"**/{notebook_name}", recursive=True)[0][0 : -len(notebook_name)]
-            os.chdir(notebook_path)  # go to the folder in the repo where one would be if this was in local Jupyter
+
+            notebook_info = get_notebook_info()
+            notebook_path = notebook_info["notebook_path"]
+            github_org_repo = notebook_info["github_org_repo"]
+            repo_name = github_org_repo.split("/")[1]
+
+            # Go to the folder in the repo where one would be if this was in local Jupyter.
+            # The repo should be clonned via the notebook cell earlier.
+            os.chdir(os.path.join(repo_name, os.path.dirname(notebook_path)))
+
         elif "ZMQInteractiveShell" in str(ip):
             environment_variables_config.update({"notebook_environment": "Jupyter"})
         else:

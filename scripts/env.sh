@@ -6,11 +6,10 @@
 set -vxeuo pipefail
 
 GIT_BRANCH="${GIT_BRANCH:-'dev'}"
+REPO_NAME="api-examples"
 
-git clone https://github.com/Exabyte-io/api-examples.git --single-branch --branch ${GIT_BRANCH}
+git clone https://github.com/Exabyte-io/${REPO_NAME}.git --single-branch --branch ${GIT_BRANCH} || \
+    echo -e "Directory ${REPO_NAME} already exists. Nothing to do."
 
-python -m pip install -r api-examples/requirements-colab.txt
-python -m pip install ./api-examples/examples/
-
-# TODO: consider removing it for Colab?
-# python api-examples/examples/utils/initialize_settings.py  # the script with cd into the current notebook dir
+python -m pip install -r ${REPO_NAME}/requirements-colab.txt
+python -m pip install ./${REPO_NAME}/examples/

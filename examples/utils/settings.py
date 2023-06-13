@@ -21,10 +21,11 @@ assert(absolute_path_to_settings_json_file)
 with open(absolute_path_to_settings_json_file) as settings_json_file:
     settings_json_config = json.load(settings_json_file)
 
-ACCOUNT_ID = settings_json_config.get("ACCOUNT_ID")
-AUTH_TOKEN = settings_json_config.get("AUTH_TOKEN")
-MATERIALS_PROJECT_API_KEY = settings_json_config.get("MATERIALS_PROJECT_API_KEY")
-ORGANIZATION_ID = settings_json_config.get("ORGANIZATION_ID")
+# NOTE: prioritize the env vars, then fall back to the settings from JSON.
+ACCOUNT_ID = os.getenv("ACCOUNT_ID", settings_json_config.get("ACCOUNT_ID"))
+AUTH_TOKEN = os.getenv("AUTH_TOKEN", settings_json_config.get("AUTH_TOKEN"))
+MATERIALS_PROJECT_API_KEY = os.getenv("MATERIALS_PROJECT_API_KEY", settings_json_config.get("MATERIALS_PROJECT_API_KEY"))
+ORGANIZATION_ID = os.getenv("ORGANIZATION_ID", settings_json_config.get("ORGANIZATION_ID"))
 
 # Advanced settings. Should not need adjustments.
 

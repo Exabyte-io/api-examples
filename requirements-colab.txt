@@ -5,4 +5,4 @@ ase==3.21.1
 git+https://github.com/Exabyte-io/api-client.git@114def4696e7cd7884d232827704e9c04c374dd2
 matplotlib
 pymatgen==2023.5.31
-pandas==1.1.4
+pandas==1.5.3

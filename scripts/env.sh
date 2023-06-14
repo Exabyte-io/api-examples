@@ -7,9 +7,21 @@ set -vxeuo pipefail
 
 GIT_BRANCH="${GIT_BRANCH:-'dev'}"
 REPO_NAME="api-examples"
+VERBOSE="${EXABYTE_API_EXAMPLES_VERBOSE:-''}"
+IS_COLAB="${COLAB_JUPYTER_IP:-''}"
 
-git clone https://github.com/Exabyte-io/${REPO_NAME}.git --single-branch --branch ${GIT_BRANCH} || \
-    echo -e "Directory ${REPO_NAME} already exists. Nothing to do."
+if [ ! -z "${VERBOSE}" ]; then
+    stdout="/dev/stdout"
+else
+    stdout="/dev/null"
+fi
 
-python -m pip install -r ${REPO_NAME}/requirements-colab.txt
-python -m pip install ./${REPO_NAME}/examples/
+if [ ! -z "${IS_COLAB}" ]; then
+    git clone https://github.com/Exabyte-io/${REPO_NAME}.git --single-branch --branch ${GIT_BRANCH} > ${stdout} 2>&1 || \
+        echo -e "Directory ${REPO_NAME} already exists. Nothing to do." > ${stdout} 2>&1
+
+    python -m pip install -r ${REPO_NAME}/requirements-colab.txt > ${stdout} 2>&1
+    python -m pip install ./${REPO_NAME}/examples/ > ${stdout} 2>&1
+
+    echo "Installation of the prerequisites is complete, the environment is ready to use!"
+fi

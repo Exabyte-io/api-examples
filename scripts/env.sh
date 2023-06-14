@@ -3,14 +3,15 @@
 # To run as:
 #   curl https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh | bash
 
-set -vxeuo pipefail
+set -euo pipefail
 
-GIT_BRANCH="${GIT_BRANCH:-'dev'}"
+GIT_BRANCH="${GIT_BRANCH:-dev}"
 REPO_NAME="api-examples"
-VERBOSE="${EXABYTE_API_EXAMPLES_VERBOSE:-''}"
-IS_COLAB="${COLAB_JUPYTER_IP:-''}"
+VERBOSE="${EXABYTE_API_EXAMPLES_VERBOSE:-}"
+IS_COLAB="${COLAB_JUPYTER_IP:-}"
 
 if [ ! -z "${VERBOSE}" ]; then
+    set -vxeuo pipefail
     stdout="/dev/stdout"
 else
     stdout="/dev/null"

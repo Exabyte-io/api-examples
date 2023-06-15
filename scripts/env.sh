@@ -36,8 +36,9 @@ if [ ! -z "${IS_COLAB}" ]; then
     notebook_dir="$(dirname $notebook_path)"
     notebook_name="$(basename $notebook_path)"
 
-    cd $notebook_dir
+    export NOTEBOOK_DIR="$notebook_dir"
 
     echo "Installation of the prerequisites is complete, the environment is ready to use!"
-    echo -e "You are currently in the '"${notebook_dir}"' directory, running '"${notebook_name}"'."
+    echo -e "  Notebook dir : ${notebook_dir}"
+    echo -e "  Notebook file: ${notebook_name}"
 fi

@@ -22,16 +22,17 @@ if [ ! -z "${IS_COLAB}" ]; then
     git clone https://github.com/Exabyte-io/${REPO_NAME}.git --single-branch --branch ${GIT_BRANCH} > ${stdout} 2>&1 || \
         echo -e "Directory ${REPO_NAME} already exists. Nothing to do." > ${stdout} 2>&1
 
-    python -m pip install -r ${REPO_NAME}/requirements-colab.txt > ${stdout} 2>&1
-    python -m pip install ./${REPO_NAME}/examples/ > ${stdout} 2>&1
+    cd ${REPO_NAME}
+
+    python -m pip install -r requirements-colab.txt > ${stdout} 2>&1
+    python -m pip install examples/ > ${stdout} 2>&1
 
     if [ ! -z "${NEED_GIT_LFS}" ]; then
         sudo apt-get install -y git-lfs > ${stdout} 2>&1
-        cd ${REPO_NAME}
         git lfs pull > ${stdout} 2>&1
     fi
 
-    notebook_path="$(notebook-info)"
+    notebook_path="$(notebook-info)"  # comes from entry-points in 'setup.py'
     notebook_dir="$(dirname $notebook_path)"
     notebook_name="${basename $notebook_path}"
 

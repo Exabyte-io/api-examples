@@ -83,8 +83,7 @@ def cli():
     Return:
         the path of the notebook being currently executed.
     """
-    info = get_notebook_info()
-    return info["notebook_path"]
+    print(get_notebook_info()["notebook_path"])
 
 
 def execute():

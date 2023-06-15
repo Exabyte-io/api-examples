@@ -15,10 +15,10 @@ import requests
 from IPython import get_ipython
 
 environment_variables_config = {
-    "ACCOUNT_ID": ACCOUNT_ID,  # noqa F821
-    "AUTH_TOKEN": AUTH_TOKEN,  # noqa F821
-    "MATERIALS_PROJECT_API_KEY": MATERIALS_PROJECT_API_KEY,  # noqa F821
-    "ORGANIZATION_ID": ORGANIZATION_ID,  # noqa F821
+    "ACCOUNT_ID": os.getenv("ACCOUNT_ID", ""),
+    "AUTH_TOKEN": os.getenv("AUTH_TOKEN", ""),
+    "MATERIALS_PROJECT_API_KEY": os.getenv("MATERIALS_PROJECT_API_KEY", ""),
+    "ORGANIZATION_ID": os.getenv("ORGANIZATION_ID", ""),
 }
 
 
@@ -64,6 +64,8 @@ def get_notebook_info():
     github_org_repo = parsed[0][1:]  # remove leading /
     branch_name = parsed[1]
     notebook_path = f"examples/{parsed[2]}"
+
+    print(notebook_path)
 
     return dict(
         notebook_name=notebook_name,

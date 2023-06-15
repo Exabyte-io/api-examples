@@ -9,6 +9,7 @@ GIT_BRANCH="${GIT_BRANCH:-dev}"
 REPO_NAME="api-examples"
 VERBOSE="${EXABYTE_API_EXAMPLES_VERBOSE:-}"
 IS_COLAB="${COLAB_JUPYTER_IP:-}"
+NEED_GIT_LFS="${NEED_GIT_LFS:-}"
 
 if [ ! -z "${VERBOSE}" ]; then
     set -vxeuo pipefail
@@ -24,5 +25,18 @@ if [ ! -z "${IS_COLAB}" ]; then
     python -m pip install -r ${REPO_NAME}/requirements-colab.txt > ${stdout} 2>&1
     python -m pip install ./${REPO_NAME}/examples/ > ${stdout} 2>&1
 
+    if [ ! -z "${NEED_GIT_LFS}" ]; then
+        sudo apt-get install -y git-lfs
+        cd ${REPO_NAME}
+        git lfs pull
+    fi
+
+    notebook_path="$(notebook-info)"
+    notebook_dir="$(dirname $notebook_path)"
+    notebook_name="${basename $notebook_path}"
+
+    cd $notebook_dir
+
     echo "Installation of the prerequisites is complete, the environment is ready to use!"
+    echo -e "You are currently in ${notebook_dir} running ${notebook_name}."
 fi

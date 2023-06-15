@@ -81,7 +81,8 @@ def cli():
     Return:
         the path of the notebook being currently executed.
     """
-    return get_notebook_info()["notebook_path"]
+    # 'return get_notebook_info()["notebook_path"]' returns non-zero exit code, use 'print'
+    print(get_notebook_info()["notebook_path"])
 
 
 def execute():

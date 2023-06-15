@@ -39,5 +39,5 @@ if [ ! -z "${IS_COLAB}" ]; then
     cd $notebook_dir
 
     echo "Installation of the prerequisites is complete, the environment is ready to use!"
-    echo -e "You are currently in ${notebook_dir} running ${notebook_name}."
+    echo -e "You are currently in the '"${notebook_dir}"' directory, running '"${notebook_name}"'."
 fi

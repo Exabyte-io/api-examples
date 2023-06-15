@@ -34,7 +34,7 @@ if [ ! -z "${IS_COLAB}" ]; then
 
     notebook_path="$(notebook-info)"  # comes from entry-points in 'setup.py'
     notebook_dir="$(dirname $notebook_path)"
-    notebook_name="${basename $notebook_path}"
+    notebook_name="$(basename $notebook_path)"
 
     cd $notebook_dir
 

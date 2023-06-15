@@ -50,6 +50,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
     virtualenv .env
     source .env/bin/activate
     pip install --no-deps -r requirements.txt
+    pip install -e ./examples/
     ```
 
 4. Run Jupyter and open a notebook in a browser. In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`, which is the `examples` folder shown below:

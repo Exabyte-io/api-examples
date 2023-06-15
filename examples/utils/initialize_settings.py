@@ -110,5 +110,6 @@ def execute():
         set_notebook_environment(environment_variables_config)
 
 
-execute()
-os.environ.update({"is_setup_executed": "True"})
+if __name__ == "__main__":
+    execute()
+    os.environ.update({"is_setup_executed": "True"})

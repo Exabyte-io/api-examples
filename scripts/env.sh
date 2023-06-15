@@ -33,12 +33,7 @@ if [ ! -z "${IS_COLAB}" ]; then
     fi
 
     notebook_path="$(notebook-info)"  # comes from entry-points in 'setup.py'
-    notebook_dir="$(dirname $notebook_path)"
-    notebook_name="$(basename $notebook_path)"
-
-    export NOTEBOOK_DIR="$notebook_dir"
 
     echo "Installation of the prerequisites is complete, the environment is ready to use!"
-    echo -e "  Notebook dir : ${notebook_dir}"
-    echo -e "  Notebook file: ${notebook_name}"
+    echo -e "  Notebook : ${notebook_path}"
 fi

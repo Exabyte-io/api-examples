@@ -65,8 +65,6 @@ def get_notebook_info():
     branch_name = parsed[1]
     notebook_path = f"examples/{parsed[2]}"
 
-    print(notebook_path)
-
     return dict(
         notebook_name=notebook_name,
         notebook_path=notebook_path,
@@ -83,7 +81,7 @@ def cli():
     Return:
         the path of the notebook being currently executed.
     """
-    print(get_notebook_info()["notebook_path"])
+    return get_notebook_info()["notebook_path"]
 
 
 def execute():

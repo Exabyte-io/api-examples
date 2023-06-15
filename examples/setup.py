@@ -7,7 +7,7 @@ setup(
     package_data={"utils": ["settings.json"]},
     entry_points={
         "console_scripts": [
-            "notebook-info = utils.initialize_settings:get_notebook_info",
+            "notebook-info = utils.initialize_settings:cli",
         ],
     },
 )

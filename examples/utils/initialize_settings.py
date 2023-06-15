@@ -52,7 +52,7 @@ def get_notebook_info():
     Args:
         None
     Return:
-        filename
+        a dict with notebook info.
     """
     # ip = socket.gethostbyname(socket.gethostname())  # 172.28.0.12
     ip = os.getenv("COLAB_JUPYTER_IP")
@@ -73,6 +73,18 @@ def get_notebook_info():
         branch_name=branch_name,
         github_org_repo=github_org_repo,
     )
+
+
+def cli():
+    """
+    A proxy function used for a single string return when the corresponding entry-point script is called.
+    Args:
+        None
+    Return:
+        the path of the notebook being currently executed.
+    """
+    info = get_notebook_info()
+    return info["notebook_path"]
 
 
 def execute():

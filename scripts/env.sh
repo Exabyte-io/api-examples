@@ -26,9 +26,9 @@ if [ ! -z "${IS_COLAB}" ]; then
     python -m pip install ./${REPO_NAME}/examples/ > ${stdout} 2>&1
 
     if [ ! -z "${NEED_GIT_LFS}" ]; then
-        sudo apt-get install -y git-lfs
+        sudo apt-get install -y git-lfs > ${stdout} 2>&1
         cd ${REPO_NAME}
-        git lfs pull
+        git lfs pull > ${stdout} 2>&1
     fi
 
     notebook_path="$(notebook-info)"

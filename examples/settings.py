@@ -29,7 +29,7 @@ ORGANIZATION_ID = os.getenv("ORGANIZATION_ID", settings_json_config.get("ORGANIZ
 
 # Advanced settings. Should not need adjustments.
 
-    # HOST: Hostname of the RESTful API server. Defaults to platform.exabyte.io.
+    # HOST: Hostname of the RESTful API server. Defaults to platform.mat3ra.com.
     # PORT: The port RESTful API server is listening on. Defaults to 443.
     # VERSION: RESTFul API version. Defaults to 2018-10-01.
     # SECURE: Whether to use secure connection. Defaults to True.

@@ -3,7 +3,7 @@ import time
 import datetime
 import os
 import importlib.util
-from .. import settings
+from examples import settings
 import urllib
 from IPython.display import display, JSON
 import json

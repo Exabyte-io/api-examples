@@ -37,11 +37,11 @@ def set_notebook_environment(environment_variables_config):
     """
     notebook_environment = environment_variables_config["notebook_environment"]
     if notebook_environment == "Colab":
-        from utils.colab import setup_colab_runtime_environment
+        from examples.utils.colab import setup_colab_runtime_environment
 
         setup_colab_runtime_environment(environment_variables_config)
     else:
-        from utils.generic import ensure_packages_are_installed
+        from examples.utils.generic import ensure_packages_are_installed
 
         ensure_packages_are_installed(notebook_environment)
 

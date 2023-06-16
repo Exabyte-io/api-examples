@@ -73,9 +73,11 @@ def get_notebook_info():
     )
 
 
-def cli():
+def get_notebook_path():
     """
-    A proxy function used for a single string return when the corresponding entry-point script is called.
+    A proxy function used for a single string return when
+    the corresponding entry-point script in 'setup.py' is called.
+
     Args:
         None
     Return:

@@ -50,7 +50,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
     virtualenv .env
     source .env/bin/activate
     pip install --no-deps -r requirements.txt
-    pip install -e ./examples/
+    pip install --no-deps -e .
     ```
 
 4. Run Jupyter and open a notebook in a browser. In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`, which is the `examples` folder shown below:
@@ -66,7 +66,7 @@ In order to run or edit the examples:
 
 1. Assert an existing Exabyte.io account. Examples require an account to run. New users can register [here](https://platform.mat3ra.com/register) to obtain one.
 
-2. Open [settings](examples/utils/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
+2. Open [settings](examples/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
 
 3. Open the desired example notebook, adjust it as necessary and run. One can speed up the notebooks execution after running the [Get Authentication Params](examples/system/get_authentication_params.ipynb) one by reusing the kernel from the first notebook.
 

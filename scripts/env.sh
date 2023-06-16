@@ -24,8 +24,8 @@ if [ ! -z "${IS_RUNNING_ON_COLAB}" ]; then
 
     cd ${REPO_NAME}
 
-    python -m pip install -r requirements-colab.txt > ${stdout} 2>&1
-    python -m pip install examples/ > ${stdout} 2>&1
+    # Dev install the repo, requirements are installed automatically.
+    python -m pip install -ve . > ${stdout} 2>&1
 
     if [ ! -z "${IS_USING_GIT_LFS}" ]; then
         sudo apt-get install -y git-lfs > ${stdout} 2>&1

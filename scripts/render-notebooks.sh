@@ -30,7 +30,10 @@ for notebook in ${notebooks}; do
     echo -e "$(now) Stripout output cells (if any)"
     nbstripout ${notebook_name}
 
-    if [[ ("${notebook_name}" == *"get_authentication_params.ipynb") || ("${notebook_name}" == *"run-simulations-and-extract-properties.ipynb") ]]; then
+    if [[ ("${notebook_name}" == *"get_authentication_params.ipynb") || \
+          ("${notebook_name}" == *"run-simulations-and-extract-properties.ipynb") || \
+          ("${notebook_name}" == *"this-notebook-does-not-exist--placeholder-for-future-updates.ipynb") \
+          ]]; then
         echo -e "$(now) Skipping execution of ${notebook_name}."
     else
         echo -e "$(now) Executing ${notebook_name} in place..."

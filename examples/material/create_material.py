@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/dev/examples/material/create_material.ipynb" target="_parent">
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/bugfix/SOF-5578-WIP/examples/material/create_material.ipynb" target="_parent">
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
 # # Overview
 # 
-# In this example we create a material from a JSON config with [tags](https://docs.exabyte.io/entities-general/data/#tags) to identify the material.
+# In this example we create a material from a JSON config with [tags](https://docs.mat3ra.com/entities-general/data/#tags) to identify the material.
 
 # # Complete Authorization Form and Initialize Settings
 # 
@@ -15,15 +15,15 @@
 # 
 # If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
 # 
-# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
 # 
 # MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
 # 
-# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.exabyte.io/collaboration/organizations/overview/
+# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.mat3ra.com/collaboration/organizations/overview/
 # 
-# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
+# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[]:
+# In[1]:
 
 
 #@title Authorization Form
@@ -31,27 +31,37 @@ ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
 AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
 MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
 ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
-import os, glob, sys, importlib, urllib.request
 
-# The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/api-examples/dev/examples/utils/initialize_settings.py').read())
+import os
+if "COLAB_JUPYTER_IP" in os.environ:
+    os.environ.update(
+        dict(
+            ACCOUNT_ID=ACCOUNT_ID,
+            AUTH_TOKEN=AUTH_TOKEN,
+            MATERIALS_PROJECT_API_KEY=MATERIALS_PROJECT_API_KEY,
+            ORGANIZATION_ID=ORGANIZATION_ID,
+        )
+    )
+
+    get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
 # # Imports
 
-# In[]:
+# In[2]:
 
 
-from utils.generic import display_JSON
-import settings; importlib.reload(settings); from settings import ENDPOINT_ARGS
+from examples.utils.generic import display_JSON
+from examples.settings import ENDPOINT_ARGS
+
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 
 # ## Create material config
 # 
-# Create material config in JSON format. See [Material](https://docs.exabyte.io/api/Material/put_materials_create) endpoint for more information about material config format.
+# Create material config in JSON format. See [Material](https://docs.mat3ra.com/api/Material/put_materials_create) endpoint for more information about material config format.
 
-# In[]:
+# In[3]:
 
 
 CONFIG = {
@@ -131,7 +141,7 @@ CONFIG = {
 # 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
 
-# In[]:
+# In[4]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -140,7 +150,8 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
-# In[]:
+# In[5]:
 
 
 display_JSON(material)
+

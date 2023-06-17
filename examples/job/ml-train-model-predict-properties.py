@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/dev/examples/job/ml-train-model-predict-properties.ipynb" target="_parent">
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/bugfix/SOF-5578-WIP/examples/job/ml-train-model-predict-properties.ipynb" target="_parent">
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
@@ -37,15 +37,15 @@
 # 
 # If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
 # 
-# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
 # 
 # MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
 # 
-# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.exabyte.io/collaboration/organizations/overview/
+# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.mat3ra.com/collaboration/organizations/overview/
 # 
-# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
+# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[]:
+# In[1]:
 
 
 #@title Authorization Form
@@ -53,24 +53,32 @@ ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
 AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
 MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
 ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
-import os, glob, sys, importlib, urllib.request
 
-# The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/api-examples/dev/examples/utils/initialize_settings.py').read())
+import os
+if "COLAB_JUPYTER_IP" in os.environ:
+    os.environ.update(
+        dict(
+            ACCOUNT_ID=ACCOUNT_ID,
+            AUTH_TOKEN=AUTH_TOKEN,
+            MATERIALS_PROJECT_API_KEY=MATERIALS_PROJECT_API_KEY,
+            ORGANIZATION_ID=ORGANIZATION_ID,
+        )
+    )
+
+    get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
 # # Imports
 
-# In[]:
+# In[2]:
 
 
 import time
 from IPython.display import IFrame
 
 # Import settings file and utils file
-import settings; importlib.reload(settings)
-from settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils.generic import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, display_JSON
+from examples.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
+from examples.utils.generic import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, display_JSON
 
 import pandas as pd
 
@@ -91,7 +99,7 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # - **TRAIN_MATERIALS_PROJECT_IDS**: a list of material IDs to train ML model based on
 # - **TARGET_MATERIALS_PROJECT_IDS**: a list of material IDs to predict the property for
 
-# In[]:
+# In[3]:
 
 
 TRAIN_MATERIALS_PROJECT_IDS = ["mp-149", "mp-978534"] # Si, SiGe
@@ -104,7 +112,7 @@ TARGET_MATERIALS_PROJECT_IDS = ["mp-32"] # Ge
 # 
 # - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
 
-# In[]:
+# In[4]:
 
 
 JOB_NAME_PREFIX = "Job Name Prefix"
@@ -112,7 +120,7 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 
 # #### Compute
 # 
-# Setup compute parameters. See [this](https://docs.exabyte.io/infrastructure/compute-settings/ui) for more information about compute parameters.
+# Setup compute parameters. See [this](https://docs.mat3ra.com/infrastructure/compute-settings/ui) for more information about compute parameters.
 # 
 # - **NODES**: Number of nodes. Defaults to 1.
 # - **PPN**: Number of MPI processes per each node, Defaults to 1.
@@ -120,7 +128,7 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
 # - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
-# In[]:
+# In[5]:
 
 
 PPN = "1"
@@ -132,7 +140,7 @@ CLUSTER = "cluster-001"
 
 # ### Initialize the endpoints
 
-# In[]:
+# In[6]:
 
 
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
@@ -143,9 +151,9 @@ bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
 raw_property_endpoints = RawPropertiesEndpoints(*ENDPOINT_ARGS)
 
 
-# Retrieve the owner and project IDs as they are needed by the endpoints. The default material is used to extract the owner ID. One can extract the owner ID from any other account's [entities](https://docs.exabyte.io/entities-general/overview/).
+# Retrieve the owner and project IDs as they are needed by the endpoints. The default material is used to extract the owner ID. One can extract the owner ID from any other account's [entities](https://docs.mat3ra.com/entities-general/overview/).
 
-# In[]:
+# In[7]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["owner"]["_id"]
@@ -156,7 +164,7 @@ project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID}
 # 
 # Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows. We use exabyte bank workflows which are identified by "systemName" field. The below can be adjusted to get the bank workflows by ID.
 
-# In[]:
+# In[8]:
 
 
 band_gap_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints, "espresso-band-gap", owner_id)
@@ -167,7 +175,7 @@ ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints
 # 
 # Import materials from materials project.
 
-# In[]:
+# In[9]:
 
 
 train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id)
@@ -178,7 +186,7 @@ target_materials = material_endpoints.import_from_materialsproject(MATERIALS_PRO
 # 
 # Create jobs for the "train materials".
 
-# In[]:
+# In[10]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
@@ -187,7 +195,7 @@ jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, projec
 
 # Submit the jobs for execution.
 
-# In[]:
+# In[11]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
@@ -195,7 +203,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[]:
+# In[12]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -206,7 +214,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # Create ML Train job for the train materials.
 
-# In[]:
+# In[13]:
 
 
 name = "-".join((JOB_NAME_PREFIX, "train"))
@@ -217,7 +225,7 @@ job = job_endpoints.create(config)
 
 # Submit the train job for execution.
 
-# In[]:
+# In[14]:
 
 
 job_endpoints.submit(job["_id"])
@@ -225,7 +233,7 @@ job_endpoints.submit(job["_id"])
 
 # Monitor the job and print the status until it is done.
 
-# In[]:
+# In[15]:
 
 
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
@@ -235,7 +243,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # 
 # The resulting trained model is extracted from the last unit (train with index 4) of the first job's subworkflow (ML: Train Model with index 0) and is further referred to as "ML predict workflow".
 
-# In[]:
+# In[16]:
 
 
 ml_predict_workflow = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]
@@ -244,7 +252,7 @@ ml_predict_workflow_id = ml_predict_workflow["_id"]
 
 # Print ML predict workflow
 
-# In[]:
+# In[17]:
 
 
 display_JSON(ml_predict_workflow)
@@ -254,7 +262,7 @@ display_JSON(ml_predict_workflow)
 # 
 # Create ML Predict job for the predict materials.
 
-# In[]:
+# In[18]:
 
 
 name = "-".join((JOB_NAME_PREFIX, "predict"))
@@ -265,7 +273,7 @@ job = job_endpoints.create(config)
 
 # Submit the predict job for execution.
 
-# In[]:
+# In[19]:
 
 
 job_endpoints.submit(job["_id"])
@@ -273,7 +281,7 @@ job_endpoints.submit(job["_id"])
 
 # Monitor the job and print the status until its done.
 
-# In[]:
+# In[20]:
 
 
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
@@ -283,7 +291,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # 
 # Predicted properties are extracted from the last unit (score with index 3) of the first job's subworkflow (ml_predict_subworkflow with index 0).
 
-# In[]:
+# In[21]:
 
 
 
@@ -294,7 +302,7 @@ predicted_properties = get_property_by_subworkow_and_unit_indicies(raw_property_
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[]:
+# In[22]:
 
 
 table = []
@@ -310,10 +318,11 @@ for exabyte_id, properties in predicted_properties.items():
 # 
 # Create and print the final table as Pandas dataFrame.
 
-# In[]:
+# In[23]:
 
 
 headers = ["ID", "NAME", "FORMULA", "EXABYTE-ID", "DIRECT-GAP", "INDIRECT-GAP"]
 df = pd.DataFrame(data=table, columns=headers)
 html = dataframe_to_html(df)
 html
+

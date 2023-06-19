@@ -7,9 +7,9 @@
 
 # # Get-File-From-Job
 # 
-# This example demonstrates how to use Exabyte RESTful API to check for and acquire files from jobs which have been run. This example assumes that the user is already familiar with the [creation and submission of jobs](create_and_submit_jobs.ipynb) using our API.
+# This example demonstrates how to use Mat3ra RESTful API to check for and acquire files from jobs which have been run. This example assumes that the user is already familiar with the [creation and submission of jobs](create_and_submit_jobs.ipynb) using our API.
 # 
-# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io account is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for VASP, for example) and adjust extraction of the results ("Viewing job files" section). RESTful API credentials shall be updated in [settings](../settings.json).
+# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Mat3ra.com account is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for VASP, for example) and adjust extraction of the results ("Viewing job files" section). RESTful API credentials shall be updated in [settings](../settings.json).
 # 
 # 
 # ## Steps
@@ -25,7 +25,7 @@
 # 
 # ## Pre-requisites
 # 
-# The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We outline these below and direct the reader to the original sources of information:
+# The explanation below assumes that the reader is familiar with the concepts used in Mat3ra platform and RESTful API. We outline these below and direct the reader to the original sources of information:
 # 
 # - [Generating RESTful API authentication parameters](../system/get_authentication_params.ipynb)
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
@@ -37,7 +37,7 @@
 # 
 # If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
 # 
-# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Mat3ra.com's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
 # 
 # MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
 # 

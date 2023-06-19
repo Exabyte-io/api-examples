@@ -7,17 +7,17 @@
 
 # # Overview
 # 
-# This example shows how to log in to Exabyte RESTFul API via [Login](https://docs.mat3ra.com/api/API/post_login) endpoint and generate API authentication parameters.
+# This example shows how to log in to Mat3ra RESTFul API via [Login](https://docs.mat3ra.com/api/API/post_login) endpoint and generate API authentication parameters.
 
 # # Execution
 # 
-# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Exabyte.io account is required.
+# > <span style="color: orange">**NOTE**</span>: In order to run this example, an active Mat3ra.com account is required.
 
 # ## Set Parameters
 # 
-# - **USERNAME**: Your Exabyte account username.
+# - **USERNAME**: Your Mat3ra account username.
 # 
-# - **PASSWORD**: Your Exabyte account password.
+# - **PASSWORD**: Your Mat3ra account password.
 
 # In[ ]:
 

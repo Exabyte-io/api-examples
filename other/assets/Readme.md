@@ -1,6 +1,11 @@
 # ML Datasets
 
-This folder contains datasets which are used in our [machine learning examples](..//machine_learning).
+This folder contains datasets which are used in our [machine learning examples](../machine_learning).
+
+- `bitter-sweet.csv` contains a slightly modified version of the dataset from
+  https://www.kaggle.com/katyaarnold/bittersweet. We have dropped the `In Bitter Domain` and `Bitter` columns and
+  retained the `Taste` column.
+- `gamma_alumina_digne_et_al.poscar` contains a structure of gamma alumina published in https://doi.org/10.1016/j.jcat.2004.04.020
 
 ## Sci_Adv_Dean_Data.csv
 

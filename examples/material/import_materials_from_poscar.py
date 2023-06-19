@@ -15,7 +15,7 @@
 # 
 # If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
 # 
-# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Mat3ra.com's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
 # 
 # MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
 # 

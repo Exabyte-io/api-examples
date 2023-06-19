@@ -9,7 +9,7 @@
 # 
 # This example was created as part of our [Advanced Topics Webinar](https://www.youtube.com/watch?v=psSFC409jSg) on February 19, 2021. This webinar focused on explaining our API in detail, and provided examples of many areas of its functionality.
 # 
-# In this notebook, we showcase a major advantage of APIs: interoperability. We begin by performing a query using the [Materials Project](https://materialsproject.org) API for all systems containing Iron and Oxygen. We then filter our results (for demonstraiton purposes, we keep only the first 10 materials found). Finally, we upload our results to the Exabyte platform, where further calculations could be performed to characterize these materials.
+# In this notebook, we showcase a major advantage of APIs: interoperability. We begin by performing a query using the [Materials Project](https://materialsproject.org) API for all systems containing Iron and Oxygen. We then filter our results (for demonstraiton purposes, we keep only the first 10 materials found). Finally, we upload our results to the Mat3ra platform, where further calculations could be performed to characterize these materials.
 
 # # Complete Authorization Form and Initialize Settings
 # 
@@ -17,7 +17,7 @@
 # 
 # If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
 # 
-# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Mat3ra.com's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
 # 
 # MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
 # 
@@ -85,7 +85,7 @@ print(some_iron_oxides)
 
 # # Bringing Materials Into the User Account
 # 
-# Now that we have filtered the results from Materials Project down to just 10 structures, we may want to study them further with the computational models provided by Exabyte. For example, we may be interested in leveraging a DFT code to find the structure with the largest band-gap, or perhaps we want to conduct a high-throughput screening of each material's surface energies.
+# Now that we have filtered the results from Materials Project down to just 10 structures, we may want to study them further with the computational models provided by Mat3ra. For example, we may be interested in leveraging a DFT code to find the structure with the largest band-gap, or perhaps we want to conduct a high-throughput screening of each material's surface energies.
 
 # In[]:
 

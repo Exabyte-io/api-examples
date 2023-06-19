@@ -7,11 +7,11 @@
 
 # # Run Simulations and Extract Properties
 # 
-# This example demonstrates how to use Exabyte RESTful API to create simulation [Jobs](https://docs.mat3ra.com/jobs/overview/) programmatically for multiple [Materials](https://docs.mat3ra.com/materials/overview/) at once and extract the resulting [Properties](https://docs.mat3ra.com/properties/overview/) forming a [Pandas](https://pandas.pydata.org/) dataframe.
+# This example demonstrates how to use Mat3ra RESTful API to create simulation [Jobs](https://docs.mat3ra.com/jobs/overview/) programmatically for multiple [Materials](https://docs.mat3ra.com/materials/overview/) at once and extract the resulting [Properties](https://docs.mat3ra.com/properties/overview/) forming a [Pandas](https://pandas.pydata.org/) dataframe.
 # 
 # This approach can work with any [Workflows](https://docs.mat3ra.com/workflows/overview/). For the demonstration purpose we use the Density Functional Theory and extract Electronic Band Gap as the property of interest.
 # 
-# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Exabyte.io account with access to VASP (Vienna ab-initio simulations package) is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for Quantum ESPRESSO, for example) and adjust extraction of the results ("Extract results" section). RESTful API credentials shall be updated in [settings](../settings.json).
+# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Mat3ra.com account with access to VASP (Vienna ab-initio simulations package) is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for Quantum ESPRESSO, for example) and adjust extraction of the results ("Extract results" section). RESTful API credentials shall be updated in [settings](../settings.json).
 # 
 # 
 # ## Steps
@@ -32,7 +32,7 @@
 # 
 # ## Pre-requisites
 # 
-# The explanation below assumes that the reader is familiar with the concepts used in Exabyte platform and RESTful API. We outline these below and direct the reader to the original sources of information:
+# The explanation below assumes that the reader is familiar with the concepts used in Mat3ra platform and RESTful API. We outline these below and direct the reader to the original sources of information:
 # 
 # - [Generating RESTful API authentication parameters](../system/get_authentication_params.ipynb)
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
@@ -44,7 +44,7 @@
 # 
 # If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
 # 
-# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Mat3ra.com's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
 # 
 # MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
 # 

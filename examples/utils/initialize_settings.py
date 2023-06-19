@@ -46,9 +46,9 @@ def set_notebook_environment(environment_variables_config):
         ensure_packages_are_installed(notebook_environment)
 
 
-def get_notebook_info():
+def get_notebook_info() -> dict:
     """
-    Get the name of a currently running notebook in Google Colab.
+    Get the information about a currently running notebook in Google Colab.
     Args:
         None
     Return:
@@ -73,7 +73,7 @@ def get_notebook_info():
     )
 
 
-def get_notebook_path():
+def print_notebook_path():
     """
     A proxy function used for a single string return when
     the corresponding entry-point script in 'setup.py' is called.
@@ -81,9 +81,9 @@ def get_notebook_path():
     Args:
         None
     Return:
-        the path of the notebook being currently executed.
+        None
     """
-    # 'return get_notebook_info()["notebook_path"]' returns non-zero exit code, use 'print'
+    # 'return get_notebook_info()["notebook_path"]' returns a non-zero exit code; using 'print' instead.
     print(get_notebook_info()["notebook_path"])
 
 

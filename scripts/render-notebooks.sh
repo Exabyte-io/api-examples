@@ -3,7 +3,8 @@
 # This is a helper script to render Jupyter notebook files (.ipynb)
 #
 # The workflow is as follows:
-# - parse the README.md file and extract all the notebooks listed in the table;
+# - parse the README.md file and extract all the notebooks listed in the table
+#   or use a list of notebooks passed as a blank-separated inputs in command line;
 # - for each notebook:
 #   - execute `nbstripout` to strip output cells;
 #   - execute `nbconvert` to populate the .ipynb file in place;
@@ -11,7 +12,13 @@
 
 set -euo pipefail
 
-notebooks="$(cat README.md | grep -E "\| (.*)[(.*)](examples/(.*).ipynb)" | cut -d'|' -f3 | grep -oE "\((.*)\)" | cut -d'(' -f2 | cut -d')' -f1)"
+if [ ! -z "$*" ]; then
+    notebooks="$@"
+    # E.g.:
+    # notebooks="examples/material/api_interoperability_showcase.ipynb"
+else
+    notebooks="$(cat README.md | grep -E "\| (.*)[(.*)](examples/(.*).ipynb)" | cut -d'|' -f3 | grep -oE "\((.*)\)" | cut -d'(' -f2 | cut -d')' -f1)"
+fi
 
 idir="$PWD"
 
@@ -21,6 +28,11 @@ function now() {
 
 for notebook in ${notebooks}; do
     echo -e "$(now) Processing ${notebook}..."
+
+    if [ ! -f "${notebook}" ]; then
+        echo "File ${notebook} does not exist. Exiting."
+        exit 1
+    fi
 
     notebook_dir=$(dirname $notebook)
     notebook_name=$(basename $notebook)
@@ -48,3 +60,5 @@ for notebook in ${notebooks}; do
     cd $idir
     echo ""
 done
+
+exit 0

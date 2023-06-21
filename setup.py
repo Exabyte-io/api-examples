@@ -25,7 +25,7 @@ setup(
     package_data={"examples": ["settings.json"]},
     entry_points={
         "console_scripts": [
-            "notebook-path = examples.utils.initialize_settings:print_notebook_path",
+            "notebook-path = examples.utils.notebook:print_notebook_path",
         ],
     },
     install_requires=requirements,

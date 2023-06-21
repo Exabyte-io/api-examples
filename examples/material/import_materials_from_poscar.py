@@ -23,7 +23,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -44,13 +44,13 @@ if "COLAB_JUPYTER_IP" in os.environ:
     )
 
     get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; export IS_USING_GIT_LFS=true; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
-    from examples.utils.initialize_settings import get_notebook_info
+    from examples.utils.notebook import get_notebook_info
     os.chdir(os.path.join("api-examples", os.path.dirname(get_notebook_info()["notebook_path"])))
 
 
 # # Imports
 
-# In[2]:
+# In[ ]:
 
 
 from examples.settings import ENDPOINT_ARGS
@@ -64,7 +64,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # - **NAME**: material name
 # - **POSCAR_PATH**: absolute path to the POSCAR file
 
-# In[3]:
+# In[ ]:
 
 
 NAME = "My Material"
@@ -75,7 +75,7 @@ POSCAR_PATH = "../assets/mp-978534.poscar"
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_file` function to import the material.
 
-# In[4]:
+# In[ ]:
 
 
 content  = ""
@@ -91,7 +91,7 @@ material = endpoint.import_from_file(NAME, content)
 # 
 # Print the list of imported materials in pretty JSON below.
 
-# In[5]:
+# In[ ]:
 
 
 display_JSON(material)

@@ -25,7 +25,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -50,7 +50,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 # # Imports
 
-# In[2]:
+# In[ ]:
 
 
 from examples.utils.generic import display_JSON
@@ -68,7 +68,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 # # Query Materials Project for all systems containing Iron and Oxygen
 
-# In[3]:
+# In[ ]:
 
 
 materials_project_api = MPRester(MATERIALS_PROJECT_API_KEY)
@@ -83,7 +83,7 @@ print(iron_oxides_ids)
 # 
 # As a basic example, here we only keep the first 10 iron oxides that the Materials Project API returned to us, and discard the other 150.
 
-# In[4]:
+# In[ ]:
 
 
 #As a demonstration, take the first 10 iron oxides
@@ -95,7 +95,7 @@ print(some_iron_oxides)
 # 
 # Now that we have filtered the results from Materials Project down to just 10 structures, we may want to study them further with the computational models provided by Mat3ra. For example, we may be interested in leveraging a DFT code to find the structure with the largest band-gap, or perhaps we want to conduct a high-throughput screening of each material's surface energies.
 
-# In[5]:
+# In[ ]:
 
 
 # Upload the first 10 iron oxides found to our account
@@ -105,7 +105,7 @@ materials = exabyte_materials_api.import_from_materialsproject(MATERIALS_PROJECT
 
 # Finally, it is always useful to stay organized. Materials sets make this convenient, acting as a folder to keep a group of related materials in. This would be especially helpful if, in the future, we wanted run a calculation over all the oxides we found in this example.
 
-# In[6]:
+# In[ ]:
 
 
 # Move the iron oxides to a materials set, just for this example

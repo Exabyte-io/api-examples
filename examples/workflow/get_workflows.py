@@ -23,7 +23,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -48,7 +48,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 # ## Imports
 
-# In[2]:
+# In[ ]:
 
 
 from examples.settings import ENDPOINT_ARGS, ACCOUNT_ID
@@ -63,7 +63,7 @@ from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 # 
 # - **limit**: Maximum number of results to return. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[3]:
+# In[ ]:
 
 
 QUERY = {
@@ -80,7 +80,7 @@ OPTIONS = {
 # 
 # Initialize a helper class to interact with `WorkflowEndpoints`. This only has to be done once.
 
-# In[4]:
+# In[ ]:
 
 
 endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
@@ -90,7 +90,7 @@ endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
 # 
 # Contact the endpoint to list workflows according to the query above.
 
-# In[5]:
+# In[ ]:
 
 
 workflows = endpoint.list(QUERY, OPTIONS)
@@ -100,7 +100,7 @@ workflows = endpoint.list(QUERY, OPTIONS)
 # 
 # Print the list of workflows saved under the corresponding variable in pretty JSON below.
 
-# In[6]:
+# In[ ]:
 
 
 display_JSON(workflows)

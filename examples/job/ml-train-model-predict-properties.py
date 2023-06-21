@@ -45,7 +45,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -70,7 +70,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 # # Imports
 
-# In[2]:
+# In[ ]:
 
 
 import time
@@ -99,7 +99,7 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # - **TRAIN_MATERIALS_PROJECT_IDS**: a list of material IDs to train ML model based on
 # - **TARGET_MATERIALS_PROJECT_IDS**: a list of material IDs to predict the property for
 
-# In[3]:
+# In[ ]:
 
 
 TRAIN_MATERIALS_PROJECT_IDS = ["mp-149", "mp-978534"] # Si, SiGe
@@ -112,7 +112,7 @@ TARGET_MATERIALS_PROJECT_IDS = ["mp-32"] # Ge
 # 
 # - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
 
-# In[4]:
+# In[ ]:
 
 
 JOB_NAME_PREFIX = "Job Name Prefix"
@@ -128,7 +128,7 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 # - **TIME_LIMIT**: Job walltime. Defaults to "01:00:00" (one hour).
 # - **CLUSTER**: The full qualified domain name (FQDN) or alias of the cluster to submit the jobs into.
 
-# In[5]:
+# In[ ]:
 
 
 PPN = "1"
@@ -140,7 +140,7 @@ CLUSTER = "cluster-001"
 
 # ### Initialize the endpoints
 
-# In[6]:
+# In[ ]:
 
 
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
@@ -153,7 +153,7 @@ raw_property_endpoints = RawPropertiesEndpoints(*ENDPOINT_ARGS)
 
 # Retrieve the owner and project IDs as they are needed by the endpoints. The default material is used to extract the owner ID. One can extract the owner ID from any other account's [entities](https://docs.mat3ra.com/entities-general/overview/).
 
-# In[7]:
+# In[ ]:
 
 
 owner_id = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]["owner"]["_id"]
@@ -164,7 +164,7 @@ project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID}
 # 
 # Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows. We use exabyte bank workflows which are identified by "systemName" field. The below can be adjusted to get the bank workflows by ID.
 
-# In[8]:
+# In[ ]:
 
 
 band_gap_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints, "espresso-band-gap", owner_id)
@@ -175,7 +175,7 @@ ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints
 # 
 # Import materials from materials project.
 
-# In[9]:
+# In[ ]:
 
 
 train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id)
@@ -186,7 +186,7 @@ target_materials = material_endpoints.import_from_materialsproject(MATERIALS_PRO
 # 
 # Create jobs for the "train materials".
 
-# In[10]:
+# In[ ]:
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
@@ -195,7 +195,7 @@ jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, projec
 
 # Submit the jobs for execution.
 
-# In[11]:
+# In[ ]:
 
 
 for job in jobs: job_endpoints.submit(job["_id"])
@@ -203,7 +203,7 @@ for job in jobs: job_endpoints.submit(job["_id"])
 
 # Monitor the jobs and print the status until they are all finished.
 
-# In[12]:
+# In[ ]:
 
 
 job_ids = [job["_id"] for job in jobs]
@@ -214,7 +214,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 # 
 # Create ML Train job for the train materials.
 
-# In[13]:
+# In[ ]:
 
 
 name = "-".join((JOB_NAME_PREFIX, "train"))
@@ -225,7 +225,7 @@ job = job_endpoints.create(config)
 
 # Submit the train job for execution.
 
-# In[14]:
+# In[ ]:
 
 
 job_endpoints.submit(job["_id"])
@@ -233,7 +233,7 @@ job_endpoints.submit(job["_id"])
 
 # Monitor the job and print the status until it is done.
 
-# In[15]:
+# In[ ]:
 
 
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
@@ -243,7 +243,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # 
 # The resulting trained model is extracted from the last unit (train with index 4) of the first job's subworkflow (ML: Train Model with index 0) and is further referred to as "ML predict workflow".
 
-# In[16]:
+# In[ ]:
 
 
 ml_predict_workflow = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]
@@ -252,7 +252,7 @@ ml_predict_workflow_id = ml_predict_workflow["_id"]
 
 # Print ML predict workflow
 
-# In[17]:
+# In[ ]:
 
 
 display_JSON(ml_predict_workflow)
@@ -262,7 +262,7 @@ display_JSON(ml_predict_workflow)
 # 
 # Create ML Predict job for the predict materials.
 
-# In[18]:
+# In[ ]:
 
 
 name = "-".join((JOB_NAME_PREFIX, "predict"))
@@ -273,7 +273,7 @@ job = job_endpoints.create(config)
 
 # Submit the predict job for execution.
 
-# In[19]:
+# In[ ]:
 
 
 job_endpoints.submit(job["_id"])
@@ -281,7 +281,7 @@ job_endpoints.submit(job["_id"])
 
 # Monitor the job and print the status until its done.
 
-# In[20]:
+# In[ ]:
 
 
 wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
@@ -291,7 +291,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # 
 # Predicted properties are extracted from the last unit (score with index 3) of the first job's subworkflow (ml_predict_subworkflow with index 0).
 
-# In[21]:
+# In[ ]:
 
 
 
@@ -302,7 +302,7 @@ predicted_properties = get_property_by_subworkow_and_unit_indicies(raw_property_
 # 
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
-# In[22]:
+# In[ ]:
 
 
 table = []
@@ -318,7 +318,7 @@ for exabyte_id, properties in predicted_properties.items():
 # 
 # Create and print the final table as Pandas dataFrame.
 
-# In[23]:
+# In[ ]:
 
 
 headers = ["ID", "NAME", "FORMULA", "EXABYTE-ID", "DIRECT-GAP", "INDIRECT-GAP"]

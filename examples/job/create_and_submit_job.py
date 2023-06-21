@@ -23,7 +23,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -46,7 +46,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
     get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
-# In[2]:
+# In[ ]:
 
 
 from examples.settings import ENDPOINT_ARGS, ACCOUNT_ID
@@ -59,7 +59,7 @@ from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 
 # ## Initialize the endpoints
 
-# In[3]:
+# In[ ]:
 
 
 job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
@@ -69,7 +69,7 @@ workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 
 # Set job name.
 
-# In[4]:
+# In[ ]:
 
 
 JOB_NAME = "TEST JOB"
@@ -79,7 +79,7 @@ JOB_NAME = "TEST JOB"
 # 
 # Default account's materail and workflow are used in this example to create the job. Adjust the queries to use different material and workflow.
 
-# In[5]:
+# In[ ]:
 
 
 default_material = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
@@ -94,7 +94,7 @@ owner_id = default_material["owner"]["_id"]
 # 
 # The job belongs to user's default account and it is created inside the defauult account's project. 
 
-# In[6]:
+# In[ ]:
 
 
 config = {
@@ -113,7 +113,7 @@ config = {
 
 # ## Create and submit job
 
-# In[7]:
+# In[ ]:
 
 
 job = job_endpoints.create(config)
@@ -124,7 +124,7 @@ job_endpoints.submit(job['_id'])
 # 
 # Print the job in pretty JSON below. Check `status` field to make sure job is submiited.
 
-# In[8]:
+# In[ ]:
 
 
 job = job_endpoints.get(job['_id'])

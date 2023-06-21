@@ -23,7 +23,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -48,7 +48,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 # # Imports
 
-# In[2]:
+# In[ ]:
 
 
 from examples.utils.generic import display_JSON
@@ -61,7 +61,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # Create material config in JSON format. See [Material](https://docs.mat3ra.com/api/Material/put_materials_create) endpoint for more information about material config format.
 
-# In[3]:
+# In[ ]:
 
 
 CONFIG = {
@@ -141,7 +141,7 @@ CONFIG = {
 # 
 # Initialize `MaterialEndpoints` class and call `create` function to create material.
 
-# In[4]:
+# In[ ]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -150,7 +150,7 @@ material = endpoint.create(CONFIG)
 
 # ## Print new material
 
-# In[5]:
+# In[ ]:
 
 
 display_JSON(material)

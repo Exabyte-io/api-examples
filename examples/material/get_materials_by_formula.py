@@ -23,7 +23,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -48,7 +48,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 # # Imports
 
-# In[2]:
+# In[ ]:
 
 
 from examples.utils.generic import display_JSON
@@ -61,7 +61,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # - **QUERY**: A query describing the documents to find. See [Meteor collection](https://docs.meteor.com/api/collections.html#Mongo-Collection-find) for more information.
 
-# In[3]:
+# In[ ]:
 
 
 QUERY = {
@@ -72,7 +72,7 @@ QUERY = {
 
 # ## Initialize the endpoint
 
-# In[4]:
+# In[ ]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -82,7 +82,7 @@ endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
 # 
 # Contact the endpoint to list materials according to the query above.
 
-# In[5]:
+# In[ ]:
 
 
 materials = endpoint.list(QUERY)
@@ -92,7 +92,7 @@ materials = endpoint.list(QUERY)
 # 
 # Print the list of materials saved under the corresponding variable in pretty JSON below.
 
-# In[6]:
+# In[ ]:
 
 
 display_JSON(materials)

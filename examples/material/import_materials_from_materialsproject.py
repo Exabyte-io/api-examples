@@ -23,7 +23,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -48,7 +48,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 # # Imports
 
-# In[2]:
+# In[ ]:
 
 
 from examples.utils.generic import display_JSON
@@ -63,7 +63,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # 
 # - **TAGS**: a list of [tags](https://docs.mat3ra.com/entities-general/data/#tags) to assign to imported materials
 
-# In[3]:
+# In[ ]:
 
 
 MATERIALS_PROJECT_IDS = ["mp-978534", "mp-1096549"]
@@ -74,7 +74,7 @@ TAGS = ["tag1", "tag2"]
 # 
 # Initialize `MaterialEndpoints` class and call `import_from_materialsproject` function to import materials.
 
-# In[4]:
+# In[ ]:
 
 
 endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
@@ -85,7 +85,7 @@ materials = endpoint.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MAT
 # 
 # Print the list of imported materials in pretty JSON below.
 
-# In[5]:
+# In[ ]:
 
 
 display_JSON(materials)

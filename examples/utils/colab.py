@@ -3,7 +3,7 @@ from .generic import ensure_packages_are_installed, update_json_file_kwargs
 
 def setup_colab_runtime_environment(environment_variables_config):
     """
-    This function setups up the runtime environment for running the exabyte-api-examples
+    This function setups up the runtime environment for running the Exabyte-io/api-examples
     notebooks within Google Colaboratory
 
     Args:

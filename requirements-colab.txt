@@ -1,21 +1,7 @@
 # Requirements for use inside Google Colab, where Jupyter environment is already present
 
-appnope==0.1.2
 ase==3.21.1
-async-generator==1.10
-backcall==0.2.0
-cycler==0.10.0
-exabyte-api-client==2021.1.18
-jedi==0.18.0
-kiwisolver==1.3.1
-monty==2021.3.3
-mpmath==1.2.1
-nest-asyncio==1.5.1
-networkx==2.5.1
-palettable==3.3.0
-pymatgen==2021.2.16
-retrying==1.3.3
-ruamel.yaml==0.17.4
-ruamel.yaml.clib==0.2.2
-spglib==1.16.1
-uncertainties==3.1.5
+exabyte-api-client==2023.6.13.post0
+matplotlib
+pymatgen==2023.5.31
+pandas==1.5.3

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/exabyte-api-examples/blob/dev/examples/material/api_interoperability_showcase.ipynb" target="_parent">
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/bugfix/SOF-5578-WIP/examples/material/api_interoperability_showcase.ipynb" target="_parent">
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
@@ -9,7 +9,7 @@
 # 
 # This example was created as part of our [Advanced Topics Webinar](https://www.youtube.com/watch?v=psSFC409jSg) on February 19, 2021. This webinar focused on explaining our API in detail, and provided examples of many areas of its functionality.
 # 
-# In this notebook, we showcase a major advantage of APIs: interoperability. We begin by performing a query using the [Materials Project](https://materialsproject.org) API for all systems containing Iron and Oxygen. We then filter our results (for demonstraiton purposes, we keep only the first 10 materials found). Finally, we upload our results to the Exabyte platform, where further calculations could be performed to characterize these materials.
+# In this notebook, we showcase a major advantage of APIs: interoperability. We begin by performing a query using the [Materials Project](https://materialsproject.org) API for all systems containing Iron and Oxygen. We then filter our results (for demonstraiton purposes, we keep only the first 10 materials found). Finally, we upload our results to the Mat3ra platform, where further calculations could be performed to characterize these materials.
 
 # # Complete Authorization Form and Initialize Settings
 # 
@@ -17,15 +17,15 @@
 # 
 # If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
 # 
-# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Exabyte.io's API Endpoints](https://docs.exabyte.io/rest-api/endpoints/).
+# ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Mat3ra.com's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
 # 
 # MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
 # 
-# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.exabyte.io/collaboration/organizations/overview/
+# ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.mat3ra.com/collaboration/organizations/overview/
 # 
-# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.exabyte.io/accounts/ui/preferences/api/
+# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[]:
+# In[ ]:
 
 
 #@title Authorization Form
@@ -33,23 +33,31 @@ ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
 AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
 MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
 ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
-import os, glob, sys, importlib, urllib.request
 
-# The below execution sets up runtime using code stored remotely in a url
-exec(urllib.request.urlopen('https://raw.githubusercontent.com/Exabyte-io/exabyte-api-examples/dev/examples/utils/initialize_settings.py').read())
+import os
+if "COLAB_JUPYTER_IP" in os.environ:
+    os.environ.update(
+        dict(
+            ACCOUNT_ID=ACCOUNT_ID,
+            AUTH_TOKEN=AUTH_TOKEN,
+            MATERIALS_PROJECT_API_KEY=MATERIALS_PROJECT_API_KEY,
+            ORGANIZATION_ID=ORGANIZATION_ID,
+        )
+    )
+
+    get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
 # # Imports
 
-# In[]:
+# In[ ]:
 
 
-from utils.generic import display_JSON
-import settings; importlib.reload(settings)
-from settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
+from examples.utils.generic import display_JSON
+from examples.settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
 
 import ase.io
-import pymatgen
+from pymatgen.ext.matproj import MPRester
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
@@ -60,10 +68,10 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 
 # # Query Materials Project for all systems containing Iron and Oxygen
 
-# In[]:
+# In[ ]:
 
 
-materials_project_api = pymatgen.ext.matproj.MPRester(MATERIALS_PROJECT_API_KEY)
+materials_project_api = MPRester(MATERIALS_PROJECT_API_KEY)
 iron_oxides_ids = materials_project_api.get_materials_ids("Fe-O")
 
 print(iron_oxides_ids)
@@ -75,7 +83,7 @@ print(iron_oxides_ids)
 # 
 # As a basic example, here we only keep the first 10 iron oxides that the Materials Project API returned to us, and discard the other 150.
 
-# In[]:
+# In[ ]:
 
 
 #As a demonstration, take the first 10 iron oxides
@@ -85,9 +93,9 @@ print(some_iron_oxides)
 
 # # Bringing Materials Into the User Account
 # 
-# Now that we have filtered the results from Materials Project down to just 10 structures, we may want to study them further with the computational models provided by Exabyte. For example, we may be interested in leveraging a DFT code to find the structure with the largest band-gap, or perhaps we want to conduct a high-throughput screening of each material's surface energies.
+# Now that we have filtered the results from Materials Project down to just 10 structures, we may want to study them further with the computational models provided by Mat3ra. For example, we may be interested in leveraging a DFT code to find the structure with the largest band-gap, or perhaps we want to conduct a high-throughput screening of each material's surface energies.
 
-# In[]:
+# In[ ]:
 
 
 # Upload the first 10 iron oxides found to our account
@@ -97,10 +105,11 @@ materials = exabyte_materials_api.import_from_materialsproject(MATERIALS_PROJECT
 
 # Finally, it is always useful to stay organized. Materials sets make this convenient, acting as a folder to keep a group of related materials in. This would be especially helpful if, in the future, we wanted run a calculation over all the oxides we found in this example.
 
-# In[]:
+# In[ ]:
 
 
 # Move the iron oxides to a materials set, just for this example
 materials_set = exabyte_materials_api.create_set({"name" : "Some Iron Oxides"})
 for material in materials:
     exabyte_materials_api.move_to_set(material["_id"], "", materials_set["_id"])
+

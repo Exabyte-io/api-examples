@@ -107,3 +107,4 @@ venv.bak/
 
 # Miscellaneous
 examples/assets/Molecules_Dataset_Collection
+examples/job/pw_scf.*

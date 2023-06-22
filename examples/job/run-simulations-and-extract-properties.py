@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/bugfix/SOF-5578-WIP/examples/job/run-simulations-and-extract-properties.ipynb" target="_parent">
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/dev/examples/job/run-simulations-and-extract-properties.ipynb" target="_parent">
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
@@ -72,7 +72,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
         )
     )
 
-    get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
+    get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
 # ### Import packages
@@ -84,8 +84,8 @@ import time
 from IPython.display import IFrame
 
 # Import settings file and utils file
-from examples.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from examples.utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html
+from utils.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
+from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkflow_and_unit_indicies, dataframe_to_html
 
 import pandas as pd
 
@@ -218,7 +218,8 @@ materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_AP
 
 
 materials_set = material_endpoints.create_set({"name": MATERIALS_SET_NAME, "owner": {"_id": owner_id}})
-for material in materials: material_endpoints.move_to_set(material["_id"], "", materials_set["_id"])
+for material in materials:
+    material_endpoints.move_to_set(material["_id"], "", materials_set["_id"])
 
 
 # ### Create jobs
@@ -238,7 +239,8 @@ jobs = job_endpoints.create_by_ids(materials, workflow_id, project_id, owner_id,
 
 
 jobs_set = job_endpoints.create_set({"name": JOBS_SET_NAME, "projectId": project_id, "owner": {"_id": owner_id}})
-for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
+for job in jobs:
+    job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 
 
 # Submit the jobs for execution.
@@ -246,7 +248,8 @@ for job in jobs: job_endpoints.move_to_set(job["_id"], "", jobs_set["_id"])
 # In[ ]:
 
 
-for job in jobs: job_endpoints.submit(job["_id"])
+for job in jobs:
+    job_endpoints.submit(job["_id"])
 
 
 # Monitor the jobs and print the status until they are all finished.
@@ -272,8 +275,8 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 results = []
 for material in materials:
     job = next((job for job in jobs if job["_material"]["_id"] == material["_id"]))
-    final_structure = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "final_structure", job, 0, 0)["data"]
-    pressure = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "pressure", job, 0, 0)["data"]["value"]
+    final_structure = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "final_structure", job, 0, 0)["data"]
+    pressure = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "pressure", job, 0, 0)["data"]["value"]
     unit_flowchart_id = job["workflow"]["subworkflows"][1]["units"][1]["flowchartId"]
     band_gap_direct = raw_property_endpoints.get_direct_band_gap(job["_id"], unit_flowchart_id)
     band_gap_indirect = raw_property_endpoints.get_indirect_band_gap(job["_id"], unit_flowchart_id)

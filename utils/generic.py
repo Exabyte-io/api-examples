@@ -3,7 +3,6 @@ import time
 import datetime
 import os
 import importlib.util
-from examples import settings
 import urllib
 from IPython.display import display, JSON
 import json
@@ -11,6 +10,8 @@ from tabulate import tabulate
 import re
 import sys
 import subprocess
+
+from . import settings
 
 # GENERIC UTILITIES
 

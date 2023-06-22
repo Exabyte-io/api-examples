@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/bugfix/SOF-5578-WIP/examples/material/import_materials_from_poscar.ipynb" target="_parent">
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/dev/examples/material/import_materials_from_poscar.ipynb" target="_parent">
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
@@ -43,7 +43,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
         )
     )
 
-    get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; export IS_USING_GIT_LFS=true; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
+    get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; export IS_USING_GIT_LFS=true; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
     from examples.utils.notebook import get_notebook_info
     os.chdir(os.path.join("api-examples", os.path.dirname(get_notebook_info()["notebook_path"])))
 
@@ -53,8 +53,8 @@ if "COLAB_JUPYTER_IP" in os.environ:
 # In[ ]:
 
 
-from examples.settings import ENDPOINT_ARGS
-from examples.utils.generic import display_JSON
+from utils.settings import ENDPOINT_ARGS
+from utils.generic import display_JSON
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 

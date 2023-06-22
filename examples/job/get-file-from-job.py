@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/bugfix/SOF-5578-WIP/examples/job/get-file-from-job.ipynb" target="_parent">
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/dev/examples/job/get-file-from-job.ipynb" target="_parent">
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
@@ -65,7 +65,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
         )
     )
 
-    get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
+    get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
 # ## Imports
@@ -74,8 +74,8 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 
 # Import settings file and utils file
-from examples.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from examples.utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, display_JSON
+from utils.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
+from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkflow_and_unit_indicies, dataframe_to_html, display_JSON
 
 # Relevant functions from the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints

@@ -29,6 +29,11 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
+      - name: Prepare environment variables
+        shell: bash -l {0}
+        run: |
+          echo "DEMO_ACCOUNT_ID=${{ secrets.DEMO_ACCOUNT_ID }}" >> $GITHUB_ENV
+          echo "DEMO_AUTH_TOKEN=${{ secrets.DEMO_AUTH_TOKEN }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         shell: bash -l {0}
@@ -48,17 +53,20 @@ jobs:
       - name: Update utils/settings.json
         shell: python
         run: |
-          import json
-          with open("utils/settings.json", "r") as fp:
+          import os, json
+
+          settings_file = "utils/settings.json"
+
+          with open(settings_file, "r") as fp:
             settings = json.load(fp)
 
-          settings["ACCOUNT_ID"] = "${{ secrets.DEMO_ACCOUNT_ID }}"
-          settings["AUTH_TOKEN"] = "${{ secrets.DEMO_AUTH_TOKEN }}"
+          settings["ACCOUNT_ID"] = os.getenv("DEMO_ACCOUNT_ID", "")
+          settings["AUTH_TOKEN"] = os.getenv("DEMO_AUTH_TOKEN", "")
           # TODO: update secrets with the MP API key
           # settings["MATERIALS_PROJECT_API_KEY"] = "MATERIALS_PROJECT_API_KEY"
 
-          with open("utils/settings.json", "w") as fp:
-            settings = json.dump(settings, fp)
+          with open(settings_file, "w") as fp:
+            json.dump(settings, fp, indent=4)
 
       - name: Render notebooks
         run: |

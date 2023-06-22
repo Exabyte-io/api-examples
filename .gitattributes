@@ -11,4 +11,5 @@ examples/material/get_materials_by_formula.ipynb    !filter !diff !merge text
 examples/material/import_materials_from_materialsproject.ipynb  !filter !diff !merge text
 examples/material/import_materials_from_poscar.ipynb    !filter !diff !merge text
 examples/system/get_authentication_params.ipynb !filter !diff !merge text
+examples/workflow/get_workflows.ipynb !filter !diff !merge text
 images/*.png filter=lfs diff=lfs merge=lfs -text

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/bugfix/SOF-5578-WIP/examples/job/ml-train-model-predict-properties.ipynb" target="_parent">
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/dev/examples/job/ml-train-model-predict-properties.ipynb" target="_parent">
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
@@ -43,7 +43,7 @@
 # 
 # ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.mat3ra.com/collaboration/organizations/overview/
 # 
-# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
+# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../../utils/settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
 # In[ ]:
 
@@ -65,7 +65,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
         )
     )
 
-    get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
+    get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
 # # Imports
@@ -77,8 +77,8 @@ import time
 from IPython.display import IFrame
 
 # Import settings file and utils file
-from examples.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from examples.utils.generic import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, display_JSON
+from utils.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
+from utils.generic import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkflow_and_unit_indicies, display_JSON
 
 import pandas as pd
 
@@ -198,7 +198,8 @@ jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, projec
 # In[ ]:
 
 
-for job in jobs: job_endpoints.submit(job["_id"])
+for job in jobs:
+    job_endpoints.submit(job["_id"])
 
 
 # Monitor the jobs and print the status until they are all finished.
@@ -246,7 +247,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # In[ ]:
 
 
-ml_predict_workflow = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]
+ml_predict_workflow = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]
 ml_predict_workflow_id = ml_predict_workflow["_id"]
 
 
@@ -294,8 +295,7 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # In[ ]:
 
 
-
-predicted_properties = get_property_by_subworkow_and_unit_indicies(raw_property_endpoints, "predicted_properties", job, 0, 3)["data"]["values"]
+predicted_properties = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "predicted_properties", job, 0, 3)["data"]["values"]
 
 
 # ### Flatten results

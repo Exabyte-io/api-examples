@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/bugfix/SOF-5578-WIP/examples/job/get-file-from-job.ipynb" target="_parent">
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/dev/examples/job/get-file-from-job.ipynb" target="_parent">
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
@@ -9,7 +9,7 @@
 # 
 # This example demonstrates how to use Mat3ra RESTful API to check for and acquire files from jobs which have been run. This example assumes that the user is already familiar with the [creation and submission of jobs](create_and_submit_jobs.ipynb) using our API.
 # 
-# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Mat3ra.com account is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for VASP, for example) and adjust extraction of the results ("Viewing job files" section). RESTful API credentials shall be updated in [settings](../settings.json).
+# > <span style="color: orange">**IMPORTANT NOTE**</span>: In order to run this example in full, an active Mat3ra.com account is required. Alternatively, Readers may substitute the workflow ID below with another one (an equivalent one for VASP, for example) and adjust extraction of the results ("Viewing job files" section). RESTful API credentials shall be updated in [settings](../../utils/settings.json).
 # 
 # 
 # ## Steps
@@ -43,7 +43,7 @@
 # 
 # ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.mat3ra.com/collaboration/organizations/overview/
 # 
-# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
+# > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../../utils/settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
 # In[ ]:
 
@@ -65,7 +65,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
         )
     )
 
-    get_ipython().system('GIT_BRANCH="bugfix/SOF-5578-WIP"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
+    get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
 # ## Imports
@@ -74,8 +74,8 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 
 # Import settings file and utils file
-from examples.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from examples.utils.generic import wait_for_jobs_to_finish, get_property_by_subworkow_and_unit_indicies, dataframe_to_html, display_JSON
+from utils.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
+from utils.generic import wait_for_jobs_to_finish, get_property_by_subworkflow_and_unit_indicies, dataframe_to_html, display_JSON
 
 # Relevant functions from the API client
 from exabyte_api_client.endpoints.jobs import JobEndpoints

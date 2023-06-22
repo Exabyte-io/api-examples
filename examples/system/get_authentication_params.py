@@ -53,7 +53,7 @@ auth_params = endpoint.login()
 
 # ## Print authentication parameters
 # 
-# Print the authentication parameters in pretty JSON below. Update [settings](../settings.json) with this parameters to be able to run other examples.
+# Print the authentication parameters in pretty JSON below. Update [settings](../../utils/settings.json) with this parameters to be able to run other examples.
 
 # In[ ]:
 

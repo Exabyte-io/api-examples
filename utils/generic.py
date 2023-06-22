@@ -135,7 +135,7 @@ def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
 
 # PROPERTY
 
-def get_property_by_subworkow_and_unit_indicies(endpoint, property_name, job, subworkflow_index, unit_index):
+def get_property_by_subworkflow_and_unit_indicies(endpoint, property_name, job, subworkflow_index, unit_index):
     """
     Returns the property extracted in the given unit of the job's subworkflow.
 

@@ -22,10 +22,10 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     packages=find_packages(),
-    package_data={"examples": ["settings.json"]},
+    package_data={"utils": ["settings.json"]},
     entry_points={
         "console_scripts": [
-            "notebook-path = examples.utils.notebook:print_notebook_path",
+            "notebook-path = utils.notebook:print_notebook_path",
         ],
     },
     install_requires=requirements,

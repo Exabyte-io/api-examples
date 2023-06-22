@@ -29,6 +29,12 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
+    env:
+      DEMO_ACCOUNT_ID: ${{ secrets.DEMO_ACCOUNT_ID }}
+      DEMO_AUTH_TOKEN: ${{ secrets.DEMO_AUTH_TOKEN }}
+      MATERIALS_PROJECT_API_KEY: ${{ secrets.MATERIALS_PROJECT_API_KEY }}
+
+    steps:
       - name: Prepare environment variables
         shell: bash -l {0}
         run: |
@@ -37,6 +43,11 @@ jobs:
 
           export DEMO_AUTH_TOKEN="${{ secrets.DEMO_AUTH_TOKEN }}"
           echo "DEMO_AUTH_TOKEN=${DEMO_AUTH_TOKEN}" >> $GITHUB_ENV
+
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
 
       - name: Install dependencies
         shell: bash -l {0}
@@ -65,8 +76,7 @@ jobs:
 
           settings["ACCOUNT_ID"] = os.getenv("DEMO_ACCOUNT_ID", "")
           settings["AUTH_TOKEN"] = os.getenv("DEMO_AUTH_TOKEN", "")
-          # TODO: update secrets with the MP API key
-          # settings["MATERIALS_PROJECT_API_KEY"] = "MATERIALS_PROJECT_API_KEY"
+          settings["MATERIALS_PROJECT_API_KEY"] = os.getenv("MATERIALS_PROJECT_API_KEY", "")
 
           with open(settings_file, "w") as fp:
               json.dump(settings, fp, indent=4)

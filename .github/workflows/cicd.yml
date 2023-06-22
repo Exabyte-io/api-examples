@@ -23,3 +23,39 @@ jobs:
         run: |
           python -m pip install pre-commit
           pre-commit run --all
+
+  build-and-deploy-docs:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+      - name: Render notebooks
+        shell: bash -l {0}
+        run: |
+          set -vxeuo pipefail
+
+          pip install virtualenv
+          virtualenv .env
+          source .env/bin/activate
+          pip install --no-deps -r requirements.txt
+          pip install --no-deps -e .
+
+      - name: Update utils/settings.json
+        shell: python
+        run: |
+          import json
+          with open("utils/settings.json", "r") as fp:
+            settings = json.load(fp)
+
+          settings["ACCOUNT_ID"] = "${{ secrets.DEMO_ACCOUNT_ID }}"
+          settings["AUTH_TOKEN"] = "${{ secrets.DEMO_AUTH_TOKEN }}"
+          # TODO: update secrets with the MP API key
+          # settings["MATERIALS_PROJECT_API_KEY"] = "MATERIALS_PROJECT_API_KEY"
+
+          with open("utils/settings.json", "w") as fp:
+            settings = json.dump(settings, fp)
+
+      - name: Render notebooks
+        run: |
+          bash scripts/render-notebooks.sh

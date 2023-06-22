@@ -61,6 +61,7 @@ jobs:
           pip install --no-deps -r requirements.txt
           pip install --no-deps -e .
           pip install nbstripout
+          pip install --upgrade numpy
 
           pip list
 

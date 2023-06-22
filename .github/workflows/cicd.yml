@@ -30,10 +30,10 @@ jobs:
       matrix:
         python-version: [3.8]
 
-      - name: Render notebooks
+      - name: Install dependencies
         shell: bash -l {0}
         run: |
-          set -vxeuo pipefail
+          set -euo pipefail
 
           pip install virtualenv
           virtualenv .env
@@ -58,4 +58,7 @@ jobs:
 
       - name: Render notebooks
         run: |
+          set -euo pipefail
+
+          source .env/bin/activate
           bash scripts/render-notebooks.sh

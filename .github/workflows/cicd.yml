@@ -1,0 +1,32 @@
+name: Continuous Testing and Docs Publication
+
+on: [push]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-linter:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ["3.8.6"]
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: Checkout actions repository
+        uses: actions/checkout@v3
+        with:
+          repository: Exabyte-io/actions
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          path: actions
+
+      - name: Run ruff linter
+        uses: ./actions/py/lint
+        with:
+          python-version: ${{ matrix.python-version }}

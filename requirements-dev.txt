@@ -1,0 +1,3 @@
+black[jupyter]
+pre-commit
+ruff

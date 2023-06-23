@@ -1,0 +1,19 @@
+[tool.black]
+line-length = 120
+target-version = ['py38']
+# 'extend-exclude' excludes files or directories in addition to the defaults
+extend-exclude = '''
+(
+    examples\/.*\/.*\.py
+  | other\/.*\/.*\.py
+)
+'''
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+extend-exclude = [
+  "examples/**/*.py",
+  "other/**/*.py",
+]
+line-length = 120
+target-version = "py38"

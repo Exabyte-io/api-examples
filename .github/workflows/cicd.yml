@@ -97,7 +97,20 @@ jobs:
           source .env/bin/activate
           bash scripts/render-notebooks.sh
 
+          cp -v examples/**/*.html docs/
+
       - uses: actions/upload-artifact@v3
         with:
           name: rendered-notebooks
           path: examples/
+
+      - name: Deploy documentation to Exabyte-io.github.io
+        if: github.repository_owner == 'Exabyte-io' && github.ref_name == 'feature/SOF-6690-docs'
+        # We pin to the SHA, not the tag, for security reasons.
+        # https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/security-hardening-for-github-actions#using-third-party-actions
+        uses: peaceiris/actions-gh-pages@bbdfb200618d235585ad98e965f4aafc39b4c501  # v3.7.3
+        with:
+          publish_branch: dev-with-documentation
+          publish_dir: ./docs/
+          keep_files: true  # Keep old files.
+          force_orphan: false  # Keep git history.

@@ -54,12 +54,15 @@ jobs:
         run: |
           set -euo pipefail
 
+          pip list
+
           pip install virtualenv
           virtualenv .env
           source .env/bin/activate
 
           pip install --no-deps -r requirements.txt
           pip install --no-deps -e .
+
           pip install nbstripout
           pip install --upgrade numpy
 

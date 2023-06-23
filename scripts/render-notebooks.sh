@@ -57,12 +57,12 @@ for notebook in ${notebooks}; do
         echo -e "$(now) Executing ${notebook_name} in place..."
         jupyter-nbconvert --execute --inplace ${notebook_name}
         echo -e "$(now) Execution of ${notebook_name} in complete."
-    fi
 
-    # Export the rendered notebook to html
-    echo -e "$(now) Exporting an html for ${notebook_name}..."
-    jupyter-nbconvert --to html $notebook_name
-    echo -e "$(now) Exporting of an html for ${notebook_name} is complete."
+        # Export the rendered notebook to html
+        echo -e "$(now) Exporting an html for ${notebook_name}..."
+        jupyter-nbconvert --execute --to html $notebook_name
+        echo -e "$(now) Exporting of an html for ${notebook_name} is complete."
+    fi
 
     cd $idir
     echo ""

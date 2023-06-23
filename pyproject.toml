@@ -5,7 +5,7 @@ target-version = ['py38']
 extend-exclude = '''
 (
     examples\/.*\/.*\.py
-  | other\/.*\/.*\.py
+  | other\/.*\/.*\.(py|ipynb)
 )
 '''
 

@@ -48,13 +48,14 @@
 # In[ ]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 
 import os
+
 if "COLAB_JUPYTER_IP" in os.environ:
     os.environ.update(
         dict(
@@ -78,7 +79,13 @@ from IPython.display import IFrame
 
 # Import settings file and utils file
 from utils.settings import ENDPOINT_ARGS, ACCOUNT_ID, MATERIALS_PROJECT_API_KEY
-from utils.generic import dataframe_to_html, copy_bank_workflow_by_system_name, wait_for_jobs_to_finish, get_property_by_subworkflow_and_unit_indicies, display_JSON
+from utils.generic import (
+    dataframe_to_html,
+    copy_bank_workflow_by_system_name,
+    wait_for_jobs_to_finish,
+    get_property_by_subworkflow_and_unit_indicies,
+    display_JSON,
+)
 
 import pandas as pd
 
@@ -102,8 +109,8 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # In[ ]:
 
 
-TRAIN_MATERIALS_PROJECT_IDS = ["mp-149", "mp-978534"] # Si, SiGe
-TARGET_MATERIALS_PROJECT_IDS = ["mp-32"] # Ge
+TRAIN_MATERIALS_PROJECT_IDS = ["mp-149", "mp-978534"]  # Si, SiGe
+TARGET_MATERIALS_PROJECT_IDS = ["mp-32"]  # Ge
 
 
 # #### Jobs
@@ -178,8 +185,12 @@ ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints
 # In[ ]:
 
 
-train_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id)
-target_materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, TARGET_MATERIALS_PROJECT_IDS, owner_id)
+train_materials = material_endpoints.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, TRAIN_MATERIALS_PROJECT_IDS, owner_id
+)
+target_materials = material_endpoints.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, TARGET_MATERIALS_PROJECT_IDS, owner_id
+)
 
 
 # ### Calculate Properties for "train materials"
@@ -190,7 +201,9 @@ target_materials = material_endpoints.import_from_materialsproject(MATERIALS_PRO
 
 
 compute = job_endpoints.get_compute(CLUSTER, PPN, NODES, QUEUE, TIME_LIMIT)
-jobs = job_endpoints.create_by_ids(train_materials, band_gap_workflow_id, project_id, owner_id, JOB_NAME_PREFIX, compute)
+jobs = job_endpoints.create_by_ids(
+    train_materials, band_gap_workflow_id, project_id, owner_id, JOB_NAME_PREFIX, compute
+)
 
 
 # Submit the jobs for execution.
@@ -247,7 +260,9 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # In[ ]:
 
 
-ml_predict_workflow = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "workflow:ml_predict", job, 0, 4)["data"]
+ml_predict_workflow = get_property_by_subworkflow_and_unit_indicies(
+    raw_property_endpoints, "workflow:ml_predict", job, 0, 4
+)["data"]
 ml_predict_workflow_id = ml_predict_workflow["_id"]
 
 
@@ -295,7 +310,9 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 # In[ ]:
 
 
-predicted_properties = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "predicted_properties", job, 0, 3)["data"]["values"]
+predicted_properties = get_property_by_subworkflow_and_unit_indicies(
+    raw_property_endpoints, "predicted_properties", job, 0, 3
+)["data"]["values"]
 
 
 # ### Flatten results
@@ -311,7 +328,9 @@ for exabyte_id, properties in predicted_properties.items():
     band_gaps = next((v for v in properties if v["name"] == "band_gaps"))
     direct_gap = next((v for v in band_gaps["values"] if v["type"] == "direct"))["value"]
     indirect_gap = next((v for v in band_gaps["values"] if v["type"] == "indirect"))["value"]
-    table.append([material["_id"], material["name"], material["formula"], material["exabyteId"], direct_gap, indirect_gap])
+    table.append(
+        [material["_id"], material["name"], material["formula"], material["exabyteId"], direct_gap, indirect_gap]
+    )
 
 
 # ### Ouput results

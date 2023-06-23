@@ -22,11 +22,12 @@
 # In[ ]:
 
 
-#@title Authorization Form
-USERNAME = "YOUR_USERNAME" #@param {type:"string"}
-PASSWORD = "YOUR_PASSWORD" #@param {type:"string"}
+# @title Authorization Form
+USERNAME = "YOUR_USERNAME"  # @param {type:"string"}
+PASSWORD = "YOUR_PASSWORD"  # @param {type:"string"}
 
 import os
+
 if "COLAB_JUPYTER_IP" in os.environ:
     get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 

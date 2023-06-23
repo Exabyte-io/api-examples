@@ -26,13 +26,14 @@
 # In[ ]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 
 import os
+
 if "COLAB_JUPYTER_IP" in os.environ:
     os.environ.update(
         dict(
@@ -64,10 +65,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 # In[ ]:
 
 
-QUERY = {
-    "formula": "Si",
-    "owner._id": ACCOUNT_ID
-}
+QUERY = {"formula": "Si", "owner._id": ACCOUNT_ID}
 
 
 # ## Initialize the endpoint

@@ -26,13 +26,14 @@
 # In[ ]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 
 import os
+
 if "COLAB_JUPYTER_IP" in os.environ:
     os.environ.update(
         dict(
@@ -66,14 +67,9 @@ from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 # In[ ]:
 
 
-QUERY = {
-    "name": "Total Energy",
-    "owner._id": ACCOUNT_ID
-}
+QUERY = {"name": "Total Energy", "owner._id": ACCOUNT_ID}
 
-OPTIONS = {
-    "limit": 2
-}
+OPTIONS = {"limit": 2}
 
 
 # ## Initialize the endpoint

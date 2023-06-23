@@ -26,13 +26,14 @@
 # In[ ]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 
 import os
+
 if "COLAB_JUPYTER_IP" in os.environ:
     os.environ.update(
         dict(
@@ -45,6 +46,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
     get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; export IS_USING_GIT_LFS=true; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
     from examples.utils.notebook import get_notebook_info
+
     os.chdir(os.path.join("api-examples", os.path.dirname(get_notebook_info()["notebook_path"])))
 
 
@@ -78,7 +80,7 @@ POSCAR_PATH = "../assets/mp-978534.poscar"
 # In[ ]:
 
 
-content  = ""
+content = ""
 with open(POSCAR_PATH) as f:
     content = f.read()
     print(content)

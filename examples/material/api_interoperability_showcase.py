@@ -28,13 +28,14 @@
 # In[ ]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 
 import os
+
 if "COLAB_JUPYTER_IP" in os.environ:
     os.environ.update(
         dict(
@@ -86,7 +87,7 @@ print(iron_oxides_ids)
 # In[ ]:
 
 
-#As a demonstration, take the first 10 iron oxides
+# As a demonstration, take the first 10 iron oxides
 some_iron_oxides = iron_oxides_ids[:10]
 print(some_iron_oxides)
 
@@ -109,7 +110,7 @@ materials = exabyte_materials_api.import_from_materialsproject(MATERIALS_PROJECT
 
 
 # Move the iron oxides to a materials set, just for this example
-materials_set = exabyte_materials_api.create_set({"name" : "Some Iron Oxides"})
+materials_set = exabyte_materials_api.create_set({"name": "Some Iron Oxides"})
 for material in materials:
     exabyte_materials_api.move_to_set(material["_id"], "", materials_set["_id"])
 

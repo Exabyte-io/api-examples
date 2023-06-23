@@ -52,11 +52,13 @@ for notebook in ${notebooks}; do
           ("${notebook_name}" == *"run-simulations-and-extract-properties.ipynb") || \
           ("${notebook_name}" == *"this-notebook-does-not-exist--placeholder-for-future-updates.ipynb") \
           ]]; then
-        echo -e "$(now) Skipping execution of ${notebook_name}."
+        echo -e "$(now) Exporting to html without execution of ${notebook_name}..."
+        jupyter-nbconvert --to html ${notebook_name}
+        echo -e "$(now) Exporting to html without execution of ${notebook_name} is complete."
     else
         echo -e "$(now) Executing ${notebook_name} and saving to html format..."
         jupyter-nbconvert --execute --to html ${notebook_name}
-        echo -e "$(now) Execution of ${notebook_name} in complete."
+        echo -e "$(now) Execution of ${notebook_name} is complete."
     fi
 
     cd $idir

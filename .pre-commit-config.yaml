@@ -1,3 +1,4 @@
+exclude: ^((examples|other)\/.*\/.*\.py)
 repos:
   - repo: https://github.com/Exabyte-io/pre-commit-hooks
     rev: 2023.6.13

@@ -127,5 +127,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: dev-with-documentation
           publish_dir: ./docs
+          destination_dir: ./docs
           keep_files: true  # Keep old files.
           force_orphan: false  # Keep git history.

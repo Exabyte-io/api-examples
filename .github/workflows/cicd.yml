@@ -99,19 +99,35 @@ jobs:
 
           cp -v examples/**/*.html docs/
 
-          cd docs/
-          tree -H '.' \
-            -L 1 \
-            --noreport \
-            --dirsfirst \
-            --charset utf-8 \
-            --ignore-case \
-            --timefmt '%d-%b-%Y %H:%M' \
-            -I "index.html" \
-            -T 'Downloads' \
-            -s -D \
-            -P "*.zip|*.gz" \
-            -o index.html
+      - name: Generate index.html
+        shell: python
+        run : |
+          import os
+          import glob
+          from tabulate import tabulate
+
+          fmtd = """\
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Mat3ra API Examples</title>
+            </head>
+            <body>
+          """
+
+          os.chdir("docs")
+          table = []
+
+          for i, link in enumerate(sorted(glob.glob("*.html"))):
+            if link:
+                table.append([f"{i+1}", f'<a href="{link}">{link}</a>'])
+
+          fmtd += tabulate(table, ["#", "Notebook title"], tablefmt="html")
+
+          fmtd += "  </body>\n</html>"
+
+          with open("index.html", "w") as f:
+              f.write(fmtd)
 
       - uses: actions/upload-artifact@v3
         with:

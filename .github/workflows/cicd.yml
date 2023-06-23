@@ -91,3 +91,8 @@ jobs:
 
           source .env/bin/activate
           bash scripts/render-notebooks.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: rendered-notebooks
+          path: examples/

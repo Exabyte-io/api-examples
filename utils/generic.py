@@ -2,20 +2,17 @@
 import time
 import datetime
 import os
-import importlib.util
 import urllib
 from IPython.display import display, JSON
 import json
 from tabulate import tabulate
-import re
-import sys
-import subprocess
 
 from . import settings
 
 # GENERIC UTILITIES
 
-def update_json_file_kwargs(path_to_json_file='settings.json', **kwargs):
+
+def update_json_file_kwargs(path_to_json_file="settings.json", **kwargs):
     """
     This function updates settings.json for a given kwargs if kwargs
     contains variables different from those already in json
@@ -38,7 +35,7 @@ def update_json_file_kwargs(path_to_json_file='settings.json', **kwargs):
     # 3. Update json file if kwargs contains new variables
     if kwargs != variables:
         updated_variables = {**variables, **kwargs}
-        with open(path_to_json_file, 'w') as settings_json_file:
+        with open(path_to_json_file, "w") as settings_json_file:
             json.dump(updated_variables, settings_json_file, indent=4)
 
 
@@ -60,7 +57,7 @@ def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
             file_metadata = file
 
     # Get a download URL for the CONTCAR
-    signed_url = file_metadata['signedUrl']
+    signed_url = file_metadata["signedUrl"]
 
     # Download the contcar to memory
     server_response = urllib.request.urlopen(signed_url)
@@ -71,6 +68,7 @@ def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
 
 
 # JOB UTILITIES
+
 
 def get_jobs_statuses_by_ids(endpoint, job_ids):
     """
@@ -107,9 +105,9 @@ def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=10):
         submitted_jobs = len([status for status in statuses if status == "submitted"])
 
         headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
-        now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
         row = [now, submitted_jobs, active_jobs, finished_jobs, errored_jobs]
-        print(tabulate([row], headers, tablefmt='grid', stralign='center'))
+        print(tabulate([row], headers, tablefmt="grid", stralign="center"))
 
         if all([status not in ["pre-submission", "submitted", "active"] for status in statuses]):
             break
@@ -117,6 +115,7 @@ def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=10):
 
 
 # WORKFLOW
+
 
 def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
     """
@@ -135,6 +134,7 @@ def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
 
 
 # PROPERTY
+
 
 def get_property_by_subworkflow_and_unit_indicies(endpoint, property_name, job, subworkflow_index, unit_index):
     """
@@ -156,6 +156,7 @@ def get_property_by_subworkflow_and_unit_indicies(endpoint, property_name, job, 
 
 # DISPLAY UTILITIES
 
+
 def dataframe_to_html(df, text_align="center"):
     """
     Converts Pandas dataframe to HTML.
@@ -167,9 +168,9 @@ def dataframe_to_html(df, text_align="center"):
     """
     styles = [
         dict(selector="th", props=[("text-align", text_align)]),
-        dict(selector="td", props=[("text-align", text_align)])
+        dict(selector="td", props=[("text-align", text_align)]),
     ]
-    return (df.style.set_table_styles(styles))
+    return df.style.set_table_styles(styles)
 
 
 def display_JSON(obj, interactive_viewer=settings.use_interactive_JSON_viewer):

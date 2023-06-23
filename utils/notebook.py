@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 from urllib.parse import unquote, urlparse
 
 import requests

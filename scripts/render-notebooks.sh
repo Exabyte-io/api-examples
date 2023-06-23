@@ -42,10 +42,12 @@ for notebook in ${notebooks}; do
     echo -e "$(now) Stripout output cells (if any)"
     nbstripout ${notebook_name}
 
+    # Export to Python
     echo -e "$(now) Exporting a python script for ${notebook_name}..."
     jupyter-nbconvert --to python $notebook_name
     echo -e "$(now) Exporting of a python script for ${notebook_name} is complete."
 
+    # Render .ipynb
     if [[ ("${notebook_name}" == *"get_authentication_params.ipynb") || \
           ("${notebook_name}" == *"run-simulations-and-extract-properties.ipynb") || \
           ("${notebook_name}" == *"this-notebook-does-not-exist--placeholder-for-future-updates.ipynb") \
@@ -56,6 +58,11 @@ for notebook in ${notebooks}; do
         jupyter-nbconvert --execute --inplace ${notebook_name}
         echo -e "$(now) Execution of ${notebook_name} in complete."
     fi
+
+    # Export the rendered notebook to html
+    echo -e "$(now) Exporting an html for ${notebook_name}..."
+    jupyter-nbconvert --to html $notebook_name
+    echo -e "$(now) Exporting of an html for ${notebook_name} is complete."
 
     cd $idir
     echo ""

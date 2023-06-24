@@ -30,7 +30,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 
 1. Clone repository:
 
-    ```bash
+    ```
     git clone git@github.com:Exabyte-io/api-examples.git
     ```
 
@@ -40,13 +40,13 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 
 2. Install [virtualenv](https://virtualenv.pypa.io/en/stable/) using [pip](https://pip.pypa.io/en/stable/) if not already present:
 
-    ```bash
+    ```
     pip install virtualenv
     ```
 
 3. Create virtual environment and install required packages:
 
-    ```bash
+    ```
     cd api-examples
     virtualenv .env
     source .env/bin/activate
@@ -55,7 +55,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 
 4. Run Jupyter and open a notebook in a browser. In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`, which is the `examples` folder shown below:
 
-    ```bash
+    ```
     cd examples
     jupyter lab --config=config.py
     ```
@@ -72,7 +72,7 @@ In order to run or edit the examples:
 
   <img src="images/reusable-kernel.png" width="250px" />
 
-NOTE: The Materials Project API key should be obtained from https://legacy.materialsproject.org/open.
+NOTE: The Materials Project API key should be obtained from [https://legacy.materialsproject.org/open](https://legacy.materialsproject.org/open).
 
 
 ## Contribute

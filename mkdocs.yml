@@ -1,0 +1,63 @@
+site_name: Mat3ra API Examples
+docs_dir: .
+repo_url: https://github.com/Exabyte-io/api-examples
+
+theme:
+  name: material
+  icon:
+    repo: simple/github
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra:
+  generator: false
+
+nav:
+  - Home: README.md
+  - Assets:                                                 examples/assets/README.md
+  - Get Authentication Params:                              examples/system/get_authentication_params.ipynb
+  - Get Workflows:                                          examples/workflow/get_workflows.ipynb
+  - Get Materials by Formula:                               examples/material/get_materials_by_formula.ipynb
+  - Create Material:                                        examples/material/create_material.ipynb
+  - Import Materials from Materials Project:                examples/material/import_materials_from_materialsproject.ipynb
+  - Import Materials from Poscar:                           examples/material/import_materials_from_poscar.ipynb
+  - Interoperability between Mat3ra and Materials Project:  examples/material/api_interoperability_showcase.ipynb
+  - Create and Submit Job:                                  examples/job/create_and_submit_job.ipynb
+  - Get File from Job:                                      examples/job/get-file-from-job.ipynb
+  - Run Simulations and Extract Properties:                 examples/job/run-simulations-and-extract-properties.ipynb
+  - ML - Train Model Predict Properties:                    examples/job/ml-train-model-predict-properties.ipynb
+
+plugins:
+  - same-dir
+
+  - exclude:
+      glob:
+        - "other/*"
+        - "utils/*.py"
+        - "utils/__pycache__/*"
+        - "scripts/*"
+        - "examples/config.py"
+        - "examples/**/*.py"
+        - "examples/job/pw_scf.*"
+        - "*.egg-info/*"
+
+  - mkdocs-jupyter:
+      ignore_h1_titles: true
+      include: ["*.ipynb"]  # Default: ["*.py", "*.ipynb"]
+      execute: true
+      allow_errors: false
+      execute_ignore:
+        - examples/system/get_authentication_params.ipynb
+        - examples/job/run-simulations-and-extract-properties.ipynb
+      ignore:
+        - "other/**/*.ipynb"

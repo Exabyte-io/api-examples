@@ -35,8 +35,8 @@ jobs:
       matrix:
         python-version: ["3.8"]
     env:
-      DEMO_ACCOUNT_ID: ${{ secrets.DEMO_ACCOUNT_ID }}
-      DEMO_AUTH_TOKEN: ${{ secrets.DEMO_AUTH_TOKEN }}
+      ACCOUNT_ID: ${{ secrets.DEMO_ACCOUNT_ID }}
+      AUTH_TOKEN: ${{ secrets.DEMO_AUTH_TOKEN }}
       MATERIALS_PROJECT_API_KEY: ${{ secrets.MATERIALS_PROJECT_API_KEY }}
 
     steps:
@@ -62,70 +62,37 @@ jobs:
           pip install --no-deps -r requirements.txt
           pip install --no-deps -e .
 
-          pip install nbstripout
+          pip install -r requirements-dev.txt
           pip install --upgrade numpy
 
           pip list
 
-      - name: Update utils/settings.json
-        shell: python
-        run: |
-          import os, json
+      # - name: Update utils/settings.json
+      #   shell: python
+      #   run: |
+      #     import os, json
+      #     settings_file = "utils/settings.json"
+      #     with open(settings_file, "r") as fp:
+      #         settings = json.load(fp)
+      #     settings["ACCOUNT_ID"] = os.getenv("DEMO_ACCOUNT_ID", "")
+      #     settings["AUTH_TOKEN"] = os.getenv("DEMO_AUTH_TOKEN", "")
+      #     settings["MATERIALS_PROJECT_API_KEY"] = os.getenv("MATERIALS_PROJECT_API_KEY", "")
+      #     with open(settings_file, "w") as fp:
+      #         json.dump(settings, fp, indent=4)
 
-          settings_file = "utils/settings.json"
+      # - name: Render notebooks
+      #   run: |
+      #     set -euo pipefail
+      #     bash scripts/render-notebooks.sh
 
-          with open(settings_file, "r") as fp:
-              settings = json.load(fp)
-
-          settings["ACCOUNT_ID"] = os.getenv("DEMO_ACCOUNT_ID", "")
-          settings["AUTH_TOKEN"] = os.getenv("DEMO_AUTH_TOKEN", "")
-          settings["MATERIALS_PROJECT_API_KEY"] = os.getenv("MATERIALS_PROJECT_API_KEY", "")
-
-          with open(settings_file, "w") as fp:
-              json.dump(settings, fp, indent=4)
-
-      - name: Render notebooks
-        run: |
-          set -euo pipefail
-
-          bash scripts/render-notebooks.sh
-
-          cp -v examples/**/*.html docs/
-
-      - name: Generate index.html
-        shell: python
+      - name: Build documentation
         run : |
-          import os
-          import glob
-          from tabulate import tabulate
-
-          fmtd = """\
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>Mat3ra API Examples</title>
-            </head>
-            <body>
-          """
-
-          os.chdir("docs")
-          table = []
-
-          for i, link in enumerate(sorted(glob.glob("*.html"))):
-            if link:
-                table.append([f"{i+1}", f'<a href="{link}">{link}</a>'])
-
-          fmtd += tabulate(table, ["#", "Notebook title"], tablefmt="html")
-
-          fmtd += "  </body>\n</html>"
-
-          with open("index.html", "w") as f:
-              f.write(fmtd)
+          mkdocs build -d site
 
       - uses: actions/upload-artifact@v3
         with:
           name: rendered-notebooks
-          path: examples/
+          path: site
 
       - name: Deploy documentation to Exabyte-io.github.io
         if: github.repository_owner == 'Exabyte-io' && github.ref_name == 'feature/SOF-6690-docs'
@@ -135,7 +102,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: dev-with-documentation
-          publish_dir: ./docs
+          publish_dir: ./site
           destination_dir: ./docs
           keep_files: true  # Keep old files.
           force_orphan: false  # Keep git history.

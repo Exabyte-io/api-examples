@@ -1,3 +1,7 @@
 black[jupyter]
 pre-commit
 ruff
+isort
+mypy
+types-requests
+types-tabulate

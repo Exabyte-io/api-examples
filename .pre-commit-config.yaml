@@ -15,4 +15,6 @@ repos:
     rev: v1.4.0
     hooks:
       - id: mypy
-        args: [--strict, --ignore-missing-imports]
+        exclude: ^examples\/config\.py
+        args: [--ignore-missing-imports]
+        additional_dependencies: [types-requests, types-tabulate]

@@ -1,4 +1,4 @@
-exclude: ^((examples|other)\/.*\/.*\.py)
+exclude: ^((examples|other)\/.*\/.*\.(py|poscar|csv))
 repos:
   - repo: https://github.com/mrakitin/exabyte-io-pre-commit-hooks
     rev: 09cf1c797140872602bae04b950e3afb5c38a9ee  # mrakitin/SOF-6690-hooks-isort-mypy branch

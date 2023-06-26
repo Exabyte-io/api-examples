@@ -4,8 +4,8 @@ target-version = ['py38']
 # 'extend-exclude' excludes files or directories in addition to the defaults
 extend-exclude = '''
 (
-    examples\/.*\/.*\.py
-  | other\/.*\/.*\.(py|ipynb)
+    examples\/.*\/.*\.(py|poscar)
+  | other\/.*\/.*\.(py|ipynb|csv)
 )
 '''
 
@@ -17,3 +17,8 @@ extend-exclude = [
 ]
 line-length = 120
 target-version = "py38"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true

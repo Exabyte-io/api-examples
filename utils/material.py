@@ -187,7 +187,7 @@ def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> Optional[
     return unit_cell_energy
 
 
-def get_surface_energy(e_slab: float, e_bulk: float, n_slab: float, n_bulk: float, a: float):
+def get_surface_energy(e_slab: float, e_bulk: float, n_slab: float, n_bulk: float, a: float) -> float:
     """
     Calculates the slab energy according to the following formula:
     (E_Slab - E_bulk * (N_Slab / N_Bulk)) / (2A)

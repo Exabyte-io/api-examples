@@ -32,7 +32,7 @@ def get_notebook_info() -> dict:
     )
 
 
-def print_notebook_path():
+def print_notebook_path() -> None:
     """
     A proxy function used for a single string return when
     the corresponding entry-point script in 'setup.py' is called.

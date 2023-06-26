@@ -1,18 +1,17 @@
-from typing import Tuple, Union, Dict, Any
-import urllib.request
 import functools
+import urllib.request
+from typing import Any, Dict, Optional, Tuple, Union
 
-import pymatgen.core.surface
-import pymatgen.io.ase
-import pymatgen.symmetry.analyzer
 import ase.build
 import ase.constraints
 import numpy as np
-
+import pymatgen.core.surface
+import pymatgen.io.ase
+import pymatgen.symmetry.analyzer
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 
 
-def download_file_by_name(job_id: str, job_endpoint: JobEndpoints, target: str, pattern: str):
+def download_file_by_name(job_id: str, job_endpoint: JobEndpoints, target: str, pattern: str) -> None:
     """
     Downloads a file from S3 and writes it to the local disk.
 
@@ -154,7 +153,7 @@ def freeze_center_bulk(slab: ase.Atoms) -> None:
     slab.set_constraint(fix_atoms_constraint)
 
 
-def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
+def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> Optional[float]:
     """
     This function takes in a VASP Job ID, reads the OUTCAR, and returns the final energy reported in the run.
 
@@ -163,7 +162,7 @@ def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
         jobs_endpoint (JobEndpoints): A job endpoint for interacting with the Exabyte platform
 
     Returns:
-        The electronic energy reported by the VASP job
+        The electronic energy reported by the VASP job or None
     """
     # Get the URL for the OUTCAR
     files = jobs_endpoint.list_files(job_id)
@@ -173,7 +172,7 @@ def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
             file_metadata = file
 
     # Get a download URL for each CONTCAR
-    cell_outcar_signed_url = file_metadata["signedUrl"]
+    cell_outcar_signed_url = file_metadata["signedUrl"]  # type: ignore
 
     # Download the outcar to memory
     cell_response = urllib.request.urlopen(cell_outcar_signed_url)

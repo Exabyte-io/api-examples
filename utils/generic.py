@@ -1,10 +1,17 @@
 # This module defines a set of common functions which are used in other examples.
-import time
 import datetime
-import os
-import urllib
-from IPython.display import display, JSON
 import json
+import os
+import time
+import urllib.request
+from typing import List
+
+from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
+from exabyte_api_client.endpoints.jobs import JobEndpoints
+from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
+from IPython.display import JSON, display
+from pandas import DataFrame
+from pandas.io.formats.style import Styler
 from tabulate import tabulate
 
 from . import settings
@@ -12,7 +19,7 @@ from . import settings
 # GENERIC UTILITIES
 
 
-def update_json_file_kwargs(path_to_json_file="settings.json", **kwargs):
+def update_json_file_kwargs(path_to_json_file: str = "settings.json", **kwargs) -> None:
     """
     This function updates settings.json for a given kwargs if kwargs
     contains variables different from those already in json
@@ -39,12 +46,13 @@ def update_json_file_kwargs(path_to_json_file="settings.json", **kwargs):
             json.dump(updated_variables, settings_json_file, indent=4)
 
 
-def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
+def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:
     """
     Saves a file to disk, overwriting any files with the same name as filename_on_disk
 
     Args:
         job_id (str): ID of the job
+        job_endpoint (JobEndpoints): Job endpoint object from the Exabyte API Client
         filename_on_cloud (str): Name of the file on the server
         filename_on_disk (str): Name the file will be saved to
 
@@ -70,12 +78,12 @@ def save_files(job_id, job_endpoint, filename_on_cloud, filename_on_disk):
 # JOB UTILITIES
 
 
-def get_jobs_statuses_by_ids(endpoint, job_ids):
+def get_jobs_statuses_by_ids(endpoint: JobEndpoints, job_ids: List[str]) -> List[str]:
     """
     Gets jobs statues by their IDs.
 
     Args:
-        endpoint (endpoints.jobs.JobEndpoints): an instance of JobEndpoints class
+        job_endpoint (JobEndpoints): Job endpoint object from the Exabyte API Client
         job_ids (list): list of job IDs to get the status for
 
     Returns:
@@ -85,13 +93,13 @@ def get_jobs_statuses_by_ids(endpoint, job_ids):
     return [job["status"] for job in jobs]
 
 
-def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=10):
+def wait_for_jobs_to_finish(endpoint: JobEndpoints, job_ids: list, poll_interval: int = 10) -> None:
     """
     Waits for jobs to finish and prints their statuses.
     A job is considered finished if it is not in "pre-submission", "submitted", or, "active" status.
 
     Args:
-        endpoint (endpoints.jobs.JobEndpoints): an instance of JobEndpoints class
+        job_endpoint (JobEndpoints): Job endpoint object from the Exabyte API Client
         job_ids (list): list of job IDs to wait for
         poll_interval (int): poll interval for job information in seconds. Defaults to 10.
     """
@@ -117,7 +125,7 @@ def wait_for_jobs_to_finish(endpoint, job_ids, poll_interval=10):
 # WORKFLOW
 
 
-def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
+def copy_bank_workflow_by_system_name(endpoint: BankWorkflowEndpoints, system_name: str, account_id: str) -> dict:
     """
     Copies a bank workflow with given ID into the account's workflows.
 
@@ -136,7 +144,9 @@ def copy_bank_workflow_by_system_name(endpoint, system_name, account_id):
 # PROPERTY
 
 
-def get_property_by_subworkflow_and_unit_indicies(endpoint, property_name, job, subworkflow_index, unit_index):
+def get_property_by_subworkflow_and_unit_indicies(
+    endpoint: RawPropertiesEndpoints, property_name: str, job: dict, subworkflow_index: int, unit_index: int
+) -> dict:
     """
     Returns the property extracted in the given unit of the job's subworkflow.
 
@@ -157,13 +167,13 @@ def get_property_by_subworkflow_and_unit_indicies(endpoint, property_name, job, 
 # DISPLAY UTILITIES
 
 
-def dataframe_to_html(df, text_align="center"):
+def dataframe_to_html(df: DataFrame, text_align: str = "center") -> Styler:
     """
     Converts Pandas dataframe to HTML.
     See https://pandas.pydata.org/pandas-docs/stable/style.html for more information about styling.
 
     Args:
-        df (pd.dataFrame): Pandas dataframe.
+        df (pd.DataFrame): Pandas dataframe.
         text_align (str): text align. Defaults to center.
     """
     styles = [
@@ -173,7 +183,7 @@ def dataframe_to_html(df, text_align="center"):
     return df.style.set_table_styles(styles)
 
 
-def display_JSON(obj, interactive_viewer=settings.use_interactive_JSON_viewer):
+def display_JSON(obj: dict, interactive_viewer: bool = settings.use_interactive_JSON_viewer) -> None:
     """
     Displays JSON, either interactively or via a text dump to Stdout
     Args:

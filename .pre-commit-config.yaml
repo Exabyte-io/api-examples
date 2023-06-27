@@ -1,14 +1,13 @@
 exclude: ^((examples|other)\/.*\/.*\.py)
 repos:
-  - repo: https://github.com/Exabyte-io/pre-commit-hooks
-    rev: 2023.6.13
+  - repo: https://github.com/mrakitin/exabyte-io-pre-commit-hooks
+    rev: 09cf1c797140872602bae04b950e3afb5c38a9ee  # mrakitin/SOF-6690-hooks-isort-mypy branch
     hooks:
       - id: ruff
       - id: black
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
       - id: isort
+      - id: mypy
+        exclude: ^examples\/config\.py
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:

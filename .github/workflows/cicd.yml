@@ -53,13 +53,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          pip install --no-deps -r requirements.txt
-          pip install --no-deps -e .
-
-          pip install -r requirements-dev.txt
-          pip install --upgrade numpy
-
-          pip list
+          python -m pip install -ve ".[jupyter, docs]"
+          # python -m pip install --upgrade numpy
+          python -m pip list
 
       - name: Build documentation
         run : |

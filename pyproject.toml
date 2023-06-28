@@ -9,21 +9,21 @@ description = "Mat3ra API Examples"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-  "ase==3.21.1",
-  "exabyte-api-client==2023.6.13.post0",
-  "matplotlib==3.4.1",
-  "pandas>=1.1.4",
-  "pymatgen==2023.5.31",
+  "ase",
+  "exabyte-api-client>=2023.6.13.post0",
+  "matplotlib",
+  "pandas",
+  "pymatgen",
 ]
 
 [project.optional-dependencies]
 jupyter = [
-  "Jinja2==2.11.3",
-  "jupyterlab==3.0.17",
-  "MarkupSafe==1.1.1",
-  "nbconvert==6.0.7",
-  "nbstripout==0.6.1",
-  "pandas==1.1.4",
+  "Jinja2",
+  "jupyterlab",
+  "MarkupSafe",
+  "nbconvert",
+  "nbstripout",
+  "pandas",
 ]
 dev = [
   "pre-commit",

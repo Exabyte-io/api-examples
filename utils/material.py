@@ -1,18 +1,17 @@
-from typing import Tuple, Union, Dict, Any, Type
-import urllib.request
 import functools
+import urllib.request
+from typing import Any, Dict, Optional, Tuple, Union
 
-import pymatgen.core.surface
-import pymatgen.io.ase
-import pymatgen.symmetry.analyzer
 import ase.build
 import ase.constraints
 import numpy as np
-
+import pymatgen.core.surface
+import pymatgen.io.ase
+import pymatgen.symmetry.analyzer
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 
 
-def download_file_by_name(job_id: str, job_endpoint: JobEndpoints, target: str, pattern: str):
+def download_file_by_name(job_id: str, job_endpoint: JobEndpoints, target: str, pattern: str) -> None:
     """
     Downloads a file from S3 and writes it to the local disk.
 
@@ -35,7 +34,7 @@ def download_file_by_name(job_id: str, job_endpoint: JobEndpoints, target: str, 
             file_metadata = file
 
     # Get a download URL for the file
-    file_signed_url = file_metadata['signedUrl']
+    file_signed_url = file_metadata["signedUrl"]
 
     # Download the file to memory
     server_response = urllib.request.urlopen(file_signed_url)
@@ -49,6 +48,7 @@ download_contcar = functools.partial(download_file_by_name, pattern="CONTCAR")
 
 
 # Pymatgen
+
 
 def is_symmetric(slab: pymatgen.core.structure.Structure) -> bool:
     """
@@ -69,8 +69,9 @@ def is_symmetric(slab: pymatgen.core.structure.Structure) -> bool:
     return is_symmetric
 
 
-def get_all_slabs_and_terms(crystal: pymatgen.core.structure.Structure, thickness: Union[int, float],
-                            is_by_layers: bool) -> Dict[str, Dict[str, Dict[str, Any]]]:
+def get_all_slabs_and_terms(
+    crystal: pymatgen.core.structure.Structure, thickness: Union[int, float], is_by_layers: bool
+) -> Dict[str, Dict[str, Dict[str, Any]]]:
     """
     Gets all slabs and terminations for a given crystal, forcing a specific number of layers in the resultant slab.
 
@@ -87,9 +88,9 @@ def get_all_slabs_and_terms(crystal: pymatgen.core.structure.Structure, thicknes
     slabs = {}
 
     for plane in all_indices:
-        slab_generator = pymatgen.core.surface.SlabGenerator(crystal, plane, min_slab_size=thickness,
-                                                             min_vacuum_size=10, center_slab=True,
-                                                             in_unit_planes=is_by_layers)
+        slab_generator = pymatgen.core.surface.SlabGenerator(
+            crystal, plane, min_slab_size=thickness, min_vacuum_size=10, center_slab=True, in_unit_planes=is_by_layers
+        )
 
         # Generate all surface terminations, and add them to the list of slabs returned
         all_terminations = slab_generator.get_slabs()
@@ -103,6 +104,7 @@ def get_all_slabs_and_terms(crystal: pymatgen.core.structure.Structure, thicknes
 
 
 # ASE
+
 
 def get_bulk_bottom_and_top_frac_coords(slab: ase.Atoms, layers: int = 3) -> Tuple[float, float]:
     """
@@ -151,7 +153,7 @@ def freeze_center_bulk(slab: ase.Atoms) -> None:
     slab.set_constraint(fix_atoms_constraint)
 
 
-def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
+def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> Optional[float]:
     """
     This function takes in a VASP Job ID, reads the OUTCAR, and returns the final energy reported in the run.
 
@@ -160,7 +162,7 @@ def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
         jobs_endpoint (JobEndpoints): A job endpoint for interacting with the Exabyte platform
 
     Returns:
-        The electronic energy reported by the VASP job
+        The electronic energy reported by the VASP job or None
     """
     # Get the URL for the OUTCAR
     files = jobs_endpoint.list_files(job_id)
@@ -170,7 +172,7 @@ def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
             file_metadata = file
 
     # Get a download URL for each CONTCAR
-    cell_outcar_signed_url = file_metadata['signedUrl']
+    cell_outcar_signed_url = file_metadata["signedUrl"]  # type: ignore
 
     # Download the outcar to memory
     cell_response = urllib.request.urlopen(cell_outcar_signed_url)
@@ -185,9 +187,7 @@ def get_vasp_total_energy(job_id: str, jobs_endpoint: JobEndpoints) -> float:
     return unit_cell_energy
 
 
-def get_surface_energy(e_slab: float, e_bulk: float,
-                       n_slab: float, n_bulk: float,
-                       a: float):
+def get_surface_energy(e_slab: float, e_bulk: float, n_slab: float, n_bulk: float, a: float) -> float:
     """
     Calculates the slab energy according to the following formula:
     (E_Slab - E_bulk * (N_Slab / N_Bulk)) / (2A)

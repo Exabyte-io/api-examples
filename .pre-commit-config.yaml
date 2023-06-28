@@ -1,7 +1,7 @@
 exclude: ^((examples|other)\/.*\/.*\.(py|poscar|csv))
 repos:
-  - repo: https://github.com/mrakitin/exabyte-io-pre-commit-hooks
-    rev: 65b0da1cd8306d3958623bb4a9cadaea32d5f3e9
+  - repo: https://github.com/Exabyte-io/pre-commit-hooks
+    rev: b044a26559ef191fabca9bd89db08edfcd1554e4
     hooks:
       - id: ruff
       - id: black

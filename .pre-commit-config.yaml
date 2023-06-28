@@ -1,16 +1,13 @@
 exclude: ^((examples|other)\/.*\/.*\.(py|poscar|csv))
 repos:
   - repo: https://github.com/mrakitin/exabyte-io-pre-commit-hooks
-    rev: 09cf1c797140872602bae04b950e3afb5c38a9ee  # mrakitin/SOF-6690-hooks-isort-mypy branch
+    rev: 65b0da1cd8306d3958623bb4a9cadaea32d5f3e9
     hooks:
       - id: ruff
       - id: black
       - id: isort
       - id: mypy
         exclude: ^examples\/config\.py
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace

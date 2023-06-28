@@ -19,10 +19,9 @@ jobs:
         with:
           lfs: true
 
-      - name: Run pre-commit hooks
-        run: |
-          python -m pip install pre-commit
-          pre-commit run --all
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Run pre-commit hooks
         run: |
@@ -40,19 +39,14 @@ jobs:
       MATERIALS_PROJECT_API_KEY: ${{ secrets.MATERIALS_PROJECT_API_KEY }}
 
     steps:
-      - name: Prepare environment variables
-        shell: bash -l {0}
-        run: |
-          export DEMO_ACCOUNT_ID="${{ secrets.DEMO_ACCOUNT_ID }}"
-          echo "DEMO_ACCOUNT_ID=${DEMO_ACCOUNT_ID}" >> $GITHUB_ENV
-
-          export DEMO_AUTH_TOKEN="${{ secrets.DEMO_AUTH_TOKEN }}"
-          echo "DEMO_AUTH_TOKEN=${DEMO_AUTH_TOKEN}" >> $GITHUB_ENV
-
       - name: Checkout this repository
         uses: actions/checkout@v3
         with:
           lfs: true
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         shell: bash -l {0}
@@ -66,24 +60,6 @@ jobs:
           pip install --upgrade numpy
 
           pip list
-
-      # - name: Update utils/settings.json
-      #   shell: python
-      #   run: |
-      #     import os, json
-      #     settings_file = "utils/settings.json"
-      #     with open(settings_file, "r") as fp:
-      #         settings = json.load(fp)
-      #     settings["ACCOUNT_ID"] = os.getenv("DEMO_ACCOUNT_ID", "")
-      #     settings["AUTH_TOKEN"] = os.getenv("DEMO_AUTH_TOKEN", "")
-      #     settings["MATERIALS_PROJECT_API_KEY"] = os.getenv("MATERIALS_PROJECT_API_KEY", "")
-      #     with open(settings_file, "w") as fp:
-      #         json.dump(settings, fp, indent=4)
-
-      # - name: Render notebooks
-      #   run: |
-      #     set -euo pipefail
-      #     bash scripts/render-notebooks.sh
 
       - name: Build documentation
         run : |

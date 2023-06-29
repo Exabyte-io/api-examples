@@ -28,6 +28,7 @@ localhost = [
 ]
 dev = [
   "pre-commit>=3.3.3",
+  "pip-compile>=6.13.0",
 ]
 docs = [
   "mkdocs>=1.4.3",

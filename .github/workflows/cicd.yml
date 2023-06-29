@@ -53,8 +53,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python -m pip install -ve ".[jupyter, docs]"
-          # python -m pip install --upgrade numpy
+          python -m pip install -ve ".[localhost, docs]"
           python -m pip list
 
       - name: Build documentation

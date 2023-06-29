@@ -22,7 +22,7 @@ Below, we list the contents of this repository, in roughly the order that a user
 
 ## Setup
 
-NOTE: tested with Python version 3.8.6, please assert that the virtual environment is created with it.
+NOTE: tested with Python version 3.8 and 3.10, please assert that the virtual environment is created with it. Use [`pyenv`](https://github.com/pyenv/pyenv#installation) to manage Python versions.
 
 Follow the steps below in order to setup and view the Jupyter notebooks:
 

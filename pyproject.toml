@@ -27,15 +27,15 @@ localhost = [
   "nbconvert>=6.0.7",
 ]
 dev = [
-  "pre-commit",
+  "pre-commit>=3.3.3",
 ]
 docs = [
-  "mkdocs",
-  "mkdocs-material",
-  "mkdocs-same-dir",
-  "mkdocs-exclude",
-  "mkdocs-jupyter",
-  "nbstripout",
+  "mkdocs>=1.4.3",
+  "mkdocs-material>=9.1.17",
+  "mkdocs-same-dir>=0.1.2",
+  "mkdocs-exclude>=1.0.2",
+  "mkdocs-jupyter>=0.24.1",
+  "nbstripout>=0.6.1",
 ]
 
 [project.urls]

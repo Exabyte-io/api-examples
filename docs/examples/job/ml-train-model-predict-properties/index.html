@@ -12,7 +12,7 @@
         <link rel="prev" href="../run-simulations-and-extract-properties/">
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="https://docs.mat3ra.com/images/logo/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
@@ -87,8 +87,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../../.." title="Mat3ra API Examples" class="md-header__button md-logo" aria-label="Mat3ra API Examples" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="https://docs.mat3ra.com/images/logo/logo-white.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -178,8 +177,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="../../.." title="Mat3ra API Examples" class="md-nav__button md-logo" aria-label="Mat3ra API Examples" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <img src="https://docs.mat3ra.com/images/logo/logo-white.png" alt="logo">
 
     </a>
     Mat3ra API Examples
@@ -2259,22 +2257,27 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-06-26-06:13:43 |                2 |             0 |               0 |              0 |
+| 2023-06-29-23:37:18 |                2 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-06-26-06:13:53 |                0 |             2 |               0 |              0 |
+| 2023-06-29-23:37:28 |                1 |             1 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-06-26-06:14:03 |                0 |             1 |               1 |              0 |
+| 2023-06-29-23:37:38 |                0 |             1 |               1 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-06-26-06:14:13 |                0 |             0 |               2 |              0 |
+| 2023-06-29-23:37:49 |                0 |             1 |               1 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-06-29-23:37:59 |                0 |             0 |               2 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -2438,12 +2441,17 @@ job = job_endpoints.create(config)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-06-26-06:14:14 |                1 |             0 |               0 |              0 |
+| 2023-06-29-23:38:00 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-06-26-06:14:25 |                0 |             0 |               1 |              0 |
+| 2023-06-29-23:38:10 |                1 |             0 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-06-29-23:38:20 |                0 |             0 |               1 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -2574,7 +2582,7 @@ ml_predict_workflow_id = ml_predict_workflow["_id"]</div>
     },
     &#34;schemaVersion&#34;: &#34;0.2.0&#34;,
     &#34;hash&#34;: &#34;&#34;,
-    &#34;_id&#34;: &#34;3jAC6cxr5WDcpY5ZK&#34;,
+    &#34;_id&#34;: &#34;zeLGpt9JMQe83d9mG&#34;,
     &#34;units&#34;: [
         {
             &#34;_id&#34;: &#34;LCthJ6E2QabYCZqf4&#34;,
@@ -3213,12 +3221,17 @@ job = job_endpoints.create(config)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-06-26-06:14:26 |                1 |             0 |               0 |              0 |
+| 2023-06-29-23:38:21 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-06-26-06:14:36 |                0 |             0 |               1 |              0 |
+| 2023-06-29-23:38:31 |                1 |             0 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-06-29-23:38:41 |                0 |             0 |               1 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -3399,22 +3412,39 @@ html</div>
 
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
-<style  type="text/css" >
-    #T_ba2eab16_13e8_11ee_949f_0744733c2324 th {
-          text-align: center;
-    }    #T_ba2eab16_13e8_11ee_949f_0744733c2324 td {
-          text-align: center;
-    }</style><table id="T_ba2eab16_13e8_11ee_949f_0744733c2324" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >ID</th>        <th class="col_heading level0 col1" >NAME</th>        <th class="col_heading level0 col2" >FORMULA</th>        <th class="col_heading level0 col3" >EXABYTE-ID</th>        <th class="col_heading level0 col4" >DIRECT-GAP</th>        <th class="col_heading level0 col5" >INDIRECT-GAP</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_ba2eab16_13e8_11ee_949f_0744733c2324level0_row0" class="row_heading level0 row0" >0</th>
-                        <td id="T_ba2eab16_13e8_11ee_949f_0744733c2324row0_col0" class="data row0 col0" >xsFR7bA2auDyRJw3z</td>
-                        <td id="T_ba2eab16_13e8_11ee_949f_0744733c2324row0_col1" class="data row0 col1" >mp-32</td>
-                        <td id="T_ba2eab16_13e8_11ee_949f_0744733c2324row0_col2" class="data row0 col2" >Ge</td>
-                        <td id="T_ba2eab16_13e8_11ee_949f_0744733c2324row0_col3" class="data row0 col3" >ts2ghFDZLBrKPiQaN</td>
-                        <td id="T_ba2eab16_13e8_11ee_949f_0744733c2324row0_col4" class="data row0 col4" >1.070000</td>
-                        <td id="T_ba2eab16_13e8_11ee_949f_0744733c2324row0_col5" class="data row0 col5" >0.465000</td>
-            </tr>
-    </tbody></table>
+<style type="text/css">
+#T_2d78d th {
+  text-align: center;
+}
+#T_2d78d td {
+  text-align: center;
+}
+</style>
+<table id="T_2d78d">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th id="T_2d78d_level0_col0" class="col_heading level0 col0" >ID</th>
+      <th id="T_2d78d_level0_col1" class="col_heading level0 col1" >NAME</th>
+      <th id="T_2d78d_level0_col2" class="col_heading level0 col2" >FORMULA</th>
+      <th id="T_2d78d_level0_col3" class="col_heading level0 col3" >EXABYTE-ID</th>
+      <th id="T_2d78d_level0_col4" class="col_heading level0 col4" >DIRECT-GAP</th>
+      <th id="T_2d78d_level0_col5" class="col_heading level0 col5" >INDIRECT-GAP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_2d78d_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_2d78d_row0_col0" class="data row0 col0" >Ekfv3rW3KerxE57kh</td>
+      <td id="T_2d78d_row0_col1" class="data row0 col1" >mp-32</td>
+      <td id="T_2d78d_row0_col2" class="data row0 col2" >Ge</td>
+      <td id="T_2d78d_row0_col3" class="data row0 col3" >ts2ghFDZLBrKPiQaN</td>
+      <td id="T_2d78d_row0_col4" class="data row0 col4" >1.070000</td>
+      <td id="T_2d78d_row0_col5" class="data row0 col5" >0.465000</td>
+    </tr>
+  </tbody>
+</table>
+
 </div>
 
 </div>
@@ -3447,6 +3477,10 @@ html</div>
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © 2023 <a target="_blank" href="https://mat3ra.com">Exabyte Inc</a>. All rights reserved. | <a target="_blank" href="https://platform.mat3ra.com">Back to platform</a>
+    </div>
   
   
 </div>

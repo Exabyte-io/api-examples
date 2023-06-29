@@ -55,6 +55,7 @@ jobs:
 
           python -m pip install -ve ".[localhost, docs]"
           python -m pip list
+          python -m pip freeze  > requirements-py${{ matrix.python-version }}.txt
 
       - name: Build documentation
         run : |
@@ -64,6 +65,10 @@ jobs:
         with:
           name: rendered-notebooks-py${{ matrix.python-version }}
           path: site
+      - uses: actions/upload-artifact@v3
+        with:
+          name: requirements-py${{ matrix.python-version }}
+          path: requirements-py${{ matrix.python-version }}.txt
 
       - name: Deploy documentation to Exabyte-io.github.io
         if: github.repository_owner == 'Exabyte-io' && github.ref_name == 'dev' && matrix.python-version == '3.8'

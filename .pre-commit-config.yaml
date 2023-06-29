@@ -5,6 +5,8 @@ repos:
     hooks:
       - id: ruff
       - id: black
+      - id: black-jupyter
+        exclude: ^other\/.*\/.*\.ipynb
       - id: isort
       - id: mypy
         exclude: ^examples\/config\.py

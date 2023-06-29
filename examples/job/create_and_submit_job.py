@@ -26,13 +26,14 @@
 # In[ ]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 
 import os
+
 if "COLAB_JUPYTER_IP" in os.environ:
     os.environ.update(
         dict(
@@ -98,16 +99,10 @@ owner_id = default_material["owner"]["_id"]
 
 
 config = {
-    "owner": {
-        "_id": owner_id
-    },
-    "_material": {
-        "_id": material_id
-    },
-    "workflow": {
-        "_id": workflow_id
-    },
-    "name": JOB_NAME
+    "owner": {"_id": owner_id},
+    "_material": {"_id": material_id},
+    "workflow": {"_id": workflow_id},
+    "name": JOB_NAME,
 }
 
 
@@ -117,7 +112,7 @@ config = {
 
 
 job = job_endpoints.create(config)
-job_endpoints.submit(job['_id'])
+job_endpoints.submit(job["_id"])
 
 
 # ## Print the job
@@ -127,6 +122,6 @@ job_endpoints.submit(job['_id'])
 # In[ ]:
 
 
-job = job_endpoints.get(job['_id'])
+job = job_endpoints.get(job["_id"])
 display_JSON(job)
 

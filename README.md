@@ -22,7 +22,7 @@ Below, we list the contents of this repository, in roughly the order that a user
 
 ## Setup
 
-NOTE: tested with Python version 3.8.6, please assert that the virtual environment is created with it.
+NOTE: tested with Python version 3.8 and 3.10, please assert that the virtual environment is created with it. Use [`pyenv`](https://github.com/pyenv/pyenv#installation) to manage Python versions.
 
 Follow the steps below in order to setup and view the Jupyter notebooks:
 
@@ -50,7 +50,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
     cd api-examples
     virtualenv .env
     source .env/bin/activate
-    pip install -e ."[jupyter]"
+    pip install -e ."[localhost]"
     ```
 
 4. Run Jupyter and open a notebook in a browser. In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`, which is the `examples` folder shown below:
@@ -72,7 +72,7 @@ In order to run or edit the examples:
 
   <img src="images/reusable-kernel.png" width="250px" />
 
-NOTE: The Materials Project API key should be obtained from https://legacy.materialsproject.org/open.
+NOTE: The Materials Project API key should be obtained from [https://legacy.materialsproject.org/open](https://legacy.materialsproject.org/open).
 
 
 ## Contribute

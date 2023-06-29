@@ -25,7 +25,7 @@ if [ ! -z "${IS_RUNNING_ON_COLAB}" ]; then
     cd ${REPO_NAME}
 
     # Install the examples repo, requirements are installed automatically.
-    python -m pip install -v . > ${stdout} 2>&1
+    python -m pip install -v ."[colab]" > ${stdout} 2>&1
 
     if [ ! -z "${IS_USING_GIT_LFS}" ]; then
         sudo apt-get install -y git-lfs > ${stdout} 2>&1

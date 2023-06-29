@@ -55,13 +55,14 @@
 # In[ ]:
 
 
-#@title Authorization Form
-ACCOUNT_ID = "ACCOUNT_ID" #@param {type:"string"}
-AUTH_TOKEN = "AUTH_TOKEN" #@param {type:"string"}
-MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY" #@param {type:"string"}
-ORGANIZATION_ID  = "ORGANIZATION_ID" #@param {type:"string"}
+# @title Authorization Form
+ACCOUNT_ID = "ACCOUNT_ID"  # @param {type:"string"}
+AUTH_TOKEN = "AUTH_TOKEN"  # @param {type:"string"}
+MATERIALS_PROJECT_API_KEY = "MATERIALS_PROJECT_API_KEY"  # @param {type:"string"}
+ORGANIZATION_ID = "ORGANIZATION_ID"  # @param {type:"string"}
 
 import os
+
 if "COLAB_JUPYTER_IP" in os.environ:
     os.environ.update(
         dict(
@@ -108,7 +109,7 @@ from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
 # In[ ]:
 
 
-MATERIALS_PROJECT_IDS = ["mp-149", "mp-32"] # Si and Ge
+MATERIALS_PROJECT_IDS = ["mp-149", "mp-32"]  # Si and Ge
 MATERIALS_SET_NAME = "materials-set"
 TAGS = ["tag1", "tag2"]
 
@@ -209,7 +210,9 @@ workflow_id = bank_workflow_endpoints.copy(BANK_WORKFLOW_ID, owner_id)["_id"]
 # In[ ]:
 
 
-materials = material_endpoints.import_from_materialsproject(MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS)
+materials = material_endpoints.import_from_materialsproject(
+    MATERIALS_PROJECT_API_KEY, MATERIALS_PROJECT_IDS, owner_id, TAGS
+)
 
 
 # Create a materials set and move the materials into it.
@@ -275,18 +278,24 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 results = []
 for material in materials:
     job = next((job for job in jobs if job["_material"]["_id"] == material["_id"]))
-    final_structure = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "final_structure", job, 0, 0)["data"]
-    pressure = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "pressure", job, 0, 0)["data"]["value"]
+    final_structure = get_property_by_subworkflow_and_unit_indicies(
+        raw_property_endpoints, "final_structure", job, 0, 0
+    )["data"]
+    pressure = get_property_by_subworkflow_and_unit_indicies(raw_property_endpoints, "pressure", job, 0, 0)["data"][
+        "value"
+    ]
     unit_flowchart_id = job["workflow"]["subworkflows"][1]["units"][1]["flowchartId"]
     band_gap_direct = raw_property_endpoints.get_direct_band_gap(job["_id"], unit_flowchart_id)
     band_gap_indirect = raw_property_endpoints.get_indirect_band_gap(job["_id"], unit_flowchart_id)
-    results.append({
-        "initial_structure": material,
-        "final_structure": final_structure,
-        "pressure": pressure,
-        "band_gap_direct": band_gap_direct,
-        "band_gap_indirect": band_gap_indirect,
-    })
+    results.append(
+        {
+            "initial_structure": material,
+            "final_structure": final_structure,
+            "pressure": pressure,
+            "band_gap_direct": band_gap_direct,
+            "band_gap_indirect": band_gap_indirect,
+        }
+    )
 
 
 # ### Flatten results

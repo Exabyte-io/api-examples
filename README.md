@@ -32,6 +32,9 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 
     ```bash
     git clone https://github.com/Exabyte-io/api-examples.git
+
+    # alternatively, if you have set up SSH keys
+    git clone git@github.com:Exabyte-io/api-examples.git
     ```
 
     In case for some reason git-lfs was not installed at the time of cloning, the files can be pulled after installing git-lfs, through `git lfs pull`.

@@ -7,7 +7,7 @@
 
 # # Overview
 # 
-# This example shows how to log in to Mat3ra RESTFul API via [Login](https://docs.mat3ra.com/api/API/post_login) endpoint and generate API authentication parameters.
+# This example shows how to log in to Mat3ra RESTFul API via [Login](https://docs.mat3ra.com/api/API/post_login) endpoint and generate API authentication parameters. Note that it is also possible to generate an API token manually via platform web UI as described in the project [README](https://github.com/Exabyte-io/api-examples/tree/dev#usage).
 
 # # Execution
 # 
@@ -24,7 +24,11 @@
 
 # @title Authorization Form
 USERNAME = "YOUR_USERNAME"  # @param {type:"string"}
-PASSWORD = "YOUR_PASSWORD"  # @param {type:"string"}
+
+# avoid storing password in plaintext
+from getpass import getpass
+
+PASSWORD = getpass("Please enter password: ")
 
 import os
 

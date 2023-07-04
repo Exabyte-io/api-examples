@@ -79,15 +79,25 @@ NOTE: The Materials Project API key should be obtained from [https://legacy.mate
 
 This is an open-source repository and we welcome contributions for other use cases. The original set of examples is only meant to demonstrate the capabilities and can be extended.
 
-We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on Github. This process is explained in more details elsewhere online [[4](#links)].
+We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on GitHub. This process is explained in more details elsewhere online [[4](#links)].
 
 If you would like to add new examples or adjust existing ones, please consider the following:
 
 1. Put examples into the corresponding directories by domain.
 
-2. Walk the readers through the examples by providing step-by-step explanation similar to [this](examples/material/get_materials_by_formula.ipynb).
+2. Walk the readers through the examples by providing step-by-step explanation similar to [this](examples/material/get_materials_by_formula.ipynb) example.
 
-3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](examples/config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[3](#links)]. Please follow this convention.
+3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](examples/config.py) file for more information. In order to facilitate code review, we exclude notebook sources in the `other/` directory from version control and store them in Git LFS [[3](#links)]. Please follow this convention.
+
+4. Apply code formatting by installing development requirements as follows:
+
+    ```bash
+    pip install -e ."[dev]"
+    pre-commit install
+    pre-commit run --all-files
+    ```
+
+    Check more details about `pre-commit` [here](https://pre-commit.com/).
 
 ## Links
 

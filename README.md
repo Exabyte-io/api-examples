@@ -69,7 +69,7 @@ In order to run or edit the examples:
 
 1. Assert an existing Mat3ra.com account. Examples require an account to run. New users can register [here](https://platform.mat3ra.com/register) to obtain one.
 
-2. Open [settings](utils/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters. It is also possible to generate API token by login to [Mat3ra platform](https://platform.mat3ra.com/), navigating to account preferences, and click the Generate new token button under API Tokens. More details can be found [here](https://docs.mat3ra.com/accounts/ui/preferences/api/).
+2. Open [settings](utils/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters. It is also possible to generate an API token by logging in to [Mat3ra platform](https://platform.mat3ra.com/), navigating to the Account Preferences, and clicking the 'Generate new token' button under API Tokens. More details can be found [here](https://docs.mat3ra.com/accounts/ui/preferences/api/).
 
 3. Open the desired example notebook, adjust it as necessary and run. One can speed up the notebooks execution after running the [Get Authentication Params](examples/system/get_authentication_params.ipynb) one by reusing the kernel from the first notebook.
 

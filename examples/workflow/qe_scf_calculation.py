@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# <a href="https://colab.research.google.com/github/Exabyte-io/api-examples/blob/dev/examples/workflow/qe_scf_calculation.ipynb" target="_parent">
+# <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
+# </a>
+
 # # Quantum Espresso SCF calcuation via API
 # 
 

@@ -15,7 +15,7 @@
         <link rel="next" href="../../workflow/get_workflows/">
       
       <link rel="icon" href="https://docs.mat3ra.com/images/logo/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.18">
     
     
       
@@ -1492,7 +1492,7 @@ Licensed under the Apache License, Version 2.0.
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="overview">Overview<a class="anchor-link" href="#overview">&#182;</a></h1><p>This example shows how to log in to Mat3ra RESTFul API via <a href="https://docs.mat3ra.com/api/API/post_login">Login</a> endpoint and generate API authentication parameters.</p>
+<h1 id="overview">Overview<a class="anchor-link" href="#overview">&#182;</a></h1><p>This example shows how to log in to Mat3ra RESTFul API via <a href="https://docs.mat3ra.com/api/API/post_login">Login</a> endpoint and generate API authentication parameters. Note that it is also possible to generate an API token manually via platform web UI as described in the project <a href="https://github.com/Exabyte-io/api-examples/tree/dev#usage">README</a>.</p>
 
 </div>
 </div>
@@ -1551,7 +1551,11 @@ Licensed under the Apache License, Version 2.0.
             </div>
             <div class="highlight-ipynb hl-python "><pre><span></span><span class="c1"># @title Authorization Form</span>
 <span class="n">USERNAME</span> <span class="o">=</span> <span class="s2">&quot;YOUR_USERNAME&quot;</span>  <span class="c1"># @param {type:&quot;string&quot;}</span>
-<span class="n">PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;YOUR_PASSWORD&quot;</span>  <span class="c1"># @param {type:&quot;string&quot;}</span>
+
+<span class="c1"># avoid storing password in plaintext</span>
+<span class="kn">from</span> <span class="nn">getpass</span> <span class="kn">import</span> <span class="n">getpass</span>
+
+<span class="n">PASSWORD</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s2">&quot;Please enter password: &quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 
@@ -1560,7 +1564,11 @@ Licensed under the Apache License, Version 2.0.
 </pre></div>
 <div id="cell-1" class="clipboard-copy-txt"># @title Authorization Form
 USERNAME = "YOUR_USERNAME"  # @param {type:"string"}
-PASSWORD = "YOUR_PASSWORD"  # @param {type:"string"}
+
+# avoid storing password in plaintext
+from getpass import getpass
+
+PASSWORD = getpass("Please enter password: ")
 
 import os
 
@@ -1752,10 +1760,10 @@ auth_params = endpoint.login()</div>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.b425cdc4.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
     
   </body>

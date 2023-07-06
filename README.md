@@ -31,6 +31,12 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 1. Clone repository:
 
     ```bash
+    git clone https://github.com/Exabyte-io/api-examples.git
+    ```
+
+    Or, if you have set up SSH keys
+    
+    ```bash
     git clone git@github.com:Exabyte-io/api-examples.git
     ```
 
@@ -38,13 +44,13 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
 
     Related to this, please be aware that as the `.ipynb` and `.poscar` files are stored on git-lfs, they are not part of the zip archive downloaded through GitHub's web interface.
 
-2. Install [virtualenv](https://virtualenv.pypa.io/en/stable/) using [pip](https://pip.pypa.io/en/stable/) if not already present:
+3. Install [virtualenv](https://virtualenv.pypa.io/en/stable/) using [pip](https://pip.pypa.io/en/stable/) if not already present:
 
     ```bash
     pip install virtualenv
     ```
 
-3. Create virtual environment and install required packages:
+4. Create virtual environment and install required packages:
 
     ```bash
     cd api-examples
@@ -53,7 +59,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
     pip install -e ."[localhost]"
     ```
 
-4. Run Jupyter and open a notebook in a browser. In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`, which is the `examples` folder shown below:
+5. Run Jupyter and open a notebook in a browser. In order for the post-save hook feature to work properly, one must launch their Jupyter Notebook environment in the folder that contains the file `config.py`, which is the `examples` folder shown below:
 
     ```bash
     cd examples
@@ -66,7 +72,7 @@ In order to run or edit the examples:
 
 1. Assert an existing Mat3ra.com account. Examples require an account to run. New users can register [here](https://platform.mat3ra.com/register) to obtain one.
 
-2. Open [settings](utils/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters.
+2. Open [settings](utils/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters. It is also possible to generate an API token by logging in to [Mat3ra platform](https://platform.mat3ra.com/), navigating to the Account Preferences, and clicking the 'Generate new token' button under API Tokens. More details can be found [here](https://docs.mat3ra.com/accounts/ui/preferences/api/).
 
 3. Open the desired example notebook, adjust it as necessary and run. One can speed up the notebooks execution after running the [Get Authentication Params](examples/system/get_authentication_params.ipynb) one by reusing the kernel from the first notebook.
 

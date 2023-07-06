@@ -198,7 +198,7 @@ def display_JSON(
     """
     if interactive_viewer:
         JSON_CSS = """.renderjson a              { text-decoration: none; }
-        .renderjson .disclosure    { color: grey; font-size: 125%; }
+        .renderjson .disclosure    { color: grey; font-size: 100%; }
         .renderjson .syntax        { color: grey; }
         .renderjson .string        { color: #fe46a5; }
         .renderjson .number        { color: #0f9b8e; }

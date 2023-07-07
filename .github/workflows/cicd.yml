@@ -37,6 +37,8 @@ jobs:
       ACCOUNT_ID: ${{ secrets.DEMO_ACCOUNT_ID }}
       AUTH_TOKEN: ${{ secrets.DEMO_AUTH_TOKEN }}
       MATERIALS_PROJECT_API_KEY: ${{ secrets.MATERIALS_PROJECT_API_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
     defaults:
       run:
         shell: bash -l {0}
@@ -90,3 +92,15 @@ jobs:
           destination_dir: ./docs
           keep_files: true  # Keep old files.
           force_orphan: false  # Keep git history.
+
+      - name: S3 Deploy
+        if: github.repository_owner == 'Exabyte-io' && github.ref_name == 'dev' && matrix.python-version == '3.8'
+        uses: Exabyte-io/action-s3-deploy@v3
+        with:
+          folder: site
+          bucket: docs.mat3ra.com/rest-api/api-examples
+          bucket-region: ${{ secrets.S3_LOCATION }}
+          dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          invalidation: /*
+          no-cache: true
+          private: true

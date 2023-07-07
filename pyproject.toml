@@ -51,7 +51,10 @@ notebook-path = "utils.notebook:print_notebook_path"
 include = ["utils"]
 
 [tool.setuptools.package-data]
-utils = ["settings.json"]
+utils = [
+  "settings.json",
+  "web/renderjson.*",
+]
 
 
 [tool.black]

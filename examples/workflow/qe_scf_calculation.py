@@ -22,7 +22,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../../utils/settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[ ]:
+# In[1]:
 
 
 # @title Authorization Form
@@ -46,7 +46,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
     get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
-# In[ ]:
+# In[2]:
 
 
 from utils.settings import ENDPOINT_ARGS, ACCOUNT_ID
@@ -57,7 +57,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 
 
-# In[ ]:
+# In[3]:
 
 
 # Initialize a helper class to interact with WorkflowEndpoints
@@ -67,209 +67,88 @@ job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
 
 
 # #### Create a Quantum Espresso workflow for SCF calculation
+# 
+# Below we provide our Quantum Espresso input file via a bash script.
+# 
+# Note that we provide the pseudo potential file via a downloadable url. We are working on suppporting uploading pseudo potential file from local file system, but it is currently not available.
 
-# In[ ]:
-
-
-# payload for workflow creation
-WORKFLOW_BODY = {
-    "name": "Silicon SCF",
-    "subworkflows": [
-        {
-            "name": "Total energy",
-            "application": {
-                "_id": "u2qtBhseFfQMWRYND",
-                "name": "espresso",
-                "shortName": "qe",
-                "summary": "Quantum Espresso",
-                "build": "Intel",
-                "version": "6.3",
-                "isDefault": False,
-                "hasAdvancedComputeOptions": True,
-                "schemaVersion": "2022.8.16",
-                "createdAt": "2023-04-13T09:42:52.622Z",
-                "createdBy": "0",
-                "updatedAt": "2023-06-15T20:01:39.744Z",
-                "updatedBy": "0",
-            },
-            "properties": [
-                "total_energy",
-                "total_energy_contributions",
-                "pressure",
-                "fermi_energy",
-                "atomic_forces",
-                "total_force",
-                "stress_tensor",
-            ],
-            "model": {
-                "type": "dft",
-                "subtype": "gga",
-                "method": {"type": "pseudopotential", "subtype": "us", "data": {"searchText": ""}},
-                "functional": {"slug": "pbe"},
-                "refiners": [],
-                "modifiers": [],
-            },
-            "units": [
-                {
-                    "type": "execution",
-                    "application": {
-                        "_id": "u2qtBhseFfQMWRYND",
-                        "name": "espresso",
-                        "shortName": "qe",
-                        "summary": "Quantum Espresso",
-                        "build": "Intel",
-                        "version": "6.3",
-                        "isDefault": False,
-                        "hasAdvancedComputeOptions": True,
-                        "schemaVersion": "2022.8.16",
-                        "createdAt": "2023-04-13T09:42:52.622Z",
-                        "createdBy": "0",
-                        "updatedAt": "2023-06-15T20:01:39.744Z",
-                        "updatedBy": "0",
-                    },
-                    "flowchartId": "066bb68919ae51b993ce7739",
-                    "status": "idle",
-                    "statusTrack": [],
-                    "results": [
-                        {"name": "total_energy"},
-                        {"name": "total_energy_contributions"},
-                        {"name": "pressure"},
-                        {"name": "fermi_energy"},
-                        {"name": "atomic_forces"},
-                        {"name": "total_force"},
-                        {"name": "stress_tensor"},
-                    ],
-                    "monitors": [{"name": "standard_output"}, {"name": "convergence_electronic"}],
-                    "preProcessors": [],
-                    "postProcessors": [],
-                    "head": True,
-                    "input": [
-                        {
-                            "content": "{% if subworkflowContext.MATERIAL_INDEX %}\n{%- set input = input.perMaterial[subworkflowContext.MATERIAL_INDEX] -%}\n{% endif -%}\n&CONTROL\n    calculation = 'scf'\n    title = ''\n    verbosity = 'low'\n    restart_mode = '{{ input.RESTART_MODE }}'\n    wf_collect = .true.\n    tstress = .true.\n    tprnfor = .true.\n    outdir = {% raw %}'{{ JOB_WORK_DIR }}/outdir'{% endraw %}\n    wfcdir = {% raw %}'{{ JOB_WORK_DIR }}/outdir'{% endraw %}\n    prefix = '__prefix__'\n    pseudo_dir = {% raw %}'{{ JOB_WORK_DIR }}/pseudo'{% endraw %}\n/\n&SYSTEM\n    ibrav = {{ input.IBRAV }}\n    nat = {{ input.NAT }}\n    ntyp = {{ input.NTYP }}\n    ecutwfc = {{ cutoffs.wavefunction }}\n    ecutrho = {{ cutoffs.density }}\n    occupations = 'smearing'\n    degauss = 0.005\n/\n&ELECTRONS\n    diagonalization = 'david'\n    diago_david_ndim = 4\n    diago_full_acc = .true.\n    mixing_beta = 0.3\n    startingwfc = 'atomic+random'\n/\n&IONS\n/\n&CELL\n/\nATOMIC_SPECIES\n{{ input.ATOMIC_SPECIES }}\nATOMIC_POSITIONS crystal\n{{ input.ATOMIC_POSITIONS }}\nCELL_PARAMETERS angstrom\n{{ input.CELL_PARAMETERS }}\nK_POINTS automatic\n{% for d in kgrid.dimensions %}{{d}} {% endfor %}{% for s in kgrid.shifts %}{{s}} {% endfor %}\n",
-                            "name": "pw_scf.in",
-                            "contextProviders": [
-                                {"name": "KGridFormDataManager"},
-                                {"name": "QEPWXInputDataManager"},
-                                {"name": "PlanewaveCutoffDataManager"},
-                            ],
-                            "applicationName": "espresso",
-                            "executableName": "pw.x",
-                            "rendered": "&CONTROL\n    calculation = 'scf'\n    title = ''\n    verbosity = 'low'\n    restart_mode = 'from_scratch'\n    wf_collect = .true.\n    tstress = .true.\n    tprnfor = .true.\n    outdir = '{{ JOB_WORK_DIR }}/outdir'\n    wfcdir = '{{ JOB_WORK_DIR }}/outdir'\n    prefix = '__prefix__'\n    pseudo_dir = '{{ JOB_WORK_DIR }}/pseudo'\n/\n&SYSTEM\n    ibrav = 0\n    nat = 2\n    ntyp = 1\n    ecutwfc = 40\n    ecutrho = 200\n    occupations = 'smearing'\n    degauss = 0.005\n/\n&ELECTRONS\n    diagonalization = 'david'\n    diago_david_ndim = 4\n    diago_full_acc = .true.\n    mixing_beta = 0.3\n    startingwfc = 'atomic+random'\n/\n&IONS\n/\n&CELL\n/\nATOMIC_SPECIES\nSi 28.0855 si_pbe_gbrv_1.0.upf\nATOMIC_POSITIONS crystal\nSi  0.000000000 0.000000000 0.000000000 \nSi  0.250000000 0.250000000 0.250000000 \nCELL_PARAMETERS angstrom\n3.348920236 0.000000000 1.933500000\n1.116307420 3.157392040 1.933500000\n0.000000000 0.000000000 3.867000000\nK_POINTS automatic\n5 5 5 0 0 0 \n",
-                        }
-                    ],
-                    "context": {
-                        "kgridExtraData": {"materialHash": "a665723ef7429caef6ca89385fe25bae"},
-                        "kgrid": {
-                            "dimensions": [5, 5, 5],
-                            "shifts": [0, 0, 0],
-                            "reciprocalVectorRatios": [1, 1, 1],
-                            "gridMetricType": "KPPRA",
-                            "gridMetricValue": 250,
-                            "preferGridMetric": False,
-                        },
-                        "isKgridEdited": True,
-                        "subworkflowContext": {},
-                    },
-                    "executable": {
-                        "isDefault": True,
-                        "hasAdvancedComputeOptions": True,
-                        "postProcessors": ["remove_non_zero_weight_kpoints"],
-                        "monitors": ["standard_output", "convergence_ionic", "convergence_electronic"],
-                        "results": [
-                            "atomic_forces",
-                            "band_gaps",
-                            "density_of_states",
-                            "fermi_energy",
-                            "pressure",
-                            "stress_tensor",
-                            "total_energy",
-                            "total_energy_contributions",
-                            "total_force",
-                            "final_structure",
-                            "magnetic_moments",
-                            "reaction_energy_barrier",
-                            "reaction_energy_profile",
-                            "potential_profile",
-                            "charge_density_profile",
-                        ],
-                        "name": "pw.x",
-                    },
-                    "flavor": {
-                        "isDefault": True,
-                        "input": [{"name": "pw_scf.in"}],
-                        "results": [
-                            "total_energy",
-                            "total_energy_contributions",
-                            "pressure",
-                            "fermi_energy",
-                            "atomic_forces",
-                            "total_force",
-                            "stress_tensor",
-                        ],
-                        "monitors": ["standard_output", "convergence_electronic"],
-                        "applicationName": "espresso",
-                        "executableName": "pw.x",
-                        "name": "pw_scf",
-                        "executable": {
-                            "isDefault": True,
-                            "hasAdvancedComputeOptions": True,
-                            "postProcessors": ["remove_non_zero_weight_kpoints"],
-                            "monitors": ["standard_output", "convergence_ionic", "convergence_electronic"],
-                            "results": [
-                                "atomic_forces",
-                                "band_gaps",
-                                "density_of_states",
-                                "fermi_energy",
-                                "pressure",
-                                "stress_tensor",
-                                "total_energy",
-                                "total_energy_contributions",
-                                "total_force",
-                                "final_structure",
-                                "magnetic_moments",
-                                "reaction_energy_barrier",
-                                "reaction_energy_profile",
-                                "potential_profile",
-                                "charge_density_profile",
-                            ],
-                            "name": "pw.x",
-                        },
-                    },
-                    "name": "pw_scf",
-                }
-            ],
-        }
-    ],
-    "units": [{"name": "Total energy", "type": "subworkflow", "head": True, "schemaVersion": "2022.8.16"}],
-    "properties": [
-        "total_energy",
-        "total_energy_contributions",
-        "pressure",
-        "fermi_energy",
-        "atomic_forces",
-        "total_force",
-        "stress_tensor",
-    ],
-}
+# In[4]:
 
 
-# In[ ]:
+# user modifiable part
+script = r"""#!/bin/bash
+
+# switch to the job working directory
+cd $PBS_O_WORKDIR
+
+# ----------------------- QUANTUM ESPRESSO INPUT FILE ------------------------ #
+cat > pw.in << EOF
+&CONTROL
+  calculation = 'scf',
+  prefix = 'silicon',
+  outdir = './tmp/'
+  pseudo_dir = './'
+/
+
+&SYSTEM
+  ibrav =  2,
+  celldm(1) = 10.26,
+  nat =  2,
+  ntyp = 1,
+  ecutwfc = 30
+  nbnd = 8
+/
+
+&ELECTRONS
+  conv_thr = 1e-8,
+  mixing_beta = 0.6
+/
+
+ATOMIC_SPECIES
+  Si 28.086 Si.pz-vbc.UPF
+
+ATOMIC_POSITIONS (alat)
+  Si 0.0 0.0 0.0
+  Si 0.25 0.25 0.25
+
+K_POINTS (automatic)
+  7 7 7 0 0 0
+EOF
+# -------------------------- PSEUDO POTENTIAL FILE --------------------------- #
+# provide a downloadable link for the pseudo potential file
+wget https://raw.githubusercontent.com/pranabdas/espresso/main/src/pseudos/Si.pz-vbc.UPF
+# --------------------------------- RUN JOB ---------------------------------- #
+# load required module
+module add espresso/63-i-174-impi-044
+
+mpirun -np $PBS_NP pw.x -in pw.in | tee pw.out
+"""
+
+
+# In[5]:
+
+
+# populate workflow from a template
+import json
+
+with open("../assets/bash_workflow_template.json", "r") as f:
+    WORKFLOW_BODY = json.load(f)
+
+WORKFLOW_BODY["subworkflows"][0]["units"][0]["input"][0]["content"] = script
+
+
+# In[6]:
 
 
 # create workflow
 WORKFLOW_RESP = workflow_endpoints.create(WORKFLOW_BODY)
 
 
-# #### Get default material from the user account
+# ### Create and submit job
+# 
+# Here user can change the `queue`, number of `nodes` and number of processors `ppn` per node.
 
-# In[ ]:
-
-
-default_material = material_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID})[0]
-material_id = default_material["_id"]
-
-
-# In[ ]:
+# In[7]:
 
 
 # job creation payload
@@ -282,14 +161,11 @@ JOB_BODY = {
         "cluster": {"fqdn": "master-production-20160630-cluster-001.exabyte.io"},
     },
     "_project": {"slug": "pranab-default"},
-    "workflow": WORKFLOW_RESP,
-    "_material": {"_id": material_id},
+    "workflow": WORKFLOW_RESP["_id"],
 }
 
 
-# #### Create and submit job
-
-# In[ ]:
+# In[8]:
 
 
 # create job
@@ -299,13 +175,24 @@ JOB_RESP = job_endpoints.create(JOB_BODY)
 # In[ ]:
 
 
-# submit job
+# TODO: NOT SUPPORTED YET, upload pseudo potential file
+# with open('../assets/Si.pz-vbc.UPF', 'r') as f:
+#     PP_FILE = f.read()
+#     data = json.dumps({"files": PP_FILE})
+#     FILE_RESP=job_endpoints.insert_output_files(JOB_RESP["_id"], data)
+
+
+# In[9]:
+
+
+# submit job to run
 job_endpoints.submit(JOB_RESP["_id"])
 
 
 # In[ ]:
 
 
+# monitor job and wait for it to be finished
 wait_for_jobs_to_finish(job_endpoints, [JOB_RESP["_id"]])
 
 
@@ -316,7 +203,7 @@ wait_for_jobs_to_finish(job_endpoints, [JOB_RESP["_id"]])
 
 files = job_endpoints.list_files(JOB_RESP["_id"])
 for file in files:
-    if file["name"] == "pw_scf.out":
+    if file["name"] == "pw.out":
         output_file_metadata = file
 
 import urllib
@@ -326,7 +213,7 @@ output_file_bytes = server_response.read()
 output_file = output_file_bytes.decode(encoding="UTF-8")
 
 
-# In[ ]:
+# In[12]:
 
 
 energy = []
@@ -336,7 +223,7 @@ for line in output_file.split("\n"):
         energy.append(float(line.split("=")[1].rstrip("Ry")))
 
 
-# In[ ]:
+# In[13]:
 
 
 # plot energy with iteration step

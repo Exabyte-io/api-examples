@@ -45,6 +45,7 @@ nav:
   - Assets:                                                 examples/assets/README.md
   - Get Authentication Params:                              examples/system/get_authentication_params.ipynb
   - Get Workflows:                                          examples/workflow/get_workflows.ipynb
+  - Quantum Espresso Workflow and Job:                      examples/workflow/qe_scf_calculation.ipynb
   - Get Materials by Formula:                               examples/material/get_materials_by_formula.ipynb
   - Create Material:                                        examples/material/create_material.ipynb
   - Import Materials from Materials Project:                examples/material/import_materials_from_materialsproject.ipynb

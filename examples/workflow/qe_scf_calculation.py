@@ -5,6 +5,8 @@
 # <img alt="Open in Google Colab" src="https://user-images.githubusercontent.com/20477508/128780728-491fea90-9b23-495f-a091-11681150db37.jpeg" width="150" border="0">
 # </a>
 
+# 
+
 # # Quantum Espresso SCF calculation via API
 # 
 
@@ -50,7 +52,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 
 from utils.settings import ENDPOINT_ARGS, ACCOUNT_ID
-from utils.generic import display_JSON, wait_for_jobs_to_finish
+from utils.generic import wait_for_jobs_to_finish
 
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
@@ -146,7 +148,7 @@ WORKFLOW_RESP = workflow_endpoints.create(WORKFLOW_BODY)
 
 # ### Create and submit job
 # 
-# Here user can change the `queue`, number of `nodes` and number of processors `ppn` per node.
+# Below user can specify the project name and compute parameters such as `queue`, number of `nodes` and number of processors `ppn` per node. Find more about compute parameters [here](https://docs.mat3ra.com/infrastructure/compute/parameters/).
 
 # In[7]:
 
@@ -155,7 +157,7 @@ WORKFLOW_RESP = workflow_endpoints.create(WORKFLOW_BODY)
 JOB_BODY = {
     "name": "SCF Calculation",
     "compute": {
-        "ppn": 2,
+        "ppn": 4,
         "nodes": 1,
         "queue": "OR",
         "cluster": {"fqdn": "master-production-20160630-cluster-001.exabyte.io"},
@@ -193,7 +195,7 @@ job_endpoints.submit(JOB_RESP["_id"])
 
 
 # monitor job and wait for it to be finished
-wait_for_jobs_to_finish(job_endpoints, [JOB_RESP["_id"]])
+wait_for_jobs_to_finish(job_endpoints, [JOB_RESP["_id"]], 30)
 
 
 # #### Get output file, perform post processing, and make plots

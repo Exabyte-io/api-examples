@@ -1,6 +1,6 @@
 // Taken from:
 // https://github.com/caldwell/renderjson/blob/c389dfd47aad2a7b102cb9a0b5d8402dfaa5090f/README.md
-// 
+//
 // Usage
 // -----
 // The module exports one entry point, the `renderjson()` function. It takes in

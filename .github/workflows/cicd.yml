@@ -99,8 +99,8 @@ jobs:
         with:
           folder: site
           bucket: docs.mat3ra.com/rest-api/api-examples/rendered-notebooks
-          bucket-region: ${{ secrets.S3_LOCATION }}
-          dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          bucket-region: us-west-2
+          dist-id: ${{ secrets.DOCS_MAT3RA_COM_CLOUDFRONT_DISTRIBUTION_ID }}
           invalidation: /*
           no-cache: true
           private: true

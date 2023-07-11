@@ -72,7 +72,12 @@ job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
 # 
 # Below we provide our Quantum Espresso input file via a bash script.
 # 
-# Note that we provide the pseudo potential file via a downloadable url. We are working on suppporting uploading pseudo potential file from local file system, but it is currently not available.
+# Note that we provide the pseudo potential file via a downloadable url. We are working on supporting direct uploading of pseudo potential file from local file system, but it is currently not available. Below are some of the sources to find pseudo potentials:
+# 
+# - [Pseudopotentials library at Quantum Espresso](https://www.quantum-espresso.org/pseudopotentials/)
+# - [Standard solid-state pseudopotentials (SSSP) library](https://www.materialscloud.org/discover/sssp/table/efficiency)
+# - [Pseudo dojo library](http://www.pseudo-dojo.org)
+# - [GBRV pseudo potential library](https://www.physics.rutgers.edu/gbrv/)
 
 # In[ ]:
 

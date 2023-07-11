@@ -28,7 +28,7 @@ localhost = [
 ]
 dev = [
   "pre-commit>=3.3.3",
-  "pip-compile>=6.13.0",
+  "pip-tools>=6.13.0",
 ]
 docs = [
   "mkdocs>=1.4.3",
@@ -51,7 +51,10 @@ notebook-path = "utils.notebook:print_notebook_path"
 include = ["utils"]
 
 [tool.setuptools.package-data]
-utils = ["settings.json"]
+utils = [
+  "settings.json",
+  "web/renderjson.*",
+]
 
 
 [tool.black]

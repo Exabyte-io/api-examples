@@ -39,6 +39,7 @@ jobs:
       MATERIALS_PROJECT_API_KEY: ${{ secrets.MATERIALS_PROJECT_API_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DOCS_MAT3RA_COM_CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.DOCS_MAT3RA_COM_CLOUDFRONT_DISTRIBUTION_ID }}
     defaults:
       run:
         shell: bash -l {0}
@@ -100,7 +101,7 @@ jobs:
           folder: site
           bucket: docs.mat3ra.com/rest-api/api-examples/rendered-notebooks
           bucket-region: us-west-2
-          dist-id: ${{ secrets.DOCS_MAT3RA_COM_CLOUDFRONT_DISTRIBUTION_ID }}
+          dist-id: ${{ env.DOCS_MAT3RA_COM_CLOUDFRONT_DISTRIBUTION_ID }}
           invalidation: /*
           no-cache: true
           private: true

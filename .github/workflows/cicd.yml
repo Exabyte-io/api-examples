@@ -98,7 +98,7 @@ jobs:
         uses: Exabyte-io/action-s3-deploy@v3
         with:
           folder: site
-          bucket: docs.mat3ra.com/rest-api/api-examples
+          bucket: docs.mat3ra.com/rest-api/api-examples/rendered-notebooks
           bucket-region: ${{ secrets.S3_LOCATION }}
           dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
           invalidation: /*

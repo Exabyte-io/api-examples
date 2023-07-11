@@ -1846,32 +1846,17 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-06-00:50:33 |                1 |             0 |               0 |              0 |
+| 2023-07-11-00:42:16 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-06-00:50:44 |                1 |             0 |               0 |              0 |
+| 2023-07-11-00:42:26 |                0 |             1 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-06-00:50:54 |                1 |             0 |               0 |              0 |
-+---------------------+------------------+---------------+-----------------+----------------+
-+---------------------+------------------+---------------+-----------------+----------------+
-|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
-+=====================+==================+===============+=================+================+
-| 2023-07-06-00:51:04 |                1 |             0 |               0 |              0 |
-+---------------------+------------------+---------------+-----------------+----------------+
-+---------------------+------------------+---------------+-----------------+----------------+
-|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
-+=====================+==================+===============+=================+================+
-| 2023-07-06-00:51:14 |                0 |             1 |               0 |              0 |
-+---------------------+------------------+---------------+-----------------+----------------+
-+---------------------+------------------+---------------+-----------------+----------------+
-|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
-+=====================+==================+===============+=================+================+
-| 2023-07-06-00:51:25 |                0 |             0 |               1 |              0 |
+| 2023-07-11-00:42:36 |                0 |             0 |               1 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -1957,16 +1942,16 @@ for path in paths:
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/.exabyte/91743.master-production-20160630-cluster-001.exabyte.io
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/.exabyte/checkpoint
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/.exabyte/job.rms
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/.exabyte/machines-91743.master-production-20160630-cluster-001.exabyte.io
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/.exabyte/rupy.log
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/5grn2fWDKBi6HodKv.json
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/job.log
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/pseudo/si_pbe_gbrv_1.0.upf
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/pw_scf.in
-/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/pw_scf.out
+<pre>/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/.exabyte/92078.master-production-20160630-cluster-001.exabyte.io
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/.exabyte/checkpoint
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/.exabyte/job.rms
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/.exabyte/machines-92078.master-production-20160630-cluster-001.exabyte.io
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/.exabyte/rupy.log
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/XuDASGhESSQoSCnh4.json
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/job.log
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/pseudo/si_pbe_gbrv_1.0.upf
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/pw_scf.in
+/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/pw_scf.out
 </pre>
 </div>
 </div>
@@ -2047,19 +2032,237 @@ display_JSON(output_file_metadata)</div>
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
 
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>{
-    &#34;key&#34;: &#34;/cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/pw_scf.out&#34;,
-    &#34;size&#34;: 11922,
-    &#34;bucket&#34;: &#34;production-20160630-cluster-001&#34;,
-    &#34;region&#34;: &#34;us-east-1&#34;,
-    &#34;provider&#34;: &#34;aws&#34;,
-    &#34;lastModified&#34;: 1688604680,
-    &#34;name&#34;: &#34;pw_scf.out&#34;,
-    &#34;signedUrl&#34;: &#34;https://production-20160630-cluster-001.s3.amazonaws.com//cluster-001-home/demo/data/demo/test-job-output-si-106-5grn2fWDKBi6HodKv/pw_scf.out?AWSAccessKeyId=AKIAJVUKZ43HBUUYOVFQ&amp;Expires=1688605587&amp;Signature=IObjautLAUsL4AXHIQpO8rDJ004%3D&#34;
-}
-</pre>
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
+<style>.renderjson a              { text-decoration: none; }
+.renderjson .disclosure    { color: grey; font-size: 150%; }
+.renderjson .syntax        { color: grey; }
+.renderjson .string        { color: #fe46a5; }
+.renderjson .number        { color: #0f9b8e; }
+.renderjson .boolean       { color: black; }
+.renderjson .key           { color: #2684ff; }
+.renderjson .keyword       { color: gray; }
+.renderjson .object.syntax { color: gray; }
+.renderjson .array.syntax  { color: gray; }
+</style><div id="1f360f6d-98d9-45bc-b2b1-b6a83ba2b152"></div>
 </div>
+
+</div>
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
+<script>// Taken from:
+// https://github.com/caldwell/renderjson/blob/c389dfd47aad2a7b102cb9a0b5d8402dfaa5090f/README.md
+//
+// Usage
+// -----
+// The module exports one entry point, the `renderjson()` function. It takes in
+// the JSON you want to render as a single argument and returns an HTML
+// element.
+//
+// Options
+// -------
+// renderjson.set_icons("+", "-")
+//   This Allows you to override the disclosure icons.
+//
+// renderjson.set_show_to_level(level)
+//   Pass the number of levels to expand when rendering. The default is 0, which
+//   starts with everything collapsed. As a special case, if level is the string
+//   "all" then it will start with everything expanded.
+//
+// renderjson.set_max_string_length(length)
+//   Strings will be truncated and made expandable if they are longer than
+//   `length`. As a special case, if `length` is the string "none" then
+//   there will be no truncation. The default is "none".
+//
+// renderjson.set_sort_objects(sort_bool)
+//   Sort objects by key (default: false)
+//
+// renderjson.set_replacer(replacer_function)
+//   Equivalent of JSON.stringify() `replacer` argument when it's a function
+//
+// renderjson.set_collapse_msg(collapse_function)
+//   Accepts a function (len:number):string => {} where len is the length of the
+//   object collapsed.  Function should return the message displayed when a
+//   object is collapsed.  The default message is "X items"
+//
+// renderjson.set_property_list(property_list)
+//   Equivalent of JSON.stringify() `replacer` argument when it's an array
+//
+// Theming
+// -------
+// The HTML output uses a number of classes so that you can theme it the way
+// you'd like:
+//     .disclosure    ("⊕", "⊖")
+//     .syntax        (",", ":", "{", "}", "[", "]")
+//     .string        (includes quotes)
+//     .number
+//     .boolean
+//     .key           (object key)
+//     .keyword       ("null", "undefined")
+//     .object.syntax ("{", "}")
+//     .array.syntax  ("[", "]")
+
+var module, window, define, renderjson=(function() {
+    var themetext = function(/* [class, text]+ */) {
+        var spans = [];
+        while (arguments.length)
+            spans.push(append(span(Array.prototype.shift.call(arguments)),
+                              text(Array.prototype.shift.call(arguments))));
+        return spans;
+    };
+    var append = function(/* el, ... */) {
+        var el = Array.prototype.shift.call(arguments);
+        for (var a=0; a<arguments.length; a++)
+            if (arguments[a].constructor == Array)
+                append.apply(this, [el].concat(arguments[a]));
+            else
+                el.appendChild(arguments[a]);
+        return el;
+    };
+    var prepend = function(el, child) {
+        el.insertBefore(child, el.firstChild);
+        return el;
+    }
+    var isempty = function(obj, pl) { var keys = pl || Object.keys(obj);
+                                      for (var i in keys) if (Object.hasOwnProperty.call(obj, keys[i])) return false;
+                                      return true; }
+    var text = function(txt) { return document.createTextNode(txt) };
+    var div = function() { return document.createElement("div") };
+    var span = function(classname) { var s = document.createElement("span");
+                                     if (classname) s.className = classname;
+                                     return s; };
+    var A = function A(txt, classname, callback) { var a = document.createElement("a");
+                                                   if (classname) a.className = classname;
+                                                   a.appendChild(text(txt));
+                                                   a.href = '#';
+                                                   a.onclick = function(e) { callback(); if (e) e.stopPropagation(); return false; };
+                                                   return a; };
+
+    function _renderjson(json, indent, dont_indent, show_level, options) {
+        var my_indent = dont_indent ? "" : indent;
+
+        var disclosure = function(open, placeholder, close, type, builder) {
+            var content;
+            var empty = span(type);
+            var show = function() { if (!content) append(empty.parentNode,
+                                                         content = prepend(builder(),
+                                                                           A(options.hide, "disclosure",
+                                                                             function() { content.style.display="none";
+                                                                                          empty.style.display="inline"; } )));
+                                    content.style.display="inline";
+                                    empty.style.display="none"; };
+            append(empty,
+                   A(options.show, "disclosure", show),
+                   themetext(type+ " syntax", open),
+                   A(placeholder, null, show),
+                   themetext(type+ " syntax", close));
+
+            var el = append(span(), text(my_indent.slice(0,-1)), empty);
+            if (show_level > 0 && type != "string")
+                show();
+            return el;
+        };
+
+        if (json === null) return themetext(null, my_indent, "keyword", "null");
+        if (json === void 0) return themetext(null, my_indent, "keyword", "undefined");
+
+        if (typeof(json) == "string" && json.length > options.max_string_length)
+            return disclosure('"', json.substr(0,options.max_string_length)+" ...", '"', "string", function () {
+                return append(span("string"), themetext(null, my_indent, "string", JSON.stringify(json)));
+            });
+
+        if (typeof(json) != "object" || [Number, String, Boolean, Date].indexOf(json.constructor) >= 0) // Strings, numbers and bools
+            return themetext(null, my_indent, typeof(json), JSON.stringify(json));
+
+        if (json.constructor == Array) {
+            if (json.length == 0) return themetext(null, my_indent, "array syntax", "[]");
+
+            return disclosure("[", options.collapse_msg(json.length), "]", "array", function () {
+                var as = append(span("array"), themetext("array syntax", "[", null, "\n"));
+                for (var i=0; i<json.length; i++)
+                    append(as,
+                           _renderjson(options.replacer.call(json, i, json[i]), indent+"    ", false, show_level-1, options),
+                           i != json.length-1 ? themetext("syntax", ",") : [],
+                           text("\n"));
+                append(as, themetext(null, indent, "array syntax", "]"));
+                return as;
+            });
+        }
+
+        // object
+        if (isempty(json, options.property_list))
+            return themetext(null, my_indent, "object syntax", "{}");
+
+        return disclosure("{", options.collapse_msg(Object.keys(json).length), "}", "object", function () {
+            var os = append(span("object"), themetext("object syntax", "{", null, "\n"));
+            for (var k in json) var last = k;
+            var keys = options.property_list || Object.keys(json);
+            if (options.sort_objects)
+                keys = keys.sort();
+            for (var i in keys) {
+                var k = keys[i];
+                if (!(k in json)) continue;
+                append(os, themetext(null, indent+"    ", "key", '"'+k+'"', "object syntax", ': '),
+                       _renderjson(options.replacer.call(json, k, json[k]), indent+"    ", true, show_level-1, options),
+                       k != last ? themetext("syntax", ",") : [],
+                       text("\n"));
+            }
+            append(os, themetext(null, indent, "object syntax", "}"));
+            return os;
+        });
+    }
+
+    var renderjson = function renderjson(json)
+    {
+        var options = new Object(renderjson.options);
+        options.replacer = typeof(options.replacer) == "function" ? options.replacer : function(k,v) { return v; };
+        var pre = append(document.createElement("pre"), _renderjson(json, "", false, options.show_to_level, options));
+        pre.className = "renderjson";
+        return pre;
+    }
+    renderjson.set_icons = function(show, hide) { renderjson.options.show = show;
+                                                  renderjson.options.hide = hide;
+                                                  return renderjson; };
+    renderjson.set_show_to_level = function(level) { renderjson.options.show_to_level = typeof level == "string" &&
+                                                                                        level.toLowerCase() === "all" ? Number.MAX_VALUE
+                                                                                                                      : level;
+                                                     return renderjson; };
+    renderjson.set_max_string_length = function(length) { renderjson.options.max_string_length = typeof length == "string" &&
+                                                                                                 length.toLowerCase() === "none" ? Number.MAX_VALUE
+                                                                                                                                 : length;
+                                                          return renderjson; };
+    renderjson.set_sort_objects = function(sort_bool) { renderjson.options.sort_objects = sort_bool;
+                                                        return renderjson; };
+    renderjson.set_replacer = function(replacer) { renderjson.options.replacer = replacer;
+                                                   return renderjson; };
+    renderjson.set_collapse_msg = function(collapse_msg) { renderjson.options.collapse_msg = collapse_msg;
+                                                           return renderjson; };
+    renderjson.set_property_list = function(prop_list) { renderjson.options.property_list = prop_list;
+                                                         return renderjson; };
+    // Backwards compatiblity. Use set_show_to_level() for new code.
+    renderjson.set_show_by_default = function(show) { renderjson.options.show_to_level = show ? Number.MAX_VALUE : 0;
+                                                      return renderjson; };
+    renderjson.options = {};
+    renderjson.set_icons('⊕', '⊖');
+    renderjson.set_show_by_default(false);
+    renderjson.set_sort_objects(false);
+    renderjson.set_max_string_length("none");
+    renderjson.set_replacer(void 0);
+    renderjson.set_property_list(void 0);
+    renderjson.set_collapse_msg(function(len) { return len + " item" + (len==1 ? "" : "s") })
+    return renderjson;
+})();
+
+if (define) define({renderjson:renderjson})
+else (module||{}).exports = (window||{}).renderjson = renderjson;
+ renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("1f360f6d-98d9-45bc-b2b1-b6a83ba2b152").appendChild(renderjson({"key": "/cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/pw_scf.out", "size": 11922, "bucket": "production-20160630-cluster-001", "region": "us-east-1", "provider": "aws", "lastModified": 1689036152, "name": "pw_scf.out", "signedUrl": "https://production-20160630-cluster-001.s3.amazonaws.com//cluster-001-home/demo/data/demo/test-job-output-si-155-XuDASGhESSQoSCnh4/pw_scf.out?AWSAccessKeyId=AKIAJVUKZ43HBUUYOVFQ&Expires=1689037057&Signature=Z9sWI6xgMsxEiZxaVKW9%2Bb1XYBI%3D"}))</script>
+</div>
+
 </div>
 
 </div>
@@ -2184,32 +2387,32 @@ for line in lines[-90:]:
 
      Writing output data file __prefix__.save
  
-     init_run     :      0.30s CPU      0.34s WALL (       1 calls)
-     electrons    :      1.58s CPU      1.85s WALL (       1 calls)
-     forces       :      0.08s CPU      0.11s WALL (       1 calls)
-     stress       :      0.29s CPU      0.36s WALL (       1 calls)
+     init_run     :      0.32s CPU      0.36s WALL (       1 calls)
+     electrons    :      1.60s CPU      1.87s WALL (       1 calls)
+     forces       :      0.09s CPU      0.10s WALL (       1 calls)
+     stress       :      0.30s CPU      0.37s WALL (       1 calls)
 
      Called by init_run:
-     wfcinit      :      0.05s CPU      0.05s WALL (       1 calls)
+     wfcinit      :      0.07s CPU      0.07s WALL (       1 calls)
      potinit      :      0.03s CPU      0.04s WALL (       1 calls)
 
      Called by electrons:
-     c_bands      :      0.87s CPU      0.88s WALL (       6 calls)
+     c_bands      :      0.89s CPU      0.90s WALL (       6 calls)
      sum_band     :      0.39s CPU      0.52s WALL (       6 calls)
-     v_of_rho     :      0.16s CPU      0.16s WALL (       7 calls)
-     newd         :      0.18s CPU      0.33s WALL (       7 calls)
+     v_of_rho     :      0.16s CPU      0.17s WALL (       7 calls)
+     newd         :      0.18s CPU      0.32s WALL (       7 calls)
      mix_rho      :      0.01s CPU      0.02s WALL (       6 calls)
 
      Called by c_bands:
      init_us_2    :      0.02s CPU      0.02s WALL (      90 calls)
-     cegterg      :      0.76s CPU      0.78s WALL (      36 calls)
+     cegterg      :      0.79s CPU      0.79s WALL (      36 calls)
 
      Called by sum_band:
      sum_band:bec :      0.00s CPU      0.00s WALL (      36 calls)
      addusdens    :      0.21s CPU      0.34s WALL (       6 calls)
 
      Called by *egterg:
-     h_psi        :      0.75s CPU      0.76s WALL (     127 calls)
+     h_psi        :      0.79s CPU      0.79s WALL (     127 calls)
      s_psi        :      0.01s CPU      0.01s WALL (     127 calls)
      g_psi        :      0.00s CPU      0.00s WALL (      85 calls)
      cdiaghg      :      0.01s CPU      0.01s WALL (     121 calls)
@@ -2221,16 +2424,16 @@ for line in lines[-90:]:
      calbec       :      0.02s CPU      0.02s WALL (     193 calls)
      fft          :      0.13s CPU      0.13s WALL (     133 calls)
      ffts         :      0.01s CPU      0.01s WALL (      13 calls)
-     fftw         :      0.78s CPU      0.79s WALL (    1912 calls)
+     fftw         :      0.81s CPU      0.82s WALL (    1912 calls)
      interpolate  :      0.02s CPU      0.02s WALL (      13 calls)
  
      Parallel routines
      fft_scatter  :      0.05s CPU      0.05s WALL (    2058 calls)
  
-     PWSCF        :     2.31s CPU         2.74s WALL
+     PWSCF        :     2.36s CPU         2.81s WALL
 
  
-   This run was terminated on:   0:51:13   6Jul2023            
+   This run was terminated on:   0:42:26  11Jul2023            
 
 =------------------------------------------------------------------------------=
    JOB DONE.

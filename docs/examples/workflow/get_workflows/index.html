@@ -1828,345 +1828,237 @@ OPTIONS = {"limit": 2}</div>
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
 
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>[
-    {
-        &#34;_id&#34;: &#34;JWzsXBvgHyBkeMa5H&#34;,
-        &#34;name&#34;: &#34;Total Energy&#34;,
-        &#34;subworkflows&#34;: [
-            {
-                &#34;_id&#34;: &#34;974fd2cab189836c26c7d9f4&#34;,
-                &#34;name&#34;: &#34;Total Energy&#34;,
-                &#34;application&#34;: {
-                    &#34;_id&#34;: &#34;XZBfXvMndSsgGPnQB&#34;,
-                    &#34;name&#34;: &#34;vasp&#34;,
-                    &#34;version&#34;: &#34;5.3.5&#34;,
-                    &#34;build&#34;: &#34;Default&#34;,
-                    &#34;isDefault&#34;: true,
-                    &#34;summary&#34;: &#34;Vienna Ab-initio Simulation Package&#34;,
-                    &#34;updatedAt&#34;: &#34;2019-07-21T20:29:48.526Z&#34;,
-                    &#34;shortName&#34;: &#34;vasp&#34;
-                },
-                &#34;properties&#34;: [
-                    null
-                ],
-                &#34;model&#34;: {
-                    &#34;type&#34;: &#34;dft&#34;,
-                    &#34;subtype&#34;: &#34;gga&#34;,
-                    &#34;method&#34;: {
-                        &#34;type&#34;: &#34;pseudopotential&#34;,
-                        &#34;subtype&#34;: &#34;paw&#34;,
-                        &#34;data&#34;: {}
-                    },
-                    &#34;functional&#34;: {
-                        &#34;slug&#34;: &#34;pbe&#34;
-                    },
-                    &#34;refiners&#34;: [],
-                    &#34;modifiers&#34;: []
-                },
-                &#34;units&#34;: [
-                    {
-                        &#34;type&#34;: &#34;execution&#34;,
-                        &#34;name&#34;: &#34;vasp&#34;,
-                        &#34;head&#34;: true,
-                        &#34;results&#34;: [
-                            {
-                                &#34;name&#34;: &#34;total_energy&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;total_energy_contributions&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;pressure&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;fermi_energy&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;atomic_forces&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;total_force&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;stress_tensor&#34;
-                            }
-                        ],
-                        &#34;monitors&#34;: [
-                            {
-                                &#34;name&#34;: &#34;standard_output&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;convergence_electronic&#34;
-                            }
-                        ],
-                        &#34;flowchartId&#34;: &#34;11029ef0b4e47c8e73de93e4&#34;,
-                        &#34;preProcessors&#34;: [],
-                        &#34;postProcessors&#34;: [],
-                        &#34;application&#34;: {
-                            &#34;_id&#34;: &#34;XZBfXvMndSsgGPnQB&#34;,
-                            &#34;name&#34;: &#34;vasp&#34;,
-                            &#34;version&#34;: &#34;5.3.5&#34;,
-                            &#34;build&#34;: &#34;Default&#34;,
-                            &#34;isDefault&#34;: true,
-                            &#34;summary&#34;: &#34;Vienna Ab-initio Simulation Package&#34;,
-                            &#34;updatedAt&#34;: &#34;2019-07-21T20:29:48.526Z&#34;,
-                            &#34;shortName&#34;: &#34;vasp&#34;
-                        },
-                        &#34;executable&#34;: {
-                            &#34;_id&#34;: &#34;Pawnn8Yihhw7MRXZK&#34;,
-                            &#34;results&#34;: [
-                                &#34;atomic_forces&#34;,
-                                &#34;band_gaps&#34;,
-                                &#34;band_structure&#34;,
-                                &#34;density_of_states&#34;,
-                                &#34;fermi_energy&#34;,
-                                &#34;pressure&#34;,
-                                &#34;stress_tensor&#34;,
-                                &#34;total_energy&#34;,
-                                &#34;total_energy_contributions&#34;,
-                                &#34;total_force&#34;,
-                                &#34;zero_point_energy&#34;,
-                                &#34;final_structure&#34;,
-                                &#34;magnetic_moments&#34;,
-                                &#34;reaction_energy_barrier&#34;,
-                                &#34;reaction_energy_profile&#34;,
-                                &#34;potential_profile&#34;,
-                                &#34;charge_density_profile&#34;
-                            ],
-                            &#34;postProcessors&#34;: [
-                                &#34;error_handler&#34;,
-                                &#34;prepare_restart&#34;,
-                                &#34;remove_non_zero_weight_kpoints&#34;
-                            ],
-                            &#34;monitors&#34;: [
-                                &#34;standard_output&#34;,
-                                &#34;convergence_ionic&#34;,
-                                &#34;convergence_electronic&#34;
-                            ],
-                            &#34;name&#34;: &#34;vasp&#34;,
-                            &#34;applicationId&#34;: [
-                                &#34;XZBfXvMndSsgGPnQB&#34;,
-                                &#34;tfmjXaGz83Wd6jrqd&#34;,
-                                &#34;JMwhTtwAhuP2nAa4u&#34;,
-                                &#34;fMAtP4Bfd2Xr665hn&#34;,
-                                &#34;rkdvSx8zuKwbqA8GE&#34;,
-                                &#34;6vH6swqd5iH9mCzDn&#34;,
-                                &#34;MJDcEWR37gPRhFusj&#34;,
-                                &#34;vKAToK6DZcM9GCNHZ&#34;,
-                                &#34;Y3sfHbv2GGdumRvZM&#34;
-                            ],
-                            &#34;createdAt&#34;: &#34;2018-03-14T18:40:08.738Z&#34;,
-                            &#34;updatedAt&#34;: &#34;2019-07-21T20:29:50.314Z&#34;,
-                            &#34;schemaVersion&#34;: &#34;0.2.0&#34;,
-                            &#34;isDefault&#34;: false,
-                            &#34;tags&#34;: [],
-                            &#34;inSet&#34;: []
-                        },
-                        &#34;flavor&#34;: {
-                            &#34;_id&#34;: &#34;9FooFphx4uDHvgNc3&#34;,
-                            &#34;name&#34;: &#34;vasp&#34;,
-                            &#34;executableId&#34;: &#34;Pawnn8Yihhw7MRXZK&#34;,
-                            &#34;isDefault&#34;: true,
-                            &#34;input&#34;: [
-                                {
-                                    &#34;name&#34;: &#34;INCAR&#34;,
-                                    &#34;templateId&#34;: &#34;s2GDJhrrDTsdiDFnn&#34;
-                                },
-                                {
-                                    &#34;name&#34;: &#34;KPOINTS&#34;,
-                                    &#34;templateId&#34;: &#34;9pcsLGkorwi9mASG2&#34;
-                                },
-                                {
-                                    &#34;name&#34;: &#34;POSCAR&#34;,
-                                    &#34;templateId&#34;: &#34;uZCuLHKmh4iYmrfsz&#34;
-                                }
-                            ],
-                            &#34;results&#34;: [
-                                &#34;total_energy&#34;,
-                                &#34;total_energy_contributions&#34;,
-                                &#34;pressure&#34;,
-                                &#34;fermi_energy&#34;,
-                                &#34;atomic_forces&#34;,
-                                &#34;total_force&#34;,
-                                &#34;stress_tensor&#34;
-                            ],
-                            &#34;monitors&#34;: [
-                                &#34;standard_output&#34;,
-                                &#34;convergence_electronic&#34;
-                            ],
-                            &#34;schemaVersion&#34;: &#34;0.2.0&#34;,
-                            &#34;tags&#34;: [],
-                            &#34;updatedAt&#34;: &#34;2019-07-21T20:29:50.329Z&#34;,
-                            &#34;inSet&#34;: []
-                        },
-                        &#34;status&#34;: &#34;idle&#34;,
-                        &#34;statusTrack&#34;: [],
-                        &#34;input&#34;: [
-                            {
-                                &#34;_id&#34;: &#34;s2GDJhrrDTsdiDFnn&#34;,
-                                &#34;applicationName&#34;: &#34;vasp&#34;,
-                                &#34;executableName&#34;: &#34;vasp&#34;,
-                                &#34;name&#34;: &#34;INCAR&#34;,
-                                &#34;content&#34;: &#34;ISMEAR = 0\nSIGMA  = 0.05\nLORBIT = 11&#34;,
-                                &#34;contextProviders&#34;: [
-                                    {
-                                        &#34;name&#34;: &#34;VASPInputDataManager&#34;
-                                    }
-                                ],
-                                &#34;updatedAt&#34;: &#34;2019-07-21T20:29:47.078Z&#34;,
-                                &#34;rendered&#34;: &#34;ISMEAR = 0\nSIGMA  = 0.05\nLORBIT = 11&#34;
-                            },
-                            {
-                                &#34;_id&#34;: &#34;9pcsLGkorwi9mASG2&#34;,
-                                &#34;applicationName&#34;: &#34;vasp&#34;,
-                                &#34;executableName&#34;: &#34;vasp&#34;,
-                                &#34;name&#34;: &#34;KPOINTS&#34;,
-                                &#34;content&#34;: &#34;Automatic mesh\n0\nGamma\n  {% for d in kgrid.dimensions %}{{d}} {% endfor %}\n  {% for s in kgrid.shifts %}{{s}} {% endfor %}&#34;,
-                                &#34;contextProviders&#34;: [
-                                    {
-                                        &#34;name&#34;: &#34;KGridFormDataManager&#34;
-                                    },
-                                    {
-                                        &#34;name&#34;: &#34;VASPInputDataManager&#34;
-                                    }
-                                ],
-                                &#34;updatedAt&#34;: &#34;2019-07-21T20:29:47.112Z&#34;,
-                                &#34;rendered&#34;: &#34;Automatic mesh\n0\nGamma\n  10 10 10 \n  0 0 0 &#34;
-                            },
-                            {
-                                &#34;_id&#34;: &#34;uZCuLHKmh4iYmrfsz&#34;,
-                                &#34;applicationName&#34;: &#34;vasp&#34;,
-                                &#34;executableName&#34;: &#34;vasp&#34;,
-                                &#34;name&#34;: &#34;POSCAR&#34;,
-                                &#34;content&#34;: &#34;{{ input.POSCAR }}&#34;,
-                                &#34;contextProviders&#34;: [
-                                    {
-                                        &#34;name&#34;: &#34;VASPInputDataManager&#34;
-                                    }
-                                ],
-                                &#34;updatedAt&#34;: &#34;2019-07-21T20:29:47.126Z&#34;,
-                                &#34;rendered&#34;: &#34;Silicon FCC\n1.0\n   3.348920000\t   0.000000000\t   1.933500000\n   1.116307000\t   3.157392000\t   1.933500000\n   0.000000000\t   0.000000000\t   3.867000000\nSi\n2\ndirect\n   0.000000000    0.000000000    0.000000000  Si\n   0.250000000    0.250000000    0.250000000  Si&#34;
-                            }
-                        ]
-                    }
-                ]
-            }
-        ],
-        &#34;units&#34;: [
-            {
-                &#34;type&#34;: &#34;subworkflow&#34;,
-                &#34;_id&#34;: &#34;974fd2cab189836c26c7d9f4&#34;,
-                &#34;name&#34;: &#34;Total Energy&#34;,
-                &#34;status&#34;: &#34;idle&#34;,
-                &#34;statusTrack&#34;: [],
-                &#34;flowchartId&#34;: &#34;3e6a581eecf2868f3f75d300&#34;,
-                &#34;results&#34;: [],
-                &#34;monitors&#34;: [],
-                &#34;preProcessors&#34;: [],
-                &#34;postProcessors&#34;: [],
-                &#34;head&#34;: true
-            }
-        ],
-        &#34;properties&#34;: [
-            &#34;total_energy&#34;,
-            &#34;total_energy_contributions&#34;,
-            &#34;pressure&#34;,
-            &#34;fermi_energy&#34;,
-            &#34;atomic_forces&#34;,
-            &#34;total_force&#34;,
-            &#34;stress_tensor&#34;
-        ],
-        &#34;access&#34;: {
-            &#34;all&#34;: {
-                &#34;roles&#34;: [
-                    &#34;read&#34;
-                ]
-            }
-        },
-        &#34;isDefault&#34;: false,
-        &#34;owner&#34;: {
-            &#34;_id&#34;: &#34;5b143a4ecd313f405b31412d&#34;,
-            &#34;slug&#34;: &#34;demo&#34;,
-            &#34;cls&#34;: &#34;Account&#34;
-        },
-        &#34;exabyteId&#34;: &#34;SnGspffD7nPsBHJaQ&#34;,
-        &#34;createdAt&#34;: &#34;2017-11-04T06:35:12.431Z&#34;,
-        &#34;updatedAt&#34;: &#34;2022-08-18T20:14:18.138Z&#34;,
-        &#34;hash&#34;: &#34;1b51b3a0940fe6824b570561af1061a6&#34;,
-        &#34;history&#34;: [
-            {
-                &#34;id&#34;: &#34;vaRcmZnCdAyZE9Qaf&#34;,
-                &#34;revision&#34;: 0
-            },
-            {
-                &#34;id&#34;: &#34;M7Tt8j2jRZvamCMHM&#34;,
-                &#34;revision&#34;: 1
-            },
-            {
-                &#34;id&#34;: &#34;XZuayshsBghA5ZTX8&#34;,
-                &#34;revision&#34;: 2
-            },
-            {
-                &#34;id&#34;: &#34;rJSkigHypTyN7Tzp7&#34;,
-                &#34;revision&#34;: 3
-            },
-            {
-                &#34;id&#34;: &#34;XAsn2GEnPxvL9aD79&#34;,
-                &#34;revision&#34;: 4
-            },
-            {
-                &#34;id&#34;: &#34;gkJmJ9P4ZAN2SGd6c&#34;,
-                &#34;revision&#34;: 5
-            },
-            {
-                &#34;id&#34;: &#34;bGZxN8fMMott7zStv&#34;,
-                &#34;revision&#34;: 6
-            },
-            {
-                &#34;id&#34;: &#34;HeECSbeuaXwrvEpTs&#34;,
-                &#34;revision&#34;: 7
-            },
-            {
-                &#34;id&#34;: &#34;bkifXeQwbzqqtGcDY&#34;,
-                &#34;revision&#34;: 8
-            },
-            {
-                &#34;id&#34;: &#34;hpsqpyskJM8ozGWXj&#34;,
-                &#34;revision&#34;: 9
-            },
-            {
-                &#34;id&#34;: &#34;gM5Sfn8ircKHNbTj8&#34;,
-                &#34;revision&#34;: 10
-            }
-        ],
-        &#34;isOutdated&#34;: true,
-        &#34;workflows&#34;: [],
-        &#34;schemaVersion&#34;: &#34;0.2.0&#34;,
-        &#34;tags&#34;: [],
-        &#34;creator&#34;: {
-            &#34;_id&#34;: &#34;W8NM4yBSgHN3ro5YC&#34;,
-            &#34;slug&#34;: &#34;exadmin&#34;,
-            &#34;cls&#34;: &#34;User&#34;
-        },
-        &#34;slug&#34;: &#34;&#34;,
-        &#34;inSet&#34;: [
-            {
-                &#34;_id&#34;: &#34;5b143a7bacd8211c4898a469&#34;,
-                &#34;cls&#34;: &#34;Team&#34;,
-                &#34;slug&#34;: &#34;owner&#34;
-            },
-            {
-                &#34;_id&#34;: &#34;5b143a7bacd8211c4898a46a&#34;,
-                &#34;cls&#34;: &#34;Team&#34;,
-                &#34;slug&#34;: &#34;admin&#34;
-            }
-        ],
-        &#34;updatedBy&#34;: &#34;0&#34;
-    }
-]
-</pre>
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
+<style>.renderjson a              { text-decoration: none; }
+.renderjson .disclosure    { color: grey; font-size: 150%; }
+.renderjson .syntax        { color: grey; }
+.renderjson .string        { color: #fe46a5; }
+.renderjson .number        { color: #0f9b8e; }
+.renderjson .boolean       { color: black; }
+.renderjson .key           { color: #2684ff; }
+.renderjson .keyword       { color: gray; }
+.renderjson .object.syntax { color: gray; }
+.renderjson .array.syntax  { color: gray; }
+</style><div id="4a5eaf4b-b03d-4fd5-88e2-50782e970680"></div>
 </div>
+
+</div>
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
+<script>// Taken from:
+// https://github.com/caldwell/renderjson/blob/c389dfd47aad2a7b102cb9a0b5d8402dfaa5090f/README.md
+//
+// Usage
+// -----
+// The module exports one entry point, the `renderjson()` function. It takes in
+// the JSON you want to render as a single argument and returns an HTML
+// element.
+//
+// Options
+// -------
+// renderjson.set_icons("+", "-")
+//   This Allows you to override the disclosure icons.
+//
+// renderjson.set_show_to_level(level)
+//   Pass the number of levels to expand when rendering. The default is 0, which
+//   starts with everything collapsed. As a special case, if level is the string
+//   "all" then it will start with everything expanded.
+//
+// renderjson.set_max_string_length(length)
+//   Strings will be truncated and made expandable if they are longer than
+//   `length`. As a special case, if `length` is the string "none" then
+//   there will be no truncation. The default is "none".
+//
+// renderjson.set_sort_objects(sort_bool)
+//   Sort objects by key (default: false)
+//
+// renderjson.set_replacer(replacer_function)
+//   Equivalent of JSON.stringify() `replacer` argument when it's a function
+//
+// renderjson.set_collapse_msg(collapse_function)
+//   Accepts a function (len:number):string => {} where len is the length of the
+//   object collapsed.  Function should return the message displayed when a
+//   object is collapsed.  The default message is "X items"
+//
+// renderjson.set_property_list(property_list)
+//   Equivalent of JSON.stringify() `replacer` argument when it's an array
+//
+// Theming
+// -------
+// The HTML output uses a number of classes so that you can theme it the way
+// you'd like:
+//     .disclosure    ("⊕", "⊖")
+//     .syntax        (",", ":", "{", "}", "[", "]")
+//     .string        (includes quotes)
+//     .number
+//     .boolean
+//     .key           (object key)
+//     .keyword       ("null", "undefined")
+//     .object.syntax ("{", "}")
+//     .array.syntax  ("[", "]")
+
+var module, window, define, renderjson=(function() {
+    var themetext = function(/* [class, text]+ */) {
+        var spans = [];
+        while (arguments.length)
+            spans.push(append(span(Array.prototype.shift.call(arguments)),
+                              text(Array.prototype.shift.call(arguments))));
+        return spans;
+    };
+    var append = function(/* el, ... */) {
+        var el = Array.prototype.shift.call(arguments);
+        for (var a=0; a<arguments.length; a++)
+            if (arguments[a].constructor == Array)
+                append.apply(this, [el].concat(arguments[a]));
+            else
+                el.appendChild(arguments[a]);
+        return el;
+    };
+    var prepend = function(el, child) {
+        el.insertBefore(child, el.firstChild);
+        return el;
+    }
+    var isempty = function(obj, pl) { var keys = pl || Object.keys(obj);
+                                      for (var i in keys) if (Object.hasOwnProperty.call(obj, keys[i])) return false;
+                                      return true; }
+    var text = function(txt) { return document.createTextNode(txt) };
+    var div = function() { return document.createElement("div") };
+    var span = function(classname) { var s = document.createElement("span");
+                                     if (classname) s.className = classname;
+                                     return s; };
+    var A = function A(txt, classname, callback) { var a = document.createElement("a");
+                                                   if (classname) a.className = classname;
+                                                   a.appendChild(text(txt));
+                                                   a.href = '#';
+                                                   a.onclick = function(e) { callback(); if (e) e.stopPropagation(); return false; };
+                                                   return a; };
+
+    function _renderjson(json, indent, dont_indent, show_level, options) {
+        var my_indent = dont_indent ? "" : indent;
+
+        var disclosure = function(open, placeholder, close, type, builder) {
+            var content;
+            var empty = span(type);
+            var show = function() { if (!content) append(empty.parentNode,
+                                                         content = prepend(builder(),
+                                                                           A(options.hide, "disclosure",
+                                                                             function() { content.style.display="none";
+                                                                                          empty.style.display="inline"; } )));
+                                    content.style.display="inline";
+                                    empty.style.display="none"; };
+            append(empty,
+                   A(options.show, "disclosure", show),
+                   themetext(type+ " syntax", open),
+                   A(placeholder, null, show),
+                   themetext(type+ " syntax", close));
+
+            var el = append(span(), text(my_indent.slice(0,-1)), empty);
+            if (show_level > 0 && type != "string")
+                show();
+            return el;
+        };
+
+        if (json === null) return themetext(null, my_indent, "keyword", "null");
+        if (json === void 0) return themetext(null, my_indent, "keyword", "undefined");
+
+        if (typeof(json) == "string" && json.length > options.max_string_length)
+            return disclosure('"', json.substr(0,options.max_string_length)+" ...", '"', "string", function () {
+                return append(span("string"), themetext(null, my_indent, "string", JSON.stringify(json)));
+            });
+
+        if (typeof(json) != "object" || [Number, String, Boolean, Date].indexOf(json.constructor) >= 0) // Strings, numbers and bools
+            return themetext(null, my_indent, typeof(json), JSON.stringify(json));
+
+        if (json.constructor == Array) {
+            if (json.length == 0) return themetext(null, my_indent, "array syntax", "[]");
+
+            return disclosure("[", options.collapse_msg(json.length), "]", "array", function () {
+                var as = append(span("array"), themetext("array syntax", "[", null, "\n"));
+                for (var i=0; i<json.length; i++)
+                    append(as,
+                           _renderjson(options.replacer.call(json, i, json[i]), indent+"    ", false, show_level-1, options),
+                           i != json.length-1 ? themetext("syntax", ",") : [],
+                           text("\n"));
+                append(as, themetext(null, indent, "array syntax", "]"));
+                return as;
+            });
+        }
+
+        // object
+        if (isempty(json, options.property_list))
+            return themetext(null, my_indent, "object syntax", "{}");
+
+        return disclosure("{", options.collapse_msg(Object.keys(json).length), "}", "object", function () {
+            var os = append(span("object"), themetext("object syntax", "{", null, "\n"));
+            for (var k in json) var last = k;
+            var keys = options.property_list || Object.keys(json);
+            if (options.sort_objects)
+                keys = keys.sort();
+            for (var i in keys) {
+                var k = keys[i];
+                if (!(k in json)) continue;
+                append(os, themetext(null, indent+"    ", "key", '"'+k+'"', "object syntax", ': '),
+                       _renderjson(options.replacer.call(json, k, json[k]), indent+"    ", true, show_level-1, options),
+                       k != last ? themetext("syntax", ",") : [],
+                       text("\n"));
+            }
+            append(os, themetext(null, indent, "object syntax", "}"));
+            return os;
+        });
+    }
+
+    var renderjson = function renderjson(json)
+    {
+        var options = new Object(renderjson.options);
+        options.replacer = typeof(options.replacer) == "function" ? options.replacer : function(k,v) { return v; };
+        var pre = append(document.createElement("pre"), _renderjson(json, "", false, options.show_to_level, options));
+        pre.className = "renderjson";
+        return pre;
+    }
+    renderjson.set_icons = function(show, hide) { renderjson.options.show = show;
+                                                  renderjson.options.hide = hide;
+                                                  return renderjson; };
+    renderjson.set_show_to_level = function(level) { renderjson.options.show_to_level = typeof level == "string" &&
+                                                                                        level.toLowerCase() === "all" ? Number.MAX_VALUE
+                                                                                                                      : level;
+                                                     return renderjson; };
+    renderjson.set_max_string_length = function(length) { renderjson.options.max_string_length = typeof length == "string" &&
+                                                                                                 length.toLowerCase() === "none" ? Number.MAX_VALUE
+                                                                                                                                 : length;
+                                                          return renderjson; };
+    renderjson.set_sort_objects = function(sort_bool) { renderjson.options.sort_objects = sort_bool;
+                                                        return renderjson; };
+    renderjson.set_replacer = function(replacer) { renderjson.options.replacer = replacer;
+                                                   return renderjson; };
+    renderjson.set_collapse_msg = function(collapse_msg) { renderjson.options.collapse_msg = collapse_msg;
+                                                           return renderjson; };
+    renderjson.set_property_list = function(prop_list) { renderjson.options.property_list = prop_list;
+                                                         return renderjson; };
+    // Backwards compatiblity. Use set_show_to_level() for new code.
+    renderjson.set_show_by_default = function(show) { renderjson.options.show_to_level = show ? Number.MAX_VALUE : 0;
+                                                      return renderjson; };
+    renderjson.options = {};
+    renderjson.set_icons('⊕', '⊖');
+    renderjson.set_show_by_default(false);
+    renderjson.set_sort_objects(false);
+    renderjson.set_max_string_length("none");
+    renderjson.set_replacer(void 0);
+    renderjson.set_property_list(void 0);
+    renderjson.set_collapse_msg(function(len) { return len + " item" + (len==1 ? "" : "s") })
+    return renderjson;
+})();
+
+if (define) define({renderjson:renderjson})
+else (module||{}).exports = (window||{}).renderjson = renderjson;
+ renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("4a5eaf4b-b03d-4fd5-88e2-50782e970680").appendChild(renderjson([{"_id": "JWzsXBvgHyBkeMa5H", "name": "Total Energy", "subworkflows": [{"_id": "974fd2cab189836c26c7d9f4", "name": "Total Energy", "application": {"_id": "XZBfXvMndSsgGPnQB", "name": "vasp", "version": "5.3.5", "build": "Default", "isDefault": true, "summary": "Vienna Ab-initio Simulation Package", "updatedAt": "2019-07-21T20:29:48.526Z", "shortName": "vasp"}, "properties": [null], "model": {"type": "dft", "subtype": "gga", "method": {"type": "pseudopotential", "subtype": "paw", "data": {}}, "functional": {"slug": "pbe"}, "refiners": [], "modifiers": []}, "units": [{"type": "execution", "name": "vasp", "head": true, "results": [{"name": "total_energy"}, {"name": "total_energy_contributions"}, {"name": "pressure"}, {"name": "fermi_energy"}, {"name": "atomic_forces"}, {"name": "total_force"}, {"name": "stress_tensor"}], "monitors": [{"name": "standard_output"}, {"name": "convergence_electronic"}], "flowchartId": "11029ef0b4e47c8e73de93e4", "preProcessors": [], "postProcessors": [], "application": {"_id": "XZBfXvMndSsgGPnQB", "name": "vasp", "version": "5.3.5", "build": "Default", "isDefault": true, "summary": "Vienna Ab-initio Simulation Package", "updatedAt": "2019-07-21T20:29:48.526Z", "shortName": "vasp"}, "executable": {"_id": "Pawnn8Yihhw7MRXZK", "results": ["atomic_forces", "band_gaps", "band_structure", "density_of_states", "fermi_energy", "pressure", "stress_tensor", "total_energy", "total_energy_contributions", "total_force", "zero_point_energy", "final_structure", "magnetic_moments", "reaction_energy_barrier", "reaction_energy_profile", "potential_profile", "charge_density_profile"], "postProcessors": ["error_handler", "prepare_restart", "remove_non_zero_weight_kpoints"], "monitors": ["standard_output", "convergence_ionic", "convergence_electronic"], "name": "vasp", "applicationId": ["XZBfXvMndSsgGPnQB", "tfmjXaGz83Wd6jrqd", "JMwhTtwAhuP2nAa4u", "fMAtP4Bfd2Xr665hn", "rkdvSx8zuKwbqA8GE", "6vH6swqd5iH9mCzDn", "MJDcEWR37gPRhFusj", "vKAToK6DZcM9GCNHZ", "Y3sfHbv2GGdumRvZM"], "createdAt": "2018-03-14T18:40:08.738Z", "updatedAt": "2019-07-21T20:29:50.314Z", "schemaVersion": "0.2.0", "isDefault": false, "tags": [], "inSet": []}, "flavor": {"_id": "9FooFphx4uDHvgNc3", "name": "vasp", "executableId": "Pawnn8Yihhw7MRXZK", "isDefault": true, "input": [{"name": "INCAR", "templateId": "s2GDJhrrDTsdiDFnn"}, {"name": "KPOINTS", "templateId": "9pcsLGkorwi9mASG2"}, {"name": "POSCAR", "templateId": "uZCuLHKmh4iYmrfsz"}], "results": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "monitors": ["standard_output", "convergence_electronic"], "schemaVersion": "0.2.0", "tags": [], "updatedAt": "2019-07-21T20:29:50.329Z", "inSet": []}, "status": "idle", "statusTrack": [], "input": [{"_id": "s2GDJhrrDTsdiDFnn", "applicationName": "vasp", "executableName": "vasp", "name": "INCAR", "content": "ISMEAR = 0\nSIGMA  = 0.05\nLORBIT = 11", "contextProviders": [{"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.078Z", "rendered": "ISMEAR = 0\nSIGMA  = 0.05\nLORBIT = 11"}, {"_id": "9pcsLGkorwi9mASG2", "applicationName": "vasp", "executableName": "vasp", "name": "KPOINTS", "content": "Automatic mesh\n0\nGamma\n  {% for d in kgrid.dimensions %}{{d}} {% endfor %}\n  {% for s in kgrid.shifts %}{{s}} {% endfor %}", "contextProviders": [{"name": "KGridFormDataManager"}, {"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.112Z", "rendered": "Automatic mesh\n0\nGamma\n  10 10 10 \n  0 0 0 "}, {"_id": "uZCuLHKmh4iYmrfsz", "applicationName": "vasp", "executableName": "vasp", "name": "POSCAR", "content": "{{ input.POSCAR }}", "contextProviders": [{"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.126Z", "rendered": "Silicon FCC\n1.0\n   3.348920000\t   0.000000000\t   1.933500000\n   1.116307000\t   3.157392000\t   1.933500000\n   0.000000000\t   0.000000000\t   3.867000000\nSi\n2\ndirect\n   0.000000000    0.000000000    0.000000000  Si\n   0.250000000    0.250000000    0.250000000  Si"}]}]}], "units": [{"type": "subworkflow", "_id": "974fd2cab189836c26c7d9f4", "name": "Total Energy", "status": "idle", "statusTrack": [], "flowchartId": "3e6a581eecf2868f3f75d300", "results": [], "monitors": [], "preProcessors": [], "postProcessors": [], "head": true}], "properties": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "access": {"all": {"roles": ["read"]}}, "isDefault": false, "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "exabyteId": "SnGspffD7nPsBHJaQ", "createdAt": "2017-11-04T06:35:12.431Z", "updatedAt": "2022-08-18T20:14:18.138Z", "hash": "1b51b3a0940fe6824b570561af1061a6", "history": [{"id": "vaRcmZnCdAyZE9Qaf", "revision": 0}, {"id": "M7Tt8j2jRZvamCMHM", "revision": 1}, {"id": "XZuayshsBghA5ZTX8", "revision": 2}, {"id": "rJSkigHypTyN7Tzp7", "revision": 3}, {"id": "XAsn2GEnPxvL9aD79", "revision": 4}, {"id": "gkJmJ9P4ZAN2SGd6c", "revision": 5}, {"id": "bGZxN8fMMott7zStv", "revision": 6}, {"id": "HeECSbeuaXwrvEpTs", "revision": 7}, {"id": "bkifXeQwbzqqtGcDY", "revision": 8}, {"id": "hpsqpyskJM8ozGWXj", "revision": 9}, {"id": "gM5Sfn8ircKHNbTj8", "revision": 10}], "isOutdated": true, "workflows": [], "schemaVersion": "0.2.0", "tags": [], "creator": {"_id": "W8NM4yBSgHN3ro5YC", "slug": "exadmin", "cls": "User"}, "slug": "", "inSet": [{"_id": "5b143a7bacd8211c4898a469", "cls": "Team", "slug": "owner"}, {"_id": "5b143a7bacd8211c4898a46a", "cls": "Team", "slug": "admin"}], "updatedBy": "0"}]))</script>
+</div>
+
 </div>
 
 </div>

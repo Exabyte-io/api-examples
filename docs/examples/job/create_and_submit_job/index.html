@@ -1926,446 +1926,237 @@ display_JSON(job)</div>
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
 
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>{
-    &#34;_id&#34;: &#34;c8jC6Eyju5LLCodZw&#34;,
-    &#34;name&#34;: &#34;TEST JOB&#34;,
-    &#34;owner&#34;: {
-        &#34;_id&#34;: &#34;5b143a4ecd313f405b31412d&#34;,
-        &#34;slug&#34;: &#34;demo&#34;,
-        &#34;cls&#34;: &#34;Account&#34;
-    },
-    &#34;compute&#34;: {
-        &#34;ppn&#34;: 1,
-        &#34;nodes&#34;: 1,
-        &#34;queue&#34;: &#34;D&#34;,
-        &#34;timeLimit&#34;: &#34;01:00:00&#34;,
-        &#34;notify&#34;: &#34;n&#34;,
-        &#34;cluster&#34;: {
-            &#34;fqdn&#34;: &#34;master-production-20160630-cluster-001.exabyte.io&#34;,
-            &#34;jid&#34;: &#34;91740.master-production-20160630-cluster-001.exabyte.io&#34;
-        },
-        &#34;timeLimitType&#34;: &#34;per single attempt&#34;,
-        &#34;isRestartable&#34;: true,
-        &#34;arguments&#34;: {
-            &#34;nimage&#34;: 1,
-            &#34;npools&#34;: 1,
-            &#34;nband&#34;: 1,
-            &#34;ntg&#34;: 1,
-            &#34;ndiag&#34;: 1
-        }
-    },
-    &#34;_project&#34;: {
-        &#34;_id&#34;: &#34;bBGMJSEJLtD2SY5ZK&#34;,
-        &#34;slug&#34;: &#34;demo&#34;,
-        &#34;cls&#34;: &#34;Project&#34;
-    },
-    &#34;workflow&#34;: {
-        &#34;_id&#34;: &#34;FX9c7YQCrZWtkZZWX&#34;,
-        &#34;name&#34;: &#34;Total Energy [Keep as Default API Tests]&#34;,
-        &#34;subworkflows&#34;: [
-            {
-                &#34;_id&#34;: &#34;52fe05b56318c9da3404dde3&#34;,
-                &#34;name&#34;: &#34;Total Energy&#34;,
-                &#34;application&#34;: {
-                    &#34;_id&#34;: &#34;XXNZ9pqkerTJtfkwk&#34;,
-                    &#34;name&#34;: &#34;espresso&#34;,
-                    &#34;version&#34;: &#34;5.4.0&#34;,
-                    &#34;build&#34;: &#34;Default&#34;,
-                    &#34;isDefault&#34;: true,
-                    &#34;summary&#34;: &#34;Quantum Espresso&#34;,
-                    &#34;updatedAt&#34;: &#34;2023-04-13T09:42:48.848Z&#34;,
-                    &#34;shortName&#34;: &#34;qe&#34;,
-                    &#34;hasAdvancedComputeOptions&#34;: true,
-                    &#34;updatedBy&#34;: &#34;0&#34;
-                },
-                &#34;properties&#34;: [
-                    &#34;total_energy&#34;,
-                    &#34;total_energy_contributions&#34;,
-                    &#34;pressure&#34;,
-                    &#34;fermi_energy&#34;,
-                    &#34;atomic_forces&#34;,
-                    &#34;total_force&#34;,
-                    &#34;stress_tensor&#34;
-                ],
-                &#34;model&#34;: {
-                    &#34;type&#34;: &#34;dft&#34;,
-                    &#34;subtype&#34;: &#34;gga&#34;,
-                    &#34;method&#34;: {
-                        &#34;type&#34;: &#34;pseudopotential&#34;,
-                        &#34;subtype&#34;: &#34;us&#34;,
-                        &#34;data&#34;: {
-                            &#34;searchText&#34;: &#34;&#34;,
-                            &#34;pseudo&#34;: [
-                                {
-                                    &#34;element&#34;: &#34;Ge&#34;,
-                                    &#34;hash&#34;: &#34;59d0ecddc603a33bb353df5aed9c18fd&#34;,
-                                    &#34;filename&#34;: &#34;ge_pbe_gbrv_1.4.upf&#34;,
-                                    &#34;path&#34;: &#34;/export/share/pseudo/ge/gga/pbe/gbrv/1.4/us/ge_pbe_gbrv_1.4.upf&#34;,
-                                    &#34;apps&#34;: [
-                                        &#34;espresso&#34;
-                                    ],
-                                    &#34;exchangeCorrelation&#34;: {
-                                        &#34;functional&#34;: &#34;pbe&#34;,
-                                        &#34;approximation&#34;: &#34;gga&#34;
-                                    },
-                                    &#34;name&#34;: &#34;pseudopotential&#34;,
-                                    &#34;source&#34;: &#34;gbrv&#34;,
-                                    &#34;type&#34;: &#34;us&#34;,
-                                    &#34;version&#34;: &#34;1.4&#34;,
-                                    &#34;schemaVersion&#34;: &#34;2022.8.16&#34;,
-                                    &#34;isDefault&#34;: false
-                                }
-                            ]
-                        }
-                    },
-                    &#34;functional&#34;: {
-                        &#34;slug&#34;: &#34;pbe&#34;
-                    },
-                    &#34;refiners&#34;: [],
-                    &#34;modifiers&#34;: []
-                },
-                &#34;units&#34;: [
-                    {
-                        &#34;type&#34;: &#34;execution&#34;,
-                        &#34;name&#34;: &#34;pw_scf&#34;,
-                        &#34;head&#34;: true,
-                        &#34;results&#34;: [
-                            {
-                                &#34;name&#34;: &#34;total_energy&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;total_energy_contributions&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;pressure&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;fermi_energy&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;atomic_forces&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;total_force&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;stress_tensor&#34;
-                            }
-                        ],
-                        &#34;monitors&#34;: [
-                            {
-                                &#34;name&#34;: &#34;standard_output&#34;
-                            },
-                            {
-                                &#34;name&#34;: &#34;convergence_electronic&#34;
-                            }
-                        ],
-                        &#34;flowchartId&#34;: &#34;40fbfde0-cd3d-447e-ba78-f11ce3555206&#34;,
-                        &#34;preProcessors&#34;: [],
-                        &#34;postProcessors&#34;: [],
-                        &#34;application&#34;: {
-                            &#34;_id&#34;: &#34;XXNZ9pqkerTJtfkwk&#34;,
-                            &#34;name&#34;: &#34;espresso&#34;,
-                            &#34;version&#34;: &#34;5.4.0&#34;,
-                            &#34;build&#34;: &#34;Default&#34;,
-                            &#34;isDefault&#34;: true,
-                            &#34;summary&#34;: &#34;Quantum Espresso&#34;,
-                            &#34;updatedAt&#34;: &#34;2023-04-13T09:42:48.848Z&#34;,
-                            &#34;shortName&#34;: &#34;qe&#34;,
-                            &#34;hasAdvancedComputeOptions&#34;: true,
-                            &#34;updatedBy&#34;: &#34;0&#34;
-                        },
-                        &#34;executable&#34;: {
-                            &#34;isDefault&#34;: true,
-                            &#34;hasAdvancedComputeOptions&#34;: true,
-                            &#34;postProcessors&#34;: [
-                                &#34;remove_non_zero_weight_kpoints&#34;
-                            ],
-                            &#34;monitors&#34;: [
-                                &#34;standard_output&#34;,
-                                &#34;convergence_ionic&#34;,
-                                &#34;convergence_electronic&#34;
-                            ],
-                            &#34;results&#34;: [
-                                &#34;atomic_forces&#34;,
-                                &#34;band_gaps&#34;,
-                                &#34;density_of_states&#34;,
-                                &#34;fermi_energy&#34;,
-                                &#34;pressure&#34;,
-                                &#34;stress_tensor&#34;,
-                                &#34;total_energy&#34;,
-                                &#34;total_energy_contributions&#34;,
-                                &#34;total_force&#34;,
-                                &#34;final_structure&#34;,
-                                &#34;magnetic_moments&#34;,
-                                &#34;reaction_energy_barrier&#34;,
-                                &#34;reaction_energy_profile&#34;,
-                                &#34;potential_profile&#34;,
-                                &#34;charge_density_profile&#34;
-                            ],
-                            &#34;name&#34;: &#34;pw.x&#34;
-                        },
-                        &#34;flavor&#34;: {
-                            &#34;isDefault&#34;: true,
-                            &#34;input&#34;: [
-                                {
-                                    &#34;name&#34;: &#34;pw_scf.in&#34;
-                                }
-                            ],
-                            &#34;results&#34;: [
-                                &#34;total_energy&#34;,
-                                &#34;total_energy_contributions&#34;,
-                                &#34;pressure&#34;,
-                                &#34;fermi_energy&#34;,
-                                &#34;atomic_forces&#34;,
-                                &#34;total_force&#34;,
-                                &#34;stress_tensor&#34;
-                            ],
-                            &#34;monitors&#34;: [
-                                &#34;standard_output&#34;,
-                                &#34;convergence_electronic&#34;
-                            ],
-                            &#34;applicationName&#34;: &#34;espresso&#34;,
-                            &#34;executableName&#34;: &#34;pw.x&#34;,
-                            &#34;name&#34;: &#34;pw_scf&#34;,
-                            &#34;executable&#34;: {
-                                &#34;isDefault&#34;: true,
-                                &#34;hasAdvancedComputeOptions&#34;: true,
-                                &#34;postProcessors&#34;: [
-                                    &#34;remove_non_zero_weight_kpoints&#34;
-                                ],
-                                &#34;monitors&#34;: [
-                                    &#34;standard_output&#34;,
-                                    &#34;convergence_ionic&#34;,
-                                    &#34;convergence_electronic&#34;
-                                ],
-                                &#34;results&#34;: [
-                                    &#34;atomic_forces&#34;,
-                                    &#34;band_gaps&#34;,
-                                    &#34;density_of_states&#34;,
-                                    &#34;fermi_energy&#34;,
-                                    &#34;pressure&#34;,
-                                    &#34;stress_tensor&#34;,
-                                    &#34;total_energy&#34;,
-                                    &#34;total_energy_contributions&#34;,
-                                    &#34;total_force&#34;,
-                                    &#34;final_structure&#34;,
-                                    &#34;magnetic_moments&#34;,
-                                    &#34;reaction_energy_barrier&#34;,
-                                    &#34;reaction_energy_profile&#34;,
-                                    &#34;potential_profile&#34;,
-                                    &#34;charge_density_profile&#34;
-                                ],
-                                &#34;name&#34;: &#34;pw.x&#34;
-                            }
-                        },
-                        &#34;status&#34;: &#34;idle&#34;,
-                        &#34;statusTrack&#34;: [],
-                        &#34;input&#34;: [
-                            {
-                                &#34;content&#34;: &#34;{% if subworkflowContext.MATERIAL_INDEX %}\n{%- set input = input.perMaterial[subworkflowContext.MATERIAL_INDEX] -%}\n{% endif -%}\n&amp;CONTROL\n    calculation = &#39;scf&#39;\n    title = &#39;&#39;\n    verbosity = &#39;low&#39;\n    restart_mode = &#39;{{ input.RESTART_MODE }}&#39;\n    wf_collect = .true.\n    tstress = .true.\n    tprnfor = .true.\n    outdir = {% raw %}&#39;{{ JOB_WORK_DIR }}/outdir&#39;{% endraw %}\n    wfcdir = {% raw %}&#39;{{ JOB_WORK_DIR }}/outdir&#39;{% endraw %}\n    prefix = &#39;__prefix__&#39;\n    pseudo_dir = {% raw %}&#39;{{ JOB_WORK_DIR }}/pseudo&#39;{% endraw %}\n/\n&amp;SYSTEM\n    ibrav = {{ input.IBRAV }}\n    nat = {{ input.NAT }}\n    ntyp = {{ input.NTYP }}\n    ecutwfc = {{ cutoffs.wavefunction }}\n    ecutrho = {{ cutoffs.density }}\n    occupations = &#39;smearing&#39;\n    degauss = 0.005\n/\n&amp;ELECTRONS\n    diagonalization = &#39;david&#39;\n    diago_david_ndim = 4\n    diago_full_acc = .true.\n    mixing_beta = 0.3\n    startingwfc = &#39;atomic+random&#39;\n/\n&amp;IONS\n/\n&amp;CELL\n/\nATOMIC_SPECIES\n{{ input.ATOMIC_SPECIES }}\nATOMIC_POSITIONS crystal\n{{ input.ATOMIC_POSITIONS }}\nCELL_PARAMETERS angstrom\n{{ input.CELL_PARAMETERS }}\nK_POINTS automatic\n{% for d in kgrid.dimensions %}{{d}} {% endfor %}{% for s in kgrid.shifts %}{{s}} {% endfor %}&#34;,
-                                &#34;name&#34;: &#34;pw_scf.in&#34;,
-                                &#34;contextProviders&#34;: [
-                                    {
-                                        &#34;name&#34;: &#34;KGridFormDataManager&#34;
-                                    },
-                                    {
-                                        &#34;name&#34;: &#34;QEPWXInputDataManager&#34;
-                                    },
-                                    {
-                                        &#34;name&#34;: &#34;PlanewaveCutoffDataManager&#34;
-                                    }
-                                ],
-                                &#34;applicationName&#34;: &#34;espresso&#34;,
-                                &#34;executableName&#34;: &#34;pw.x&#34;,
-                                &#34;updatedAt&#34;: &#34;2023-04-13T09:42:46.026Z&#34;,
-                                &#34;updatedBy&#34;: &#34;0&#34;,
-                                &#34;rendered&#34;: &#34;&amp;CONTROL\n    calculation = &#39;scf&#39;\n    title = &#39;&#39;\n    verbosity = &#39;low&#39;\n    restart_mode = &#39;from_scratch&#39;\n    wf_collect = .true.\n    tstress = .true.\n    tprnfor = .true.\n    outdir = &#39;{{ JOB_WORK_DIR }}/outdir&#39;\n    wfcdir = &#39;{{ JOB_WORK_DIR }}/outdir&#39;\n    prefix = &#39;__prefix__&#39;\n    pseudo_dir = &#39;{{ JOB_WORK_DIR }}/pseudo&#39;\n/\n&amp;SYSTEM\n    ibrav = 0\n    nat = 2\n    ntyp = 1\n    ecutwfc = 40\n    ecutrho = 200\n    occupations = &#39;smearing&#39;\n    degauss = 0.005\n/\n&amp;ELECTRONS\n    diagonalization = &#39;david&#39;\n    diago_david_ndim = 4\n    diago_full_acc = .true.\n    mixing_beta = 0.3\n    startingwfc = &#39;atomic+random&#39;\n/\n&amp;IONS\n/\n&amp;CELL\n/\nATOMIC_SPECIES\nGe 72.61 ge_pbe_gbrv_1.4.upf\nATOMIC_POSITIONS crystal\nGe  0.875000000 0.875000000 0.875000000 \nGe  0.125000000 0.125000000 0.125000000 \nCELL_PARAMETERS angstrom\n3.529018000 0.000000000 2.037480000\n1.176339000 3.327190000 2.037480000\n0.000000000 0.000000000 4.074959000\nK_POINTS automatic\n2 2 2 0 0 0 &#34;
-                            }
-                        ],
-                        &#34;context&#34;: {
-                            &#34;subworkflowContext&#34;: {}
-                        }
-                    }
-                ],
-                &#34;compute&#34;: null,
-                &#34;isDraft&#34;: false
-            }
-        ],
-        &#34;units&#34;: [
-            {
-                &#34;name&#34;: &#34;Total Energy&#34;,
-                &#34;type&#34;: &#34;subworkflow&#34;,
-                &#34;_id&#34;: &#34;52fe05b56318c9da3404dde3&#34;,
-                &#34;flowchartId&#34;: &#34;322af1714e0b1aeb25e75e82&#34;,
-                &#34;status&#34;: &#34;idle&#34;,
-                &#34;statusTrack&#34;: [],
-                &#34;results&#34;: [],
-                &#34;monitors&#34;: [],
-                &#34;preProcessors&#34;: [],
-                &#34;postProcessors&#34;: [],
-                &#34;head&#34;: true,
-                &#34;schemaVersion&#34;: &#34;2022.8.16&#34;,
-                &#34;isDefault&#34;: false
-            }
-        ],
-        &#34;properties&#34;: [
-            &#34;total_energy&#34;,
-            &#34;total_energy_contributions&#34;,
-            &#34;pressure&#34;,
-            &#34;fermi_energy&#34;,
-            &#34;atomic_forces&#34;,
-            &#34;total_force&#34;,
-            &#34;stress_tensor&#34;
-        ],
-        &#34;isDefault&#34;: true,
-        &#34;owner&#34;: {
-            &#34;_id&#34;: &#34;5b143a4ecd313f405b31412d&#34;,
-            &#34;slug&#34;: &#34;demo&#34;,
-            &#34;cls&#34;: &#34;Account&#34;
-        },
-        &#34;exabyteId&#34;: &#34;84DAjE9YyTFndx6z3&#34;,
-        &#34;createdAt&#34;: &#34;2017-11-04T06:32:04.926Z&#34;,
-        &#34;updatedAt&#34;: &#34;2023-04-13T09:44:22.344Z&#34;,
-        &#34;hash&#34;: &#34;87148c7947ede06e787ec9d0197190f8&#34;,
-        &#34;history&#34;: [
-            {
-                &#34;id&#34;: &#34;YFo399u8TBQsCRyAZ&#34;,
-                &#34;revision&#34;: 0
-            },
-            {
-                &#34;id&#34;: &#34;inP56GZ4meWP7vBGi&#34;,
-                &#34;revision&#34;: 1
-            },
-            {
-                &#34;id&#34;: &#34;Lobx4MBpudJyPuGdK&#34;,
-                &#34;revision&#34;: 2
-            },
-            {
-                &#34;id&#34;: &#34;YQ2z4inZ4ipTB6m8p&#34;,
-                &#34;revision&#34;: 3
-            },
-            {
-                &#34;id&#34;: &#34;2KCFvn2tacGcmJnfa&#34;,
-                &#34;revision&#34;: 4
-            }
-        ],
-        &#34;isOutdated&#34;: false,
-        &#34;workflows&#34;: [],
-        &#34;schemaVersion&#34;: &#34;2022.8.16&#34;,
-        &#34;tags&#34;: [],
-        &#34;creator&#34;: {
-            &#34;_id&#34;: &#34;W8NM4yBSgHN3ro5YC&#34;,
-            &#34;slug&#34;: &#34;exadmin&#34;,
-            &#34;cls&#34;: &#34;User&#34;
-        },
-        &#34;inSet&#34;: [
-            {
-                &#34;_id&#34;: &#34;5b143a7bacd8211c4898a469&#34;,
-                &#34;cls&#34;: &#34;Team&#34;,
-                &#34;slug&#34;: &#34;owner&#34;
-            },
-            {
-                &#34;_id&#34;: &#34;5b143a7bacd8211c4898a46a&#34;,
-                &#34;cls&#34;: &#34;Team&#34;,
-                &#34;slug&#34;: &#34;admin&#34;
-            }
-        ],
-        &#34;compute&#34;: null,
-        &#34;updatedBy&#34;: &#34;0&#34;,
-        &#34;isEntitySet&#34;: false
-    },
-    &#34;status&#34;: &#34;submitted&#34;,
-    &#34;inSet&#34;: [
-        {
-            &#34;_id&#34;: &#34;5b143a7bacd8211c4898a469&#34;,
-            &#34;slug&#34;: &#34;owner&#34;,
-            &#34;cls&#34;: &#34;Team&#34;
-        },
-        {
-            &#34;_id&#34;: &#34;5b143a7bacd8211c4898a46a&#34;,
-            &#34;slug&#34;: &#34;admin&#34;,
-            &#34;cls&#34;: &#34;Team&#34;
-        },
-        {
-            &#34;_id&#34;: &#34;5b143a7bacd8211c4898a46c&#34;,
-            &#34;slug&#34;: &#34;read&#34;,
-            &#34;cls&#34;: &#34;Team&#34;
-        },
-        {
-            &#34;_id&#34;: &#34;5b143a7bacd8211c4898a46e&#34;,
-            &#34;slug&#34;: &#34;execute&#34;,
-            &#34;cls&#34;: &#34;Team&#34;
-        },
-        {
-            &#34;_id&#34;: &#34;5b143a7bacd8211c4898a46d&#34;,
-            &#34;slug&#34;: &#34;comment&#34;,
-            &#34;cls&#34;: &#34;Team&#34;
-        },
-        {
-            &#34;_id&#34;: &#34;5b143a7bacd8211c4898a46f&#34;,
-            &#34;slug&#34;: &#34;edit&#34;,
-            &#34;cls&#34;: &#34;Team&#34;
-        },
-        {
-            &#34;_id&#34;: &#34;bBGMJSEJLtD2SY5ZK&#34;,
-            &#34;slug&#34;: &#34;demo&#34;,
-            &#34;cls&#34;: &#34;Project&#34;
-        }
-    ],
-    &#34;dataset&#34;: {
-        &#34;datasetFilepath&#34;: &#34;&#34;,
-        &#34;datasetBasename&#34;: &#34;&#34;,
-        &#34;objectStorageContainerData&#34;: {
-            &#34;CONTAINER&#34;: &#34;&#34;,
-            &#34;NAME&#34;: &#34;&#34;,
-            &#34;PROVIDER&#34;: &#34;&#34;,
-            &#34;REGION&#34;: &#34;&#34;,
-            &#34;SIZE&#34;: &#34;&#34;,
-            &#34;TIMESTAMP&#34;: &#34;&#34;
-        }
-    },
-    &#34;_material&#34;: {
-        &#34;_id&#34;: &#34;Pnnh5fPBJ2rkppFJb&#34;,
-        &#34;slug&#34;: null,
-        &#34;cls&#34;: &#34;Material&#34;
-    },
-    &#34;tags&#34;: [],
-    &#34;runtimeContext&#34;: {},
-    &#34;_materials&#34;: [],
-    &#34;creator&#34;: {
-        &#34;_id&#34;: &#34;7y7KEHWocY7tCF5k5&#34;,
-        &#34;slug&#34;: &#34;demo&#34;,
-        &#34;cls&#34;: &#34;User&#34;
-    },
-    &#34;schemaVersion&#34;: &#34;2022.8.16&#34;,
-    &#34;isDefault&#34;: false,
-    &#34;statusTrack&#34;: [
-        {
-            &#34;trackedAt&#34;: 1688604619384,
-            &#34;status&#34;: &#34;pre-submission&#34;
-        },
-        {
-            &#34;trackedAt&#34;: 1688604620359,
-            &#34;status&#34;: &#34;submitted&#34;
-        }
-    ],
-    &#34;isEntitySet&#34;: false,
-    &#34;createdAt&#34;: &#34;2023-07-06T00:50:19.384Z&#34;,
-    &#34;createdBy&#34;: &#34;0&#34;,
-    &#34;friendlySlugs&#34;: {
-        &#34;slug&#34;: {
-            &#34;base&#34;: &#34;test-job&#34;,
-            &#34;index&#34;: 107
-        }
-    },
-    &#34;slug&#34;: &#34;test-job-107&#34;,
-    &#34;updatedAt&#34;: &#34;2023-07-06T00:50:20.719Z&#34;,
-    &#34;updatedBy&#34;: &#34;0&#34;
-}
-</pre>
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
+<style>.renderjson a              { text-decoration: none; }
+.renderjson .disclosure    { color: grey; font-size: 150%; }
+.renderjson .syntax        { color: grey; }
+.renderjson .string        { color: #fe46a5; }
+.renderjson .number        { color: #0f9b8e; }
+.renderjson .boolean       { color: black; }
+.renderjson .key           { color: #2684ff; }
+.renderjson .keyword       { color: gray; }
+.renderjson .object.syntax { color: gray; }
+.renderjson .array.syntax  { color: gray; }
+</style><div id="ed02d222-6de3-4a9e-aee9-2709dc849c21"></div>
 </div>
+
+</div>
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
+<script>// Taken from:
+// https://github.com/caldwell/renderjson/blob/c389dfd47aad2a7b102cb9a0b5d8402dfaa5090f/README.md
+//
+// Usage
+// -----
+// The module exports one entry point, the `renderjson()` function. It takes in
+// the JSON you want to render as a single argument and returns an HTML
+// element.
+//
+// Options
+// -------
+// renderjson.set_icons("+", "-")
+//   This Allows you to override the disclosure icons.
+//
+// renderjson.set_show_to_level(level)
+//   Pass the number of levels to expand when rendering. The default is 0, which
+//   starts with everything collapsed. As a special case, if level is the string
+//   "all" then it will start with everything expanded.
+//
+// renderjson.set_max_string_length(length)
+//   Strings will be truncated and made expandable if they are longer than
+//   `length`. As a special case, if `length` is the string "none" then
+//   there will be no truncation. The default is "none".
+//
+// renderjson.set_sort_objects(sort_bool)
+//   Sort objects by key (default: false)
+//
+// renderjson.set_replacer(replacer_function)
+//   Equivalent of JSON.stringify() `replacer` argument when it's a function
+//
+// renderjson.set_collapse_msg(collapse_function)
+//   Accepts a function (len:number):string => {} where len is the length of the
+//   object collapsed.  Function should return the message displayed when a
+//   object is collapsed.  The default message is "X items"
+//
+// renderjson.set_property_list(property_list)
+//   Equivalent of JSON.stringify() `replacer` argument when it's an array
+//
+// Theming
+// -------
+// The HTML output uses a number of classes so that you can theme it the way
+// you'd like:
+//     .disclosure    ("⊕", "⊖")
+//     .syntax        (",", ":", "{", "}", "[", "]")
+//     .string        (includes quotes)
+//     .number
+//     .boolean
+//     .key           (object key)
+//     .keyword       ("null", "undefined")
+//     .object.syntax ("{", "}")
+//     .array.syntax  ("[", "]")
+
+var module, window, define, renderjson=(function() {
+    var themetext = function(/* [class, text]+ */) {
+        var spans = [];
+        while (arguments.length)
+            spans.push(append(span(Array.prototype.shift.call(arguments)),
+                              text(Array.prototype.shift.call(arguments))));
+        return spans;
+    };
+    var append = function(/* el, ... */) {
+        var el = Array.prototype.shift.call(arguments);
+        for (var a=0; a<arguments.length; a++)
+            if (arguments[a].constructor == Array)
+                append.apply(this, [el].concat(arguments[a]));
+            else
+                el.appendChild(arguments[a]);
+        return el;
+    };
+    var prepend = function(el, child) {
+        el.insertBefore(child, el.firstChild);
+        return el;
+    }
+    var isempty = function(obj, pl) { var keys = pl || Object.keys(obj);
+                                      for (var i in keys) if (Object.hasOwnProperty.call(obj, keys[i])) return false;
+                                      return true; }
+    var text = function(txt) { return document.createTextNode(txt) };
+    var div = function() { return document.createElement("div") };
+    var span = function(classname) { var s = document.createElement("span");
+                                     if (classname) s.className = classname;
+                                     return s; };
+    var A = function A(txt, classname, callback) { var a = document.createElement("a");
+                                                   if (classname) a.className = classname;
+                                                   a.appendChild(text(txt));
+                                                   a.href = '#';
+                                                   a.onclick = function(e) { callback(); if (e) e.stopPropagation(); return false; };
+                                                   return a; };
+
+    function _renderjson(json, indent, dont_indent, show_level, options) {
+        var my_indent = dont_indent ? "" : indent;
+
+        var disclosure = function(open, placeholder, close, type, builder) {
+            var content;
+            var empty = span(type);
+            var show = function() { if (!content) append(empty.parentNode,
+                                                         content = prepend(builder(),
+                                                                           A(options.hide, "disclosure",
+                                                                             function() { content.style.display="none";
+                                                                                          empty.style.display="inline"; } )));
+                                    content.style.display="inline";
+                                    empty.style.display="none"; };
+            append(empty,
+                   A(options.show, "disclosure", show),
+                   themetext(type+ " syntax", open),
+                   A(placeholder, null, show),
+                   themetext(type+ " syntax", close));
+
+            var el = append(span(), text(my_indent.slice(0,-1)), empty);
+            if (show_level > 0 && type != "string")
+                show();
+            return el;
+        };
+
+        if (json === null) return themetext(null, my_indent, "keyword", "null");
+        if (json === void 0) return themetext(null, my_indent, "keyword", "undefined");
+
+        if (typeof(json) == "string" && json.length > options.max_string_length)
+            return disclosure('"', json.substr(0,options.max_string_length)+" ...", '"', "string", function () {
+                return append(span("string"), themetext(null, my_indent, "string", JSON.stringify(json)));
+            });
+
+        if (typeof(json) != "object" || [Number, String, Boolean, Date].indexOf(json.constructor) >= 0) // Strings, numbers and bools
+            return themetext(null, my_indent, typeof(json), JSON.stringify(json));
+
+        if (json.constructor == Array) {
+            if (json.length == 0) return themetext(null, my_indent, "array syntax", "[]");
+
+            return disclosure("[", options.collapse_msg(json.length), "]", "array", function () {
+                var as = append(span("array"), themetext("array syntax", "[", null, "\n"));
+                for (var i=0; i<json.length; i++)
+                    append(as,
+                           _renderjson(options.replacer.call(json, i, json[i]), indent+"    ", false, show_level-1, options),
+                           i != json.length-1 ? themetext("syntax", ",") : [],
+                           text("\n"));
+                append(as, themetext(null, indent, "array syntax", "]"));
+                return as;
+            });
+        }
+
+        // object
+        if (isempty(json, options.property_list))
+            return themetext(null, my_indent, "object syntax", "{}");
+
+        return disclosure("{", options.collapse_msg(Object.keys(json).length), "}", "object", function () {
+            var os = append(span("object"), themetext("object syntax", "{", null, "\n"));
+            for (var k in json) var last = k;
+            var keys = options.property_list || Object.keys(json);
+            if (options.sort_objects)
+                keys = keys.sort();
+            for (var i in keys) {
+                var k = keys[i];
+                if (!(k in json)) continue;
+                append(os, themetext(null, indent+"    ", "key", '"'+k+'"', "object syntax", ': '),
+                       _renderjson(options.replacer.call(json, k, json[k]), indent+"    ", true, show_level-1, options),
+                       k != last ? themetext("syntax", ",") : [],
+                       text("\n"));
+            }
+            append(os, themetext(null, indent, "object syntax", "}"));
+            return os;
+        });
+    }
+
+    var renderjson = function renderjson(json)
+    {
+        var options = new Object(renderjson.options);
+        options.replacer = typeof(options.replacer) == "function" ? options.replacer : function(k,v) { return v; };
+        var pre = append(document.createElement("pre"), _renderjson(json, "", false, options.show_to_level, options));
+        pre.className = "renderjson";
+        return pre;
+    }
+    renderjson.set_icons = function(show, hide) { renderjson.options.show = show;
+                                                  renderjson.options.hide = hide;
+                                                  return renderjson; };
+    renderjson.set_show_to_level = function(level) { renderjson.options.show_to_level = typeof level == "string" &&
+                                                                                        level.toLowerCase() === "all" ? Number.MAX_VALUE
+                                                                                                                      : level;
+                                                     return renderjson; };
+    renderjson.set_max_string_length = function(length) { renderjson.options.max_string_length = typeof length == "string" &&
+                                                                                                 length.toLowerCase() === "none" ? Number.MAX_VALUE
+                                                                                                                                 : length;
+                                                          return renderjson; };
+    renderjson.set_sort_objects = function(sort_bool) { renderjson.options.sort_objects = sort_bool;
+                                                        return renderjson; };
+    renderjson.set_replacer = function(replacer) { renderjson.options.replacer = replacer;
+                                                   return renderjson; };
+    renderjson.set_collapse_msg = function(collapse_msg) { renderjson.options.collapse_msg = collapse_msg;
+                                                           return renderjson; };
+    renderjson.set_property_list = function(prop_list) { renderjson.options.property_list = prop_list;
+                                                         return renderjson; };
+    // Backwards compatiblity. Use set_show_to_level() for new code.
+    renderjson.set_show_by_default = function(show) { renderjson.options.show_to_level = show ? Number.MAX_VALUE : 0;
+                                                      return renderjson; };
+    renderjson.options = {};
+    renderjson.set_icons('⊕', '⊖');
+    renderjson.set_show_by_default(false);
+    renderjson.set_sort_objects(false);
+    renderjson.set_max_string_length("none");
+    renderjson.set_replacer(void 0);
+    renderjson.set_property_list(void 0);
+    renderjson.set_collapse_msg(function(len) { return len + " item" + (len==1 ? "" : "s") })
+    return renderjson;
+})();
+
+if (define) define({renderjson:renderjson})
+else (module||{}).exports = (window||{}).renderjson = renderjson;
+ renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("ed02d222-6de3-4a9e-aee9-2709dc849c21").appendChild(renderjson({"_id": "5y2M9XCqLxj9qkznv", "name": "TEST JOB", "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "compute": {"ppn": 1, "nodes": 1, "queue": "D", "timeLimit": "01:00:00", "notify": "n", "cluster": {"fqdn": "master-production-20160630-cluster-001.exabyte.io"}, "timeLimitType": "per single attempt", "isRestartable": true, "arguments": {"nimage": 1, "npools": 1, "nband": 1, "ntg": 1, "ndiag": 1}}, "_project": {"_id": "bBGMJSEJLtD2SY5ZK", "slug": "demo", "cls": "Project"}, "workflow": {"_id": "FX9c7YQCrZWtkZZWX", "name": "Total Energy [Keep as Default API Tests]", "subworkflows": [{"_id": "52fe05b56318c9da3404dde3", "name": "Total Energy", "application": {"_id": "XXNZ9pqkerTJtfkwk", "name": "espresso", "version": "5.4.0", "build": "Default", "isDefault": true, "summary": "Quantum Espresso", "updatedAt": "2023-04-13T09:42:48.848Z", "shortName": "qe", "hasAdvancedComputeOptions": true, "updatedBy": "0"}, "properties": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "model": {"type": "dft", "subtype": "gga", "method": {"type": "pseudopotential", "subtype": "us", "data": {"searchText": "", "pseudo": [{"element": "Ge", "hash": "59d0ecddc603a33bb353df5aed9c18fd", "filename": "ge_pbe_gbrv_1.4.upf", "path": "/export/share/pseudo/ge/gga/pbe/gbrv/1.4/us/ge_pbe_gbrv_1.4.upf", "apps": ["espresso"], "exchangeCorrelation": {"functional": "pbe", "approximation": "gga"}, "name": "pseudopotential", "source": "gbrv", "type": "us", "version": "1.4", "schemaVersion": "2022.8.16", "isDefault": false}]}}, "functional": {"slug": "pbe"}, "refiners": [], "modifiers": []}, "units": [{"type": "execution", "name": "pw_scf", "head": true, "results": [{"name": "total_energy"}, {"name": "total_energy_contributions"}, {"name": "pressure"}, {"name": "fermi_energy"}, {"name": "atomic_forces"}, {"name": "total_force"}, {"name": "stress_tensor"}], "monitors": [{"name": "standard_output"}, {"name": "convergence_electronic"}], "flowchartId": "40fbfde0-cd3d-447e-ba78-f11ce3555206", "preProcessors": [], "postProcessors": [], "application": {"_id": "XXNZ9pqkerTJtfkwk", "name": "espresso", "version": "5.4.0", "build": "Default", "isDefault": true, "summary": "Quantum Espresso", "updatedAt": "2023-04-13T09:42:48.848Z", "shortName": "qe", "hasAdvancedComputeOptions": true, "updatedBy": "0"}, "executable": {"isDefault": true, "hasAdvancedComputeOptions": true, "postProcessors": ["remove_non_zero_weight_kpoints"], "monitors": ["standard_output", "convergence_ionic", "convergence_electronic"], "results": ["atomic_forces", "band_gaps", "density_of_states", "fermi_energy", "pressure", "stress_tensor", "total_energy", "total_energy_contributions", "total_force", "final_structure", "magnetic_moments", "reaction_energy_barrier", "reaction_energy_profile", "potential_profile", "charge_density_profile"], "name": "pw.x"}, "flavor": {"isDefault": true, "input": [{"name": "pw_scf.in"}], "results": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "monitors": ["standard_output", "convergence_electronic"], "applicationName": "espresso", "executableName": "pw.x", "name": "pw_scf", "executable": {"isDefault": true, "hasAdvancedComputeOptions": true, "postProcessors": ["remove_non_zero_weight_kpoints"], "monitors": ["standard_output", "convergence_ionic", "convergence_electronic"], "results": ["atomic_forces", "band_gaps", "density_of_states", "fermi_energy", "pressure", "stress_tensor", "total_energy", "total_energy_contributions", "total_force", "final_structure", "magnetic_moments", "reaction_energy_barrier", "reaction_energy_profile", "potential_profile", "charge_density_profile"], "name": "pw.x"}}, "status": "idle", "statusTrack": [], "input": [{"content": "{% if subworkflowContext.MATERIAL_INDEX %}\n{%- set input = input.perMaterial[subworkflowContext.MATERIAL_INDEX] -%}\n{% endif -%}\n&CONTROL\n    calculation = 'scf'\n    title = ''\n    verbosity = 'low'\n    restart_mode = '{{ input.RESTART_MODE }}'\n    wf_collect = .true.\n    tstress = .true.\n    tprnfor = .true.\n    outdir = {% raw %}'{{ JOB_WORK_DIR }}/outdir'{% endraw %}\n    wfcdir = {% raw %}'{{ JOB_WORK_DIR }}/outdir'{% endraw %}\n    prefix = '__prefix__'\n    pseudo_dir = {% raw %}'{{ JOB_WORK_DIR }}/pseudo'{% endraw %}\n/\n&SYSTEM\n    ibrav = {{ input.IBRAV }}\n    nat = {{ input.NAT }}\n    ntyp = {{ input.NTYP }}\n    ecutwfc = {{ cutoffs.wavefunction }}\n    ecutrho = {{ cutoffs.density }}\n    occupations = 'smearing'\n    degauss = 0.005\n/\n&ELECTRONS\n    diagonalization = 'david'\n    diago_david_ndim = 4\n    diago_full_acc = .true.\n    mixing_beta = 0.3\n    startingwfc = 'atomic+random'\n/\n&IONS\n/\n&CELL\n/\nATOMIC_SPECIES\n{{ input.ATOMIC_SPECIES }}\nATOMIC_POSITIONS crystal\n{{ input.ATOMIC_POSITIONS }}\nCELL_PARAMETERS angstrom\n{{ input.CELL_PARAMETERS }}\nK_POINTS automatic\n{% for d in kgrid.dimensions %}{{d}} {% endfor %}{% for s in kgrid.shifts %}{{s}} {% endfor %}", "name": "pw_scf.in", "contextProviders": [{"name": "KGridFormDataManager"}, {"name": "QEPWXInputDataManager"}, {"name": "PlanewaveCutoffDataManager"}], "applicationName": "espresso", "executableName": "pw.x", "updatedAt": "2023-04-13T09:42:46.026Z", "updatedBy": "0", "rendered": "&CONTROL\n    calculation = 'scf'\n    title = ''\n    verbosity = 'low'\n    restart_mode = 'from_scratch'\n    wf_collect = .true.\n    tstress = .true.\n    tprnfor = .true.\n    outdir = '{{ JOB_WORK_DIR }}/outdir'\n    wfcdir = '{{ JOB_WORK_DIR }}/outdir'\n    prefix = '__prefix__'\n    pseudo_dir = '{{ JOB_WORK_DIR }}/pseudo'\n/\n&SYSTEM\n    ibrav = 0\n    nat = 2\n    ntyp = 1\n    ecutwfc = 40\n    ecutrho = 200\n    occupations = 'smearing'\n    degauss = 0.005\n/\n&ELECTRONS\n    diagonalization = 'david'\n    diago_david_ndim = 4\n    diago_full_acc = .true.\n    mixing_beta = 0.3\n    startingwfc = 'atomic+random'\n/\n&IONS\n/\n&CELL\n/\nATOMIC_SPECIES\nGe 72.61 ge_pbe_gbrv_1.4.upf\nATOMIC_POSITIONS crystal\nGe  0.875000000 0.875000000 0.875000000 \nGe  0.125000000 0.125000000 0.125000000 \nCELL_PARAMETERS angstrom\n3.529018000 0.000000000 2.037480000\n1.176339000 3.327190000 2.037480000\n0.000000000 0.000000000 4.074959000\nK_POINTS automatic\n2 2 2 0 0 0 "}], "context": {"subworkflowContext": {}}}], "compute": null, "isDraft": false}], "units": [{"name": "Total Energy", "type": "subworkflow", "_id": "52fe05b56318c9da3404dde3", "flowchartId": "322af1714e0b1aeb25e75e82", "status": "idle", "statusTrack": [], "results": [], "monitors": [], "preProcessors": [], "postProcessors": [], "head": true, "schemaVersion": "2022.8.16", "isDefault": false}], "properties": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "isDefault": true, "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "exabyteId": "84DAjE9YyTFndx6z3", "createdAt": "2017-11-04T06:32:04.926Z", "updatedAt": "2023-04-13T09:44:22.344Z", "hash": "87148c7947ede06e787ec9d0197190f8", "history": [{"id": "YFo399u8TBQsCRyAZ", "revision": 0}, {"id": "inP56GZ4meWP7vBGi", "revision": 1}, {"id": "Lobx4MBpudJyPuGdK", "revision": 2}, {"id": "YQ2z4inZ4ipTB6m8p", "revision": 3}, {"id": "2KCFvn2tacGcmJnfa", "revision": 4}], "isOutdated": false, "workflows": [], "schemaVersion": "2022.8.16", "tags": [], "creator": {"_id": "W8NM4yBSgHN3ro5YC", "slug": "exadmin", "cls": "User"}, "inSet": [{"_id": "5b143a7bacd8211c4898a469", "cls": "Team", "slug": "owner"}, {"_id": "5b143a7bacd8211c4898a46a", "cls": "Team", "slug": "admin"}], "compute": null, "updatedBy": "0", "isEntitySet": false}, "status": "submitted", "inSet": [{"_id": "5b143a7bacd8211c4898a469", "slug": "owner", "cls": "Team"}, {"_id": "5b143a7bacd8211c4898a46a", "slug": "admin", "cls": "Team"}, {"_id": "5b143a7bacd8211c4898a46c", "slug": "read", "cls": "Team"}, {"_id": "5b143a7bacd8211c4898a46e", "slug": "execute", "cls": "Team"}, {"_id": "5b143a7bacd8211c4898a46d", "slug": "comment", "cls": "Team"}, {"_id": "5b143a7bacd8211c4898a46f", "slug": "edit", "cls": "Team"}, {"_id": "bBGMJSEJLtD2SY5ZK", "slug": "demo", "cls": "Project"}], "dataset": {"datasetFilepath": "", "datasetBasename": "", "objectStorageContainerData": {"CONTAINER": "", "NAME": "", "PROVIDER": "", "REGION": "", "SIZE": "", "TIMESTAMP": ""}}, "_material": {"_id": "Pnnh5fPBJ2rkppFJb", "slug": null, "cls": "Material"}, "tags": [], "runtimeContext": {}, "_materials": [], "creator": {"_id": "7y7KEHWocY7tCF5k5", "slug": "demo", "cls": "User"}, "schemaVersion": "2022.8.16", "isDefault": false, "statusTrack": [{"trackedAt": 1689036116495, "status": "pre-submission"}, {"trackedAt": 1689036117029, "status": "submitted"}], "isEntitySet": false, "createdAt": "2023-07-11T00:41:56.495Z", "createdBy": "0", "friendlySlugs": {"slug": {"base": "test-job", "index": 160}}, "slug": "test-job-160", "updatedAt": "2023-07-11T00:41:57.029Z", "updatedBy": "0"}))</script>
+</div>
+
 </div>
 
 </div>

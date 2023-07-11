@@ -3,3 +3,5 @@
 This directory contains various files for the example notebooks.
 
 - `mp-978534.poscar` contains a SiGe structure from [https://materialsproject.org/materials/mp-978534/](https://materialsproject.org/materials/mp-978534/).
+- `bash_workflow-template.json` contains the template JSON schema of mat3ra workflow.
+- `Si.pz-vbc.UPF` is the pseudo potential file of silicon used in the Quantum Espresso workflow example.

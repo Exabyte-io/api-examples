@@ -24,7 +24,7 @@
 # 
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../../utils/settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
-# In[1]:
+# In[ ]:
 
 
 # @title Authorization Form
@@ -48,7 +48,7 @@ if "COLAB_JUPYTER_IP" in os.environ:
     get_ipython().system('GIT_BRANCH="dev"; export GIT_BRANCH; curl -s "https://raw.githubusercontent.com/Exabyte-io/api-examples/${GIT_BRANCH}/scripts/env.sh" | bash')
 
 
-# In[2]:
+# In[ ]:
 
 
 from utils.settings import ENDPOINT_ARGS, ACCOUNT_ID
@@ -59,7 +59,7 @@ from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 
 
-# In[3]:
+# In[ ]:
 
 
 # Initialize a helper class to interact with WorkflowEndpoints
@@ -74,7 +74,7 @@ job_endpoints = JobEndpoints(*ENDPOINT_ARGS)
 # 
 # Note that we provide the pseudo potential file via a downloadable url. We are working on suppporting uploading pseudo potential file from local file system, but it is currently not available.
 
-# In[4]:
+# In[ ]:
 
 
 # user modifiable part
@@ -127,7 +127,7 @@ mpirun -np $PBS_NP pw.x -in pw.in | tee pw.out
 """
 
 
-# In[5]:
+# In[ ]:
 
 
 # populate workflow from a template
@@ -139,7 +139,7 @@ with open("../assets/bash_workflow_template.json", "r") as f:
 WORKFLOW_BODY["subworkflows"][0]["units"][0]["input"][0]["content"] = script
 
 
-# In[6]:
+# In[ ]:
 
 
 # create workflow
@@ -150,24 +150,19 @@ WORKFLOW_RESP = workflow_endpoints.create(WORKFLOW_BODY)
 # 
 # Below user can specify the project name and compute parameters such as `queue`, number of `nodes` and number of processors `ppn` per node. Find more about compute parameters [here](https://docs.mat3ra.com/infrastructure/compute/parameters/).
 
-# In[7]:
+# In[ ]:
 
 
 # job creation payload
 JOB_BODY = {
     "name": "SCF Calculation",
-    "compute": {
-        "ppn": 4,
-        "nodes": 1,
-        "queue": "OR",
-        "cluster": {"fqdn": "master-production-20160630-cluster-001.exabyte.io"},
-    },
+    "compute": {"ppn": 4, "nodes": 1, "queue": "OR"},
     "_project": {"slug": "pranab-default"},
     "workflow": WORKFLOW_RESP["_id"],
 }
 
 
-# In[8]:
+# In[ ]:
 
 
 # create job
@@ -184,7 +179,7 @@ JOB_RESP = job_endpoints.create(JOB_BODY)
 #     FILE_RESP=job_endpoints.insert_output_files(JOB_RESP["_id"], data)
 
 
-# In[9]:
+# In[ ]:
 
 
 # submit job to run
@@ -215,7 +210,7 @@ output_file_bytes = server_response.read()
 output_file = output_file_bytes.decode(encoding="UTF-8")
 
 
-# In[12]:
+# In[ ]:
 
 
 energy = []
@@ -225,7 +220,7 @@ for line in output_file.split("\n"):
         energy.append(float(line.split("=")[1].rstrip("Ry")))
 
 
-# In[13]:
+# In[ ]:
 
 
 # plot energy with iteration step
@@ -237,10 +232,4 @@ plt.plot(energy)
 plt.xlabel("Number of iteration")
 plt.ylabel("Energy (Ry)")
 plt.show()
-
-
-# In[ ]:
-
-
-
 

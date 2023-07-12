@@ -35,7 +35,7 @@ Follow the steps below in order to setup and view the Jupyter notebooks:
     ```
 
     Or, if you have set up SSH keys
-    
+
     ```bash
     git clone git@github.com:Exabyte-io/api-examples.git
     ```

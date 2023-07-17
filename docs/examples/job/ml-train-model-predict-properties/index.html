@@ -2257,27 +2257,37 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:29:07 |                2 |             0 |               0 |              0 |
+| 2023-07-17-02:40:43 |                2 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:29:17 |                1 |             1 |               0 |              0 |
+| 2023-07-17-02:40:54 |                2 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:29:28 |                0 |             1 |               1 |              0 |
+| 2023-07-17-02:41:04 |                2 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:29:38 |                0 |             1 |               1 |              0 |
+| 2023-07-17-02:41:15 |                0 |             2 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:29:49 |                0 |             0 |               2 |              0 |
+| 2023-07-17-02:41:25 |                0 |             2 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-17-02:41:35 |                0 |             1 |               1 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-17-02:41:46 |                0 |             0 |               2 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -2441,27 +2451,27 @@ job = job_endpoints.create(config)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:29:50 |                1 |             0 |               0 |              0 |
+| 2023-07-17-02:41:47 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:30:01 |                1 |             0 |               0 |              0 |
+| 2023-07-17-02:41:58 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:30:11 |                1 |             0 |               0 |              0 |
+| 2023-07-17-02:42:08 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:30:22 |                1 |             0 |               0 |              0 |
+| 2023-07-17-02:42:19 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:30:32 |                0 |             0 |               1 |              0 |
+| 2023-07-17-02:42:29 |                0 |             0 |               1 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -2588,7 +2598,7 @@ ml_predict_workflow_id = ml_predict_workflow["_id"]</div>
 .renderjson .keyword       { color: gray; }
 .renderjson .object.syntax { color: gray; }
 .renderjson .array.syntax  { color: gray; }
-</style><div id="9c9337cb-691f-4538-8fad-1047b0a3b854"></div>
+</style><div id="69c25769-443d-4197-890e-a5f0b01d51c9"></div>
 </div>
 
 </div>
@@ -2804,7 +2814,7 @@ var module, window, define, renderjson=(function() {
 
 if (define) define({renderjson:renderjson})
 else (module||{}).exports = (window||{}).renderjson = renderjson;
- renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("9c9337cb-691f-4538-8fad-1047b0a3b854").appendChild(renderjson({"name": "workflow:ml_predict", "displayName": "workflow:ml_predict", "creator": {"_id": "7y7KEHWocY7tCF5k5", "slug": "demo", "cls": "User"}, "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "schemaVersion": "0.2.0", "hash": "", "_id": "mJjFeYFYmeTixuFWK", "units": [{"_id": "LCthJ6E2QabYCZqf4", "name": "ml_predict_subworkflow", "type": "subworkflow", "flowchartId": "subworkflow", "head": true}], "subworkflows": [{"name": "ml_predict_subworkflow", "isDraft": true, "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "units": [{"status": "idle", "statusTrack": [], "head": true, "flowchartId": "io", "name": "input", "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "results": [], "next": "data_transformation_manipulation", "source": "api", "postProcessors": [], "preProcessors": [], "subtype": "dataFrame", "input": [{"endpoint": "dataframe", "endpoint_options": {"headers": {}, "data": {"features": ["volume", "density", "elemental_ratio:element=Si", "elemental_ratio:element=Ge", "p-norm:degree=0", "p-norm:degree=2", "p-norm:degree=3", "p-norm:degree=5", "p-norm:degree=7", "p-norm:degree=10", "electronegativity:Si", "electronegativity:Ge", "atomic_radius:Si", "atomic_radius:Ge", "ionization_potential:Si", "ionization_potential:Ge"], "ids": [], "targets": ["band_gaps:direct", "band_gaps:indirect"]}, "method": "POST", "params": {}, "jobId": ""}}], "type": "io", "monitors": []}, {"status": "idle", "statusTrack": [], "head": false, "flowchartId": "data_transformation_manipulation", "name": "clean data", "monitors": [], "results": [], "next": "data_transformation_scale_and_reduce", "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "postProcessors": [], "preProcessors": [], "operationType": "manipulation", "operation": "data_transformation", "type": "processing", "inputData": {"cleanMissingData": true, "replaceNoneValuesWith": 0, "removeDuplicateRows": true}}, {"status": "idle", "statusTrack": [], "head": false, "flowchartId": "data_transformation_scale_and_reduce", "name": "scale and reduce", "monitors": [], "results": [], "next": "score", "application": {"version": "0.2.0", "build": "Default", "name": "exabyteml", "shortName": "ml", "summary": "Exabyte Machine Learning Engine"}, "postProcessors": [], "preProcessors": [], "operationType": "scale_and_reduce", "operation": "data_transformation", "type": "processing", "inputData": {"scaler": "standard_scaler", "perFeature": [{"variance": 543.8373686872978, "mean": 64.20941132751862, "scale": 23.32032093877136, "name": "volume"}, {"variance": 0.5933666445116338, "mean": 3.0514527087099674, "scale": 0.7703029563175996, "name": "density"}, {"variance": 0.0625, "mean": 0.75, "scale": 0.25, "name": "elemental_ratio:element=Si"}, {"variance": 0.0625, "mean": 0.25, "scale": 0.25, "name": "elemental_ratio:element=Ge"}, {"variance": 0.25, "mean": 1.5, "scale": 0.5, "name": "p-norm:degree=0"}, {"variance": 0.02144660940672623, "mean": 0.8535533905932737, "scale": 0.1464466094067262, "name": "p-norm:degree=2"}, {"variance": 0.034232303274294176, "mean": 0.8149802624737184, "scale": 0.1850197375262817, "name": "p-norm:degree=3"}, {"variance": 0.045294655674047155, "mean": 0.7871745887492587, "scale": 0.21282541125074128, "name": "p-norm:degree=5"}, {"variance": 0.050165974969326614, "mean": 0.7760223784184531, "scale": 0.22397762158154688, "name": "p-norm:degree=7"}, {"variance": 0.053850281553241404, "mean": 0.7679433656340733, "scale": 0.23205663436592672, "name": "p-norm:degree=10"}, {"variance": 0, "mean": 1.9, "scale": 1, "name": "electronegativity:Si"}, {"variance": 1.0100249999999997, "mean": 1.005, "scale": 1.005, "name": "electronegativity:Ge"}, {"variance": 0, "mean": 110, "scale": 1, "name": "atomic_radius:Si"}, {"variance": 3906.25, "mean": 62.5, "scale": 62.5, "name": "atomic_radius:Ge"}, {"variance": 0, "mean": 786, "scale": 1, "name": "ionization_potential:Si"}, {"variance": 144400, "mean": 380, "scale": 380, "name": "ionization_potential:Ge"}]}}, {"status": "idle", "statusTrack": [], "executable": {"name": "score"}, "flowchartId": "score", "name": "score", "head": false, "results": [{"name": "predicted_properties"}], "application": {"version": "0.2.0", "build": "Default", "name": "exabyteml", "shortName": "ml", "summary": "Exabyte Machine Learning Engine"}, "postProcessors": [], "preProcessors": [], "context": {}, "input": [], "flavor": {"name": "score"}, "type": "execution", "monitors": [{"name": "standard_output"}]}], "model": {"type": "ml", "subtype": "re", "method": {"type": "linear", "subtype": "least_squares", "data": {"perProperty": [{"name": "band_gaps:direct", "perFeature": [{"name": "volume", "coefficient": -0.08324446799667684, "importance": "NaN"}, {"name": "density", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "elemental_ratio:element=Si", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "elemental_ratio:element=Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=0", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=2", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=3", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=5", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=7", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=10", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "electronegativity:Si", "coefficient": 0, "importance": "NaN"}, {"name": "electronegativity:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "atomic_radius:Si", "coefficient": 0, "importance": "NaN"}, {"name": "atomic_radius:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "ionization_potential:Si", "coefficient": 0, "importance": "NaN"}, {"name": "ionization_potential:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}], "intercept": 1.476}, {"name": "band_gaps:indirect", "perFeature": [{"name": "volume", "coefficient": -0.00880522234977136, "importance": "NaN"}, {"name": "density", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "elemental_ratio:element=Si", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "elemental_ratio:element=Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=0", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=2", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=3", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=5", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=7", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=10", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "electronegativity:Si", "coefficient": 0, "importance": "NaN"}, {"name": "electronegativity:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "atomic_radius:Si", "coefficient": 0, "importance": "NaN"}, {"name": "atomic_radius:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "ionization_potential:Si", "coefficient": 0, "importance": "NaN"}, {"name": "ionization_potential:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}], "intercept": 0.508}]}, "precision": {"perProperty": [{"name": "band_gaps:direct", "score": -0.5992750363271038, "trainingError": 1.8729260368583518}, {"name": "band_gaps:indirect", "score": 1, "trainingError": 1.5407439555097887e-33}]}}}, "_id": "LCthJ6E2QabYCZqf4", "properties": ["band_gaps:direct", "band_gaps:indirect"]}], "properties": ["band_gaps:direct", "band_gaps:indirect"], "repetition": 0}))</script>
+ renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("69c25769-443d-4197-890e-a5f0b01d51c9").appendChild(renderjson({"name": "workflow:ml_predict", "displayName": "workflow:ml_predict", "creator": {"_id": "7y7KEHWocY7tCF5k5", "slug": "demo", "cls": "User"}, "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "schemaVersion": "0.2.0", "hash": "", "_id": "g8hjEt5eAKQ2Dun3t", "units": [{"_id": "LCthJ6E2QabYCZqf4", "name": "ml_predict_subworkflow", "type": "subworkflow", "flowchartId": "subworkflow", "head": true}], "subworkflows": [{"name": "ml_predict_subworkflow", "isDraft": true, "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "units": [{"status": "idle", "statusTrack": [], "head": true, "flowchartId": "io", "name": "input", "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "results": [], "next": "data_transformation_manipulation", "source": "api", "postProcessors": [], "preProcessors": [], "subtype": "dataFrame", "input": [{"endpoint": "dataframe", "endpoint_options": {"headers": {}, "data": {"features": ["volume", "density", "elemental_ratio:element=Si", "p-norm:degree=0", "p-norm:degree=2", "p-norm:degree=3", "p-norm:degree=5", "p-norm:degree=7", "p-norm:degree=10", "electronegativity:Si", "atomic_radius:Si", "ionization_potential:Si", "elemental_ratio:element=Ge", "electronegativity:Ge", "atomic_radius:Ge", "ionization_potential:Ge"], "ids": [], "targets": ["band_gaps:direct", "band_gaps:indirect"]}, "method": "POST", "params": {}, "jobId": ""}}], "type": "io", "monitors": []}, {"status": "idle", "statusTrack": [], "head": false, "flowchartId": "data_transformation_manipulation", "name": "clean data", "monitors": [], "results": [], "next": "data_transformation_scale_and_reduce", "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "postProcessors": [], "preProcessors": [], "operationType": "manipulation", "operation": "data_transformation", "type": "processing", "inputData": {"cleanMissingData": true, "replaceNoneValuesWith": 0, "removeDuplicateRows": true}}, {"status": "idle", "statusTrack": [], "head": false, "flowchartId": "data_transformation_scale_and_reduce", "name": "scale and reduce", "monitors": [], "results": [], "next": "score", "application": {"version": "0.2.0", "build": "Default", "name": "exabyteml", "shortName": "ml", "summary": "Exabyte Machine Learning Engine"}, "postProcessors": [], "preProcessors": [], "operationType": "scale_and_reduce", "operation": "data_transformation", "type": "processing", "inputData": {"scaler": "standard_scaler", "perFeature": [{"variance": 543.8373686872978, "mean": 64.20941132751862, "scale": 23.32032093877136, "name": "volume"}, {"variance": 0.5933666445116338, "mean": 3.0514527087099674, "scale": 0.7703029563175996, "name": "density"}, {"variance": 0.0625, "mean": 0.75, "scale": 0.25, "name": "elemental_ratio:element=Si"}, {"variance": 0.25, "mean": 1.5, "scale": 0.5, "name": "p-norm:degree=0"}, {"variance": 0.02144660940672623, "mean": 0.8535533905932737, "scale": 0.1464466094067262, "name": "p-norm:degree=2"}, {"variance": 0.034232303274294176, "mean": 0.8149802624737184, "scale": 0.1850197375262817, "name": "p-norm:degree=3"}, {"variance": 0.045294655674047155, "mean": 0.7871745887492587, "scale": 0.21282541125074128, "name": "p-norm:degree=5"}, {"variance": 0.050165974969326614, "mean": 0.7760223784184531, "scale": 0.22397762158154688, "name": "p-norm:degree=7"}, {"variance": 0.053850281553241404, "mean": 0.7679433656340733, "scale": 0.23205663436592672, "name": "p-norm:degree=10"}, {"variance": 0, "mean": 1.9, "scale": 1, "name": "electronegativity:Si"}, {"variance": 0, "mean": 110, "scale": 1, "name": "atomic_radius:Si"}, {"variance": 0, "mean": 786, "scale": 1, "name": "ionization_potential:Si"}, {"variance": 0.0625, "mean": 0.25, "scale": 0.25, "name": "elemental_ratio:element=Ge"}, {"variance": 1.0100249999999997, "mean": 1.005, "scale": 1.005, "name": "electronegativity:Ge"}, {"variance": 3906.25, "mean": 62.5, "scale": 62.5, "name": "atomic_radius:Ge"}, {"variance": 144400, "mean": 380, "scale": 380, "name": "ionization_potential:Ge"}]}}, {"status": "idle", "statusTrack": [], "executable": {"name": "score"}, "flowchartId": "score", "name": "score", "head": false, "results": [{"name": "predicted_properties"}], "application": {"version": "0.2.0", "build": "Default", "name": "exabyteml", "shortName": "ml", "summary": "Exabyte Machine Learning Engine"}, "postProcessors": [], "preProcessors": [], "context": {}, "input": [], "flavor": {"name": "score"}, "type": "execution", "monitors": [{"name": "standard_output"}]}], "model": {"type": "ml", "subtype": "re", "method": {"type": "linear", "subtype": "least_squares", "data": {"perProperty": [{"name": "band_gaps:direct", "perFeature": [{"name": "volume", "coefficient": -0.08324446799667684, "importance": "NaN"}, {"name": "density", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "elemental_ratio:element=Si", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=0", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=2", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=3", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=5", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=7", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=10", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "electronegativity:Si", "coefficient": 0, "importance": "NaN"}, {"name": "atomic_radius:Si", "coefficient": 0, "importance": "NaN"}, {"name": "ionization_potential:Si", "coefficient": 0, "importance": "NaN"}, {"name": "elemental_ratio:element=Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "electronegativity:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "atomic_radius:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "ionization_potential:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}], "intercept": 1.476}, {"name": "band_gaps:indirect", "perFeature": [{"name": "volume", "coefficient": -0.00880522234977136, "importance": "NaN"}, {"name": "density", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "elemental_ratio:element=Si", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=0", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=2", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=3", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=5", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=7", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=10", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "electronegativity:Si", "coefficient": 0, "importance": "NaN"}, {"name": "atomic_radius:Si", "coefficient": 0, "importance": "NaN"}, {"name": "ionization_potential:Si", "coefficient": 0, "importance": "NaN"}, {"name": "elemental_ratio:element=Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "electronegativity:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "atomic_radius:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "ionization_potential:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}], "intercept": 0.508}]}, "precision": {"perProperty": [{"name": "band_gaps:direct", "score": -0.5992750363271038, "trainingError": 1.8729260368583518}, {"name": "band_gaps:indirect", "score": 1, "trainingError": 1.5407439555097887e-33}]}}}, "_id": "LCthJ6E2QabYCZqf4", "properties": ["band_gaps:direct", "band_gaps:indirect"]}], "properties": ["band_gaps:direct", "band_gaps:indirect"], "repetition": 0}))</script>
 </div>
 
 </div>
@@ -2967,12 +2977,12 @@ job = job_endpoints.create(config)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:30:35 |                1 |             0 |               0 |              0 |
+| 2023-07-17-02:42:32 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-12-23:30:45 |                0 |             0 |               1 |              0 |
+| 2023-07-17-02:42:42 |                0 |             0 |               1 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -3154,34 +3164,34 @@ html</div>
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
 <style type="text/css">
-#T_72b30 th {
+#T_611d3 th {
   text-align: center;
 }
-#T_72b30 td {
+#T_611d3 td {
   text-align: center;
 }
 </style>
-<table id="T_72b30">
+<table id="T_611d3">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_72b30_level0_col0" class="col_heading level0 col0" >ID</th>
-      <th id="T_72b30_level0_col1" class="col_heading level0 col1" >NAME</th>
-      <th id="T_72b30_level0_col2" class="col_heading level0 col2" >FORMULA</th>
-      <th id="T_72b30_level0_col3" class="col_heading level0 col3" >EXABYTE-ID</th>
-      <th id="T_72b30_level0_col4" class="col_heading level0 col4" >DIRECT-GAP</th>
-      <th id="T_72b30_level0_col5" class="col_heading level0 col5" >INDIRECT-GAP</th>
+      <th id="T_611d3_level0_col0" class="col_heading level0 col0" >ID</th>
+      <th id="T_611d3_level0_col1" class="col_heading level0 col1" >NAME</th>
+      <th id="T_611d3_level0_col2" class="col_heading level0 col2" >FORMULA</th>
+      <th id="T_611d3_level0_col3" class="col_heading level0 col3" >EXABYTE-ID</th>
+      <th id="T_611d3_level0_col4" class="col_heading level0 col4" >DIRECT-GAP</th>
+      <th id="T_611d3_level0_col5" class="col_heading level0 col5" >INDIRECT-GAP</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th id="T_72b30_level0_row0" class="row_heading level0 row0" >0</th>
-      <td id="T_72b30_row0_col0" class="data row0 col0" >nZ73JLHLKTAJWs4Gu</td>
-      <td id="T_72b30_row0_col1" class="data row0 col1" >mp-32</td>
-      <td id="T_72b30_row0_col2" class="data row0 col2" >Ge</td>
-      <td id="T_72b30_row0_col3" class="data row0 col3" >ts2ghFDZLBrKPiQaN</td>
-      <td id="T_72b30_row0_col4" class="data row0 col4" >1.070000</td>
-      <td id="T_72b30_row0_col5" class="data row0 col5" >0.465000</td>
+      <th id="T_611d3_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_611d3_row0_col0" class="data row0 col0" >5Wvm4GC6FmF997nBg</td>
+      <td id="T_611d3_row0_col1" class="data row0 col1" >mp-32</td>
+      <td id="T_611d3_row0_col2" class="data row0 col2" >Ge</td>
+      <td id="T_611d3_row0_col3" class="data row0 col3" >ts2ghFDZLBrKPiQaN</td>
+      <td id="T_611d3_row0_col4" class="data row0 col4" >1.070000</td>
+      <td id="T_611d3_row0_col5" class="data row0 col5" >0.465000</td>
     </tr>
   </tbody>
 </table>

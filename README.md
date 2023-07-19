@@ -8,6 +8,7 @@ Below, we list the contents of this repository, in roughly the order that a user
 | ------------------|-----------------------------------------| ----------- |
 | [Examples/System](examples/system/)     | [Get Authentication Params](examples/system/get_authentication_params.ipynb)               | Demonstrates how to programatically find your user ID and access token, which is to [authenticate](https://docs.mat3ra.com/rest-api/authentication/) for many portions of the Mat3ra API.
 | [Examples/Workflow](examples/workflow/) | [Get Workflows](examples/workflow/get_workflows.ipynb)                           | Walks through how to [query](https://docs.mat3ra.com/rest-api/query-structure/) the Mat3ra API to programatically search for workflows. In this example, we search for workflows that calculate the total energy of a material.
+| [Examples/Workflow](examples/workflow/) | [Quantum Espresso Workflow and Job](examples/workflow/qe_scf_calculation.ipynb)  | Create Quantum Espresso workflow starting from QE input file; create and submit job; after the job is finished, download output file, and finally perform postprocessing analysis.
 | [Examples/Material](examples/material/) | [Get Materials by Formula](examples/material/get_materials_by_formula.ipynb)                | Shows how [queries](https://docs.mat3ra.com/rest-api/query-structure/) can be made to search for materials stored on your account by their formula. In this example, we search for a system containing Si.
 | [Examples/Material](examples/material/) | [Create Material](examples/material/create_material.ipynb)                         | Gives an overview of how materials can be generated in [JSON format](https://docs.mat3ra.com/materials/data/) and uploaded to your user account. In this example, we create an FCC Si crystal and upload it.
 | [Examples/Material](examples/material/) | [Import Materials from Materials Project](examples/material/import_materials_from_materialsproject.ipynb) | Demonstrates how materials can be imported from [Materials Project](https://materialsproject.org/about), if their Materials Project ID is known. In this example, we import monoclinic and hexagonal SiGe cells.
@@ -85,15 +86,25 @@ NOTE: The Materials Project API key should be obtained from [https://legacy.mate
 
 This is an open-source repository and we welcome contributions for other use cases. The original set of examples is only meant to demonstrate the capabilities and can be extended.
 
-We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on Github. This process is explained in more details elsewhere online [[4](#links)].
+We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on GitHub. This process is explained in more details elsewhere online [[4](#links)].
 
 If you would like to add new examples or adjust existing ones, please consider the following:
 
 1. Put examples into the corresponding directories by domain.
 
-2. Walk the readers through the examples by providing step-by-step explanation similar to [this](examples/material/get_materials_by_formula.ipynb).
+2. Walk the readers through the examples by providing step-by-step explanation similar to [this](examples/material/get_materials_by_formula.ipynb) example.
 
-3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](examples/config.py) file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [[3](#links)]. Please follow this convention.
+3. We use post-save hooks to automatically convert notebooks to python scripts. See [config](examples/config.py) file for more information. In order to facilitate code review, we exclude notebook sources in the `other/` directory from version control and store them in Git LFS [[3](#links)]. Please follow this convention.
+
+4. Apply code formatting by installing development requirements as follows:
+
+    ```bash
+    pip install -e ."[dev]"
+    pre-commit install
+    pre-commit run --all-files
+    ```
+
+    Check more details about `pre-commit` [here](https://pre-commit.com/).
 
 ## Links
 

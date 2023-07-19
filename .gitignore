@@ -109,3 +109,4 @@ venv.bak/
 examples/assets/Molecules_Dataset_Collection
 pw_scf.*
 examples/**/*.html
+.DS_Store

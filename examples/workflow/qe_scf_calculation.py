@@ -123,7 +123,7 @@ K_POINTS (automatic)
 EOF
 # -------------------------- PSEUDO POTENTIAL FILE --------------------------- #
 # provide a downloadable link for the pseudo potential file
-wget https://raw.githubusercontent.com/pranabdas/espresso/main/src/pseudos/Si.pz-vbc.UPF
+wget https://media.githubusercontent.com/media/exabyte-io/api-examples/dev/examples/assets/Si.pz-vbc.UPF
 # --------------------------------- RUN JOB ---------------------------------- #
 # load required module
 module add espresso/63-i-174-impi-044

@@ -1,0 +1,150 @@
+{
+  "name": "QE SCF Calculation",
+  "subworkflows": [
+    {
+      "name": "Total energy",
+      "application": {
+        "_id": "ZcxX9DDY7GWcQKkEj",
+        "name": "shell",
+        "version": "4.2.46",
+        "build": "Default",
+        "isDefault": true,
+        "summary": "Shell Script",
+        "shortName": "sh",
+        "updatedBy": "0"
+      },
+      "units": [
+        {
+          "type": "execution",
+          "application": {
+            "_id": "ZcxX9DDY7GWcQKkEj",
+            "name": "shell",
+            "version": "4.2.46",
+            "build": "Default",
+            "isDefault": true,
+            "summary": "Shell Script",
+            "shortName": "sh",
+            "updatedBy": "0"
+          },
+          "results": [],
+          "monitors": [
+            {
+              "name": "standard_output"
+            }
+          ],
+          "head": true,
+          "input": [
+            {
+              "content": "",
+              "name": "job_script.sh",
+              "applicationName": "shell",
+              "executableName": "sh"
+            }
+          ],
+          "executable": {
+            "isDefault": true,
+            "monitors": [
+              "standard_output"
+            ],
+            "results": [
+              "atomic_forces",
+              "band_gaps",
+              "band_structure",
+              "density_of_states",
+              "fermi_energy",
+              "phonon_dispersions",
+              "phonon_dos",
+              "pressure",
+              "stress_tensor",
+              "total_energy",
+              "total_energy_contributions",
+              "total_force",
+              "zero_point_energy",
+              "final_structure",
+              "magnetic_moments",
+              "reaction_energy_barrier",
+              "reaction_energy_profile",
+              "potential_profile",
+              "charge_density_profile"
+            ],
+            "name": "sh"
+          },
+          "flavor": {
+            "isDefault": true,
+            "input": [
+              {
+                "name": "job.sh"
+              }
+            ],
+            "monitors": [
+              "standard_output"
+            ],
+            "applicationName": "shell",
+            "executableName": "sh",
+            "name": "hello_world",
+            "executable": {
+              "isDefault": true,
+              "monitors": [
+                "standard_output"
+              ],
+              "results": [
+                "atomic_forces",
+                "band_gaps",
+                "band_structure",
+                "density_of_states",
+                "fermi_energy",
+                "phonon_dispersions",
+                "phonon_dos",
+                "pressure",
+                "stress_tensor",
+                "total_energy",
+                "total_energy_contributions",
+                "total_force",
+                "zero_point_energy",
+                "final_structure",
+                "magnetic_moments",
+                "reaction_energy_barrier",
+                "reaction_energy_profile",
+                "potential_profile",
+                "charge_density_profile"
+              ],
+              "name": "sh"
+            }
+          },
+          "name": "test workflow",
+          "flowchartId": "48324e768e23e729006648ff",
+          "status": "idle",
+          "statusTrack": [],
+          "preProcessors": [],
+          "postProcessors": []
+        }
+      ],
+      "isDraft": false,
+      "model": {
+        "type": "unknown",
+        "subtype": "unknown",
+        "method": {
+          "type": "unknown",
+          "subtype": "unknown",
+          "data": {}
+        }
+      }
+    }
+  ],
+  "units": [
+    {
+      "name": "bash subworkflow",
+      "type": "subworkflow",
+      "head": true,
+      "schemaVersion": "2022.8.16",
+      "isDefault": false,
+      "flowchartId": "98c34129442d7826ed9d7608",
+      "status": "idle",
+      "statusTrack": [],
+      "results": [],
+      "monitors": [],
+      "preProcessors": [],
+      "postProcessors": []
+    }
+  ]
+}

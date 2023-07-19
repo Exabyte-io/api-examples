@@ -13,7 +13,7 @@
         <link rel="next" href="examples/assets/">
       
       <link rel="icon" href="https://docs.mat3ra.com/images/logo/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.18">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.19">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.eebd395e.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.ecc896b0.min.css">
@@ -334,6 +334,21 @@
   
   
     <li class="md-nav__item">
+      <a href="examples/workflow/qe_scf_calculation/" class="md-nav__link">
+        Quantum Espresso Workflow and Job
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="examples/material/get_materials_by_formula/" class="md-nav__link">
         Get Materials by Formula
       </a>
@@ -563,6 +578,11 @@
 <td>Walks through how to <a href="https://docs.mat3ra.com/rest-api/query-structure/">query</a> the Mat3ra API to programatically search for workflows. In this example, we search for workflows that calculate the total energy of a material.</td>
 </tr>
 <tr>
+<td><a href="examples/workflow/">Examples/Workflow</a></td>
+<td><a href="examples/workflow/qe_scf_calculation/">Quantum Espresso Workflow and Job</a></td>
+<td>Create Quantum Espresso workflow starting from QE input file; create and submit job; after the job is finished, download output file, and finally perform postprocessing analysis.</td>
+</tr>
+<tr>
 <td><a href="examples/material/">Examples/Material</a></td>
 <td><a href="examples/material/get_materials_by_formula/">Get Materials by Formula</a></td>
 <td>Shows how <a href="https://docs.mat3ra.com/rest-api/query-structure/">queries</a> can be made to search for materials stored on your account by their formula. In this example, we search for a system containing Si.</td>
@@ -663,17 +683,25 @@ jupyter<span class="w"> </span>lab<span class="w"> </span>--config<span class="o
 <p>NOTE: The Materials Project API key should be obtained from <a href="https://legacy.materialsproject.org/open">https://legacy.materialsproject.org/open</a>.</p>
 <h2 id="contribute">Contribute<a class="headerlink" href="#contribute" title="Permanent link">&para;</a></h2>
 <p>This is an open-source repository and we welcome contributions for other use cases. The original set of examples is only meant to demonstrate the capabilities and can be extended.</p>
-<p>We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on Github. This process is explained in more details elsewhere online [<a href="#links">4</a>].</p>
+<p>We suggest forking this repository and introducing the adjustments there. The changes in the fork can further be considered for merging into this repository as it is commonly used on GitHub. This process is explained in more details elsewhere online [<a href="#links">4</a>].</p>
 <p>If you would like to add new examples or adjust existing ones, please consider the following:</p>
 <ol>
 <li>
 <p>Put examples into the corresponding directories by domain.</p>
 </li>
 <li>
-<p>Walk the readers through the examples by providing step-by-step explanation similar to <a href="examples/material/get_materials_by_formula/">this</a>.</p>
+<p>Walk the readers through the examples by providing step-by-step explanation similar to <a href="examples/material/get_materials_by_formula/">this</a> example.</p>
 </li>
 <li>
-<p>We use post-save hooks to automatically convert notebooks to python scripts. See <a href="examples/config.py">config</a> file for more information. In order to facilitate code review, we exclude notebook sources from version control and store them in Git LFS [<a href="#links">3</a>]. Please follow this convention.</p>
+<p>We use post-save hooks to automatically convert notebooks to python scripts. See <a href="examples/config.py">config</a> file for more information. In order to facilitate code review, we exclude notebook sources in the <code>other/</code> directory from version control and store them in Git LFS [<a href="#links">3</a>]. Please follow this convention.</p>
+</li>
+<li>
+<p>Apply code formatting by installing development requirements as follows:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="s2">&quot;[dev]&quot;</span>
+pre-commit<span class="w"> </span>install
+pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+</code></pre></div>
+<p>Check more details about <code>pre-commit</code> <a href="https://pre-commit.com/">here</a>.</p>
 </li>
 </ol>
 <h2 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h2>

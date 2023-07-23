@@ -30,6 +30,9 @@ copyright: © 2023 <a target="_blank" href="https://mat3ra.com">Exabyte Inc</a>.
 extra:
   generator: false
 
+extra_css:
+  - extra/css/custom.css
+
 markdown_extensions:
   - codehilite:
       linenums: true

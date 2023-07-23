@@ -59,6 +59,9 @@ nav:
 plugins:
   - same-dir
 
+  - search:
+      lang: en
+
   - exclude:
       glob:
         - "other/*"

@@ -15,7 +15,7 @@
         <link rel="next" href="../qe_scf_calculation/">
       
       <link rel="icon" href="https://docs.mat3ra.com/images/logo/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.19">
+      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
     
     
       
@@ -41,6 +41,8 @@
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../../../extra/css/custom.css">
     
     <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -139,6 +141,39 @@
       
     
     
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
     
     
       <div class="md-header__source">
@@ -1801,7 +1836,7 @@ OPTIONS = {"limit": 2}</div>
 .renderjson .keyword       { color: gray; }
 .renderjson .object.syntax { color: gray; }
 .renderjson .array.syntax  { color: gray; }
-</style><div id="c8ef7ba2-a473-4bfd-ba8b-e5ae659ff60f"></div>
+</style><div id="1d099579-a752-49f1-afd0-25683b4bf8b2"></div>
 </div>
 </div>
 <div class="jp-OutputArea-child">
@@ -2012,7 +2047,7 @@ var module, window, define, renderjson=(function() {
 
 if (define) define({renderjson:renderjson})
 else (module||{}).exports = (window||{}).renderjson = renderjson;
- renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("c8ef7ba2-a473-4bfd-ba8b-e5ae659ff60f").appendChild(renderjson([{"_id": "JWzsXBvgHyBkeMa5H", "name": "Total Energy", "subworkflows": [{"_id": "974fd2cab189836c26c7d9f4", "name": "Total Energy", "application": {"_id": "XZBfXvMndSsgGPnQB", "name": "vasp", "version": "5.3.5", "build": "Default", "isDefault": true, "summary": "Vienna Ab-initio Simulation Package", "updatedAt": "2019-07-21T20:29:48.526Z", "shortName": "vasp"}, "properties": [null], "model": {"type": "dft", "subtype": "gga", "method": {"type": "pseudopotential", "subtype": "paw", "data": {}}, "functional": {"slug": "pbe"}, "refiners": [], "modifiers": []}, "units": [{"type": "execution", "name": "vasp", "head": true, "results": [{"name": "total_energy"}, {"name": "total_energy_contributions"}, {"name": "pressure"}, {"name": "fermi_energy"}, {"name": "atomic_forces"}, {"name": "total_force"}, {"name": "stress_tensor"}], "monitors": [{"name": "standard_output"}, {"name": "convergence_electronic"}], "flowchartId": "11029ef0b4e47c8e73de93e4", "preProcessors": [], "postProcessors": [], "application": {"_id": "XZBfXvMndSsgGPnQB", "name": "vasp", "version": "5.3.5", "build": "Default", "isDefault": true, "summary": "Vienna Ab-initio Simulation Package", "updatedAt": "2019-07-21T20:29:48.526Z", "shortName": "vasp"}, "executable": {"_id": "Pawnn8Yihhw7MRXZK", "results": ["atomic_forces", "band_gaps", "band_structure", "density_of_states", "fermi_energy", "pressure", "stress_tensor", "total_energy", "total_energy_contributions", "total_force", "zero_point_energy", "final_structure", "magnetic_moments", "reaction_energy_barrier", "reaction_energy_profile", "potential_profile", "charge_density_profile"], "postProcessors": ["error_handler", "prepare_restart", "remove_non_zero_weight_kpoints"], "monitors": ["standard_output", "convergence_ionic", "convergence_electronic"], "name": "vasp", "applicationId": ["XZBfXvMndSsgGPnQB", "tfmjXaGz83Wd6jrqd", "JMwhTtwAhuP2nAa4u", "fMAtP4Bfd2Xr665hn", "rkdvSx8zuKwbqA8GE", "6vH6swqd5iH9mCzDn", "MJDcEWR37gPRhFusj", "vKAToK6DZcM9GCNHZ", "Y3sfHbv2GGdumRvZM"], "createdAt": "2018-03-14T18:40:08.738Z", "updatedAt": "2019-07-21T20:29:50.314Z", "schemaVersion": "0.2.0", "isDefault": false, "tags": [], "inSet": []}, "flavor": {"_id": "9FooFphx4uDHvgNc3", "name": "vasp", "executableId": "Pawnn8Yihhw7MRXZK", "isDefault": true, "input": [{"name": "INCAR", "templateId": "s2GDJhrrDTsdiDFnn"}, {"name": "KPOINTS", "templateId": "9pcsLGkorwi9mASG2"}, {"name": "POSCAR", "templateId": "uZCuLHKmh4iYmrfsz"}], "results": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "monitors": ["standard_output", "convergence_electronic"], "schemaVersion": "0.2.0", "tags": [], "updatedAt": "2019-07-21T20:29:50.329Z", "inSet": []}, "status": "idle", "statusTrack": [], "input": [{"_id": "s2GDJhrrDTsdiDFnn", "applicationName": "vasp", "executableName": "vasp", "name": "INCAR", "content": "ISMEAR = 0\nSIGMA  = 0.05\nLORBIT = 11", "contextProviders": [{"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.078Z", "rendered": "ISMEAR = 0\nSIGMA  = 0.05\nLORBIT = 11"}, {"_id": "9pcsLGkorwi9mASG2", "applicationName": "vasp", "executableName": "vasp", "name": "KPOINTS", "content": "Automatic mesh\n0\nGamma\n  {% for d in kgrid.dimensions %}{{d}} {% endfor %}\n  {% for s in kgrid.shifts %}{{s}} {% endfor %}", "contextProviders": [{"name": "KGridFormDataManager"}, {"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.112Z", "rendered": "Automatic mesh\n0\nGamma\n  10 10 10 \n  0 0 0 "}, {"_id": "uZCuLHKmh4iYmrfsz", "applicationName": "vasp", "executableName": "vasp", "name": "POSCAR", "content": "{{ input.POSCAR }}", "contextProviders": [{"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.126Z", "rendered": "Silicon FCC\n1.0\n   3.348920000\t   0.000000000\t   1.933500000\n   1.116307000\t   3.157392000\t   1.933500000\n   0.000000000\t   0.000000000\t   3.867000000\nSi\n2\ndirect\n   0.000000000    0.000000000    0.000000000  Si\n   0.250000000    0.250000000    0.250000000  Si"}]}]}], "units": [{"type": "subworkflow", "_id": "974fd2cab189836c26c7d9f4", "name": "Total Energy", "status": "idle", "statusTrack": [], "flowchartId": "3e6a581eecf2868f3f75d300", "results": [], "monitors": [], "preProcessors": [], "postProcessors": [], "head": true}], "properties": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "access": {"all": {"roles": ["read"]}}, "isDefault": false, "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "exabyteId": "SnGspffD7nPsBHJaQ", "createdAt": "2017-11-04T06:35:12.431Z", "updatedAt": "2023-07-13T18:16:25.325Z", "hash": "1b51b3a0940fe6824b570561af1061a6", "history": [{"id": "dDiPijHtPAmZ8NgDM", "revision": 0}, {"id": "vNk9bu33WRKqaNNd5", "revision": 1}, {"id": "WoMXsHXB6j565SAwj", "revision": 2}, {"id": "AxWXbzcFoT7Ck2pyk", "revision": 3}], "isOutdated": true, "workflows": [], "schemaVersion": "0.2.0", "tags": [], "creator": {"_id": "W8NM4yBSgHN3ro5YC", "slug": "exadmin", "cls": "User"}, "slug": "", "inSet": [{"_id": "5b143a7bacd8211c4898a469", "cls": "Team", "slug": "owner"}, {"_id": "5b143a7bacd8211c4898a46a", "cls": "Team", "slug": "admin"}], "updatedBy": "0", "isEntitySet": false}]))</script>
+ renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("1d099579-a752-49f1-afd0-25683b4bf8b2").appendChild(renderjson([{"_id": "JWzsXBvgHyBkeMa5H", "name": "Total Energy", "subworkflows": [{"_id": "974fd2cab189836c26c7d9f4", "name": "Total Energy", "application": {"_id": "XZBfXvMndSsgGPnQB", "name": "vasp", "version": "5.3.5", "build": "Default", "isDefault": true, "summary": "Vienna Ab-initio Simulation Package", "updatedAt": "2019-07-21T20:29:48.526Z", "shortName": "vasp"}, "properties": [null], "model": {"type": "dft", "subtype": "gga", "method": {"type": "pseudopotential", "subtype": "paw", "data": {}}, "functional": {"slug": "pbe"}, "refiners": [], "modifiers": []}, "units": [{"type": "execution", "name": "vasp", "head": true, "results": [{"name": "total_energy"}, {"name": "total_energy_contributions"}, {"name": "pressure"}, {"name": "fermi_energy"}, {"name": "atomic_forces"}, {"name": "total_force"}, {"name": "stress_tensor"}], "monitors": [{"name": "standard_output"}, {"name": "convergence_electronic"}], "flowchartId": "11029ef0b4e47c8e73de93e4", "preProcessors": [], "postProcessors": [], "application": {"_id": "XZBfXvMndSsgGPnQB", "name": "vasp", "version": "5.3.5", "build": "Default", "isDefault": true, "summary": "Vienna Ab-initio Simulation Package", "updatedAt": "2019-07-21T20:29:48.526Z", "shortName": "vasp"}, "executable": {"_id": "Pawnn8Yihhw7MRXZK", "results": ["atomic_forces", "band_gaps", "band_structure", "density_of_states", "fermi_energy", "pressure", "stress_tensor", "total_energy", "total_energy_contributions", "total_force", "zero_point_energy", "final_structure", "magnetic_moments", "reaction_energy_barrier", "reaction_energy_profile", "potential_profile", "charge_density_profile"], "postProcessors": ["error_handler", "prepare_restart", "remove_non_zero_weight_kpoints"], "monitors": ["standard_output", "convergence_ionic", "convergence_electronic"], "name": "vasp", "applicationId": ["XZBfXvMndSsgGPnQB", "tfmjXaGz83Wd6jrqd", "JMwhTtwAhuP2nAa4u", "fMAtP4Bfd2Xr665hn", "rkdvSx8zuKwbqA8GE", "6vH6swqd5iH9mCzDn", "MJDcEWR37gPRhFusj", "vKAToK6DZcM9GCNHZ", "Y3sfHbv2GGdumRvZM"], "createdAt": "2018-03-14T18:40:08.738Z", "updatedAt": "2019-07-21T20:29:50.314Z", "schemaVersion": "0.2.0", "isDefault": false, "tags": [], "inSet": []}, "flavor": {"_id": "9FooFphx4uDHvgNc3", "name": "vasp", "executableId": "Pawnn8Yihhw7MRXZK", "isDefault": true, "input": [{"name": "INCAR", "templateId": "s2GDJhrrDTsdiDFnn"}, {"name": "KPOINTS", "templateId": "9pcsLGkorwi9mASG2"}, {"name": "POSCAR", "templateId": "uZCuLHKmh4iYmrfsz"}], "results": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "monitors": ["standard_output", "convergence_electronic"], "schemaVersion": "0.2.0", "tags": [], "updatedAt": "2019-07-21T20:29:50.329Z", "inSet": []}, "status": "idle", "statusTrack": [], "input": [{"_id": "s2GDJhrrDTsdiDFnn", "applicationName": "vasp", "executableName": "vasp", "name": "INCAR", "content": "ISMEAR = 0\nSIGMA  = 0.05\nLORBIT = 11", "contextProviders": [{"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.078Z", "rendered": "ISMEAR = 0\nSIGMA  = 0.05\nLORBIT = 11"}, {"_id": "9pcsLGkorwi9mASG2", "applicationName": "vasp", "executableName": "vasp", "name": "KPOINTS", "content": "Automatic mesh\n0\nGamma\n  {% for d in kgrid.dimensions %}{{d}} {% endfor %}\n  {% for s in kgrid.shifts %}{{s}} {% endfor %}", "contextProviders": [{"name": "KGridFormDataManager"}, {"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.112Z", "rendered": "Automatic mesh\n0\nGamma\n  10 10 10 \n  0 0 0 "}, {"_id": "uZCuLHKmh4iYmrfsz", "applicationName": "vasp", "executableName": "vasp", "name": "POSCAR", "content": "{{ input.POSCAR }}", "contextProviders": [{"name": "VASPInputDataManager"}], "updatedAt": "2019-07-21T20:29:47.126Z", "rendered": "Silicon FCC\n1.0\n   3.348920000\t   0.000000000\t   1.933500000\n   1.116307000\t   3.157392000\t   1.933500000\n   0.000000000\t   0.000000000\t   3.867000000\nSi\n2\ndirect\n   0.000000000    0.000000000    0.000000000  Si\n   0.250000000    0.250000000    0.250000000  Si"}]}]}], "units": [{"type": "subworkflow", "_id": "974fd2cab189836c26c7d9f4", "name": "Total Energy", "status": "idle", "statusTrack": [], "flowchartId": "3e6a581eecf2868f3f75d300", "results": [], "monitors": [], "preProcessors": [], "postProcessors": [], "head": true}], "properties": ["total_energy", "total_energy_contributions", "pressure", "fermi_energy", "atomic_forces", "total_force", "stress_tensor"], "access": {"all": {"roles": ["read"]}}, "isDefault": false, "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "exabyteId": "SnGspffD7nPsBHJaQ", "createdAt": "2017-11-04T06:35:12.431Z", "updatedAt": "2023-07-13T18:16:25.325Z", "hash": "1b51b3a0940fe6824b570561af1061a6", "history": [{"id": "dDiPijHtPAmZ8NgDM", "revision": 0}, {"id": "vNk9bu33WRKqaNNd5", "revision": 1}, {"id": "WoMXsHXB6j565SAwj", "revision": 2}, {"id": "AxWXbzcFoT7Ck2pyk", "revision": 3}], "isOutdated": true, "workflows": [], "schemaVersion": "0.2.0", "tags": [], "creator": {"_id": "W8NM4yBSgHN3ro5YC", "slug": "exadmin", "cls": "User"}, "slug": "", "inSet": [{"_id": "5b143a7bacd8211c4898a469", "cls": "Team", "slug": "owner"}, {"_id": "5b143a7bacd8211c4898a46a", "cls": "Team", "slug": "admin"}], "updatedBy": "0", "isEntitySet": false}]))</script>
 </div>
 </div>
 </div>

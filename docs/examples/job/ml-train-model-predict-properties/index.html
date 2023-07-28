@@ -13,7 +13,7 @@
       
       
       <link rel="icon" href="https://docs.mat3ra.com/images/logo/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.19">
+      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
     
     
       
@@ -39,6 +39,8 @@
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../../../extra/css/custom.css">
     
     <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -137,6 +139,39 @@
       
     
     
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
     
     
       <div class="md-header__source">
@@ -2184,22 +2219,57 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:15:55 |                2 |             0 |               0 |              0 |
+| 2023-07-28-15:20:23 |                2 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:16:05 |                0 |             2 |               0 |              0 |
+| 2023-07-28-15:20:34 |                2 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:16:15 |                0 |             2 |               0 |              0 |
+| 2023-07-28-15:20:44 |                2 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:16:25 |                0 |             0 |               2 |              0 |
+| 2023-07-28-15:20:55 |                2 |             0 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:21:05 |                0 |             2 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:21:16 |                0 |             2 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:21:26 |                0 |             2 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:21:36 |                0 |             2 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:21:47 |                0 |             1 |               1 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:21:57 |                0 |             1 |               1 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:22:08 |                0 |             0 |               2 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -2337,17 +2407,27 @@ job = job_endpoints.create(config)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:16:26 |                1 |             0 |               0 |              0 |
+| 2023-07-28-15:22:09 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:16:36 |                0 |             1 |               0 |              0 |
+| 2023-07-28-15:22:20 |                0 |             1 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:16:47 |                0 |             0 |               1 |              0 |
+| 2023-07-28-15:22:30 |                0 |             1 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:22:41 |                0 |             1 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:22:51 |                0 |             0 |               1 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -2453,7 +2533,7 @@ ml_predict_workflow_id = ml_predict_workflow["_id"]</div>
 .renderjson .keyword       { color: gray; }
 .renderjson .object.syntax { color: gray; }
 .renderjson .array.syntax  { color: gray; }
-</style><div id="f1296139-00e4-445e-999a-14c38538c427"></div>
+</style><div id="38dca281-4f27-4a1b-966f-a49999cebc81"></div>
 </div>
 </div>
 <div class="jp-OutputArea-child">
@@ -2664,7 +2744,7 @@ var module, window, define, renderjson=(function() {
 
 if (define) define({renderjson:renderjson})
 else (module||{}).exports = (window||{}).renderjson = renderjson;
- renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("f1296139-00e4-445e-999a-14c38538c427").appendChild(renderjson({"name": "workflow:ml_predict", "displayName": "workflow:ml_predict", "creator": {"_id": "7y7KEHWocY7tCF5k5", "slug": "demo", "cls": "User"}, "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "schemaVersion": "0.2.0", "hash": "", "_id": "6CdSzRuw4DN3ypdQs", "units": [{"_id": "LCthJ6E2QabYCZqf4", "name": "ml_predict_subworkflow", "type": "subworkflow", "flowchartId": "subworkflow", "head": true}], "subworkflows": [{"name": "ml_predict_subworkflow", "isDraft": true, "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "units": [{"status": "idle", "statusTrack": [], "head": true, "flowchartId": "io", "name": "input", "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "results": [], "next": "data_transformation_manipulation", "source": "api", "postProcessors": [], "preProcessors": [], "subtype": "dataFrame", "input": [{"endpoint": "dataframe", "endpoint_options": {"headers": {}, "data": {"features": ["volume", "density", "elemental_ratio:element=Si", "elemental_ratio:element=Ge", "p-norm:degree=0", "p-norm:degree=2", "p-norm:degree=3", "p-norm:degree=5", "p-norm:degree=7", "p-norm:degree=10", "electronegativity:Si", "electronegativity:Ge", "atomic_radius:Si", "atomic_radius:Ge", "ionization_potential:Si", "ionization_potential:Ge"], "ids": [], "targets": ["band_gaps:direct", "band_gaps:indirect"]}, "method": "POST", "params": {}, "jobId": ""}}], "type": "io", "monitors": []}, {"status": "idle", "statusTrack": [], "head": false, "flowchartId": "data_transformation_manipulation", "name": "clean data", "monitors": [], "results": [], "next": "data_transformation_scale_and_reduce", "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "postProcessors": [], "preProcessors": [], "operationType": "manipulation", "operation": "data_transformation", "type": "processing", "inputData": {"cleanMissingData": true, "replaceNoneValuesWith": 0, "removeDuplicateRows": true}}, {"status": "idle", "statusTrack": [], "head": false, "flowchartId": "data_transformation_scale_and_reduce", "name": "scale and reduce", "monitors": [], "results": [], "next": "score", "application": {"version": "0.2.0", "build": "Default", "name": "exabyteml", "shortName": "ml", "summary": "Exabyte Machine Learning Engine"}, "postProcessors": [], "preProcessors": [], "operationType": "scale_and_reduce", "operation": "data_transformation", "type": "processing", "inputData": {"scaler": "standard_scaler", "perFeature": [{"variance": 543.8373686872978, "mean": 64.20941132751862, "scale": 23.32032093877136, "name": "volume"}, {"variance": 0.5933666445116338, "mean": 3.0514527087099674, "scale": 0.7703029563175996, "name": "density"}, {"variance": 0.0625, "mean": 0.75, "scale": 0.25, "name": "elemental_ratio:element=Si"}, {"variance": 0.0625, "mean": 0.25, "scale": 0.25, "name": "elemental_ratio:element=Ge"}, {"variance": 0.25, "mean": 1.5, "scale": 0.5, "name": "p-norm:degree=0"}, {"variance": 0.02144660940672623, "mean": 0.8535533905932737, "scale": 0.1464466094067262, "name": "p-norm:degree=2"}, {"variance": 0.034232303274294176, "mean": 0.8149802624737184, "scale": 0.1850197375262817, "name": "p-norm:degree=3"}, {"variance": 0.045294655674047155, "mean": 0.7871745887492587, "scale": 0.21282541125074128, "name": "p-norm:degree=5"}, {"variance": 0.050165974969326614, "mean": 0.7760223784184531, "scale": 0.22397762158154688, "name": "p-norm:degree=7"}, {"variance": 0.053850281553241404, "mean": 0.7679433656340733, "scale": 0.23205663436592672, "name": "p-norm:degree=10"}, {"variance": 0, "mean": 1.9, "scale": 1, "name": "electronegativity:Si"}, {"variance": 1.0100249999999997, "mean": 1.005, "scale": 1.005, "name": "electronegativity:Ge"}, {"variance": 0, "mean": 110, "scale": 1, "name": "atomic_radius:Si"}, {"variance": 3906.25, "mean": 62.5, "scale": 62.5, "name": "atomic_radius:Ge"}, {"variance": 0, "mean": 786, "scale": 1, "name": "ionization_potential:Si"}, {"variance": 144400, "mean": 380, "scale": 380, "name": "ionization_potential:Ge"}]}}, {"status": "idle", "statusTrack": [], "executable": {"name": "score"}, "flowchartId": "score", "name": "score", "head": false, "results": [{"name": "predicted_properties"}], "application": {"version": "0.2.0", "build": "Default", "name": "exabyteml", "shortName": "ml", "summary": "Exabyte Machine Learning Engine"}, "postProcessors": [], "preProcessors": [], "context": {}, "input": [], "flavor": {"name": "score"}, "type": "execution", "monitors": [{"name": "standard_output"}]}], "model": {"type": "ml", "subtype": "re", "method": {"type": "linear", "subtype": "least_squares", "data": {"perProperty": [{"name": "band_gaps:direct", "perFeature": [{"name": "volume", "coefficient": -0.08324446799667684, "importance": "NaN"}, {"name": "density", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "elemental_ratio:element=Si", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "elemental_ratio:element=Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=0", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=2", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=3", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=5", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=7", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=10", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "electronegativity:Si", "coefficient": 0, "importance": "NaN"}, {"name": "electronegativity:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "atomic_radius:Si", "coefficient": 0, "importance": "NaN"}, {"name": "atomic_radius:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "ionization_potential:Si", "coefficient": 0, "importance": "NaN"}, {"name": "ionization_potential:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}], "intercept": 1.476}, {"name": "band_gaps:indirect", "perFeature": [{"name": "volume", "coefficient": -0.00880522234977136, "importance": "NaN"}, {"name": "density", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "elemental_ratio:element=Si", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "elemental_ratio:element=Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=0", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=2", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=3", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=5", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=7", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=10", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "electronegativity:Si", "coefficient": 0, "importance": "NaN"}, {"name": "electronegativity:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "atomic_radius:Si", "coefficient": 0, "importance": "NaN"}, {"name": "atomic_radius:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "ionization_potential:Si", "coefficient": 0, "importance": "NaN"}, {"name": "ionization_potential:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}], "intercept": 0.508}]}, "precision": {"perProperty": [{"name": "band_gaps:direct", "score": -0.5992750363271038, "trainingError": 1.8729260368583518}, {"name": "band_gaps:indirect", "score": 1, "trainingError": 1.5407439555097887e-33}]}}}, "_id": "LCthJ6E2QabYCZqf4", "properties": ["band_gaps:direct", "band_gaps:indirect"]}], "properties": ["band_gaps:direct", "band_gaps:indirect"], "repetition": 0}))</script>
+ renderjson.set_show_to_level(2); renderjson.set_icons("▸","▾"); document.getElementById("38dca281-4f27-4a1b-966f-a49999cebc81").appendChild(renderjson({"name": "workflow:ml_predict", "displayName": "workflow:ml_predict", "creator": {"_id": "7y7KEHWocY7tCF5k5", "slug": "demo", "cls": "User"}, "owner": {"_id": "5b143a4ecd313f405b31412d", "slug": "demo", "cls": "Account"}, "schemaVersion": "0.2.0", "hash": "", "_id": "8q8mG86u8b8DejkSY", "units": [{"_id": "LCthJ6E2QabYCZqf4", "name": "ml_predict_subworkflow", "type": "subworkflow", "flowchartId": "subworkflow", "head": true}], "subworkflows": [{"name": "ml_predict_subworkflow", "isDraft": true, "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "units": [{"status": "idle", "statusTrack": [], "head": true, "flowchartId": "io", "name": "input", "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "results": [], "next": "data_transformation_manipulation", "source": "api", "postProcessors": [], "preProcessors": [], "subtype": "dataFrame", "input": [{"endpoint": "dataframe", "endpoint_options": {"headers": {}, "data": {"features": ["volume", "density", "elemental_ratio:element=Si", "p-norm:degree=0", "p-norm:degree=2", "p-norm:degree=3", "p-norm:degree=5", "p-norm:degree=7", "p-norm:degree=10", "electronegativity:Si", "atomic_radius:Si", "ionization_potential:Si", "elemental_ratio:element=Ge", "electronegativity:Ge", "atomic_radius:Ge", "ionization_potential:Ge"], "ids": [], "targets": ["band_gaps:direct", "band_gaps:indirect"]}, "method": "POST", "params": {}, "jobId": ""}}], "type": "io", "monitors": []}, {"status": "idle", "statusTrack": [], "head": false, "flowchartId": "data_transformation_manipulation", "name": "clean data", "monitors": [], "results": [], "next": "data_transformation_scale_and_reduce", "application": {"version": "0.2.0", "summary": "Exabyte Machine Learning Engine", "name": "exabyteml", "shortName": "ml", "build": "Default"}, "postProcessors": [], "preProcessors": [], "operationType": "manipulation", "operation": "data_transformation", "type": "processing", "inputData": {"cleanMissingData": true, "replaceNoneValuesWith": 0, "removeDuplicateRows": true}}, {"status": "idle", "statusTrack": [], "head": false, "flowchartId": "data_transformation_scale_and_reduce", "name": "scale and reduce", "monitors": [], "results": [], "next": "score", "application": {"version": "0.2.0", "build": "Default", "name": "exabyteml", "shortName": "ml", "summary": "Exabyte Machine Learning Engine"}, "postProcessors": [], "preProcessors": [], "operationType": "scale_and_reduce", "operation": "data_transformation", "type": "processing", "inputData": {"scaler": "standard_scaler", "perFeature": [{"variance": 543.8373686872978, "mean": 64.20941132751862, "scale": 23.32032093877136, "name": "volume"}, {"variance": 0.5933666445116338, "mean": 3.0514527087099674, "scale": 0.7703029563175996, "name": "density"}, {"variance": 0.0625, "mean": 0.75, "scale": 0.25, "name": "elemental_ratio:element=Si"}, {"variance": 0.25, "mean": 1.5, "scale": 0.5, "name": "p-norm:degree=0"}, {"variance": 0.02144660940672623, "mean": 0.8535533905932737, "scale": 0.1464466094067262, "name": "p-norm:degree=2"}, {"variance": 0.034232303274294176, "mean": 0.8149802624737184, "scale": 0.1850197375262817, "name": "p-norm:degree=3"}, {"variance": 0.045294655674047155, "mean": 0.7871745887492587, "scale": 0.21282541125074128, "name": "p-norm:degree=5"}, {"variance": 0.050165974969326614, "mean": 0.7760223784184531, "scale": 0.22397762158154688, "name": "p-norm:degree=7"}, {"variance": 0.053850281553241404, "mean": 0.7679433656340733, "scale": 0.23205663436592672, "name": "p-norm:degree=10"}, {"variance": 0, "mean": 1.9, "scale": 1, "name": "electronegativity:Si"}, {"variance": 0, "mean": 110, "scale": 1, "name": "atomic_radius:Si"}, {"variance": 0, "mean": 786, "scale": 1, "name": "ionization_potential:Si"}, {"variance": 0.0625, "mean": 0.25, "scale": 0.25, "name": "elemental_ratio:element=Ge"}, {"variance": 1.0100249999999997, "mean": 1.005, "scale": 1.005, "name": "electronegativity:Ge"}, {"variance": 3906.25, "mean": 62.5, "scale": 62.5, "name": "atomic_radius:Ge"}, {"variance": 144400, "mean": 380, "scale": 380, "name": "ionization_potential:Ge"}]}}, {"status": "idle", "statusTrack": [], "executable": {"name": "score"}, "flowchartId": "score", "name": "score", "head": false, "results": [{"name": "predicted_properties"}], "application": {"version": "0.2.0", "build": "Default", "name": "exabyteml", "shortName": "ml", "summary": "Exabyte Machine Learning Engine"}, "postProcessors": [], "preProcessors": [], "context": {}, "input": [], "flavor": {"name": "score"}, "type": "execution", "monitors": [{"name": "standard_output"}]}], "model": {"type": "ml", "subtype": "re", "method": {"type": "linear", "subtype": "least_squares", "data": {"perProperty": [{"name": "band_gaps:direct", "perFeature": [{"name": "volume", "coefficient": -0.08324446799667684, "importance": "NaN"}, {"name": "density", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "elemental_ratio:element=Si", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=0", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=2", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=3", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=5", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=7", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "p-norm:degree=10", "coefficient": 0.08324446799667683, "importance": "NaN"}, {"name": "electronegativity:Si", "coefficient": 0, "importance": "NaN"}, {"name": "atomic_radius:Si", "coefficient": 0, "importance": "NaN"}, {"name": "ionization_potential:Si", "coefficient": 0, "importance": "NaN"}, {"name": "elemental_ratio:element=Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "electronegativity:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "atomic_radius:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}, {"name": "ionization_potential:Ge", "coefficient": -0.08324446799667683, "importance": "NaN"}], "intercept": 1.476}, {"name": "band_gaps:indirect", "perFeature": [{"name": "volume", "coefficient": -0.00880522234977136, "importance": "NaN"}, {"name": "density", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "elemental_ratio:element=Si", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=0", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=2", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=3", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=5", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=7", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "p-norm:degree=10", "coefficient": 0.008805222349771354, "importance": "NaN"}, {"name": "electronegativity:Si", "coefficient": 0, "importance": "NaN"}, {"name": "atomic_radius:Si", "coefficient": 0, "importance": "NaN"}, {"name": "ionization_potential:Si", "coefficient": 0, "importance": "NaN"}, {"name": "elemental_ratio:element=Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "electronegativity:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "atomic_radius:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}, {"name": "ionization_potential:Ge", "coefficient": -0.008805222349771354, "importance": "NaN"}], "intercept": 0.508}]}, "precision": {"perProperty": [{"name": "band_gaps:direct", "score": -0.5992750363271038, "trainingError": 1.8729260368583518}, {"name": "band_gaps:indirect", "score": 1, "trainingError": 1.5407439555097887e-33}]}}}, "_id": "LCthJ6E2QabYCZqf4", "properties": ["band_gaps:direct", "band_gaps:indirect"]}], "properties": ["band_gaps:direct", "band_gaps:indirect"], "repetition": 0}))</script>
 </div>
 </div>
 </div>
@@ -2800,12 +2880,17 @@ job = job_endpoints.create(config)</div>
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:16:48 |                1 |             0 |               0 |              0 |
+| 2023-07-28-15:22:53 |                1 |             0 |               0 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 +---------------------+------------------+---------------+-----------------+----------------+
 |        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
 +=====================+==================+===============+=================+================+
-| 2023-07-20-11:16:58 |                0 |             0 |               1 |              0 |
+| 2023-07-28-15:23:03 |                0 |             1 |               0 |              0 |
++---------------------+------------------+---------------+-----------------+----------------+
++---------------------+------------------+---------------+-----------------+----------------+
+|        TIME         |   SUBMITTED-JOBS |   ACTIVE-JOBS |   FINISHED-JOBS |   ERRORED-JOBS |
++=====================+==================+===============+=================+================+
+| 2023-07-28-15:23:14 |                0 |             0 |               1 |              0 |
 +---------------------+------------------+---------------+-----------------+----------------+
 </pre>
 </div>
@@ -2960,34 +3045,34 @@ html</div>
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[23]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
 <style type="text/css">
-#T_97d07 th {
+#T_e0306 th {
   text-align: center;
 }
-#T_97d07 td {
+#T_e0306 td {
   text-align: center;
 }
 </style>
-<table id="T_97d07">
+<table id="T_e0306">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_97d07_level0_col0">ID</th>
-<th class="col_heading level0 col1" id="T_97d07_level0_col1">NAME</th>
-<th class="col_heading level0 col2" id="T_97d07_level0_col2">FORMULA</th>
-<th class="col_heading level0 col3" id="T_97d07_level0_col3">EXABYTE-ID</th>
-<th class="col_heading level0 col4" id="T_97d07_level0_col4">DIRECT-GAP</th>
-<th class="col_heading level0 col5" id="T_97d07_level0_col5">INDIRECT-GAP</th>
+<th class="col_heading level0 col0" id="T_e0306_level0_col0">ID</th>
+<th class="col_heading level0 col1" id="T_e0306_level0_col1">NAME</th>
+<th class="col_heading level0 col2" id="T_e0306_level0_col2">FORMULA</th>
+<th class="col_heading level0 col3" id="T_e0306_level0_col3">EXABYTE-ID</th>
+<th class="col_heading level0 col4" id="T_e0306_level0_col4">DIRECT-GAP</th>
+<th class="col_heading level0 col5" id="T_e0306_level0_col5">INDIRECT-GAP</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_97d07_level0_row0">0</th>
-<td class="data row0 col0" id="T_97d07_row0_col0">NEH4M2tEbP47BQ35c</td>
-<td class="data row0 col1" id="T_97d07_row0_col1">mp-32</td>
-<td class="data row0 col2" id="T_97d07_row0_col2">Ge</td>
-<td class="data row0 col3" id="T_97d07_row0_col3">ts2ghFDZLBrKPiQaN</td>
-<td class="data row0 col4" id="T_97d07_row0_col4">1.070000</td>
-<td class="data row0 col5" id="T_97d07_row0_col5">0.465000</td>
+<th class="row_heading level0 row0" id="T_e0306_level0_row0">0</th>
+<td class="data row0 col0" id="T_e0306_row0_col0">myocweCq5L9fWdRDh</td>
+<td class="data row0 col1" id="T_e0306_row0_col1">mp-32</td>
+<td class="data row0 col2" id="T_e0306_row0_col2">Ge</td>
+<td class="data row0 col3" id="T_e0306_row0_col3">ts2ghFDZLBrKPiQaN</td>
+<td class="data row0 col4" id="T_e0306_row0_col4">1.070000</td>
+<td class="data row0 col5" id="T_e0306_row0_col5">0.465000</td>
 </tr>
 </tbody>
 </table>

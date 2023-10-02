@@ -1,75 +1,3 @@
-# data that comes from JS, here are some examples
-poscars = {
-    "Ni": """Ni4
-1.0
-   3.4751458659480110    0.0000000000000000    0.0000000000000002
-   0.0000000000000006    3.4751458659480110    0.0000000000000002
-   0.0000000000000000    0.0000000000000000    3.4751458659480110
-Ni
-4
-direct
-   0.0000000000000000    0.0000000000000000    0.0000000000000000 Ni
-   0.0000000000000000    0.5000000000000000    0.5000000000000000 Ni
-   0.5000000000000000    0.0000000000000000    0.5000000000000000 Ni
-   0.5000000000000000    0.5000000000000000    0.0000000000000000 Ni
-""",
-    "Cu": """Cu4
-1.0
-   3.5774306715697510    0.0000000000000000    0.0000000000000002
-   0.0000000000000006    3.5774306715697510    0.0000000000000002
-   0.0000000000000000    0.0000000000000000    3.5774306715697510
-Cu
-4
-direct
-   0.0000000000000000    0.0000000000000000    0.0000000000000000 Cu
-   0.0000000000000000    0.5000000000000000    0.5000000000000000 Cu
-   0.5000000000000000    0.0000000000000000    0.5000000000000000 Cu
-   0.5000000000000000    0.5000000000000000    0.0000000000000000 Cu
-""",
-    "Au": """Au4
-1.0
-   4.1712885314747270    0.0000000000000000    0.0000000000000003
-   0.0000000000000007    4.1712885314747270    0.0000000000000003
-   0.0000000000000000    0.0000000000000000    4.1712885314747270
-Au
-4
-direct
-   0.0000000000000000    0.0000000000000000    0.0000000000000000 Au
-   0.0000000000000000    0.5000000000000000    0.5000000000000000 Au
-   0.5000000000000000    0.0000000000000000    0.5000000000000000 Au
-   0.5000000000000000    0.5000000000000000    0.0000000000000000 Au
-""",
-    "SiC": """Si4 C4
-1.0
-   4.3539932475828609    0.0000000000000000    0.0000000000000003
-   0.0000000000000007    4.3539932475828609    0.0000000000000003
-   0.0000000000000000    0.0000000000000000    4.3539932475828609
-Si C
-4 4
-direct
-   0.7500000000000000    0.2500000000000000    0.7500000000000000 Si4+
-   0.7500000000000000    0.7500000000000000    0.2500000000000000 Si4+
-   0.2500000000000000    0.2500000000000000    0.2500000000000000 Si4+
-   0.2500000000000000    0.7500000000000000    0.7500000000000000 Si4+
-   0.0000000000000000    0.0000000000000000    0.0000000000000000 C4-
-   0.0000000000000000    0.5000000000000000    0.5000000000000000 C4-
-   0.5000000000000000    0.0000000000000000    0.5000000000000000 C4-
-   0.5000000000000000    0.5000000000000000    0.0000000000000000 C4-
-""",
-    "Graphene": """Graphene
-1.0
-   2.467291000	   0.000000000	   0.000000000
-  -1.233645000	   2.136737000	   0.000000000
-   0.000000000	   0.000000000	   7.803074000
-C
-2
-direct
-   0.000000000    0.000000000    0.000000000  C
-   0.333333000    0.666667000    0.000000000  C
-""",
-}
-
-# definition of MaterialInterface class and helper functions for it
 from ase.build import surface, supercells
 from ase.io import read, write
 import io
@@ -186,33 +114,24 @@ class MaterialInterface:
             from ase.visualize import view    
             view(material * repeat)
         except:
-            print("ASE is not installed, cannot view the structure")
+            print("ASE.gui is not installed, cannot view the structure")
             raise
      
 
-# actual Pyodide code
-
-global settings, poscar_data
-poscar_data = poscars
-
+# Running the interface creation
 
 def func():
     """This function is a gateway to Pyodide in Materials Designer"""
 
     poscar_data = globals()["poscar_data"]
     settings = globals()["settings"]
-    materials = {}
+    substrate = poscar_to_atoms(poscar_data[0])
+    material = poscar_to_atoms(poscar_data[1])
 
-    for material_name, poscar in poscar_data.items():
-        materials[material_name] = poscar_to_atoms(poscar)
-
-    substrate = materials["Au"]
-    material = materials["Graphene"]
     interface = MaterialInterface(substrate, material, settings)
-    write("structure.poscar", interface.structure, format="vasp")
-    print(interface.structure)
-    interface.view(repeat=(2, 2, 1))
-    print("strain (a, b):", interface.calculate_strain())
 
+    print(interface.structure)
+    print("strain (a, b):", interface.calculate_strain())
+    return interface
 
 func()

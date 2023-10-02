@@ -3,7 +3,11 @@ from ase.io import read, write
 import io
 import numpy as np
 
-globals()["data"]["settings"] = {
+globals()["data"]= {
+    "poscar_data": [
+        """Empty POSCAR file"""
+    ],
+    "settings": {
     "slab": {
         "miller:h": 1,
         "miller:k": 1,
@@ -16,6 +20,7 @@ globals()["data"]["settings"] = {
         "layer_v:matrix": [[1, 0], [0, 1]], 
         "distance": 2.0
         },
+    }
 }
 
 

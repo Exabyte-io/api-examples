@@ -3,7 +3,7 @@ from ase.io import read, write
 import io
 import numpy as np
 
-globals()["settings"] = {
+globals()["data"]["settings"] = {
     "slab": {
         "miller:h": 1,
         "miller:k": 1,
@@ -11,7 +11,11 @@ globals()["settings"] = {
         "vacuum": 1,
         "number_of_layers": 3,
     },
-    "interface": {"slab_v:matrix": [[1, 0], [0, 1]], "layer_v:matrix": [[1, 0], [0, 1]], "distance": 2.0},
+    "interface": {
+        "slab_v:matrix": [[1, 0], [0, 1]], 
+        "layer_v:matrix": [[1, 0], [0, 1]], 
+        "distance": 2.0
+        },
 }
 
 
@@ -43,7 +47,7 @@ class MaterialInterface:
     def __init__(self, substrate, material, settings=None):
         self.substrate = substrate
         self.material = material
-        self.settings = globals()["settings"]
+        self.settings = globals()["data"]["settings"]
         if settings:
             for key in self.settings.keys():
                 if key in settings:
@@ -123,8 +127,8 @@ class MaterialInterface:
 def func():
     """This function is a gateway to Pyodide in Materials Designer"""
 
-    poscar_data = globals()["poscar_data"]
-    settings = globals()["settings"]
+    poscar_data = globals()["data"]["poscar_data"]
+    settings = globals()["data"]["settings"]
     substrate = poscar_to_atoms(poscar_data[0])
     material = poscar_to_atoms(poscar_data[1])
 

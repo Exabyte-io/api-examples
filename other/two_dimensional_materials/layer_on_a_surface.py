@@ -3,10 +3,10 @@ from ase.io import read, write
 import io
 import numpy as np
 
-if "data" not in globals():
-    globals()["data"] = {}
+if "data_in" not in globals():
+    globals()["data_in"] = {}
   
-globals()["data"]["settings"] = {
+globals()["data_in"]["settings"] = {
     "slab": {
         "miller:h": 1,
         "miller:k": 1,
@@ -50,7 +50,7 @@ class MaterialInterface:
     def __init__(self, substrate, material, settings=None):
         self.substrate = substrate
         self.material = material
-        self.settings = globals()["data"]["settings"]
+        self.settings = globals()["data_in"]["settings"]
         if settings:
             for key in self.settings.keys():
                 if key in settings:
@@ -129,19 +129,31 @@ class MaterialInterface:
 
 def func():
     """This function is a gateway to Pyodide in Materials Designer"""
+ 
+    settings = globals()["data_in"]["settings"]
+    materials = globals()["data_in"]["materials"]
+    substrate_data = materials[0]
+    layer_data = materials[1]
 
-    poscar_data = globals()["data"]["poscar_data"]
-    lattice_data = globals()["data"]["lattice_data"]
-    settings = globals()["data"]["settings"]
-    substrate = poscar_to_atoms(poscar_data[0])
-    material = poscar_to_atoms(poscar_data[1])
+    substrate = poscar_to_atoms(substrate_data["poscar"])
+    layer = poscar_to_atoms(layer_data["poscar"])
 
-    interface = MaterialInterface(substrate, material, settings)
+    interface = MaterialInterface(substrate, layer, settings)
 
-    print(interface.structure)
+    print('Interface: ',interface.structure)
     print("strain (a, b):", interface.calculate_strain())
 
-    content = {"poscar_data": write_atoms_to_poscar(interface.structure), "lattice_data": lattice_data}
-    return content
+    material = substrate_data["material"]
+    metadata = {"kind": "interface"}
+    
+    globals()["data_out"]["materials"] = [
+        {
+            "poscar": write_atoms_to_poscar(interface.structure), 
+            "material": material,
+            "metadata": metadata,
+        }
+    ]
+
+    return globals()
 
 func()

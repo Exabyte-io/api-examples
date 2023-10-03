@@ -131,7 +131,7 @@ def func():
     """This function is a gateway to Pyodide in Materials Designer"""
 
     poscar_data = globals()["data"]["poscar_data"]
-    lattice_data
+    lattice_data = globals()["data"]["lattice_data"]
     settings = globals()["data"]["settings"]
     substrate = poscar_to_atoms(poscar_data[0])
     material = poscar_to_atoms(poscar_data[1])
@@ -141,7 +141,7 @@ def func():
     print(interface.structure)
     print("strain (a, b):", interface.calculate_strain())
 
-    content = {"poscar_data": write_atoms_to_poscar(interface.structure), "lattice_data":globals()["data"]}
+    content = {"poscar_data": write_atoms_to_poscar(interface.structure), "lattice_data": lattice_data}
     return content
 
 func()

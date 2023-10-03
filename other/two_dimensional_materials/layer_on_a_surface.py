@@ -3,11 +3,10 @@ from ase.io import read, write
 import io
 import numpy as np
 
-globals()["data"]= {
-    "poscar_data": [
-        """Empty POSCAR file"""
-    ],
-    "settings": {
+if "data" not in globals():
+    globals()["data"] = {}
+  
+globals()["data"]["settings"] = {
     "slab": {
         "miller:h": 1,
         "miller:k": 1,
@@ -21,7 +20,6 @@ globals()["data"]= {
         "distance": 2.0
         },
     }
-}
 
 
 def poscar_to_atoms(poscar):
@@ -141,6 +139,8 @@ def func():
 
     print(interface.structure)
     print("strain (a, b):", interface.calculate_strain())
-    return interface
+
+    content = write_atoms_to_poscar(interface.structure)
+    return content
 
 func()

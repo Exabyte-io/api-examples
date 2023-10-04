@@ -2,26 +2,7 @@ from ase.build import surface, supercells
 from ase.io import read, write
 import io
 import numpy as np
-
-if "data_in" not in globals():
-    globals()["data_in"] = {}
   
-globals()["data_in"]["settings"] = {
-    "slab": {
-        "miller:h": 1,
-        "miller:k": 1,
-        "miller:l": 1,
-        "vacuum": 1,
-        "number_of_layers": 3,
-    },
-    "interface": {
-        "slab_v:matrix": [[1, 0], [0, 1]], 
-        "layer_v:matrix": [[1, 0], [0, 1]], 
-        "distance": 2.0
-        },
-    }
-
-
 def poscar_to_atoms(poscar):
     input = io.StringIO(poscar)
     atoms = read(input, format="vasp")
@@ -56,7 +37,7 @@ class MaterialInterface:
                 if key in settings:
                     self.settings[key].update(settings[key])
         self.structure = self.create_structure()
-
+      
     def create_structure(self):
         slab = self.settings["slab"]
         interface = self.settings["interface"]
@@ -75,13 +56,14 @@ class MaterialInterface:
         self.substrate.wrap()
         self.material = supercells.make_supercell(self.material, layer_v_matrix)
         self.original_material = self.material.copy()
-        self.material.set_cell(self.substrate.get_cell(), scale_atoms=True)
+        # self.material.set_cell(self.substrate.get_cell(), scale_atoms=True)
         self.material.wrap()
 
         z_offset = self.calculate_distance()
         self.material.positions[:, 2] += z_offset
-
-        return self.substrate + self.material
+        interface = self.substrate + self.material
+        interface.wrap()
+        return interface
 
     def calculate_strain(self, substrate=None, material=None):
         """Calculates strain for the material layer on the substrate"""
@@ -114,18 +96,25 @@ class MaterialInterface:
 
         return z_offset
 
-    def view(self, material=None, repeat=(1, 1, 1)):
-        if material is None:
-            material = self.structure
-        try :
-            from ase.visualize import view    
-            view(material * repeat)
-        except:
-            print("ASE.gui is not installed, cannot view the structure")
-            raise
-     
+# Set the parameters
 
-# Running the interface creation
+globals()["data_in"]["settings"] = {
+    "slab": {
+        "miller:h": 1,
+        "miller:k": 1,
+        "miller:l": 1,
+        "vacuum": 5,
+        "number_of_layers": 3,
+    },
+    "interface": {
+        "slab_v:matrix": [[1, 0], [0, 1]], 
+        "layer_v:matrix": [[1, 0], [0, 1]], 
+        "distance": 2.0
+        },
+    }
+
+
+# Run the interface creation
 
 def func():
     """This function is a gateway to Pyodide in Materials Designer"""
@@ -142,15 +131,11 @@ def func():
 
     print('Interface: ',interface.structure)
     print("strain (a, b):", interface.calculate_strain())
-
-    material = substrate_data["material"]
-    metadata = {"kind": "interface"}
     
     globals()["data_out"]["materials"] = [
         {
-            "poscar": write_atoms_to_poscar(interface.structure), 
-            "material": material,
-            "metadata": metadata,
+            "poscar": write_atoms_to_poscar(interface.structure),
+            "metadata": {},
         }
     ]
 

@@ -40,7 +40,7 @@ class MaterialInterface:
     def __init__(self, substrate, material, settings=None):
         self.substrate = substrate
         self.material = material
-        self.settings = globals()["data_in"]["settings"]
+        self.settings = settings
         if settings:
             for key in self.settings.keys():
                 if key in settings:

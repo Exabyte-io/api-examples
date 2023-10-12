@@ -1,5 +1,3 @@
-"""This module provides classes to store, generate, and manipulate material interfaces."""
-
 from __future__ import annotations
 
 from itertools import product

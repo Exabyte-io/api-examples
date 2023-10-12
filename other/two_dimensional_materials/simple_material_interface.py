@@ -92,9 +92,7 @@ class MaterialInterface:
 
         return z_offset
 # default values
-globals()["data_in"] = {
-    "materials" : [{"poscar":""}, {"poscar":""}]
-}
+globals().setdefault("data_in", {"materials": [{"poscar": ""}, {"poscar": ""}]})
 
 # Set the parameters
 globals()["data_in"]["settings"] = {

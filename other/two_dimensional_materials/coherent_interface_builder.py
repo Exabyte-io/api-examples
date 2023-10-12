@@ -285,3 +285,86 @@ def from_2d_to_3d(mat: np.ndarray) -> np.ndarray:
     new_mat = np.diag([1.0, 1.0, 1.0])
     new_mat[:2, :2] = mat
     return new_mat
+
+# data and settings
+materials = globals()["data_in"]["materials"]
+substrate_data = materials[0]
+layer_data = materials[1]
+
+substrate_poscar = (substrate_data["poscar"])
+layer_poscar = (layer_data["poscar"])
+
+# code to run
+def func():
+    from pymatgen.analysis.interfaces.zsl import ZSLGenerator
+    from pymatgen.core.structure import Structure
+    from coherent_interface_builder import CoherentInterfaceBuilder
+    from operator import itemgetter
+    import matplotlib.pyplot as plt
+
+
+    substrate = Structure.from_str(substrate_poscar, fmt="poscar")
+    layer = Structure.from_str(layer_poscar, fmt="poscar")
+    substrate_miller = (1, 1, 1)
+    layer_miller = (0, 0, 1)
+
+    zsl = ZSLGenerator(max_area=400, max_length_tol=0.01)
+    cib = CoherentInterfaceBuilder(
+        substrate_structure=substrate,
+        film_structure=layer,
+        substrate_miller=substrate_miller,
+        film_miller=layer_miller,
+        zslgen=zsl,
+    )
+
+
+    cib._find_terminations()
+    matches = cib.zsl_matches
+    terminations = cib.terminations
+    interfaces = list(cib.get_interfaces(terminations[0], gap=3.0, substrate_thickness=3, in_layers=True))
+
+    print("Found {} interfaces".format(len(matches)))
+    print(f"Terminations ({len(terminations)}):", terminations)
+
+    interfaces_list = list(interfaces)
+    interfaces_list = sorted(interfaces_list, key=itemgetter("von_mises_strain"))
+
+    # map thru all interfaces and plot the strain vs number of atoms in the interface
+    strain = []
+    strain_von_mises = []
+    number_of_atoms = []
+    for i, object in enumerate(interfaces_list):
+        strain_11 = object["strain"][0][0]
+        strain_22 = object["strain"][1][1]
+        strain_12 = object["strain"][0][1]
+        strain_mean = (abs(strain_11) + abs(strain_22) + abs(strain_12)) / 3
+
+        strain.append({"strain_11": strain_11, "strain_22": strain_22, "strain_12": strain_12, "strain_mean": strain_mean})
+        strain_von_mises.append(object["von_mises_strain"])
+        number_of_atoms.append(object["interface"].num_sites)
+
+    strain_mean_values = [s["strain_mean"] for s in strain]
+
+    # plot the strain and strain_von_misses vs number of atoms in the interface with scatter plot
+    plt.figure(figsize=(6, 10))
+    plt.plot(strain_mean_values, number_of_atoms, "o")
+    plt.xlabel("strain")
+    plt.ylabel("atoms")
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.xlim(left=0.001, right=0.1)
+    plt.ylim(bottom=10, top=1000)
+    plt.show()
+
+    interface = interfaces_list[0]["interface"]
+    
+    globals()["data_out"]["materials"] = [
+        {
+            "poscar": interface.to(fmt="poscar"),
+            "metadata": {},
+        }
+    ]
+
+    return globals()
+
+func()

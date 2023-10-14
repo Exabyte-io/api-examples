@@ -1,6 +1,19 @@
 name: Continuous Testing and Docs Publication
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - dev
+    types:
+      - opened
+      - ready_for_review
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+  schedule:
+    # At 02:00 on Sunday: https://crontab.guru/#0_2_*_*_0
+    - cron: "0 2 * * 0"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -15,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout this repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
@@ -46,7 +59,7 @@ jobs:
 
     steps:
       - name: Checkout this repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
@@ -105,3 +118,10 @@ jobs:
           invalidation: /*
           no-cache: true
           private: true
+
+      - name: Github Action to keep the schedules alive after inactivity
+        uses: gautamkrishnar/keepalive-workflow@v1
+        with:
+          committer_username: exabyte-io-bot
+          committer_email: info@exabyte.io
+          time_elapsed: 50  # days

@@ -1,7 +1,28 @@
+"""Simple Materials Interface"""
 from ase.build import surface, supercells
 from ase.io import read, write
 import io
 import numpy as np
+
+# Settings and parameters
+globals().setdefault("data_in", {"materials": [{"poscar": ""}, {"poscar": ""}]})
+globals()["data_in"]["settings"] = {
+    "slab": {
+        "miller:h": 1,
+        "miller:k": 1,
+        "miller:l": 1,
+        "vacuum": 5,
+        "number_of_layers": 3,
+    },
+    "interface": {
+        "slab_v:matrix": [[1, 0], [0, 1]],
+        "layer_v:matrix": [[1, 0], [0, 1]],
+        "distance": 2.0,
+    },
+}
+
+SUBSTRATE_INDEX = 0
+LAYER_INDEX = 1
 
 
 def ase_poscar_to_atoms(poscar):
@@ -94,32 +115,14 @@ class MaterialInterface:
         return z_offset
 
 
-# default values
-globals().setdefault("data_in", {"materials": [{"poscar": ""}, {"poscar": ""}]})
-
-# Set the parameters
-globals()["data_in"]["settings"] = {
-    "slab": {
-        "miller:h": 1,
-        "miller:k": 1,
-        "miller:l": 1,
-        "vacuum": 5,
-        "number_of_layers": 3,
-    },
-    "interface": {"slab_v:matrix": [[1, 0], [0, 1]], "layer_v:matrix": [[1, 0], [0, 1]], "distance": 2.0},
-}
-
-
 # Run the interface creation
-
-
 def func():
-    """This function is a gateway to Pyodide in Materials Designer"""
+    """This function gets executed and returns transformed materials to platform JS environment"""
     try:
         settings = globals()["data_in"]["settings"]
         materials = globals()["data_in"]["materials"]
-        substrate_data = materials[0]
-        layer_data = materials[1]
+        substrate_data = materials[SUBSTRATE_INDEX]
+        layer_data = materials[LAYER_INDEX]
 
         substrate = ase_poscar_to_atoms(substrate_data["poscar"])
         layer = ase_poscar_to_atoms(layer_data["poscar"])

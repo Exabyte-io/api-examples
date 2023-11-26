@@ -299,7 +299,6 @@ layer_poscar = layer_data["poscar"]
 def func():
     from pymatgen.analysis.interfaces.zsl import ZSLGenerator
     from pymatgen.core.structure import Structure
-    from coherent_interface_builder import CoherentInterfaceBuilder
     from operator import itemgetter
     import matplotlib.pyplot as plt
 

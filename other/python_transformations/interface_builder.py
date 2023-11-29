@@ -7,6 +7,7 @@ import micropip
 
 await micropip.install("https://files.mat3ra.com:44318/uploads/pymatgen-2023.9.10-py3-none-any.whl", deps=False)
 await micropip.install("matplotlib")
+await micropip.install("uncertainties")
 
 import numpy as np
 from numpy.testing import assert_allclose

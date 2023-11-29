@@ -1,4 +1,65 @@
 """Simple Materials Interface"""
+
+# Settings and parameters
+SUBSTRATE_INDEX = 0
+LAYER_INDEX = 1
+
+SLAB_MILLER_H = 1
+SLAB_MILLER_K = 1
+SLAB_MILLER_L = 1
+SLAB_VACUUM = 5
+SLAB_NUMBER_OF_LAYERS = 3
+
+INTERFACE_SLAB_V_MATRIX = [[1, 0], [0, 1]]
+INTERFACE_LAYER_V_MATRIX = [[1, 0], [0, 1]]
+INTERFACE_DISTANCE = 2.0
+
+
+# Function that gets executed
+def func():
+    """This function gets executed and returns transformed materials to platform JS environment"""
+    globals().setdefault("data_in", {"materials": [{"poscar": ""}, {"poscar": ""}]})
+    globals()["data_in"]["settings"] = {
+        "slab": {
+            "miller:h": SLAB_MILLER_H,
+            "miller:k": SLAB_MILLER_K,
+            "miller:l": SLAB_MILLER_L,
+            "vacuum": SLAB_VACUUM,
+            "number_of_layers": SLAB_NUMBER_OF_LAYERS,
+        },
+        "interface": {
+            "slab_v:matrix": INTERFACE_SLAB_V_MATRIX,
+            "layer_v:matrix": INTERFACE_LAYER_V_MATRIX,
+            "distance": INTERFACE_DISTANCE,
+        },
+    }
+    try:
+        settings = globals()["data_in"]["settings"]
+        materials = globals()["data_in"]["materials"]
+        substrate_data = materials[SUBSTRATE_INDEX]
+        layer_data = materials[LAYER_INDEX]
+
+        substrate = ase_poscar_to_atoms(substrate_data["poscar"])
+        layer = ase_poscar_to_atoms(layer_data["poscar"])
+
+        interface = MaterialInterface(substrate, layer, settings)
+
+        print("Interface: ", interface.structure)
+        print("strain (a, b):", interface.calculate_strain())
+
+        globals()["data_out"]["materials"] = [
+            {
+                "poscar": ase_atoms_to_poscar(interface.structure),
+                "metadata": {},
+            }
+        ]
+    except Exception as e:
+        print(e)
+
+    return globals()
+
+
+# Required imports and installs
 import micropip
 
 await micropip.install("ase")
@@ -7,27 +68,8 @@ from ase.io import read, write
 import io
 import numpy as np
 
-# Settings and parameters
-globals().setdefault("data_in", {"materials": [{"poscar": ""}, {"poscar": ""}]})
-globals()["data_in"]["settings"] = {
-    "slab": {
-        "miller:h": 1,
-        "miller:k": 1,
-        "miller:l": 1,
-        "vacuum": 5,
-        "number_of_layers": 3,
-    },
-    "interface": {
-        "slab_v:matrix": [[1, 0], [0, 1]],
-        "layer_v:matrix": [[1, 0], [0, 1]],
-        "distance": 2.0,
-    },
-}
 
-SUBSTRATE_INDEX = 0
-LAYER_INDEX = 1
-
-
+# Classes and Definitions
 def ase_poscar_to_atoms(poscar):
     input = io.StringIO(poscar)
     atoms = read(input, format="vasp")
@@ -118,33 +160,5 @@ class MaterialInterface:
         return z_offset
 
 
-# Run the interface creation
-def func():
-    """This function gets executed and returns transformed materials to platform JS environment"""
-    try:
-        settings = globals()["data_in"]["settings"]
-        materials = globals()["data_in"]["materials"]
-        substrate_data = materials[SUBSTRATE_INDEX]
-        layer_data = materials[LAYER_INDEX]
-
-        substrate = ase_poscar_to_atoms(substrate_data["poscar"])
-        layer = ase_poscar_to_atoms(layer_data["poscar"])
-
-        interface = MaterialInterface(substrate, layer, settings)
-
-        print("Interface: ", interface.structure)
-        print("strain (a, b):", interface.calculate_strain())
-
-        globals()["data_out"]["materials"] = [
-            {
-                "poscar": ase_atoms_to_poscar(interface.structure),
-                "metadata": {},
-            }
-        ]
-    except Exception as e:
-        print(e)
-
-    return globals()
-
-
+# Required for correct execution in Materials Designer
 func()

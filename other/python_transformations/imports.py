@@ -1,3 +1,4 @@
+"""Install all supported packages"""
 import micropip
 
 packages = [

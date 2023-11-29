@@ -6,6 +6,10 @@ SUBSTRATE_INDEX = 0
 LAYER_INDEX = 1
 SUBSTRATE_MILLER = (1, 1, 1)
 LAYER_MILLER = (0, 0, 1)
+INTERFACE_DISTANCE = 2.0
+SUBSTRATE_NUMBER_OF_LAYERS = 3
+
+INTERFACE_INDEX = 0
 
 
 # Function that gets executed
@@ -40,7 +44,11 @@ def func():
     cib._find_terminations()
     matches = cib.zsl_matches
     terminations = cib.terminations
-    interfaces = list(cib.get_interfaces(terminations[0], gap=3.0, substrate_thickness=3, in_layers=True))
+    interfaces = list(
+        cib.get_interfaces(
+            terminations[0], gap=INTERFACE_DISTANCE, substrate_thickness=SUBSTRATE_NUMBER_OF_LAYERS, in_layers=True
+        )
+    )
 
     print("Found {} interfaces".format(len(matches)))
     print(f"Terminations ({len(terminations)}):", terminations)
@@ -77,7 +85,7 @@ def func():
     plt.ylim(bottom=10, top=1000)
     plt.show()
 
-    interface = interfaces_list[0]["interface"]
+    interface = interfaces_list[INTERFACE_INDEX]["interface"]
 
     globals()["data_out"]["materials"] = [
         {

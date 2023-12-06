@@ -1,11 +1,6 @@
 """Simple Materials Interface"""
 
 """BLOCK: Packages Import"""
-
-import sys
-import subprocess
-
-subprocess.check_call([sys.executable, "-m", "pip", "install", "micropip"])
 import micropip
 
 micropip.install("ase")

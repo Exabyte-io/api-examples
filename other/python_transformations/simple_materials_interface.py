@@ -3,7 +3,7 @@
 """BLOCK: Packages Import"""
 import micropip
 
-micropip.install("ase")
+await micropip.install("ase")
 from ase.build import surface, supercells
 from ase.io import read, write
 import io

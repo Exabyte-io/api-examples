@@ -9,8 +9,23 @@ from ase.io import read, write
 import io
 import numpy as np
 
+print("installed ase")
+
 
 """BLOCK: Classes and Definitions"""
+# Parameters of the interface
+SUBSTRATE_INDEX = 0
+LAYER_INDEX = 1
+
+SLAB_MILLER_H = 1
+SLAB_MILLER_K = 1
+SLAB_MILLER_L = 1
+SLAB_VACUUM = 5
+SLAB_NUMBER_OF_LAYERS = 3
+
+INTERFACE_SLAB_V_MATRIX = [[1, 0], [0, 1]]
+INTERFACE_LAYER_V_MATRIX = [[1, 0], [0, 1]]
+INTERFACE_DISTANCE = 2.0
 
 
 def ase_poscar_to_atoms(poscar):
@@ -146,19 +161,5 @@ def func():
 
     return globals()
 
-
-"""BLOCK: Settings and Execution"""
-SUBSTRATE_INDEX = 0
-LAYER_INDEX = 1
-
-SLAB_MILLER_H = 1
-SLAB_MILLER_K = 1
-SLAB_MILLER_L = 1
-SLAB_VACUUM = 5
-SLAB_NUMBER_OF_LAYERS = 3
-
-INTERFACE_SLAB_V_MATRIX = [[1, 0], [0, 1]]
-INTERFACE_LAYER_V_MATRIX = [[1, 0], [0, 1]]
-INTERFACE_DISTANCE = 2.0
 
 func()

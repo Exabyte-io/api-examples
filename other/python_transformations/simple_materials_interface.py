@@ -14,6 +14,7 @@ print("installed ase")
 
 """BLOCK: Classes and Definitions"""
 # Parameters of the interface
+
 SUBSTRATE_INDEX = 0
 LAYER_INDEX = 1
 
@@ -121,8 +122,7 @@ class MaterialInterface:
 # Function that gets executed
 def func():
     """This function gets executed and returns transformed materials to platform JS environment"""
-    globals().setdefault("data_in", {"materials": [{"poscar": ""}, {"poscar": ""}]})
-    globals()["data_in"]["settings"] = {
+    settings = {
         "slab": {
             "miller:h": SLAB_MILLER_H,
             "miller:k": SLAB_MILLER_K,
@@ -137,8 +137,7 @@ def func():
         },
     }
     try:
-        settings = globals()["data_in"]["settings"]
-        materials = globals()["data_in"]["materials"]
+        materials = globals()["materials_in"]
         substrate_data = materials[SUBSTRATE_INDEX]
         layer_data = materials[LAYER_INDEX]
 
@@ -150,10 +149,9 @@ def func():
         print("Interface: ", interface.structure)
         print("strain (a, b):", interface.calculate_strain())
 
-        globals()["data_out"]["materials"] = [
+        globals()["materials_out"] = [
             {
                 "poscar": ase_atoms_to_poscar(interface.structure),
-                "metadata": {},
             }
         ]
     except Exception as e:

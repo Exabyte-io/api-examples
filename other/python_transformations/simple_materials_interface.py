@@ -28,6 +28,11 @@ INTERFACE_SLAB_V_MATRIX = [[1, 0], [0, 1]]
 INTERFACE_LAYER_V_MATRIX = [[1, 0], [0, 1]]
 INTERFACE_DISTANCE = 2.0
 
+from ase.build import surface, supercells
+from ase.io import read, write
+import io
+import numpy as np
+
 
 def ase_poscar_to_atoms(poscar):
     input = io.StringIO(poscar)
@@ -53,7 +58,7 @@ class MaterialInterface:
     def __init__(self, substrate, material, settings=None):
         self.substrate = substrate
         self.material = material
-        self.settings = globals()["data_in"]["settings"]
+        self.settings = settings
         if settings:
             for key in self.settings.keys():
                 if key in settings:

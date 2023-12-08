@@ -136,26 +136,24 @@ def func():
             "distance": INTERFACE_DISTANCE,
         },
     }
-    try:
-        materials = globals()["materials_in"]
-        substrate_data = materials[SUBSTRATE_INDEX]
-        layer_data = materials[LAYER_INDEX]
 
-        substrate = ase_poscar_to_atoms(substrate_data["poscar"])
-        layer = ase_poscar_to_atoms(layer_data["poscar"])
+    materials = globals()["materials_in"]
+    substrate_data = materials[SUBSTRATE_INDEX]
+    layer_data = materials[LAYER_INDEX]
 
-        interface = MaterialInterface(substrate, layer, settings)
+    substrate = ase_poscar_to_atoms(substrate_data["poscar"])
+    layer = ase_poscar_to_atoms(layer_data["poscar"])
 
-        print("Interface: ", interface.structure)
-        print("strain (a, b):", interface.calculate_strain())
+    interface = MaterialInterface(substrate, layer, settings)
 
-        globals()["materials_out"] = [
-            {
-                "poscar": ase_atoms_to_poscar(interface.structure),
-            }
-        ]
-    except Exception as e:
-        print(e)
+    print("Interface: ", interface.structure)
+    print("strain (a, b):", interface.calculate_strain())
+
+    globals()["materials_out"] = [
+        {
+            "poscar": ase_atoms_to_poscar(interface.structure),
+        }
+    ]
 
     return globals()
 

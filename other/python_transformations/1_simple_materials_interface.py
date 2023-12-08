@@ -34,7 +34,7 @@ INTERFACE_DISTANCE = 2.0
 
 # DO NOT EDIT code below unless you are developing a new transformation.
 # The required imports
-from ase.build import surface, supercells
+from ase.build import surface as make_surface, supercells
 from ase.io import read, write
 import io
 import numpy as np
@@ -78,7 +78,7 @@ class MaterialInterface:
         surface = self.settings["surface"]
         interface = self.settings["interface"]
 
-        self.substrate = surface(
+        self.substrate = make_surface(
             self.substrate,
             (surface["miller:h"], surface["miller:k"], surface["miller:l"]),
             vacuum=surface["vacuum"],
@@ -121,7 +121,7 @@ class MaterialInterface:
         strain_a = (a1 - a0) / a0
         strain_b = (b1 - b0) / b0
 
-        return (strain_a, strain_b)
+        return {"a": strain_a, "b": strain_b}
 
     def calculate_distance(self):
         """Calculates distance between the substrate and the material"""
@@ -162,8 +162,8 @@ def transform():
     interface = MaterialInterface(substrate, layer, settings)
 
     print("Interface structure: ", interface.structure)
-    print("Strain alongside lattice a:", interface.calculate_strain().a)
-    print("Strain alongside lattice b:", interface.calculate_strain().b)
+    print("Strain alongside lattice a:", interface.calculate_strain()["a"])
+    print("Strain alongside lattice b:", interface.calculate_strain()["b"])
 
     globals()["materials_out"] = [
         {

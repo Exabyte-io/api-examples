@@ -4,11 +4,6 @@
 import micropip
 
 await micropip.install("ase")
-from ase.build import surface, supercells
-from ase.io import read, write
-import io
-import numpy as np
-
 print("installed ase")
 
 

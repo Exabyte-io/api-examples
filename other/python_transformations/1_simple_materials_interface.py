@@ -1,6 +1,9 @@
 """Simple Materials Interface"""
 
 """BLOCK: Packages Import"""
+# This block handles the import of necessary packages for the script.
+# Micropip is used to install packages in a Pyodide environment.
+# ASE (Atomic Simulation Environment) is installed as it is required for manipulating atoms, molecules and crystals.
 import micropip
 
 await micropip.install("ase")
@@ -8,27 +11,36 @@ print("installed ase")
 
 
 """BLOCK: Classes and Definitions"""
-# Parameters of the interface
-
+# Define indices to identify the substrate and layer from the list of input materials.
+# These materials are expected to be provided as primitive cells of a 3D material (substrate)
+# and a 2D material (layer), which will form the interface.
 SUBSTRATE_INDEX = 0
 LAYER_INDEX = 1
 
-SLAB_MILLER_H = 1
-SLAB_MILLER_K = 1
-SLAB_MILLER_L = 1
-SLAB_VACUUM = 5
-SLAB_NUMBER_OF_LAYERS = 3
+# Set Miller indices (h, k, l) for the resulting surface
+SURFACE_MILLER_H = 1
+SURFACE_MILLER_H = 1
+SURFACE_MILLER_K = 1
+SURFACE_MILLER_L = 1
+SURFACE_VACUUM = 5  # defines the vacuum spacing (in Ångströms) added to the SURFACE unit cell.
+SURFACE_NUMBER_OF_LAYERS = 3
 
-INTERFACE_SLAB_V_MATRIX = [[1, 0], [0, 1]]
+# Set parameters of the interface
+# Matrices of deformation for the surface and the layer
+INTERFACE_SURFACE_V_MATRIX = [[1, 0], [0, 1]]
 INTERFACE_LAYER_V_MATRIX = [[1, 0], [0, 1]]
 INTERFACE_DISTANCE = 2.0
 
+
+# DO NOT EDIT code below unless you are developing a new transformation.
+# The required imports
 from ase.build import surface, supercells
 from ase.io import read, write
 import io
 import numpy as np
 
 
+# The following functions are used to convert between the POSCAR format and the ASE Atoms object.
 def ase_poscar_to_atoms(poscar):
     input = io.StringIO(poscar)
     atoms = read(input, format="vasp")
@@ -49,6 +61,8 @@ def expand_matrix_2x2_to_3x3(matrix_2x2):
     return matrix_3x3
 
 
+# The `MaterialInterface` class encapsulates the creation and manipulation of a material interface.
+# It includes methods to create the structure of the interface, calculate strain and distance between layers.
 class MaterialInterface:
     def __init__(self, substrate, material, settings=None):
         self.substrate = substrate
@@ -61,24 +75,24 @@ class MaterialInterface:
         self.structure = self.create_structure()
 
     def create_structure(self):
-        slab = self.settings["slab"]
+        surface = self.settings["surface"]
         interface = self.settings["interface"]
 
         self.substrate = surface(
             self.substrate,
-            (slab["miller:h"], slab["miller:k"], slab["miller:l"]),
-            vacuum=slab["vacuum"],
-            layers=slab["number_of_layers"],
+            (surface["miller:h"], surface["miller:k"], surface["miller:l"]),
+            vacuum=surface["vacuum"],
+            layers=surface["number_of_layers"],
         )
 
-        slab_v_matrix = expand_matrix_2x2_to_3x3(interface["slab_v:matrix"])
+        surface_v_matrix = expand_matrix_2x2_to_3x3(interface["surface_v:matrix"])
         layer_v_matrix = expand_matrix_2x2_to_3x3(interface["layer_v:matrix"])
 
-        self.substrate = supercells.make_supercell(self.substrate, slab_v_matrix)
+        self.substrate = supercells.make_supercell(self.substrate, surface_v_matrix)
         self.substrate.wrap()
         self.material = supercells.make_supercell(self.material, layer_v_matrix)
         self.original_material = self.material.copy()
-        # self.material.set_cell(self.substrate.get_cell(), scale_atoms=True)
+        self.material.set_cell(self.substrate.get_cell(), scale_atoms=True)
         self.material.wrap()
 
         z_offset = self.calculate_distance()
@@ -119,19 +133,20 @@ class MaterialInterface:
         return z_offset
 
 
-# Function that gets executed
-def func():
-    """This function gets executed and returns transformed materials to platform JS environment"""
+# The function 'transform' will serve as the main execution point for the transformation.
+# It creates a `MaterialInterface` object with input materials and settings,
+# calculates the interface structure, and handles output.
+def transform():
     settings = {
-        "slab": {
-            "miller:h": SLAB_MILLER_H,
-            "miller:k": SLAB_MILLER_K,
-            "miller:l": SLAB_MILLER_L,
-            "vacuum": SLAB_VACUUM,
-            "number_of_layers": SLAB_NUMBER_OF_LAYERS,
+        "surface": {
+            "miller:h": SURFACE_MILLER_H,
+            "miller:k": SURFACE_MILLER_K,
+            "miller:l": SURFACE_MILLER_L,
+            "vacuum": SURFACE_VACUUM,
+            "number_of_layers": SURFACE_NUMBER_OF_LAYERS,
         },
         "interface": {
-            "slab_v:matrix": INTERFACE_SLAB_V_MATRIX,
+            "surface_v:matrix": INTERFACE_SURFACE_V_MATRIX,
             "layer_v:matrix": INTERFACE_LAYER_V_MATRIX,
             "distance": INTERFACE_DISTANCE,
         },
@@ -146,8 +161,9 @@ def func():
 
     interface = MaterialInterface(substrate, layer, settings)
 
-    print("Interface: ", interface.structure)
-    print("strain (a, b):", interface.calculate_strain())
+    print("Interface structure: ", interface.structure)
+    print("Strain alongside lattice a:", interface.calculate_strain().a)
+    print("Strain alongside lattice b:", interface.calculate_strain().b)
 
     globals()["materials_out"] = [
         {
@@ -155,7 +171,9 @@ def func():
         }
     ]
 
+    # Return the globals() dictionary to the platform JS environment.
     return globals()
 
 
-func()
+# Execute the main function to preform the material transformation process.
+transform()

@@ -15,6 +15,8 @@ print("installed ase")
 
 """BLOCK: Classes and Definitions"""
 
+     
+
 """
 NOTE: edit the variables above for your specific use case.
 """
@@ -37,13 +39,13 @@ SETTINGS = {
     "interface": {
         # The transformation matrix for the surface
         "surface_v:matrix": [
-            [1, 0],
-            [0, 1]
+            [3, 0],
+            [0, 3]
         ],
         # The transformation matrix for the surface
         "layer_v:matrix": [
-            [1, 0],
-            [0, 1]
+            [2, 0],
+            [0, 2]
         ],
         # Distance between the substrate and the layer (in Ångströms)
         "distance": 2.0,
@@ -120,6 +122,12 @@ class MaterialInterface:
         self.material = supercells.make_supercell(self.material, layer_v_matrix)
 
         self.material.set_cell(self.substrate.get_cell(), scale_atoms=True)
+        cell = self.material.get_cell_lengths_and_angles()
+        # Reverting lattices switched by ASE wrap
+        cell[5] = 180 - cell[5]
+
+        self.material.set_cell(cell, scale_atoms=True)
+    
         self.material.wrap()
 
         z_offset = self.calculate_distance()

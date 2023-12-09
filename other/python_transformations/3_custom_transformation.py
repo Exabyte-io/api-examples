@@ -7,6 +7,7 @@ This code demonstrates how to:
  - return the data back to the application runtime.
 See https://github.com/Exabyte-io/made.js/blob/dev/src/material.js also.
 """
+import json
 
 # materials_in holds the array of materials pased from the application runtime
 input_materials = materials_in
@@ -21,7 +22,7 @@ def main():
     # of a Material class (https://github.com/Exabyte-io/made.js/blob/dev/src/material.js).
 
     output_materials = globals()["materials_out"] = [{"poscar": poscar}]
-    print("Output materials: ", output_materials)
+    print("Output materials: ", json.dumps(output_materials, indent=4))
     return output_materials
 
 

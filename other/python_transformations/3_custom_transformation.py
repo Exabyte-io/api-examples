@@ -1,19 +1,27 @@
 """TITLE: Custom Transformation (Example)."""
 """BLOCK: Main"""
 """
-This code demonstrates how to get materials from the application runtime, apply changes using python and return back to the platform
+This code demonstrates how to:
+ - get materials from the application runtime as JS class instances, 
+ - extract poscar data from the materials, 
+ - return the data back to the application runtime.
+See https://github.com/Exabyte-io/made.js/blob/dev/src/material.js also.
 """
-# variable materials_in holds array of materials pased from the application runtime
+
+# materials_in holds the array of materials pased from the application runtime
 input_materials = materials_in
 
+
 def main():
-  material = materials_in[0]
-  poscar = material.getAsPOSCAR()
+    material = input_materials[0]
+    poscar = material.getAsPOSCAR()
 
-  # your code here
+    # REMOVE THIS COMMENT AND PLACE YOUR CODE HERE.
+    # NOTE: when passing back to the application runtime, the poscar data will be converted to a JS class instance
+    # of a Material class (https://github.com/Exabyte-io/made.js/blob/dev/src/material.js).
 
-  
-  globals()["materials_out"] = [{"poscar":poscar}]
-  return globals()
+    globals()["materials_out"] = [{"poscar": poscar}]
+    return globals()
+
 
 main()

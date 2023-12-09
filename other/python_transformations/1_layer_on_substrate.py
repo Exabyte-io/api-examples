@@ -14,7 +14,6 @@ await micropip.install("ase")
 print("installed ase")
 
 """BLOCK: Classes and Definitions"""
-
 """
 NOTE: edit the variables above for your specific use case.
 """

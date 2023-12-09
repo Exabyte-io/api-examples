@@ -20,8 +20,9 @@ def main():
     # NOTE: when passing back to the application runtime, the poscar data will be converted to a JS class instance
     # of a Material class (https://github.com/Exabyte-io/made.js/blob/dev/src/material.js).
 
-    globals()["materials_out"] = [{"poscar": poscar}]
-    return globals()
+    output_materials = globals()["materials_out"] = [{"poscar": poscar}]
+    print("Output materials: ", output_materials)
+    return output_materials
 
 
 main()

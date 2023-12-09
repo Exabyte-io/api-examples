@@ -1,6 +1,4 @@
-"""
-TITLE: Import of all supported packages.
-"""
+"""TITLE: Import of all supported packages."""
 """BLOCK: Install Packages"""
 """
 This scripts installs the required packages for a basic Pyodide environment for Materials structure manipulation.

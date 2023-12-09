@@ -1,6 +1,4 @@
-"""
-TITLE: Custom Transformation (Example).
-"""
+"""TITLE: Custom Transformation (Example)."""
 """BLOCK: Main"""
 """
 This code demonstrates how to get materials from the application runtime, apply changes using python and return back to the platform

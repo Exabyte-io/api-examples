@@ -1,6 +1,4 @@
-"""
-TITLE: Layer on Substrate.
-"""
+"""TITLE: Layer on Substrate."""
 
 """BLOCK: Install Dependencies"""
 """

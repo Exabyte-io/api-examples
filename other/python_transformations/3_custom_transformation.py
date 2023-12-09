@@ -23,7 +23,9 @@ def main():
 
     output_materials = globals()["materials_out"] = [{"poscar": poscar}]
     print("Output materials: ", json.dumps(output_materials, indent=4))
-    return output_materials
+
+    # Return the globals() dictionary to the application environment. Required for proper operation at this time.
+    return globals()
 
 
 main()

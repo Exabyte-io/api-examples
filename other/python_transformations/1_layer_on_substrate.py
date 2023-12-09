@@ -15,8 +15,6 @@ print("installed ase")
 
 """BLOCK: Classes and Definitions"""
 
-     
-
 """
 NOTE: edit the variables above for your specific use case.
 """
@@ -39,16 +37,16 @@ SETTINGS = {
     "interface": {
         # The transformation matrix for the surface
         "surface_v:matrix": [
-            [3, 0],
-            [0, 3]
+            [1, 0],
+            [0, 1]
         ],
         # The transformation matrix for the surface
         "layer_v:matrix": [
-            [2, 0],
-            [0, 2]
+            [1, 0],
+            [0, 1]
         ],
         # Distance between the substrate and the layer (in Ångströms)
-        "distance": 2.0,
+        "distance": 3.0,
     },
 }
 

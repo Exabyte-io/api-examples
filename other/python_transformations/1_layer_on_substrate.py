@@ -1,4 +1,5 @@
 """
+TITLE: Layer on Substrate.
 This scripts creates a basic interface between two materials: (1) substrate and (2) layer.
 It is assumed that the substrate is a 3D material and the layer is a 2D material.
 This script is based on the ASE package (Atomic Simulation Environment).
@@ -172,11 +173,11 @@ def main():
         globals(): The globals() dictionary is returned to the platform JS environment.
     """
     materials = globals()["materials_in"]
-    substrate_data = materials[SUBSTRATE_INDEX]
-    layer_data = materials[LAYER_INDEX]
+    substrate_data = materials[SUBSTRATE_INDEX].getAsPOSCAR()
+    layer_data = materials[LAYER_INDEX].getAsPOSCAR()
 
-    substrate = poscar_to_atoms(substrate_data["poscar"])
-    layer = poscar_to_atoms(layer_data["poscar"])
+    substrate = poscar_to_atoms(substrate_data)
+    layer = poscar_to_atoms(layer_data)
 
     interface = MaterialInterface(substrate, layer, SETTINGS)
 

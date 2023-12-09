@@ -1,12 +1,13 @@
+"""TITLE: Place a 2D material Layer on a Surface."""
+
+"""BLOCK: Install Dependencies"""
 """
-TITLE: Place a 2D material Layer on a Surface
 This scripts creates an interface between two materials: (1) substrate and (2) layer.
 It is assumed that the substrate is a 3D material and the layer is a 2D material.
 This script is based on the ASE package (Atomic Simulation Environment) and the tutorial at:
 https://wiki.fysik.dtu.dk/ase/gettingstarted/manipulating_atoms/manipulating_atoms.html#interface-building.
 """
 
-"""BLOCK: Install Dependencies"""
 # This block handles the installation of necessary packages for the script using Micropip in a Pyodide environment.
 # ASE (Atomic Simulation Environment) is installed for manipulating structures.
 import micropip

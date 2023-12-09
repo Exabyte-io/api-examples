@@ -1,5 +1,6 @@
+"""TITLE: Import of all supported packages."""
+"""BLOCK: Install Packages"""
 """
-TITLE: Import of all supported packages.
 This scripts installs the required packages for a basic Pyodide environment for Materials structure manipulation.
 It uses micropip - a Python package manager for Pyodide.
 """

@@ -17,7 +17,7 @@ print("installed ase")
 
 """BLOCK: Utils, Class Definitions, and main()"""
 """
-NOTE: edit the variables above for your specific use case.
+NOTE: edit the variables below for your specific use case.
 """
 
 # Indices identify the substrate and layer from the list of input materials under `materials_in` in globals().
@@ -73,9 +73,11 @@ from ase.io import read, write
 import numpy as np
 
 
+# Utility functions
 def poscar_to_atoms(poscar):
     input = io.StringIO(poscar)
     atoms = read(input, format="vasp")
+
     return atoms
 
 
@@ -84,34 +86,76 @@ def atoms_to_poscar(atoms):
     write(output, atoms, format="vasp")
     content = output.getvalue()
     output.close()
+
     return content
 
 
 def expand_matrix_2x2_to_3x3(matrix_2x2):
     matrix_3x3 = np.identity(3)
     matrix_3x3[0:2, 0:2] = matrix_2x2
+
     return matrix_3x3
 
 
+
 def create_surface_and_supercell(atoms, miller_indices, number_of_layers, vacuum, superlattice_matrix):
-    # Create the surface
+    """
+    Creates a surface and supercell based on the input parameters.
+
+    Params:
+        atoms: The input atoms.
+        miller_indices: The Miller indices for the surface.
+        number_of_layers: The number of layers in the resulting surface.
+        vacuum: The vacuum space (in Ångströms) added to the surface in the direction perpendicular to the surface.
+        superlattice_matrix: The transformation matrix for the surface. Format is: [[v1x, v1y], [v2x, v2y]].
+
+    Returns:
+        supercell_atoms: The resulting supercell.
+    """
+
     surface_atoms = surface(atoms, miller_indices, number_of_layers, vacuum)
-    # Expand and apply the superlattice matrix
     expanded_matrix = expand_matrix_2x2_to_3x3(superlattice_matrix)
     supercell_atoms = make_supercell(surface_atoms, expanded_matrix)
+
     return supercell_atoms
 
 
 def calculate_strain_matrix(scaled_layer_cell, original_layer_cell):
-    # Calculate the original and scaled norms
+    """
+    Calculates the strain matrix based on the scaled and original layer cells.
+
+    Params:
+        scaled_layer_cell: The scaled layer cell.
+        original_layer_cell: The original layer cell.
+
+    Returns:
+        difference_matrix: The difference matrix.
+    """
+
     cell1 = np.array(original_layer_cell)[0:2,0:2]
     cell2 = np.array(scaled_layer_cell)[0:2,0:2]
     transformation_matrix = np.linalg.inv(cell1) @ cell2
     difference_matrix = transformation_matrix - np.eye(2)
+
     return difference_matrix
 
 
 def create_interface(substrate_poscar, layer_poscar, substrate_surface_settings, layer_surface_settings, interface_settings, scale_layer_to_fit=False):
+    """
+    Creates an interface between the substrate and the layer.
+
+    Params:
+        substrate_poscar: The POSCAR data for the substrate.
+        layer_poscar: The POSCAR data for the layer.
+        substrate_surface_settings: The settings for the substrate surface.
+        layer_surface_settings: The settings for the layer surface.
+        interface_settings: The settings for the interface.
+        scale_layer_to_fit: If True the layer cell and basis vectors will be scaled to fit the substrate cell.
+
+    Returns:
+        interface: The resulting interface.
+    """
+
     substrate_atoms = poscar_to_atoms(substrate_poscar)
     layer_atoms = poscar_to_atoms(layer_poscar)
     
@@ -138,6 +182,7 @@ def create_interface(substrate_poscar, layer_poscar, substrate_surface_settings,
     percent_str = np.array2string(m_percent, formatter={'float': '{:0.2f}%'.format})
     print("Strain matrix as percentages:\n", percent_str)
     
+    # Scale the layer to fit the substrate (mind the strain)
     if scale_layer_to_fit:  
         layer_supercell.set_cell(substrate_supercell.get_cell(), scale_atoms=True)
         layer_supercell.wrap()
@@ -156,7 +201,7 @@ def create_interface(substrate_poscar, layer_poscar, substrate_surface_settings,
 def main():
     """
     The main function of the script.
-    Creates a `MaterialInterface` based on the input materials, the InterfaceCreator class, and SETTINGS above.
+    Creates an interface between the substrate and the layer based on the SETTINGS defined above.
     Makes the resulting material available to the platform JS environment.
 
     Params:
@@ -166,7 +211,7 @@ def main():
 
     Returns:
         globals(): The globals() dictionary is returned to the platform JS environment.
-            - materials_out: The list of output materials.
+            - materials_out: The list of output materials with poscar as strucutre representation.
     """
     # Get the input materials from the platform JS environment.
     materials = globals()["materials_in"]

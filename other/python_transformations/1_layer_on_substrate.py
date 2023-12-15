@@ -28,18 +28,24 @@ SETTINGS = {
     "substrate_surface": {
         # Set Miller indices as a tuple for the resulting substrate surface.
         "miller_indices": (1, 1, 1),
+        # The vacuum space (in Ångströms) added to the surface in the direction perpendicular to the surface.
         "vacuum": 5,
+        # The number of atomic layers in the resulting substrate.
         "number_of_layers": 3,
+        # The transformation matrix for the surface. Format is: [[v1x, v1y], [v2x, v2y]].
         "superlattice_matrix": [
             [1, 0],
             [0, 1]
         ],
     },
     "layer_surface": {
-        # Set Miller indices as a tuple for the resulting layer surface.
+        # Set Miller indices as a tuple for the resulting layer surface: (0,0,1) for 2D material
         "miller_indices": (0, 0, 1),
+        # The vacuum space (in Ångströms) added to the surface in the direction perpendicular to the surface.
         "vacuum": 5,
+        # The number of atomic layers in the resulting substrate: 1 for 2D material
         "number_of_layers": 1,
+        # The transformation matrix for the surface. Format is: [[v1x, v1y], [v2x, v2y]].
         "superlattice_matrix": [
             [1, 0],
             [0, 1]
@@ -66,7 +72,7 @@ from ase.build import surface, make_supercell
 from ase.io import read, write
 import numpy as np
 
-# The following 3 util functions are used for convenience purposes.
+
 def poscar_to_atoms(poscar):
     input = io.StringIO(poscar)
     atoms = read(input, format="vasp")
@@ -96,7 +102,7 @@ def create_surface_and_supercell(atoms, miller_indices, number_of_layers, vacuum
     return supercell_atoms
 
 
-def calculate_strain_matrix(original_layer_cell, scaled_layer_cell):
+def calculate_strain_matrix(scaled_layer_cell, original_layer_cell):
     # Calculate the original and scaled norms
     cell1 = np.array(original_layer_cell)[0:2,0:2]
     cell2 = np.array(scaled_layer_cell)[0:2,0:2]
@@ -145,9 +151,6 @@ def create_interface(substrate_poscar, layer_poscar, substrate_surface_settings,
     # Combine substrate and layer into one Atoms object
     interface = substrate_supercell + layer_supercell
     return interface
-
-
-
 
 
 def main():

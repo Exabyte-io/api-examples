@@ -33,7 +33,12 @@ SETTINGS = {
         # The number of atomic layers in the resulting substrate.
         "number_of_layers": 3,
         # The transformation matrix for the surface. Format is: [[v1x, v1y], [v2x, v2y]].
-        "superlattice_matrix": [[1, 0], [0, 1]],
+        # fmt: off
+        "superlattice_matrix": [
+            [1, 0],
+            [0, 1]
+        ],
+        # fmt: on
     },
     "layer_surface": {
         # Set Miller indices as a tuple for the resulting layer surface: (0,0,1) for 2D material
@@ -43,7 +48,12 @@ SETTINGS = {
         # The number of atomic layers in the resulting substrate: 1 for 2D material
         "number_of_layers": 1,
         # The transformation matrix for the surface. Format is: [[v1x, v1y], [v2x, v2y]].
-        "superlattice_matrix": [[1, 0], [0, 1]],
+        # fmt: off
+        "superlattice_matrix": [
+            [1, 0],
+            [0, 1]
+        ],
+        # fmt: on
     },
     "interface": {
         "distance": 3.0,

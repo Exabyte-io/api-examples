@@ -33,10 +33,7 @@ SETTINGS = {
         # The number of atomic layers in the resulting substrate.
         "number_of_layers": 3,
         # The transformation matrix for the surface. Format is: [[v1x, v1y], [v2x, v2y]].
-        "superlattice_matrix": [
-            [1, 0],
-            [0, 1]
-        ],
+        "superlattice_matrix": [[1, 0], [0, 1]],
     },
     "layer_surface": {
         # Set Miller indices as a tuple for the resulting layer surface: (0,0,1) for 2D material
@@ -46,10 +43,7 @@ SETTINGS = {
         # The number of atomic layers in the resulting substrate: 1 for 2D material
         "number_of_layers": 1,
         # The transformation matrix for the surface. Format is: [[v1x, v1y], [v2x, v2y]].
-        "superlattice_matrix": [
-            [1, 0],
-            [0, 1]
-        ],
+        "superlattice_matrix": [[1, 0], [0, 1]],
     },
     "interface": {
         "distance": 3.0,
@@ -98,7 +92,6 @@ def expand_matrix_2x2_to_3x3(matrix_2x2):
     return matrix_3x3
 
 
-
 def create_surface_and_supercell(atoms, miller_indices, number_of_layers, vacuum, superlattice_matrix):
     """
     Creates a surface and supercell based on the input parameters.
@@ -133,15 +126,22 @@ def calculate_strain_matrix(scaled_layer_cell, original_layer_cell):
         difference_matrix: The difference matrix.
     """
 
-    cell1 = np.array(original_layer_cell)[0:2,0:2]
-    cell2 = np.array(scaled_layer_cell)[0:2,0:2]
+    cell1 = np.array(original_layer_cell)[0:2, 0:2]
+    cell2 = np.array(scaled_layer_cell)[0:2, 0:2]
     transformation_matrix = np.linalg.inv(cell1) @ cell2
     difference_matrix = transformation_matrix - np.eye(2)
 
     return difference_matrix
 
 
-def create_interface(substrate_poscar, layer_poscar, substrate_surface_settings, layer_surface_settings, interface_settings, scale_layer_to_fit=False):
+def create_interface(
+    substrate_poscar,
+    layer_poscar,
+    substrate_surface_settings,
+    layer_surface_settings,
+    interface_settings,
+    scale_layer_to_fit=False,
+):
     """
     Creates an interface between the substrate and the layer.
 
@@ -159,32 +159,31 @@ def create_interface(substrate_poscar, layer_poscar, substrate_surface_settings,
 
     substrate_atoms = poscar_to_atoms(substrate_poscar)
     layer_atoms = poscar_to_atoms(layer_poscar)
-    
+
     substrate_supercell = create_surface_and_supercell(
         substrate_atoms,
         miller_indices=substrate_surface_settings["miller_indices"],
         number_of_layers=substrate_surface_settings["number_of_layers"],
         vacuum=substrate_surface_settings["vacuum"],
-        superlattice_matrix=substrate_surface_settings["superlattice_matrix"]
+        superlattice_matrix=substrate_surface_settings["superlattice_matrix"],
     )
-    
+
     layer_supercell = create_surface_and_supercell(
         layer_atoms,
         miller_indices=layer_surface_settings["miller_indices"],
         number_of_layers=layer_surface_settings["number_of_layers"],
         vacuum=layer_surface_settings["vacuum"],
-        superlattice_matrix=layer_surface_settings["superlattice_matrix"]
+        superlattice_matrix=layer_surface_settings["superlattice_matrix"],
     )
-    
 
     # Calculate strain on the layer
     m = calculate_strain_matrix(substrate_supercell.get_cell(), layer_supercell.get_cell())
-    m_percent = m * 100 
-    percent_str = np.array2string(m_percent, formatter={'float': '{:0.2f}%'.format})
+    m_percent = m * 100
+    percent_str = np.array2string(m_percent, formatter={"float": "{:0.2f}%".format})
     print("Strain matrix as percentages:\n", percent_str)
-    
+
     # Scale the layer to fit the substrate (mind the strain)
-    if scale_layer_to_fit:  
+    if scale_layer_to_fit:
         layer_supercell.set_cell(substrate_supercell.get_cell(), scale_atoms=True)
         layer_supercell.wrap()
 
@@ -193,7 +192,7 @@ def create_interface(substrate_poscar, layer_poscar, substrate_surface_settings,
     z_min_layer = min(layer_supercell.positions[:, 2])
     z_offset = z_max_substrate - z_min_layer + interface_settings["distance"]
     layer_supercell.positions[:, 2] += z_offset
-    
+
     # Combine substrate and layer into one Atoms object
     interface = substrate_supercell + layer_supercell
     return interface
@@ -224,12 +223,12 @@ def main():
 
     # Interface is created based on SETTINGS for both substrate and layer
     interface_structure = create_interface(
-    substrate_poscar=substrate_data,
-    layer_poscar=layer_data,
-    substrate_surface_settings=SETTINGS["substrate_surface"],
-    layer_surface_settings=SETTINGS["layer_surface"],
-    interface_settings=SETTINGS["interface"],
-    scale_layer_to_fit=SETTINGS["scale_layer_to_fit"]
+        substrate_poscar=substrate_data,
+        layer_poscar=layer_data,
+        substrate_surface_settings=SETTINGS["substrate_surface"],
+        layer_surface_settings=SETTINGS["layer_surface"],
+        interface_settings=SETTINGS["interface"],
+        scale_layer_to_fit=SETTINGS["scale_layer_to_fit"],
     )
 
     # Make the data available to the platform JS environment.

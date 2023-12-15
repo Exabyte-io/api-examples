@@ -55,6 +55,7 @@ SETTINGS = {
         "distance": 3.0,
     },
     # If True the layer cell and basis vectors will be scaled to fit the substrate cell.
+    # Mind the strain that is introduced by this operation.
     "scale_layer_to_fit": False,
 }
 

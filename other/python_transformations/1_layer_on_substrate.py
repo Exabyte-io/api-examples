@@ -48,7 +48,8 @@ SETTINGS = {
     "interface": {
         "distance": 3.0,
     },
-    "scale_layer_to_fit": True,
+    # If True the layer cell and basis vectors will be scaled to fit the substrate cell.
+    "scale_layer_to_fit": False,
 }
 
 

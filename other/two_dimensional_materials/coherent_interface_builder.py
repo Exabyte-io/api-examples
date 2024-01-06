@@ -229,19 +229,20 @@ class CoherentInterfaceBuilder:
             interface_properties["film_thickness"] = film_thickness
             interface_properties["substrate_thickness"] = substrate_thickness
 
-            yield {"interface": Interface.from_slabs(
-                substrate_slab=sub_sl_slab,
-                film_slab=film_sl_slab,
-                gap=gap,
-                vacuum_over_film=vacuum_over_film,
-                interface_properties=interface_properties,
-            ),
-            "strain": strain,
-            "von_mises_strain": strain.von_mises_strain,
-            "film_sl_vectors": match.film_sl_vectors,
-            "substrate_sl_vectors": match.substrate_sl_vectors,
-            "film_transform": super_film_transform,
-            "substrate_transform": super_sub_transform,
+            yield {
+                "interface": Interface.from_slabs(
+                    substrate_slab=sub_sl_slab,
+                    film_slab=film_sl_slab,
+                    gap=gap,
+                    vacuum_over_film=vacuum_over_film,
+                    interface_properties=interface_properties,
+                ),
+                "strain": strain,
+                "von_mises_strain": strain.von_mises_strain,
+                "film_sl_vectors": match.film_sl_vectors,
+                "substrate_sl_vectors": match.substrate_sl_vectors,
+                "film_transform": super_film_transform,
+                "substrate_transform": super_sub_transform,
             }
 
 
@@ -284,13 +285,15 @@ def from_2d_to_3d(mat: np.ndarray) -> np.ndarray:
     new_mat[:2, :2] = mat
     return new_mat
 
+
 # data and settings
 materials = globals()["data_in"]["materials"]
 substrate_data = materials[0]
 layer_data = materials[1]
 
-substrate_poscar = (substrate_data["poscar"])
-layer_poscar = (layer_data["poscar"])
+substrate_poscar = substrate_data["poscar"]
+layer_poscar = layer_data["poscar"]
+
 
 # code to run
 def func():
@@ -299,7 +302,6 @@ def func():
     from coherent_interface_builder import CoherentInterfaceBuilder
     from operator import itemgetter
     import matplotlib.pyplot as plt
-
 
     substrate = Structure.from_str(substrate_poscar, fmt="poscar")
     layer = Structure.from_str(layer_poscar, fmt="poscar")
@@ -314,7 +316,6 @@ def func():
         film_miller=layer_miller,
         zslgen=zsl,
     )
-
 
     cib._find_terminations()
     matches = cib.zsl_matches
@@ -337,7 +338,9 @@ def func():
         strain_12 = object["strain"][0][1]
         strain_mean = (abs(strain_11) + abs(strain_22) + abs(strain_12)) / 3
 
-        strain.append({"strain_11": strain_11, "strain_22": strain_22, "strain_12": strain_12, "strain_mean": strain_mean})
+        strain.append(
+            {"strain_11": strain_11, "strain_22": strain_22, "strain_12": strain_12, "strain_mean": strain_mean}
+        )
         strain_von_mises.append(object["von_mises_strain"])
         number_of_atoms.append(object["interface"].num_sites)
 
@@ -355,7 +358,7 @@ def func():
     plt.show()
 
     interface = interfaces_list[0]["interface"]
-    
+
     globals()["data_out"]["materials"] = [
         {
             "poscar": interface.to(fmt="poscar"),
@@ -364,5 +367,6 @@ def func():
     ]
 
     return globals()
+
 
 func()

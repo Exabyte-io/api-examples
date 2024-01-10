@@ -5,6 +5,8 @@ import micropip
 
 await micropip.install("uncertainties")
 print("Installed uncertainties")
+await micropip.install("https://files.mat3ra.com:44318/uploads/pymatgen-2023.9.10-py3-none-any.whl", deps=False)
+print("Installed pymatgen")
 
 """BLOCK: Utils, Class Definitions, and main()"""
 
@@ -361,6 +363,14 @@ def main():
 
     interfaces_list = list(interfaces)
     sorted_interfaces = sorted(interfaces_list, key=itemgetter("von_mises_strain"))
+
+    # plot stran vs number of atoms via matplotlib
+    import matplotlib.pyplot as plt
+
+    plt.plot([i["von_mises_strain"] for i in sorted_interfaces], [i["interface"].num_sites for i in sorted_interfaces])
+    plt.xlabel("von mises strain")
+    plt.ylabel("number of atoms")
+    plt.show()
 
     best_interface = sorted_interfaces[0]["interface"]
     wrapped_structure = best_interface.copy()

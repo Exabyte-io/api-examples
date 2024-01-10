@@ -4,6 +4,7 @@
 import micropip
 
 await micropip.install("uncertainties")
+print("Installed uncertainties")
 
 """BLOCK: Utils, Class Definitions, and main()"""
 
@@ -15,12 +16,19 @@ from pymatgen.core.structure import Structure
 from operator import itemgetter
 
 # Select materials and surface plane
-MAX_AREA = 120
 SUBSTRATE_INDEX = 0
 LAYER_INDEX = 1
 
-substrate_miller = (1, 1, 1)
-layer_miller = (0, 0, 1)
+SUBSTRATE_MILLER = (1, 1, 1)
+SUBSTRATE_THICKNESS = 3
+LAYER_MILLER = (0, 0, 1)
+LAYER_THICKNESS = 1
+
+# Select distance between layers
+DISTANCE = 3.0
+
+# Select maximum area of the interface search
+MAX_AREA = 120
 
 
 """ Classes and Definitions """
@@ -327,8 +335,8 @@ def main():
     cib = CoherentInterfaceBuilder(
         substrate_structure=substrate,
         film_structure=layer,
-        substrate_miller=substrate_miller,
-        film_miller=layer_miller,
+        substrate_miller=SUBSTRATE_MILLER,
+        film_miller=LAYER_MILLER,
         zslgen=zsl,
     )
 
@@ -338,7 +346,15 @@ def main():
     terminations = cib.terminations
 
     # Create interfaces
-    interfaces = list(cib.get_interfaces(terminations[0], gap=3.0, substrate_thickness=3, in_layers=True))
+    interfaces = list(
+        cib.get_interfaces(
+            terminations[0],
+            gap=DISTANCE,
+            film_thickness=LAYER_THICKNESS,
+            substrate_thickness=SUBSTRATE_THICKNESS,
+            in_layers=True,
+        )
+    )
 
     print("Found {} interfaces".format(len(matches)))
     print(f"Terminations ({len(terminations)}):", terminations)

@@ -367,7 +367,22 @@ def main():
     # plot stran vs number of atoms via matplotlib
     import matplotlib.pyplot as plt
 
-    plt.plot([i["von_mises_strain"] for i in sorted_interfaces], [i["interface"].num_sites for i in sorted_interfaces])
+    # Scatter plot with index annotations
+    plt.scatter(
+        [i["von_mises_strain"] for i in sorted_interfaces], [i["interface"].num_sites for i in sorted_interfaces]
+    )
+
+    # Adding index as text labels (popovers) near each point
+    for index, interface in enumerate(sorted_interfaces):
+        plt.text(
+            interface["von_mises_strain"],
+            interface["interface"].num_sites,
+            str(index),
+            fontsize=9,
+            ha="right",  # horizontal alignment can be left, right or center
+            va="bottom",  # vertical alignment can be bottom, top or center
+        )
+
     plt.xlabel("von mises strain")
     plt.ylabel("number of atoms")
     plt.show()

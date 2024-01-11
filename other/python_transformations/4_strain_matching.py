@@ -29,8 +29,11 @@ LAYER_THICKNESS = 1
 # Select distance between layers
 DISTANCE = 3.0
 
-# Select maximum area of the interface search
-MAX_AREA = 120
+# Select paramteres for the ZSL algorithm
+MAX_AREA = 400
+MAX_AREA_TOL = 0.25
+MAX_LENGTH_TOL = 0.05
+MAX_ANGLE_TOL = 0.02
 
 
 """ Classes and Definitions """
@@ -334,7 +337,9 @@ def main():
     layer = Structure.from_str(materials_in[LAYER_INDEX].getAsPOSCAR(), fmt="poscar")
 
     # Create Interface Builder class
-    zsl = PymatgenZSL(max_area=MAX_AREA)
+    zsl = PymatgenZSL(
+        max_area_ratio_tol=MAX_AREA_TOL, max_area=MAX_AREA, max_length_tol=MAX_LENGTH_TOL, max_angle_tol=MAX_ANGLE_TOL
+    )
     cib = CoherentInterfaceBuilder(
         substrate_structure=substrate,
         film_structure=layer,

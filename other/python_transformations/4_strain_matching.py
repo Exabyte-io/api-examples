@@ -370,7 +370,7 @@ def main():
     strain_modes = {"VON_MISES": "von_mises_strain", "STRAIN": "strain", "MEAN": "mean_abs_strain"}
     strain_mode = strain_modes["MEAN"]
     interfaces_list = list(interfaces)
-    # print strain
+
     for index, interface in enumerate(interfaces_list):
         print(index, interface[strain_mode])
     sorted_interfaces = sorted(interfaces_list, key=itemgetter(strain_mode))
@@ -378,24 +378,53 @@ def main():
     # plot stran vs number of atoms via matplotlib
     import matplotlib.pyplot as plt
 
-    # Scatter plot with index annotations
-    plt.scatter([i[strain_mode] for i in sorted_interfaces], [i["interface"].num_sites for i in sorted_interfaces])
+    fig, ax = plt.subplots()
 
-    # Adding index as text labels (popovers) near each point
-    for index, interface in enumerate(sorted_interfaces):
-        plt.text(
-            interface["von_mises_strain"],
-            interface["interface"].num_sites,
-            str(index),
-            fontsize=9,
-            ha="right",  # horizontal alignment can be left, right or center
-            va="bottom",  # vertical alignment can be bottom, top or center
-        )
+    # Scatter plot
+    x = [i[strain_mode] for i in sorted_interfaces]
+    y = [i["interface"].num_sites for i in sorted_interfaces]
+    sc = ax.scatter(x, y)
 
+    # Annotation for the hover-over labels
+    annot = ax.annotate(
+        "",
+        xy=(0, 0),
+        xytext=(20, 20),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="w"),
+        arrowprops=dict(arrowstyle="->"),
+    )
+    annot.set_visible(False)
+
+    def update_annot(ind):
+        pos = sc.get_offsets()[ind["ind"][0]]
+        annot.xy = pos
+        text = "{}".format(" ".join([str(index) for index in ind["ind"]]))
+        annot.set_text(text)
+        annot.get_bbox_patch().set_alpha(0.4)
+
+    def hover(event):
+        vis = annot.get_visible()
+        if event.inaxes == ax:
+            cont, ind = sc.contains(event)
+            if cont:
+                update_annot(ind)
+                annot.set_visible(True)
+                fig.canvas.draw_idle()
+            else:
+                if vis:
+                    annot.set_visible(False)
+                    fig.canvas.draw_idle()
+
+    # Connect the hover event
+    fig.canvas.mpl_connect("motion_notify_event", hover)
+
+    # Set the scale and labels
     plt.xscale("log")
     plt.yscale("log")
     plt.xlabel(strain_mode)
     plt.ylabel("number of atoms")
+
     plt.show()
 
     best_interface = sorted_interfaces[0]["interface"]

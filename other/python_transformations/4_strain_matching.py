@@ -31,9 +31,9 @@ DISTANCE = 3.0
 
 # Select paramteres for the ZSL algorithm
 MAX_AREA = 400
-MAX_AREA_TOL = 0.25
-MAX_LENGTH_TOL = 0.05
-MAX_ANGLE_TOL = 0.02
+MAX_AREA_TOL = 0.09
+MAX_LENGTH_TOL = 0.03
+MAX_ANGLE_TOL = 0.01
 
 
 """ Classes and Definitions """

@@ -6,7 +6,7 @@ It uses micropip - a Python package manager for Pyodide.
 """
 
 
-def install_packages():
+async def install_packages():
     import micropip
 
     packages = [

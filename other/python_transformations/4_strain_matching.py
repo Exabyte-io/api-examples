@@ -274,6 +274,7 @@ class CoherentInterfaceBuilder:
                 ),
                 "strain": strain,
                 "von_mises_strain": strain.von_mises_strain,
+                "mean_abs_strain": np.mean(np.abs(strain)) * 100,
                 "film_sl_vectors": match.film_sl_vectors,
                 "substrate_sl_vectors": match.substrate_sl_vectors,
                 "film_transform": super_film_transform,
@@ -361,16 +362,19 @@ def main():
     print("Found {} interfaces".format(len(matches)))
     print(f"Terminations ({len(terminations)}):", terminations)
 
+    strain_modes = {"VON_MISES": "von_mises_strain", "STRAIN": "strain", "MEAN": "mean_abs_strain"}
+    strain_mode = strain_modes["MEAN"]
     interfaces_list = list(interfaces)
-    sorted_interfaces = sorted(interfaces_list, key=itemgetter("von_mises_strain"))
+    # print strain
+    for index, interface in enumerate(interfaces_list):
+        print(index, interface[strain_mode])
+    sorted_interfaces = sorted(interfaces_list, key=itemgetter(strain_mode))
 
     # plot stran vs number of atoms via matplotlib
     import matplotlib.pyplot as plt
 
     # Scatter plot with index annotations
-    plt.scatter(
-        [i["von_mises_strain"] for i in sorted_interfaces], [i["interface"].num_sites for i in sorted_interfaces]
-    )
+    plt.scatter([i[strain_mode] for i in sorted_interfaces], [i["interface"].num_sites for i in sorted_interfaces])
 
     # Adding index as text labels (popovers) near each point
     for index, interface in enumerate(sorted_interfaces):
@@ -383,7 +387,9 @@ def main():
             va="bottom",  # vertical alignment can be bottom, top or center
         )
 
-    plt.xlabel("von mises strain")
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.xlabel(strain_mode)
     plt.ylabel("number of atoms")
     plt.show()
 

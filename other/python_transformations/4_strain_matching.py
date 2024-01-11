@@ -371,8 +371,6 @@ def main():
     strain_mode = strain_modes["MEAN"]
     interfaces_list = list(interfaces)
 
-    for index, interface in enumerate(interfaces_list):
-        print(index, interface[strain_mode])
     sorted_interfaces = sorted(interfaces_list, key=itemgetter(strain_mode))
 
     # plot stran vs number of atoms via matplotlib

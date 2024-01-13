@@ -17,10 +17,11 @@ from pymatgen.analysis.interfaces.zsl import ZSLGenerator as PymatgenZSL
 from pymatgen.core.structure import Structure
 from operator import itemgetter
 
-# Select materials and surface plane
+# Select materials from the list of input materials under `materials_in` in globals().
 SUBSTRATE_INDEX = 0
 LAYER_INDEX = 1
 
+# Select Miller indices and thickness for substrate and layer.
 SUBSTRATE_MILLER = (1, 1, 1)
 SUBSTRATE_THICKNESS = 3
 LAYER_MILLER = (0, 0, 1)
@@ -29,7 +30,7 @@ LAYER_THICKNESS = 1
 # Select distance between layers
 DISTANCE = 3.0
 
-# Select paramteres for the ZSL algorithm
+# Select parameters for the ZSL algorithm
 MAX_AREA = 400
 MAX_AREA_TOL = 0.09
 MAX_LENGTH_TOL = 0.03

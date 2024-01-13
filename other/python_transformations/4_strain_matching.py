@@ -9,7 +9,13 @@ await micropip.install("https://files.mat3ra.com:44318/uploads/pymatgen-2023.9.1
 print("Installed pymatgen")
 
 """BLOCK: Utils, Class Definitions, and main()"""
-
+"""
+This script employs the Zur and McGill SuperLattice (ZSL) algorithm for strain matching a 2D material layer on a surface. 
+Using pymatgen, it constructs coherent interfaces between a substrate and a film layer, with a focus on lattice matching and interface terminations. 
+Key parameters like Miller indices and layer thicknesses can be customized.
+The result of the lagorithm is a list of interfaces, sorted by the mean absolute strain.
+Plot shows the mean absolute strain vs. the number of atoms in the interface to select corresponding material by index. 
+"""
 from __future__ import annotations
 
 import pymatgen

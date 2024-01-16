@@ -44,17 +44,24 @@ for package in packages:
     await install_package(package)
 
 """BLOCK: Utils, Class Definitions, and main()"""
-
+"""
+This script employs the Zur and McGill SuperLattice (ZSL) algorithm for strain matching a 2D material layer on a surface. 
+Using pymatgen, it constructs coherent interfaces between a substrate and a film layer, with a focus on lattice matching and interface terminations. 
+Key parameters like Miller indices and layer thicknesses can be customized.
+The result of the lagorithm is a list of interfaces, sorted by the mean absolute strain.
+Plot shows the mean absolute strain vs. the number of atoms in the interface to select corresponding material by index. 
+"""
 from __future__ import annotations
 
 
-# Select materials and surface plane
+# Select materials from the list of input materials under `materials_in` in globals().
 SUBSTRATE_INDEX = 0
 LAYER_INDEX = 1
 
 # Select interface from list of generated interfaces sorted by increasing mean absolute strain
 RESULT_INDEX = 0
 
+# Select Miller indices and thickness for substrate and layer.
 SUBSTRATE_MILLER = (1, 1, 1)
 SUBSTRATE_THICKNESS = 3
 LAYER_MILLER = (0, 0, 1)
@@ -63,7 +70,7 @@ LAYER_THICKNESS = 1
 # Select distance between layers
 DISTANCE = 3.0
 
-# Select paramteres for the ZSL algorithm
+# Select parameters for the ZSL algorithm
 MAX_AREA = 400
 MAX_AREA_TOL = 0.09
 MAX_LENGTH_TOL = 0.03

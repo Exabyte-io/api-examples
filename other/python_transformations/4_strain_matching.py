@@ -12,10 +12,6 @@ print("Installed pymatgen")
 
 from __future__ import annotations
 
-import pymatgen
-from pymatgen.analysis.interfaces.zsl import ZSLGenerator as PymatgenZSL
-from pymatgen.core.structure import Structure
-from operator import itemgetter
 
 # Select materials and surface plane
 SUBSTRATE_INDEX = 0
@@ -35,6 +31,9 @@ MAX_AREA_TOL = 0.09
 MAX_LENGTH_TOL = 0.03
 MAX_ANGLE_TOL = 0.01
 
+"""
+NOTE: DO NOT edit code below unless you know what you are doing.
+"""
 
 """ Classes and Definitions """
 
@@ -45,6 +44,10 @@ import numpy as np
 from numpy.testing import assert_allclose
 from scipy.linalg import polar
 
+import pymatgen
+from pymatgen.analysis.interfaces.zsl import ZSLGenerator as PymatgenZSL
+from pymatgen.core.structure import Structure
+from operator import itemgetter
 from pymatgen.analysis.elasticity.strain import Deformation
 from pymatgen.analysis.interfaces.zsl import ZSLGenerator, fast_norm
 from pymatgen.core.interface import Interface, label_termination

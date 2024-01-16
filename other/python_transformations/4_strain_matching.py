@@ -20,6 +20,7 @@ packages = [
     "tabulate==0.9.0",
     "sqlite3",
     "sympy==1.12",
+    "uncertainties==3.1.6",
 ]
 
 

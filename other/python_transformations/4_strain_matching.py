@@ -85,6 +85,7 @@ NOTE: DO NOT edit code below unless you know what you are doing.
 from itertools import product
 from typing import TYPE_CHECKING
 
+import matplotlib.pyplot as plt
 import numpy as np
 from numpy.testing import assert_allclose
 from scipy.linalg import polar
@@ -373,6 +374,57 @@ def from_2d_to_3d(mat: np.ndarray) -> np.ndarray:
     return new_mat
 
 
+def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
+    fig, ax = plt.subplots()
+
+    # Scatter plot
+    x = [i[strain_mode] for i in sorted_interfaces]
+    y = [i["interface"].num_sites for i in sorted_interfaces]
+    sc = ax.scatter(x, y)
+
+    # Annotation for the hover-over labels
+    annot = ax.annotate(
+        "",
+        xy=(0, 0),
+        xytext=(20, 20),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="w"),
+        arrowprops=dict(arrowstyle="->"),
+    )
+    annot.set_visible(False)
+
+    def update_annot(ind):
+        pos = sc.get_offsets()[ind["ind"][0]]
+        annot.xy = pos
+        text = "{}".format(" ".join([str(index) for index in ind["ind"]]))
+        annot.set_text(text)
+        annot.get_bbox_patch().set_alpha(0.4)
+
+    def hover(event):
+        vis = annot.get_visible()
+        if event.inaxes == ax:
+            cont, ind = sc.contains(event)
+            if cont:
+                update_annot(ind)
+                annot.set_visible(True)
+                fig.canvas.draw_idle()
+            else:
+                if vis:
+                    annot.set_visible(False)
+                    fig.canvas.draw_idle()
+
+    # Connect the hover event
+    fig.canvas.mpl_connect("motion_notify_event", hover)
+
+    # Set the scale and labels
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.xlabel(strain_mode)
+    plt.ylabel("number of atoms")
+
+    plt.show()
+
+
 """ MAIN """
 
 
@@ -422,56 +474,7 @@ def main():
     sorted_interfaces = sorted(interfaces_list, key=itemgetter(strain_mode))
 
     # plot stran vs number of atoms via matplotlib
-    import matplotlib.pyplot as plt
-
-    fig, ax = plt.subplots()
-
-    # Scatter plot
-    x = [i[strain_mode] for i in sorted_interfaces]
-    y = [i["interface"].num_sites for i in sorted_interfaces]
-    sc = ax.scatter(x, y)
-
-    # Annotation for the hover-over labels
-    annot = ax.annotate(
-        "",
-        xy=(0, 0),
-        xytext=(20, 20),
-        textcoords="offset points",
-        bbox=dict(boxstyle="round", fc="w"),
-        arrowprops=dict(arrowstyle="->"),
-    )
-    annot.set_visible(False)
-
-    def update_annot(ind):
-        pos = sc.get_offsets()[ind["ind"][0]]
-        annot.xy = pos
-        text = "{}".format(" ".join([str(index) for index in ind["ind"]]))
-        annot.set_text(text)
-        annot.get_bbox_patch().set_alpha(0.4)
-
-    def hover(event):
-        vis = annot.get_visible()
-        if event.inaxes == ax:
-            cont, ind = sc.contains(event)
-            if cont:
-                update_annot(ind)
-                annot.set_visible(True)
-                fig.canvas.draw_idle()
-            else:
-                if vis:
-                    annot.set_visible(False)
-                    fig.canvas.draw_idle()
-
-    # Connect the hover event
-    fig.canvas.mpl_connect("motion_notify_event", hover)
-
-    # Set the scale and labels
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.xlabel(strain_mode)
-    plt.ylabel("number of atoms")
-
-    plt.show()
+    plot_strain_vs_atoms(strain_mode, sorted_interfaces)
 
     best_interface = sorted_interfaces[RESULT_INDEX]["interface"]
     wrapped_structure = best_interface.copy()

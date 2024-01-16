@@ -58,8 +58,9 @@ from __future__ import annotations
 SUBSTRATE_INDEX = 0
 LAYER_INDEX = 1
 
-# Select interface from list of generated interfaces sorted by increasing mean absolute strain
-RESULT_INDEX = 0
+# Select interfaces from list of generated interfaces sorted by increasing mean absolute strain
+# By interval or by index
+OUTPUT_INDICES = [0, 10]
 
 # Select Miller indices and thickness for substrate and layer.
 SUBSTRATE_MILLER = (1, 1, 1)
@@ -425,6 +426,33 @@ def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
     plt.show()
 
 
+def output_materials(sorted_interfaces, output_indices):
+    # Initialize an empty list to store the materials
+    materials_out = []
+
+    # Check if output_indices is a single number or a list
+    if isinstance(output_indices, int):
+        # If it's a single number, output the material with that index
+        output_range = [output_indices]
+    else:
+        # If it's a list, output materials in that range
+        output_range = range(*output_indices)
+
+    # Loop over the interfaces in the output range
+    for index in output_range:
+        best_interface = sorted_interfaces[index]["interface"]
+
+        wrapped_structure = best_interface.copy()
+        # This should wrap the atoms inside the unit cell
+        wrapped_structure.make_supercell([1, 1, 1])
+        interface_poscar = wrapped_structure.to(fmt="poscar")
+
+        # Append the material to the list
+        materials_out.append({"poscar": interface_poscar})
+
+    return materials_out
+
+
 """ MAIN """
 
 
@@ -476,12 +504,9 @@ def main():
     # plot stran vs number of atoms via matplotlib
     plot_strain_vs_atoms(strain_mode, sorted_interfaces)
 
-    best_interface = sorted_interfaces[RESULT_INDEX]["interface"]
-    wrapped_structure = best_interface.copy()
-    wrapped_structure.make_supercell([1, 1, 1])  # This should wrap the atoms inside the unit cell
-    interface_poscar = wrapped_structure.to(fmt="poscar")
+    # Return created materials to the platform
+    globals()["materials_out"] = output_materials(sorted_interfaces, OUTPUT_INDICES)
 
-    globals()["materials_out"] = [{"poscar": interface_poscar}]
     return globals()
 
 

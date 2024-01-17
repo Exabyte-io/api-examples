@@ -335,7 +335,7 @@ class CoherentInterfaceBuilder:
                 ),
                 "strain": strain,
                 "von_mises_strain": strain.von_mises_strain,
-                "mean_abs_strain": np.mean(np.abs(strain)) * 100,
+                "mean_abs_strain": np.mean(np.abs(strain)),
                 "film_sl_vectors": match.film_sl_vectors,
                 "substrate_sl_vectors": match.substrate_sl_vectors,
                 "film_transform": super_film_transform,
@@ -394,7 +394,7 @@ def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
     fig, ax = plt.subplots()
 
     # Scatter plot
-    x = [i[strain_mode] for i in sorted_interfaces]
+    x = [i[strain_mode] for i in sorted_interfaces] * 100  # in precentage
     y = [i["interface"].num_sites for i in sorted_interfaces]
     sc = ax.scatter(x, y)
 
@@ -517,7 +517,14 @@ def main():
     strain_mode = strain_modes["MEAN"]
     interfaces_list = list(interfaces)
 
+    # Sort interfaces by ascending strain
     sorted_interfaces = sorted(interfaces_list, key=itemgetter(strain_mode))
+    # Sort interfaces by ascending number of atoms
+    sorted_interfaces = sorted(sorted_interfaces, key=lambda x: x["interface"].num_sites)
+
+    print("Interface with lowest strain (index 0):")
+    print("    strain:", sorted_interfaces[0][strain_mode], "%")
+    print("    number of atoms:", sorted_interfaces[0]["interface"].num_sites)
 
     # plot stran vs number of atoms via matplotlib
     plot_strain_vs_atoms(strain_mode, sorted_interfaces)

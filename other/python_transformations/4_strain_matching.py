@@ -460,9 +460,7 @@ def output_materials(sorted_interfaces, output_indices):
 def main():
     # Interaction with Platform
     materials_in = globals()["materials_in"]
-    print("Materials in:", materials_in)
     substrate = Structure.from_str(materials_in[SUBSTRATE_INDEX].getAsPOSCAR(), fmt="poscar")
-    print(substrate)
     layer = Structure.from_str(materials_in[LAYER_INDEX].getAsPOSCAR(), fmt="poscar")
 
     # Create Interface Builder class
@@ -495,8 +493,8 @@ def main():
             )
         )
 
-    print("Found {} interfaces".format(len(matches)))
-    print(f"Terminations ({len(terminations)}):", terminations)
+    print(f"Found {len(matches)} interfaces")
+    print(f"Found {len(terminations)} terminations:", terminations)
 
     strain_modes = {"VON_MISES": "von_mises_strain", "STRAIN": "strain", "MEAN": "mean_abs_strain"}
     strain_mode = strain_modes["MEAN"]

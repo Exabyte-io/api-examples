@@ -517,13 +517,11 @@ def main():
     strain_mode = strain_modes["MEAN"]
     interfaces_list = list(interfaces)
 
-    # Sort interfaces by ascending strain
-    sorted_interfaces = sorted(interfaces_list, key=itemgetter(strain_mode))
-    # Sort interfaces by ascending number of atoms
-    sorted_interfaces = sorted(sorted_interfaces, key=lambda x: x["interface"].num_sites)
+    # Sort interfaces by ascending strain and then by ascending number of atoms
+    sorted_interfaces = sorted(interfaces_list, key=lambda x: (itemgetter(strain_mode)(x), x["interface"].num_sites))
 
     print("Interface with lowest strain (index 0):")
-    print("    strain:", sorted_interfaces[0][strain_mode], "%")
+    print("    strain:", sorted_interfaces[0][strain_mode] * 100, "%")
     print("    number of atoms:", sorted_interfaces[0]["interface"].num_sites)
 
     # plot stran vs number of atoms via matplotlib

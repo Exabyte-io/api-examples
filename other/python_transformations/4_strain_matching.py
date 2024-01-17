@@ -46,8 +46,9 @@ for package in packages:
 
 """BLOCK: Utils, Class Definitions, and main()"""
 """
-This script employs the Zur and McGill SuperLattice (ZSL) algorithm for strain matching a 2D material layer on a surface. 
+This script employs the Zur and McGill SuperLattice algorithm (Journal of Applied Physics 55 (1984), 378 ; doi: 10.1063/1.333084)  for strain matching a 2D material layer on a surface. 
 Using pymatgen, it constructs coherent interfaces between a substrate and a film layer, with a focus on lattice matching and interface terminations. 
+Link to pymatgen ZSL implementation: https://pymatgen.org/pymatgen.analysis.interfaces.html#pymatgen.analysis.interfaces.zsl.ZSLGenerator
 Key parameters like Miller indices and layer thicknesses can be customized.
 The result of the lagorithm is a list of interfaces, sorted by the mean absolute strain.
 Plot shows the mean absolute strain vs. the number of atoms in the interface to select corresponding material by index. 
@@ -73,10 +74,21 @@ LAYER_THICKNESS = 1
 DISTANCE = 3.0
 
 # Select parameters for the ZSL algorithm
+# as defined in: https://pymatgen.org/pymatgen.analysis.interfaces.html#pymatgen.analysis.interfaces.zsl.ZSLGenerator
 MAX_AREA = 400
 MAX_AREA_TOL = 0.09
 MAX_LENGTH_TOL = 0.03
 MAX_ANGLE_TOL = 0.01
+
+# Plot settings
+# Strain axis limits in percent
+X_MIN = 0.01
+X_MAX = 100
+
+# Number of atoms axis limits
+Y_MIN = 1
+Y_MAX = 1000
+
 
 """
 NOTE: DO NOT edit code below unless you know what you are doing.
@@ -435,6 +447,8 @@ def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
     # Set the scale and labels
     plt.xscale("log")
     plt.yscale("log")
+    plt.xlim(0.01, 100)
+    plt.ylim(1, 1000)
     plt.xlabel(strain_mode)
     plt.ylabel("number of atoms")
 

@@ -61,7 +61,7 @@ SUBSTRATE_INDEX = 0
 LAYER_INDEX = 1
 
 # Select interfaces from list of generated interfaces sorted by increasing mean absolute strain
-# By interval or by index
+# By interval or by index, e.g. [0, 10] or 0
 OUTPUT_INDICES = [0, 10]
 
 # Select Miller indices and thickness for substrate and layer.
@@ -80,6 +80,7 @@ MAX_AREA_TOL = 0.09
 MAX_LENGTH_TOL = 0.03
 MAX_ANGLE_TOL = 0.01
 
+# Strains within this tolerance are considered equal
 STRAIN_TOL = 10e-6
 
 # Plot settings

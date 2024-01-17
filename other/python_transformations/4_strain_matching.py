@@ -441,7 +441,7 @@ def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
     plt.show()
 
 
-def output_materials(sorted_interfaces, output_indices):
+def output_materials(sorted_interfaces, output_indices, strain_mode):
     """
     Outputs the materials in the output range.
     """
@@ -464,6 +464,12 @@ def output_materials(sorted_interfaces, output_indices):
         # This should wrap the atoms inside the unit cell
         wrapped_structure.make_supercell([1, 1, 1])
         interface_poscar = wrapped_structure.to(fmt="poscar")
+
+        # Add the strain to the POSCAR first line to use as a name
+        strain = sorted_interfaces[index][strain_mode]
+        lines = interface_poscar.split("\n")
+        lines[0] = lines[0] + " strain: " + str(strain * 100).format(".3f") + "%"
+        interface_poscar = "\n".join(lines)
 
         # Append the material to the list
         materials_out.append({"poscar": interface_poscar})
@@ -528,7 +534,7 @@ def main():
     plot_strain_vs_atoms(strain_mode, sorted_interfaces)
 
     # Return created materials to the platform
-    globals()["materials_out"] = output_materials(sorted_interfaces, OUTPUT_INDICES)
+    globals()["materials_out"] = output_materials(sorted_interfaces, OUTPUT_INDICES, strain_mode)
 
     return globals()
 

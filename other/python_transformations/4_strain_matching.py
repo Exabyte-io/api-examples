@@ -82,7 +82,9 @@ MAX_ANGLE_TOL = 0.01
 NOTE: DO NOT edit code below unless you know what you are doing.
 """
 
-""" Classes and Definitions """
+""" 
+Classes and Definitions
+"""
 
 from itertools import product
 from typing import TYPE_CHECKING
@@ -140,7 +142,9 @@ class CoherentInterfaceBuilder:
         self._find_terminations()
 
     def _find_matches(self) -> None:
-        """Finds and stores the ZSL matches."""
+        """
+        Finds and stores the ZSL matches.
+        """
         self.zsl_matches = []
 
         film_sg = SlabGenerator(
@@ -188,7 +192,9 @@ class CoherentInterfaceBuilder:
             ), "Substrate lattice vectors changed during ZSL match, check your ZSL Generator parameters"
 
     def _find_terminations(self):
-        """Finds all terminations."""
+        """
+        Finds all terminations.
+        """
         film_sg = SlabGenerator(
             self.film_structure,
             self.film_miller,
@@ -237,7 +243,8 @@ class CoherentInterfaceBuilder:
         substrate_thickness: float = 1,
         in_layers: bool = True,
     ) -> Iterator[Interface]:
-        """Generates interface structures given the film and substrate structure
+        """
+        Generates interface structures given the film and substrate structure
         as well as the desired terminations.
 
         Args:
@@ -337,7 +344,9 @@ class CoherentInterfaceBuilder:
 
 
 def get_rot_3d_for_2d(film_matrix, sub_matrix) -> np.ndarray:
-    """Find transformation matrix that will rotate and strain the film to the substrate while preserving the c-axis."""
+    """
+    Find transformation matrix that will rotate and strain the film to the substrate while preserving the c-axis.
+    """
     film_matrix = np.array(film_matrix)
     film_matrix = film_matrix.tolist()[:2]
     film_matrix.append(np.cross(film_matrix[0], film_matrix[1]))
@@ -370,13 +379,18 @@ def get_2d_transform(start: Sequence, end: Sequence) -> np.ndarray:
 
 
 def from_2d_to_3d(mat: np.ndarray) -> np.ndarray:
-    """Converts a 2D matrix to a 3D matrix."""
+    """
+    Converts a 2D matrix to a 3D matrix.
+    """
     new_mat = np.diag([1.0, 1.0, 1.0])
     new_mat[:2, :2] = mat
     return new_mat
 
 
 def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
+    """
+    Plots the strain vs. the number of atoms in the interface. With hover-over labels.
+    """
     fig, ax = plt.subplots()
 
     # Scatter plot
@@ -428,6 +442,9 @@ def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
 
 
 def output_materials(sorted_interfaces, output_indices):
+    """
+    Outputs the materials in the output range.
+    """
     # Initialize an empty list to store the materials
     materials_out = []
 

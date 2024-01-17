@@ -80,6 +80,8 @@ MAX_AREA_TOL = 0.09
 MAX_LENGTH_TOL = 0.03
 MAX_ANGLE_TOL = 0.01
 
+STRAIN_TOL = 10e-6
+
 # Plot settings
 # Strain axis limits in percent
 X_MIN = 0.01
@@ -347,7 +349,7 @@ class CoherentInterfaceBuilder:
                 ),
                 "strain": strain,
                 "von_mises_strain": strain.von_mises_strain,
-                "mean_abs_strain": np.mean(np.abs(strain)),
+                "mean_abs_strain": round(np.mean(np.abs(strain)) / STRAIN_TOL) * STRAIN_TOL,
                 "film_sl_vectors": match.film_sl_vectors,
                 "substrate_sl_vectors": match.substrate_sl_vectors,
                 "film_transform": super_film_transform,

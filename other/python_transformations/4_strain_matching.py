@@ -483,15 +483,17 @@ def main():
     terminations = cib.terminations
 
     # Create interfaces
-    interfaces = list(
-        cib.get_interfaces(
-            terminations[0],
-            gap=DISTANCE,
-            film_thickness=LAYER_THICKNESS,
-            substrate_thickness=SUBSTRATE_THICKNESS,
-            in_layers=True,
+    interfaces = []
+    for termination in terminations:
+        interfaces = list(
+            cib.get_interfaces(
+                termination,
+                gap=DISTANCE,
+                film_thickness=LAYER_THICKNESS,
+                substrate_thickness=SUBSTRATE_THICKNESS,
+                in_layers=True,
+            )
         )
-    )
 
     print("Found {} interfaces".format(len(matches)))
     print(f"Terminations ({len(terminations)}):", terminations)

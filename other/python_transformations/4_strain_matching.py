@@ -394,7 +394,7 @@ def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
     fig, ax = plt.subplots()
 
     # Scatter plot
-    x = [i[strain_mode] for i in sorted_interfaces] * 100  # in precentage
+    x = [i[strain_mode] * 100 for i in sorted_interfaces]  # in precentage
     y = [i["interface"].num_sites for i in sorted_interfaces]
     sc = ax.scatter(x, y)
 

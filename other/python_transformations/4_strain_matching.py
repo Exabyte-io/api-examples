@@ -468,7 +468,7 @@ def output_materials(sorted_interfaces, output_indices, strain_mode):
         # Add the strain to the POSCAR first line to use as a name
         strain = sorted_interfaces[index][strain_mode]
         lines = interface_poscar.split("\n")
-        lines[0] = lines[0] + " strain: " + str(strain * 100).format(".3f") + "%"
+        lines[0] = lines[0] + " strain: " + "{:.3f}".format(strain * 100) + "%"
         interface_poscar = "\n".join(lines)
 
         # Append the material to the list

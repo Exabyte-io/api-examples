@@ -450,9 +450,9 @@ def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
     # Set the scale and labels
     plt.xscale("log")
     plt.yscale("log")
-    plt.xlim(0.01, 100)
-    plt.ylim(1, 1000)
-    plt.xlabel(strain_mode)
+    plt.xlim(X_MIN, X_MAX)
+    plt.ylim(Y_MIN, Y_MAX)
+    plt.xlabel("strain in %")
     plt.ylabel("number of atoms")
 
     plt.show()

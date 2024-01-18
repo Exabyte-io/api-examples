@@ -64,16 +64,16 @@ LAYER_INDEX = 1
 # By interval or by index, e.g. [0, 10] or 0
 OUTPUT_INDICES = [0, 10]
 
-# Select Miller indices and thickness for substrate and layer.
+# Miller indices and thickness for substrate and layer.
 SUBSTRATE_MILLER = (1, 1, 1)
 SUBSTRATE_THICKNESS = 3
 LAYER_MILLER = (0, 0, 1)
 LAYER_THICKNESS = 1
 
-# Select distance between layers
+# Distance between layers, in Angstroms
 DISTANCE = 3.0
 
-# Select parameters for the ZSL algorithm
+# Parameters for the ZSL algorithm
 # as defined in: https://pymatgen.org/pymatgen.analysis.interfaces.html#pymatgen.analysis.interfaces.zsl.ZSLGenerator
 MAX_AREA = 400
 MAX_AREA_TOL = 0.09

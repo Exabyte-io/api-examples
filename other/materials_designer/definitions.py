@@ -2,9 +2,9 @@ from IPython.display import display, Javascript
 import json
 
 
-def submit(data):
-    python_data = data
-    serialized_data = json.dumps(python_data)
+def submit(materials):
+    python_data = materials
+    serialized_data = json.dumps({"materials": python_data})
     js_code = f"""
     (function() {{
         window.sendDataToHost({serialized_data})
@@ -13,22 +13,23 @@ def submit(data):
     """
 
     display(Javascript(js_code))
-    print("Status: materials sent")
+    print("materials sent")
 
 
 def get_materials():
     js_code = """
     (function() {
-        if (window.requestMaterialsFromHost) {
-            window.requestMaterialsFromHost();
+        if (window.requestDataFromHost) {
+            window.requestDataFromHost();
+            
         } else {
-            console.error('requestMaterialsFromHost function is not defined on the window object.');
+            console.error('requestDataFromHost function is not defined on the window object.');
         }
     })();
     """
 
     display(Javascript(js_code))
-    print("Status: materials updated")
+    print("materials requested")
 
 
 from pymatgen.core import Structure, Lattice
@@ -54,6 +55,8 @@ def to_pymatgen(material_data):
 
     # Create the Structure
     structure = Structure(lattice, elements, coordinates, coords_are_cartesian=coords_are_cartesian)
+    # wrap atoms into the unit cell
+    structure = structure.to_unit_cell()
 
     return structure
 
@@ -93,7 +96,7 @@ def from_pymatgen(structure: Structure):
         "lattice": lattice,
         "isNonPeriodic": not structure.is_ordered,
         "_id": "",
-        "metadata": {"boundaryConditions": {"type": "pbc", "offset": 0}},
+        "metadata": {"boundaryConditions": {"type": "bc2", "offset": 0}},
         "isUpdated": True,
     }
 

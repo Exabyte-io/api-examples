@@ -2,7 +2,7 @@ from IPython.display import display, Javascript
 import json
 
 
-def submit(materials):
+def set_materials(materials):
     python_data = materials
     serialized_data = json.dumps({"materials": python_data})
     js_code = f"""

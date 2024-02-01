@@ -135,7 +135,7 @@ def from_pymatgen(structure: Structure):
 import matplotlib.pyplot as plt
 
 
-def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
+def plot_strain_vs_atoms(strain_mode, sorted_interfaces, settings):
     """
     Plots the strain vs. the number of atoms in the interface. With hover-over labels.
     """
@@ -181,10 +181,11 @@ def plot_strain_vs_atoms(strain_mode, sorted_interfaces):
     fig.canvas.mpl_connect("motion_notify_event", hover)
 
     # Set the scale and labels
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.xlim(X_MIN, X_MAX)
-    plt.ylim(Y_MIN, Y_MAX)
+    plt.xscale(settings["X_SCALE"])
+    plt.yscale(settings["Y_SCALE"])
+    plt.xlim(settings["X_MIN"], settings["X_MAX"])
+    plt.ylim(settings["Y_MIN"], settings["Y_MAX"])
+
     plt.xlabel("strain in %")
     plt.ylabel("number of atoms")
 

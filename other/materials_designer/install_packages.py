@@ -1,3 +1,8 @@
+"""
+This module contains a function to install packages in a Pyodide environment.
+Pyodide uses micropip as replacement for pip to install packages.
+Package must be compiled for none-any platform.
+"""
 import micropip
 
 

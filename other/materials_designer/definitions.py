@@ -77,8 +77,6 @@ def to_pymatgen(material_data):
 
     # Create the Structure
     structure = Structure(lattice, elements, coordinates, coords_are_cartesian=coords_are_cartesian)
-    # wrap atoms into the unit cell
-    structure = structure.to_unit_cell()
 
     return structure
 

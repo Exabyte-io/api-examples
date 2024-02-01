@@ -125,7 +125,7 @@ def from_pymatgen(structure: Structure):
         "lattice": lattice,
         "isNonPeriodic": not structure.is_ordered,
         "_id": "",
-        "metadata": {"boundaryConditions": {"type": "bc2", "offset": 0}},
+        "metadata": {"boundaryConditions": {"type": "pbc", "offset": 0}},
         "isUpdated": True,
     }
 

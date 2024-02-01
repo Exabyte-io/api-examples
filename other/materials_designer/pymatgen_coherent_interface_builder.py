@@ -14,7 +14,6 @@ from scipy.linalg import polar
 import pymatgen
 from pymatgen.analysis.interfaces.zsl import ZSLGenerator
 from pymatgen.core.structure import Structure
-from operator import itemgetter
 from pymatgen.analysis.elasticity.strain import Deformation
 from pymatgen.analysis.interfaces.zsl import ZSLGenerator, fast_norm
 from pymatgen.core.interface import Interface, label_termination

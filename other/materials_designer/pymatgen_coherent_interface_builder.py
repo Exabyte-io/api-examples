@@ -38,6 +38,7 @@ class CoherentInterfaceBuilder:
         film_miller: tuple[int, int, int],
         substrate_miller: tuple[int, int, int],
         zslgen: ZSLGenerator | None = None,
+        strain_tol: float = 1e-6,
     ):
         """
         Args:
@@ -53,6 +54,7 @@ class CoherentInterfaceBuilder:
         self.film_miller = film_miller
         self.substrate_miller = substrate_miller
         self.zslgen = zslgen or ZSLGenerator(bidirectional=True)
+        self.strain_tol = strain_tol
 
         self._find_matches()
         self._find_terminations()
@@ -251,7 +253,7 @@ class CoherentInterfaceBuilder:
                 ),
                 "strain": strain,
                 "von_mises_strain": strain.von_mises_strain,
-                "mean_abs_strain": round(np.mean(np.abs(strain)) / STRAIN_TOL) * STRAIN_TOL,
+                "mean_abs_strain": round(np.mean(np.abs(strain)) / self.strain_tol) * self.strain_tol,
                 "film_sl_vectors": match.film_sl_vectors,
                 "substrate_sl_vectors": match.substrate_sl_vectors,
                 "film_transform": super_film_transform,

@@ -6,43 +6,43 @@
 # </a>
 
 # # Overview
-# 
+#
 # This example demonstrates how to use Mat3ra RESTful API to build a machine learning (ML) model for a set of materials called "train materials" and use the model to predict properties of another set called "target materials". The general approach can work for multiple properties, we use the Electronic Band Gap in this example.
-# 
-# 
-# 
+#
+#
+#
 # ## Steps
-# 
+#
 # We follow the below steps:
-# 
+#
 # - Import materials from [materials project](https://materialsproject.org/)
 # - Calculate band gap for the "train materials"
 # - Build ML Train model based on the "train materials"
 # - Create and submit a job to predict band gap for the "target materials"
 # - Extract band gap for "target materials"
 # - Output the results as Pandas dataFrame
-# 
+#
 # ## Pre-requisites
-# 
+#
 # The explanation below assumes that the reader is familiar with the concepts used in Mat3ra platform and RESTful API. We outline these below and direct the reader to the original sources of information:
-# 
+#
 # - [Generating RESTful API authentication parameters](../system/get_authentication_params.ipynb)
 # - [Importing materials from materials project](../material/import_materials_from_materialsproject.ipynb)
 # - [Creating and submitting jobs](./create_and_submit_job.ipynb)
 # - [Running DFT calculations](./run-simulations-and-extract-properties.ipynb)
 
 # # Complete Authorization Form and Initialize Settings
-# 
+#
 # This will also determine environment and set all environment variables. We determine if we are using Jupyter Notebooks or Google Colab to run this tutorial.
-# 
+#
 # If you are running this notebook from Google Colab, Colab takes ~1 min to execute the following cell.
-# 
+#
 # ACCOUNT_ID and AUTH_TOKEN - Authentication parameters needed for when making requests to [Mat3ra.com's API Endpoints](https://docs.mat3ra.com/rest-api/endpoints/).
-# 
+#
 # MATERIALS_PROJECT_API_KEY - Authentication parameter needed for when making requests to [Material Project's API](https://materialsproject.org/open)
-# 
+#
 # ORGANIZATION_ID - Authentication parameter needed for when working with collaborative accounts https://docs.mat3ra.com/collaboration/organizations/overview/
-# 
+#
 # > <span style="color: orange">**NOTE**</span>: If you are running this notebook from Jupyter, the variables ACCOUNT_ID, AUTH_TOKEN, MATERIALS_PROJECT_API_KEY, and ORGANIZATION_ID should be set in the file [settings.json](../../utils/settings.json) if you need to use these variables. To obtain API token parameters, please see the following link to the documentation explaining how to get them: https://docs.mat3ra.com/accounts/ui/preferences/api/
 
 # In[ ]:
@@ -96,13 +96,13 @@ from exabyte_api_client.endpoints.projects import ProjectEndpoints
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
-from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
+from exabyte_api_client.endpoints.properties import PropertiesEndpoints
 
 
 # #### Materials
-# 
+#
 # Set parameters for the materials to be imported:
-# 
+#
 # - **TRAIN_MATERIALS_PROJECT_IDS**: a list of material IDs to train ML model based on
 # - **TARGET_MATERIALS_PROJECT_IDS**: a list of material IDs to predict the property for
 
@@ -114,9 +114,9 @@ TARGET_MATERIALS_PROJECT_IDS = ["mp-32"]  # Ge
 
 
 # #### Jobs
-# 
+#
 # Set parameters for the jobs to be ran for the imported materials:
-# 
+#
 # - **JOB_NAME_PREFIX**: prefix to be used for the job name with "{JOB_NAME_PREFIX} {FORMULA}" convention (e.g.  "Job Name Prefix - SiGe")
 
 # In[ ]:
@@ -126,9 +126,9 @@ JOB_NAME_PREFIX = "Job Name Prefix"
 
 
 # #### Compute
-# 
+#
 # Setup compute parameters. See [this](https://docs.mat3ra.com/infrastructure/compute-settings/ui) for more information about compute parameters.
-# 
+#
 # - **NODES**: Number of nodes. Defaults to 1.
 # - **PPN**: Number of MPI processes per each node, Defaults to 1.
 # - **QUEUE**: The name of queue to submit the jobs into. Defaults to D.
@@ -155,7 +155,7 @@ project_endpoints = ProjectEndpoints(*ENDPOINT_ARGS)
 material_endpoints = MaterialEndpoints(*ENDPOINT_ARGS)
 workflow_endpoints = WorkflowEndpoints(*ENDPOINT_ARGS)
 bank_workflow_endpoints = BankWorkflowEndpoints(*ENDPOINT_ARGS)
-raw_property_endpoints = RawPropertiesEndpoints(*ENDPOINT_ARGS)
+property_endpoints = PropertiesEndpoints(*ENDPOINT_ARGS)
 
 
 # Retrieve the owner and project IDs as they are needed by the endpoints. The default material is used to extract the owner ID. One can extract the owner ID from any other account's [entities](https://docs.mat3ra.com/entities-general/overview/).
@@ -168,7 +168,7 @@ project_id = project_endpoints.list({"isDefault": True, "owner._id": ACCOUNT_ID}
 
 
 # ### Create workflows
-# 
+#
 # Copy "ML: Train Model" and "Band Gap" bank workflows to the account's workflows. We use exabyte bank workflows which are identified by "systemName" field. The below can be adjusted to get the bank workflows by ID.
 
 # In[ ]:
@@ -179,7 +179,7 @@ ml_train_workflow_id = copy_bank_workflow_by_system_name(bank_workflow_endpoints
 
 
 # ### Import materials
-# 
+#
 # Import materials from materials project.
 
 # In[ ]:
@@ -194,7 +194,7 @@ target_materials = material_endpoints.import_from_materialsproject(
 
 
 # ### Calculate Properties for "train materials"
-# 
+#
 # Create jobs for the "train materials".
 
 # In[ ]:
@@ -225,7 +225,7 @@ wait_for_jobs_to_finish(job_endpoints, job_ids)
 
 
 # ### Build ML Train model
-# 
+#
 # Create ML Train job for the train materials.
 
 # In[ ]:
@@ -254,14 +254,14 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 
 # ### Extract ML model as workflow
-# 
+#
 # The resulting trained model is extracted from the last unit (train with index 4) of the first job's subworkflow (ML: Train Model with index 0) and is further referred to as "ML predict workflow".
 
 # In[ ]:
 
 
 ml_predict_workflow = get_property_by_subworkflow_and_unit_indicies(
-    raw_property_endpoints, "workflow:ml_predict", job, 0, 4
+    property_endpoints, "workflow:ml_predict", job, 0, 4
 )["data"]
 ml_predict_workflow_id = ml_predict_workflow["_id"]
 
@@ -275,7 +275,7 @@ display_JSON(ml_predict_workflow)
 
 
 # ### Predict property using the model
-# 
+#
 # Create ML Predict job for the predict materials.
 
 # In[ ]:
@@ -304,19 +304,19 @@ wait_for_jobs_to_finish(job_endpoints, [job["_id"]])
 
 
 # ### Extract predicted properties
-# 
+#
 # Predicted properties are extracted from the last unit (score with index 3) of the first job's subworkflow (ml_predict_subworkflow with index 0).
 
 # In[ ]:
 
 
 predicted_properties = get_property_by_subworkflow_and_unit_indicies(
-    raw_property_endpoints, "predicted_properties", job, 0, 3
+    property_endpoints, "predicted_properties", job, 0, 3
 )["data"]["values"]
 
 
 # ### Flatten results
-# 
+#
 # The below for-loop iterates over the results and flatten them to form the final Pandas dataFrame.
 
 # In[ ]:
@@ -334,7 +334,7 @@ for exabyte_id, properties in predicted_properties.items():
 
 
 # ### Ouput results
-# 
+#
 # Create and print the final table as Pandas dataFrame.
 
 # In[ ]:

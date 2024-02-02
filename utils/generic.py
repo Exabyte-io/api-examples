@@ -9,7 +9,7 @@ from typing import List, Union
 
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from exabyte_api_client.endpoints.jobs import JobEndpoints
-from exabyte_api_client.endpoints.raw_properties import RawPropertiesEndpoints
+from exabyte_api_client.endpoints.properties import PropertiesEndpoints
 from IPython.display import HTML, display
 from pandas import DataFrame
 from pandas.io.formats.style import Styler
@@ -146,13 +146,13 @@ def copy_bank_workflow_by_system_name(endpoint: BankWorkflowEndpoints, system_na
 
 
 def get_property_by_subworkflow_and_unit_indicies(
-    endpoint: RawPropertiesEndpoints, property_name: str, job: dict, subworkflow_index: int, unit_index: int
+    endpoint: PropertiesEndpoints, property_name: str, job: dict, subworkflow_index: int, unit_index: int
 ) -> dict:
     """
     Returns the property extracted in the given unit of the job's subworkflow.
 
     Args:
-        endpoint (endpoints.raw_properties.RawPropertiesEndpoints): an instance of RawPropertiesEndpoints class.
+        endpoint (endpoints.properties.PropertiesEndpoints): an instance of PropertiesEndpoints class.
         property_name (str): name of property to extract.
         job (dict): job config to extract the property from.
         subworkflow_index (int): index of subworkflow to extract the property from.

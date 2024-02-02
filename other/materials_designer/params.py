@@ -49,15 +49,39 @@ def create_widgets(params):
     widgets_dict = {}
     for key, val in params.items():
         if isinstance(val, tuple):
+            # Assuming that all values in the tuple should be integers
             widgets_dict[key] = widgets.HBox(
                 [
-                    widgets.FloatText(value=v, description=f"{key}_{i+1}", continuous_update=False)
+                    widgets.IntText(value=v, description=f"{key}_{i+1}", continuous_update=False)
                     for i, v in enumerate(val)
                 ]
             )
-        else:
+        elif isinstance(val, int):
+            # Use IntText for integer values
+            widgets_dict[key] = widgets.IntText(value=val, description=key, continuous_update=False)
+        elif isinstance(val, float):
+            # Use FloatText for float values
             widgets_dict[key] = widgets.FloatText(value=val, description=key, continuous_update=False)
+        else:
+            # Fallback for any other type
+            widgets_dict[key] = widgets.Text(value=str(val), description=key, continuous_update=False)
     return widgets_dict
+
+
+def update_params(button):
+    global ZSL_GENERATOR_PARAMS, INTERFACE_PARAMS
+    for key, widget in zsl_widgets.items():
+        val = widget.value
+        ZSL_GENERATOR_PARAMS[key] = (
+            val if not isinstance(widget, widgets.HBox) else tuple(w.value for w in widget.children)
+        )
+    for key, widget in interface_widgets.items():
+        val = widget.value
+        INTERFACE_PARAMS[key] = val if not isinstance(widget, widgets.HBox) else tuple(w.value for w in widget.children)
+    clear_output(wait=True)
+    print("Parameters updated:")
+    print("ZSL_GENERATOR_PARAMS:", ZSL_GENERATOR_PARAMS)
+    print("INTERFACE_PARAMS:", INTERFACE_PARAMS)
 
 
 def display_form(zsl_widgets, interface_widgets, update_func):
@@ -68,20 +92,6 @@ def display_form(zsl_widgets, interface_widgets, update_func):
     update_button = widgets.Button(description="Update Parameters")
     update_button.on_click(update_func)
     display(update_button)
-
-
-def update_params(button):
-    for key, widget in zsl_widgets.items():
-        ZSL_GENERATOR_PARAMS[key] = widget.value
-    for key, widget in interface_widgets.items():
-        if isinstance(widget, widgets.HBox):
-            INTERFACE_PARAMS[key] = tuple(w.value for w in widget.children)
-        else:
-            INTERFACE_PARAMS[key] = widget.value
-    clear_output(wait=True)
-    print("Parameters updated:")
-    print("ZSL_GENERATOR_PARAMS:", ZSL_GENERATOR_PARAMS)
-    print("INTERFACE_PARAMS:", INTERFACE_PARAMS)
 
 
 zsl_widgets = create_widgets(ZSL_GENERATOR_PARAMS)

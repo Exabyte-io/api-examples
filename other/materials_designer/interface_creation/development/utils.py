@@ -3,12 +3,34 @@ This module contains a function to install packages in a Pyodide environment.
 Pyodide uses micropip as replacement for pip to install packages.
 Package must be compiled for none-any platform.
 """
-import micropip
+
+try:
+    import micropip
+except ImportError:
+    raise ImportError(
+        "This module intended to be used in a Pyodide environment. Please install packages ypurself using pip."
+    )
+
 import json
+
+packages = [
+    "https://files.mat3ra.com:44318/uploads/pymatgen-2023.9.10-py3-none-any.whl",
+    "https://files.mat3ra.com:44318/web/pyodide/spglib-2.0.2-py3-none-any.whl",
+    "https://files.pythonhosted.org/packages/d9/0e/2a05efa11ea33513fbdf4a2e2576fe94fd8fa5ad226dbb9c660886390974/ruamel.yaml-0.17.32-py3-none-any.whl",
+    "ase==3.22.1",
+    "networkx==3.2.1",
+    "monty==2023.11.3",
+    "scipy==1.11.2",
+    "lzma",
+    "tabulate==0.9.0",
+    "sqlite3",
+    "sympy==1.12",
+    "uncertainties==3.1.6",
+    "ipywidgets",
+]
 
 
 async def install_packages(verbose=True):
-    packages = json.loads(open("packages.json").read())["packages"]
 
     async def install_package(pkg):
         """

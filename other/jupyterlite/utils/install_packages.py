@@ -4,8 +4,6 @@ Pyodide uses micropip as replacement for pip to install packages.
 Package must be compiled for none-any platform.
 """
 
-import yaml
-
 try:
     import micropip
 
@@ -14,6 +12,8 @@ except ImportError:
     raise ImportError(
         "This module intended to be used in a Pyodide environment. Please install packages ypurself using pip."
     )
+
+import yaml
 
 
 async def install_packages(notebook_name, requirements_path="requirements.yml", verbose=True):

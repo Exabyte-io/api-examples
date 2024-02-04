@@ -6,17 +6,16 @@ Package must be compiled for none-any platform.
 
 try:
     import micropip
-
-    await micropip.install("pyyaml")
 except ImportError:
     raise ImportError(
         "This module intended to be used in a Pyodide environment. Please install packages ypurself using pip."
     )
 
-import yaml
-
 
 async def install_packages(notebook_name, requirements_path="requirements.yml", verbose=True):
+    await micropip.install("pyyaml")
+    import yaml
+
     with open(requirements_path, "r") as f:
         requirements = yaml.safe_load(f)
 

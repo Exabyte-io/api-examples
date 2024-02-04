@@ -4,6 +4,8 @@ Pyodide uses micropip as replacement for pip to install packages.
 Package must be compiled for none-any platform.
 """
 
+import yaml
+
 try:
     import micropip
 except ImportError:
@@ -11,26 +13,19 @@ except ImportError:
         "This module intended to be used in a Pyodide environment. Please install packages ypurself using pip."
     )
 
-import json
 
-packages = [
-    "https://files.mat3ra.com:44318/uploads/pymatgen-2023.9.10-py3-none-any.whl",
-    "https://files.mat3ra.com:44318/web/pyodide/spglib-2.0.2-py3-none-any.whl",
-    "https://files.pythonhosted.org/packages/d9/0e/2a05efa11ea33513fbdf4a2e2576fe94fd8fa5ad226dbb9c660886390974/ruamel.yaml-0.17.32-py3-none-any.whl",
-    "ase==3.22.1",
-    "networkx==3.2.1",
-    "monty==2023.11.3",
-    "scipy==1.11.2",
-    "lzma",
-    "tabulate==0.9.0",
-    "sqlite3",
-    "sympy==1.12",
-    "uncertainties==3.1.6",
-    "ipywidgets",
-]
+async def install_packages(notebook_name, requirements_path="requirements.yml", verbose=True):
+    with open(requirements_path, "r") as f:
+        requirements = yaml.safe_load(f)
 
+    packages = None
+    for requirement in requirements:
+        if requirement["notebook"] == notebook_name:
+            packages = requirement["packages"]
+            break
 
-async def install_packages(verbose=True):
+    if packages is None:
+        raise ValueError(f"No packages found for notebook {notebook_name}")
 
     async def install_package(pkg):
         """
@@ -52,4 +47,4 @@ async def install_packages(verbose=True):
     for package in packages:
         await install_package(package)
     if verbose:
-        print("Done!")
+        print("All packages installed.")

@@ -11,7 +11,7 @@ def set_data(key, value):
     Args:
         materials (object): The Python object to be sent to the host environment.
     """
-    serialized_data = json.dumps({[key]: value})
+    serialized_data = json.dumps({key: value})
     js_code = f"""
     (function() {{
         window.sendDataToHost({serialized_data})
@@ -20,7 +20,7 @@ def set_data(key, value):
     """
 
     display(Javascript(js_code))
-    print("Status: {key} sent to host.")
+    print(f"Status: {key} sent to host.")
 
 
 def get_data(key):
@@ -41,4 +41,4 @@ def get_data(key):
 
     display(Javascript(js_code))
     time.sleep(2)  # JS postMessage is asynchronous, so we need to wait for the response from JS host
-    print("Status: {key} received")
+    print(f"Status: {key} received")

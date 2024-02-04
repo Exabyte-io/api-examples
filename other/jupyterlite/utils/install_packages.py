@@ -8,6 +8,8 @@ import yaml
 
 try:
     import micropip
+
+    await micropip.install("pyyaml")
 except ImportError:
     raise ImportError(
         "This module intended to be used in a Pyodide environment. Please install packages ypurself using pip."

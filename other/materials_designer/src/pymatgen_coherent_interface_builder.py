@@ -185,6 +185,7 @@ class CoherentInterfaceBuilder:
             center_slab=True,
             primitive=True,
             reorient_lattice=False,  # This is necessary to not screw up the lattice
+            lll_reduce=True,  # Reduce lattice to have elements inside the unit cell
         )
 
         sub_sg = SlabGenerator(
@@ -196,6 +197,7 @@ class CoherentInterfaceBuilder:
             center_slab=True,
             primitive=True,
             reorient_lattice=False,  # This is necessary to not screw up the lattice
+            lll_reduce=True,  # Reduce lattice to have elements inside the unit cell
         )
 
         film_shift, sub_shift = self._terminations[termination]
@@ -250,6 +252,7 @@ class CoherentInterfaceBuilder:
                     gap=gap,
                     vacuum_over_film=vacuum_over_film,
                     interface_properties=interface_properties,
+                    center_slab=False,  # False -- positions interface at the most bottom of the cell, solving the issue of second iteration not working properly
                 ),
                 "strain": strain,
                 "von_mises_strain": strain.von_mises_strain,

@@ -14,3 +14,6 @@
     - sympy==1.12
     - uncertainties==3.1.6
     - ipywidgets
+    - plotly=5.18
+    - pandas=1.5.3
+    - nbformat>=4.2.0

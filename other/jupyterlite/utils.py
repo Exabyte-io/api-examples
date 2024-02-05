@@ -92,5 +92,5 @@ def get_data(key):
     """
 
     display(Javascript(js_code))
-    time.sleep(2)  # JS postMessage is asynchronous, so we need to wait for the response from JS host
+    time.sleep(3)  # JS postMessage is asynchronous, so we need to wait for the response from JS host
     print(f"Status: {key} received")

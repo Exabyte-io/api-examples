@@ -185,7 +185,6 @@ class CoherentInterfaceBuilder:
             center_slab=True,
             primitive=True,
             reorient_lattice=False,  # This is necessary to not screw up the lattice
-            lll_reduce=True,  # Reduce lattice to have elements inside the unit cell
         )
 
         sub_sg = SlabGenerator(
@@ -197,7 +196,6 @@ class CoherentInterfaceBuilder:
             center_slab=True,
             primitive=True,
             reorient_lattice=False,  # This is necessary to not screw up the lattice
-            lll_reduce=True,  # Reduce lattice to have elements inside the unit cell
         )
 
         film_shift, sub_shift = self._terminations[termination]

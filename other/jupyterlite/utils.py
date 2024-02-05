@@ -16,7 +16,7 @@ except ImportError:
     )
 
 
-async def install_packages(notebook_name, requirements_path="requirements.yml", verbose=True):
+async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
     await micropip.install("pyyaml")
     import yaml
 

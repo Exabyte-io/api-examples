@@ -80,17 +80,16 @@ def get_data(key):
     This function requests materials from the host environment through a JavaScript function defined in the JupyterLite
     extension `data_bridge`. The materials are then returned to the Python environment.
     """
-    js_code = """
-    (function() {
-        if (window.requestDataFromHost) {
-            window.requestDataFromHost();
+    js_code = f"""
+    (function() {{
+        if (window.requestDataFromHost) {{
+            window.requestDataFromHost('{key}')
             
-        } else {
-            console.error('requestDataFromHost function is not defined on the window object.');
-        }
-    })();
+}} else {{
+            console.error('requestDataFromHost function is not defined on the window object.')
+        }}
+}})();
     """
 
     display(Javascript(js_code))
-    time.sleep(3)  # JS postMessage is asynchronous, so we need to wait for the response from JS host
-    print(f"Status: {key} received")
+    print(f"Status: {key} requested")

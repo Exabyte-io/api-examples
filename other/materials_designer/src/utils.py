@@ -1,48 +1,3 @@
-from IPython.display import display, Javascript
-import json
-
-
-def set_materials(materials):
-    """
-    This function takes a Python object, serializes it to JSON, and sends it to the host environment
-    through a JavaScript function defined in the JupyterLite extension `data_bridge`.
-
-    Args:
-        materials (object): The Python object to be sent to the host environment.
-    """
-    python_data = materials
-    serialized_data = json.dumps({"materials": python_data})
-    js_code = f"""
-    (function() {{
-        window.sendDataToHost({serialized_data})
-        console.log({serialized_data})
-    }})();
-    """
-
-    display(Javascript(js_code))
-    print("materials sent")
-
-
-def get_materials():
-    """
-    This function requests materials from the host environment through a JavaScript function defined in the JupyterLite
-    extension `data_bridge`. The materials are then returned to the Python environment.
-    """
-    js_code = """
-    (function() {
-        if (window.requestDataFromHost) {
-            window.requestDataFromHost();
-            
-        } else {
-            console.error('requestDataFromHost function is not defined on the window object.');
-        }
-    })();
-    """
-
-    display(Javascript(js_code))
-    print("materials requested")
-
-
 from pymatgen.core import Structure, Lattice
 
 
@@ -125,7 +80,7 @@ def from_pymatgen(structure: Structure):
         "lattice": lattice,
         "isNonPeriodic": not structure.is_ordered,
         "_id": "",
-        "metadata": {"boundaryConditions": {"type": "bc2", "offset": 0}},
+        "metadata": {"boundaryConditions": {"type": "pbc", "offset": 0}},
         "isUpdated": True,
     }
 

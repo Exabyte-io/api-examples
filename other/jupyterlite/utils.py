@@ -69,7 +69,7 @@ def set_data(key, value):
 
     Args:
         key (string): The name under which data will be sent.
-        value (string): The value to send to the host environment.
+        value (Any): The value to send to the host environment.
     """
     serialized_data = json.dumps({key: value})
     js_code = f"""

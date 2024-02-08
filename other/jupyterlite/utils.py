@@ -1,38 +1,16 @@
 from IPython.display import display, Javascript
 import json
 import time
-
-"""
-This module contains a function to install packages in a Pyodide environment.
-Pyodide uses micropip as replacement for pip to install packages.
-Package must be compiled for none-any platform.
-"""
+import os
 
 try:
     import micropip
 except ImportError:
     raise ImportError(
-        "This module intended to be used in a Pyodide environment. Please install packages ypurself using pip."
+        "This module intended to be used in a Pyodide environment. Please install packages yourself using pip."
     )
 
-
-async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
-    await micropip.install("pyyaml")
-    import yaml
-
-    with open(requirements_path, "r") as f:
-        requirements = yaml.safe_load(f)
-
-    packages = None
-    for requirement in requirements:
-        if requirement["notebook"] == notebook_name:
-            packages = requirement["packages"]
-            break
-
-    if packages is None:
-        raise ValueError(f"No packages found for notebook {notebook_name}")
-
-    async def install_package(pkg):
+async def install_package(pkg, verbose=True):
         """
         Installs a package in a Pyodide environment.
         Args:
@@ -49,10 +27,32 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
         if verbose:
             print(f"Installed {pkg_name}")
 
-    for package in packages:
-        await install_package(package)
-    if verbose:
-        print("All packages installed.")
+async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
+    await micropip.install("pyyaml")
+    import yaml
+
+    requirements_hash = ""
+
+    with open(requirements_path, "r") as f:
+        requirements = yaml.safe_load(f)
+        requirements_hash = str(hash(json.dumps(requirements)))
+
+    packages = None
+    for requirement in requirements:
+        if requirement["notebook"] == notebook_name:
+            packages = requirement["packages"]
+            break
+
+    if packages is None:
+        raise ValueError(f"No packages found for notebook {notebook_name}")  
+
+    if os.environ.get("requirements_hash") != requirements_hash:
+        for package in packages:
+            await install_package(package)
+        if verbose:
+            print("All packages installed.")
+    
+    os.environ["requirements_hash"] = requirements_hash
 
 
 def set_data(key, value):

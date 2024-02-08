@@ -14,6 +14,7 @@ async def install_package(pkg, verbose=True):
         Installs a package in a Pyodide environment.
         Args:
             pkg: The name of the package to install.
+            verbose: Whether to print the name of the installed package.
 
         Returns:
             None
@@ -29,6 +30,10 @@ async def install_package(pkg, verbose=True):
 async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
     """
     This function installs the packages listed in the requirements file for the notebook with the given name.
+    Args:
+        notebook_name: The name of the notebook for which to install packages.
+        requirements_path: The path to the requirements file.
+        verbose: Whether to print the names of the installed packages and status of installation.
     """
     await micropip.install("pyyaml")
     import yaml
@@ -63,7 +68,8 @@ def set_data(key, value):
     through a JavaScript function defined in the JupyterLite extension `data_bridge`.
 
     Args:
-        materials (object): The Python object to be sent to the host environment.
+        key: The key to use for the data.
+        value: The value to send to the host environment.
     """
     serialized_data = json.dumps({key: value})
     js_code = f"""
@@ -81,6 +87,8 @@ def get_data(key):
     """
     This function requests data from the host environment through a JavaScript function defined in the JupyterLite
     extension `data_bridge`. The data is then returned to the Python environment.
+    Args:
+        key: The key to use for the data.
     """
     js_code = f"""
     (function() {{

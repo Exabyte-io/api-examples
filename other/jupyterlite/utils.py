@@ -13,8 +13,8 @@ async def install_package(pkg, verbose=True):
         """
         Installs a package in a Pyodide environment.
         Args:
-            pkg: The name of the package to install.
-            verbose: Whether to print the name of the installed package.
+            pkg (string): The name of the package to install.
+            verbose (bool): Whether to print the name of the installed package.
 
         Returns:
             None

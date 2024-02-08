@@ -24,6 +24,9 @@ if TYPE_CHECKING:
 
     from pymatgen.core import Structure
 
+# This is a modified version of the pymatgen CoherentInterfaceBuilder
+# that adds strain information to the generated interfaces.
+# The original code can be found at: https://github.com/materialsproject/pymatgen/blob/v2024.1.27/pymatgen/analysis/interfaces/coherent_interfaces.py
 
 class CoherentInterfaceBuilder:
     """

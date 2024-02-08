@@ -28,6 +28,9 @@ async def install_package(pkg, verbose=True):
             print(f"Installed {pkg_name}")
 
 async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
+    """
+    This function installs the packages listed in the requirements file for the notebook with the given name.
+    """
     await micropip.install("pyyaml")
     import yaml
 
@@ -77,8 +80,8 @@ def set_data(key, value):
 
 def get_data(key):
     """
-    This function requests materials from the host environment through a JavaScript function defined in the JupyterLite
-    extension `data_bridge`. The materials are then returned to the Python environment.
+    This function requests data from the host environment through a JavaScript function defined in the JupyterLite
+    extension `data_bridge`. The data is then returned to the Python environment.
     """
     js_code = f"""
     (function() {{

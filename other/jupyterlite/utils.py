@@ -31,9 +31,9 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
     """
     This function installs the packages listed in the requirements file for the notebook with the given name.
     Args:
-        notebook_name: The name of the notebook for which to install packages.
-        requirements_path: The path to the requirements file.
-        verbose: Whether to print the names of the installed packages and status of installation.
+        notebook_name (string): The name of the notebook for which to install packages.
+        requirements_path (string): The path to the requirements file.
+        verbose (bool): Whether to print the names of the installed packages and status of installation.
     """
     await micropip.install("pyyaml")
     import yaml
@@ -68,8 +68,8 @@ def set_data(key, value):
     through a JavaScript function defined in the JupyterLite extension `data_bridge`.
 
     Args:
-        key: The key to use for the data.
-        value: The value to send to the host environment.
+        key (string): The name under which data will be sent.
+        value (string): The value to send to the host environment.
     """
     serialized_data = json.dumps({key: value})
     js_code = f"""
@@ -88,7 +88,7 @@ def get_data(key):
     This function requests data from the host environment through a JavaScript function defined in the JupyterLite
     extension `data_bridge`. The data is then returned to the Python environment.
     Args:
-        key: The key to use for the data.
+        key (string): The name under which data is expected to be received.
     """
     js_code = f"""
     (function() {{

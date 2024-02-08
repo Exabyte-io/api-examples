@@ -1,6 +1,5 @@
 from IPython.display import display, Javascript
 import json
-import time
 import os
 
 try:

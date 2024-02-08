@@ -1,42 +1,20 @@
 from IPython.display import display, Javascript
 import json
-import time
-
-"""
-This module contains a function to install packages in a Pyodide environment.
-Pyodide uses micropip as replacement for pip to install packages.
-Package must be compiled for none-any platform.
-"""
+import os
 
 try:
     import micropip
 except ImportError:
     raise ImportError(
-        "This module intended to be used in a Pyodide environment. Please install packages ypurself using pip."
+        "This module intended to be used in a Pyodide environment. Please install packages yourself using pip."
     )
 
-
-async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
-    await micropip.install("pyyaml")
-    import yaml
-
-    with open(requirements_path, "r") as f:
-        requirements = yaml.safe_load(f)
-
-    packages = None
-    for requirement in requirements:
-        if requirement["notebook"] == notebook_name:
-            packages = requirement["packages"]
-            break
-
-    if packages is None:
-        raise ValueError(f"No packages found for notebook {notebook_name}")
-
-    async def install_package(pkg):
+async def install_package(pkg, verbose=True):
         """
         Installs a package in a Pyodide environment.
         Args:
-            pkg: The name of the package to install.
+            pkg (string): The name of the package to install.
+            verbose (bool): Whether to print the name of the installed package.
 
         Returns:
             None
@@ -49,10 +27,39 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
         if verbose:
             print(f"Installed {pkg_name}")
 
-    for package in packages:
-        await install_package(package)
-    if verbose:
-        print("All packages installed.")
+async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
+    """
+    This function installs the packages listed in the requirements file for the notebook with the given name.
+    Args:
+        notebook_name (string): The name of the notebook for which to install packages.
+        requirements_path (string): The path to the requirements file.
+        verbose (bool): Whether to print the names of the installed packages and status of installation.
+    """
+    await micropip.install("pyyaml")
+    import yaml
+
+    requirements_hash = ""
+
+    with open(requirements_path, "r") as f:
+        requirements = yaml.safe_load(f)
+        requirements_hash = str(hash(json.dumps(requirements)))
+
+    packages = None
+    for requirement in requirements:
+        if requirement["notebook"] == notebook_name:
+            packages = requirement["packages"]
+            break
+
+    if packages is None:
+        raise ValueError(f"No packages found for notebook {notebook_name}")  
+
+    if os.environ.get("requirements_hash") != requirements_hash:
+        for package in packages:
+            await install_package(package)
+        if verbose:
+            print("All packages installed.")
+    
+    os.environ["requirements_hash"] = requirements_hash
 
 
 def set_data(key, value):
@@ -61,7 +68,8 @@ def set_data(key, value):
     through a JavaScript function defined in the JupyterLite extension `data_bridge`.
 
     Args:
-        materials (object): The Python object to be sent to the host environment.
+        key (string): The name under which data will be sent.
+        value (Any): The value to send to the host environment.
     """
     serialized_data = json.dumps({key: value})
     js_code = f"""
@@ -77,8 +85,10 @@ def set_data(key, value):
 
 def get_data(key):
     """
-    This function requests materials from the host environment through a JavaScript function defined in the JupyterLite
-    extension `data_bridge`. The materials are then returned to the Python environment.
+    This function requests data from the host environment through a JavaScript function defined in the JupyterLite
+    extension `data_bridge`. The data is then returned to the Python environment.
+    Args:
+        key (string): The name under which data is expected to be received.
     """
     js_code = f"""
     (function() {{

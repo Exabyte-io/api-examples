@@ -24,6 +24,9 @@ if TYPE_CHECKING:
 
     from pymatgen.core import Structure
 
+# This is a modified version of the pymatgen CoherentInterfaceBuilder
+# that adds strain information to the generated interfaces (line 249).
+# The original code can be found at: https://github.com/materialsproject/pymatgen/blob/v2024.1.27/pymatgen/analysis/interfaces/coherent_interfaces.py
 
 class CoherentInterfaceBuilder:
     """
@@ -138,7 +141,7 @@ class CoherentInterfaceBuilder:
         film_slabs = film_sg.get_slabs()
         sub_slabs = sub_sg.get_slabs()
 
-        film_shits = [s.shift for s in film_slabs]
+        film_shifts = [s.shift for s in film_slabs]
         film_terminations = [label_termination(s) for s in film_slabs]
 
         sub_shifts = [s.shift for s in sub_slabs]
@@ -147,7 +150,7 @@ class CoherentInterfaceBuilder:
         self._terminations = {
             (film_label, sub_label): (film_shift, sub_shift)
             for (film_label, film_shift), (sub_label, sub_shift) in product(
-                zip(film_terminations, film_shits), zip(sub_terminations, sub_shifts)
+                zip(film_terminations, film_shifts), zip(sub_terminations, sub_shifts)
             )
         }
         self.terminations = list(self._terminations)

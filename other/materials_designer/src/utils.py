@@ -1,5 +1,7 @@
+import io
 from pymatgen.core import Structure, Lattice
-
+from ase import Atoms as ase_Atoms
+from ase.io import read, write
 
 def to_pymatgen(material_data):
     """
@@ -85,3 +87,20 @@ def from_pymatgen(structure: Structure):
     }
 
     return material
+
+
+
+def poscar_to_ase(poscar: str):
+    input_ = io.StringIO(poscar)
+    atoms = read(input_, format="vasp")
+
+    return atoms
+
+
+def ase_to_poscar(atoms: ase_Atoms):
+    output = io.StringIO()
+    write(output, atoms, format="vasp")
+    content = output.getvalue()
+    output.close()
+
+    return content

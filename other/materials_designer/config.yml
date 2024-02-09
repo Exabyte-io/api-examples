@@ -34,7 +34,7 @@
     - sympy==1.12
     - uncertainties==3.1.6
     - pandas==1.5.3
-    - express-py
+    - express-py==2024.2.2.post2
     - mat3ra-esse
     - jarvis-tools
     - munch

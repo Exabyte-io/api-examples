@@ -17,3 +17,25 @@
     - plotly==5.18
     - pandas==1.5.3
     - nbformat>=4.2.0
+
+- notebook: import_material_from_jarvis_db_entry.ipynb
+  packages:
+    - https://files.mat3ra.com:44318/uploads/pymatgen-2023.9.10-py3-none-any.whl
+    - https://files.mat3ra.com:44318/web/pyodide/spglib-2.0.2-py3-none-any.whl
+    - https://files.pythonhosted.org/packages/d9/0e/2a05efa11ea33513fbdf4a2e2576fe94fd8fa5ad226dbb9c660886390974/ruamel.yaml-0.17.32-py3-none-any.whl
+    - https://files.mat3ra.com:44318/uploads/paginate-0.5.6-py3-none-any.whl
+    - https://files.mat3ra.com:44318/uploads/watchdog-2.3.1-py3-none-any.whl
+    - networkx==3.2.1
+    - monty==2023.11.3
+    - scipy==1.11.2
+    - lzma
+    - tabulate==0.9.0
+    - sqlite3
+    - sympy==1.12
+    - uncertainties==3.1.6
+    - pandas==1.5.3
+    - express-py==2024.2.2.post2
+    - mat3ra-esse
+    - jarvis-tools
+    - munch
+    - setuptools

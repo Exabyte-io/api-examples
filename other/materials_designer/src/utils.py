@@ -104,3 +104,14 @@ def ase_to_poscar(atoms: ase_Atoms):
     output.close()
 
     return content
+
+from pymatgen.io.ase import AseAtomsAdaptor
+from matgl.ext.ase import M3GNetCalculator
+from matgl.apps.pes import Potential
+ase_adaptor = AseAtomsAdaptor()
+
+def get_energy(structure: ase_Atoms, pot: Potential):
+    atoms = ase_adaptor.get_atoms(structure)
+    calc = M3GNetCalculator(pot)
+    atoms.set_calculator(calc)
+    return float(atoms.get_potential_energy())

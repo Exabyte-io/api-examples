@@ -105,6 +105,18 @@ def ase_to_poscar(atoms: ase_Atoms):
 
     return content
 
+def ase_to_pymatgen(atoms: ase_Atoms):
+    poscar = ase_to_poscar(atoms)
+    structure = Structure.from_str(poscar, fmt="poscar")
+
+    return structure
+
+def pymatgen_to_ase(structure: Structure):
+    poscar = structure.to(fmt="poscar")
+    atoms = poscar_to_ase(poscar)
+
+    return atoms
+
 from pymatgen.io.ase import AseAtomsAdaptor
 from matgl.ext.ase import M3GNetCalculator
 from matgl.apps.pes import Potential

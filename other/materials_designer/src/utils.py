@@ -3,9 +3,11 @@ from pymatgen.core import Structure, Lattice
 from ase import Atoms as ase_Atoms
 from ase.io import read, write
 
+
 def to_pymatgen(material_data):
     """
     Convert material object in ESSE format to a pymatgen Structure object.
+    Assumes that the lattice is defined by lengths a, b, c and angles alpha, beta, gamma.
 
     Args:
         material_data (dict): A dictionary containing the material information in ESSE format.
@@ -16,13 +18,15 @@ def to_pymatgen(material_data):
 
     # Extract lattice information
     lattice_params = material_data["lattice"]
-    lattice_vectors = lattice_params["vectors"]
-    a = lattice_vectors["a"]
-    b = lattice_vectors["b"]
-    c = lattice_vectors["c"]
+    a = lattice_params["a"]
+    b = lattice_params["b"]
+    c = lattice_params["c"]
+    alpha = lattice_params["alpha"]
+    beta = lattice_params["beta"]
+    gamma = lattice_params["gamma"]
 
-    # Create a Lattice
-    lattice = Lattice([a, b, c])
+    # Create a Lattice from parameters
+    lattice = Lattice.from_parameters(a, b, c, alpha, beta, gamma)
 
     # Extract the basis information
     basis = material_data["basis"]
@@ -30,12 +34,13 @@ def to_pymatgen(material_data):
     coordinates = [coord["value"] for coord in basis["coordinates"]]
 
     # Assuming that the basis units are fractional since it's a crystal basis
-    coords_are_cartesian = basis["units"].lower() != "crystal"
+    coords_are_cartesian = 'units' in basis and basis['units'].lower() == 'angstrom'
 
     # Create the Structure
     structure = Structure(lattice, elements, coordinates, coords_are_cartesian=coords_are_cartesian)
 
     return structure
+
 
 
 def from_pymatgen(structure: Structure):

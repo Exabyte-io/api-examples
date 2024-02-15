@@ -40,7 +40,7 @@
     - munch
     - setuptools
 
-- notebook: read_materials_from_files.ipynb
+- notebook: import_materials_from_files.ipynb
   packages:
     - https://files.mat3ra.com:44318/web/pyodide/spglib-2.0.2-py3-none-any.whl
     - https://files.pythonhosted.org/packages/d9/0e/2a05efa11ea33513fbdf4a2e2576fe94fd8fa5ad226dbb9c660886390974/ruamel.yaml-0.17.32-py3-none-any.whl
@@ -53,3 +53,7 @@
     - sqlite3
     - sympy==1.12
     - ipywidgets
+    - express-py==2024.2.2.post2
+    - mat3ra-esse
+    - jarvis-tools
+    - munch

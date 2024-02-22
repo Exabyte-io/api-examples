@@ -56,10 +56,9 @@ def from_pymatgen(structure: Structure):
         "coordinates": [{"id": i, "value": list(site.frac_coords)} for i, site in enumerate(structure.sites)],
         "units": "crystal",
         "cell": structure.lattice.matrix.tolist(),
-        "constraints": [],  # Assuming there are no constraints
+        "constraints": [], 
     }
 
-    # Extract lattice information
     lattice = {
         "a": structure.lattice.a,
         "b": structure.lattice.b,
@@ -68,17 +67,16 @@ def from_pymatgen(structure: Structure):
         "beta": structure.lattice.beta,
         "gamma": structure.lattice.gamma,
         "units": {"length": "angstrom", "angle": "degree"},
-        "type": "FCC",  # You need a way to determine the lattice type
+        "type": "TRI",
         "vectors": {
             "a": structure.lattice.matrix[0].tolist(),
             "b": structure.lattice.matrix[1].tolist(),
             "c": structure.lattice.matrix[2].tolist(),
-            "alat": 1,  # This seems to be a scaling factor; adjust if necessary
+            "alat": 1,
             "units": "angstrom",
         },
     }
 
-    # Combine into a material dictionary
     material = {
         "name": structure.formula,
         "basis": basis,

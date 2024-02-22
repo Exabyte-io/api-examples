@@ -6,8 +6,7 @@ from ase.io import read, write
 
 def to_pymatgen(material_data):
     """
-    Convert material object in ESSE format to a pymatgen Structure object.
-    Assumes that the lattice is defined by lengths a, b, c and angles alpha, beta, gamma.
+    Converts material object in ESSE format to a pymatgen Structure object.
 
     Args:
         material_data (dict): A dictionary containing the material information in ESSE format.
@@ -42,10 +41,9 @@ def to_pymatgen(material_data):
     return structure
 
 
-
 def from_pymatgen(structure: Structure):
     """
-    Convert a pymatgen Structure object to a material object in ESSE format.
+    Converts a pymatgen Structure object to a material object in ESSE format.
 
     Args:
         structure (Structure): A pymatgen Structure object.
@@ -94,8 +92,16 @@ def from_pymatgen(structure: Structure):
     return material
 
 
-
 def poscar_to_ase(poscar: str):
+    """
+    Converts POSCAR to ase.Atoms object
+
+    Args:
+        poscar (str): POSCAR content
+
+    Returns:
+        ase.Atoms: ase.Atoms object
+    """
     input_ = io.StringIO(poscar)
     atoms = read(input_, format="vasp")
 
@@ -103,6 +109,15 @@ def poscar_to_ase(poscar: str):
 
 
 def ase_to_poscar(atoms: ase_Atoms):
+    """
+    Converts ase.Atoms object to POSCAR format
+
+    Args:
+        atoms (ase.Atoms): ase.Atoms object
+
+    Returns:
+        str: POSCAR string
+    """
     output = io.StringIO()
     write(output, atoms, format="vasp")
     content = output.getvalue()
@@ -110,16 +125,34 @@ def ase_to_poscar(atoms: ase_Atoms):
 
     return content
 
+
 def ase_to_pymatgen(atoms: ase_Atoms):
+    """
+    Converts ase.Atoms object to pymatgen Structure object
+
+    Args:
+        atoms (ase.Atoms): ase.Atoms object
+
+    Returns:
+        Structure: pymatgen Structure object
+    """
     poscar = ase_to_poscar(atoms)
     structure = Structure.from_str(poscar, fmt="poscar")
 
     return structure
 
+
 def pymatgen_to_ase(structure: Structure):
+    """
+    Converts pymatgen Structure object to ase.Atoms object
+
+    Args:
+        structure (Structure): pymatgen Structure object
+
+    Returns:
+        ase.Atoms: ase.Atoms object
+    """
     poscar = structure.to(fmt="poscar")
     atoms = poscar_to_ase(poscar)
 
     return atoms
-
-

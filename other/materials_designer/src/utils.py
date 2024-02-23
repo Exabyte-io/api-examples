@@ -1,5 +1,6 @@
 import io
 from pymatgen.core import Structure, Lattice
+from pymatgen.io.ase import AseAtomsAdaptor
 from ase import Atoms as ase_Atoms
 from ase.io import read, write
 
@@ -142,15 +143,22 @@ def ase_to_pymatgen(atoms: ase_Atoms):
 
 def pymatgen_to_ase(structure: Structure):
     """
-    Converts pymatgen Structure object to ase.Atoms object
+    Converts pymatgen Structure object to an ASE Atoms object.
+    Transfers 'material_id' from each site's properties to the 'tag' attribute of the corresponding ASE atom.
 
     Args:
-        structure (Structure): pymatgen Structure object
+        structure (Structure): Pymatgen Structure object.
 
     Returns:
-        ase.Atoms: ase.Atoms object
+        Atoms: ASE Atoms object with transferred 'material_id' as tags.
     """
-    poscar = structure.to(fmt="poscar")
-    atoms = poscar_to_ase(poscar)
+    # Use AseAtomsAdaptor for the conversion to maintain the order of atoms
+    adaptor = AseAtomsAdaptor()
+    atoms = adaptor.get_atoms(structure)
+
+    # Transfer 'material_id' property to atom tags
+    for i, site in enumerate(structure):
+        # Default tag is None
+        atoms[i].tag = site.properties.get('material_id', None)
 
     return atoms

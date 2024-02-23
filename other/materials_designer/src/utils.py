@@ -143,22 +143,28 @@ def ase_to_pymatgen(atoms: ase_Atoms):
 
 def pymatgen_to_ase(structure: Structure):
     """
-    Converts pymatgen Structure object to an ASE Atoms object.
-    Transfers 'material_id' from each site's properties to the 'tag' attribute of the corresponding ASE atom.
+    Converts a Pymatgen Structure object to an ASE Atoms object,
+    transferring the 'interface_label' property to the ASE atom tags.
 
     Args:
-        structure (Structure): Pymatgen Structure object.
+        structure (Structure): The Pymatgen Structure object to convert.
 
     Returns:
-        Atoms: ASE Atoms object with transferred 'material_id' as tags.
+        Atoms: The resulting ASE Atoms object with 'interface_label' as tags.
     """
-    # Use AseAtomsAdaptor for the conversion to maintain the order of atoms
+    # Define a mapping from string labels to integer tags
+    label_to_tag = {
+        "substrate": 0,
+        "film": 1,
+    }
+
     adaptor = AseAtomsAdaptor()
     atoms = adaptor.get_atoms(structure)
 
-    # Transfer 'material_id' property to atom tags
+    # Transfer 'interface_label' property to atom tags using the mapping
     for i, site in enumerate(structure):
-        # Default tag is None
-        atoms[i].tag = site.properties.get('material_id', None)
+        label = site.properties.get('interface_label', None)
+        tag = label_to_tag.get(label, 0)  # Default to 0 if 'interface_label' is not set or is unrecognized
+        atoms[i].tag = tag
 
     return atoms

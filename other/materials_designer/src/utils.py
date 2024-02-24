@@ -3,7 +3,7 @@ from pymatgen.core import Structure, Lattice
 from pymatgen.io.ase import AseAtomsAdaptor
 from ase import Atoms as ase_Atoms
 from ase.io import read, write
-
+import numpy as np
 
 def to_pymatgen(material_data):
     """
@@ -168,3 +168,37 @@ def pymatgen_to_ase(structure: Structure):
         atoms[i].tag = tag
 
     return atoms
+
+
+def calculate_average_interlayer_distance(atoms, tag_substrate, tag_film, threshold = 0.5):
+    """
+    Calculate the average distance between the top layer of substrate atoms and the bottom layer of film atoms.
+
+    Args:
+        atoms (ase.Atoms): The ASE Atoms object containing both sets of atoms.
+        tag_substrate (int): The tag representing the substrate atoms.
+        tag_film (int): The tag representing the film atoms.
+        threshold (float): The threshold for identifying the top and bottom layers of atoms.
+
+    Returns:
+        float: The average distance between the top layer of substrate and the bottom layer of film.
+    """
+    # Extract z-coordinates of substrate and film atoms
+    z_substrate = atoms.positions[atoms.get_tags() == tag_substrate][:, 2]
+    z_film = atoms.positions[atoms.get_tags() == tag_film][:, 2]
+
+    # Identify the top layer of substrate atoms and bottom layer of film atoms by z-coordinate
+    top_substrate_layer_z = np.max(z_substrate)
+    bottom_film_layer_z = np.min(z_film)
+
+    # Get the average z-coordinate of the top substrate atoms (within a threshold from the top)
+    top_substrate_atoms = z_substrate[z_substrate >= top_substrate_layer_z - threshold]
+    avg_z_top_substrate = np.mean(top_substrate_atoms)
+
+    # Get the average z-coordinate of the bottom film atoms (within a threshold from the bottom)
+    bottom_film_atoms = z_film[z_film <= bottom_film_layer_z + threshold]
+    avg_z_bottom_film = np.mean(bottom_film_atoms)
+
+    # Calculate the average distance between the top layer of substrate and the bottom layer of film
+    average_interlayer_distance = avg_z_bottom_film - avg_z_top_substrate
+    return average_interlayer_distance

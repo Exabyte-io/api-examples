@@ -1,41 +1,53 @@
 from IPython.display import display, Javascript
 import json
 import os
+import sys
+
+# Environment detection
+IN_PYODIDE = False
 
 try:
     import micropip
+
+    IN_PYODIDE = True
 except ImportError:
-    raise ImportError(
-        "This module intended to be used in a Pyodide environment. Please install packages yourself using pip."
-    )
+    IN_PYODIDE = False
 
-async def install_package(pkg, verbose=True):
-        """
-        Installs a package in a Pyodide environment.
-        Args:
-            pkg (string): The name of the package to install.
-            verbose (bool): Whether to print the name of the installed package.
+if not IN_PYODIDE:
+    import subprocess
+    import sys
 
-        Returns:
-            None
-        """
-        is_url = pkg.startswith("http://") or pkg.startswith("https://")
-        are_dependencies_installed = not is_url
-        await micropip.install(pkg, deps=are_dependencies_installed)
-        # Extract package name for printing
-        pkg_name = pkg.split("/")[-1].split("-")[0] if is_url else pkg.split("==")[0]
-        if verbose:
-            print(f"Installed {pkg_name}")
+
+async def install_package_pyodide(pkg, verbose=True):
+    """
+    Installs a package in a Pyodide environment.
+    """
+    is_url = pkg.startswith("http://") or pkg.startswith("https://")
+    are_dependencies_installed = not is_url
+    await micropip.install(pkg, deps=are_dependencies_installed)
+    pkg_name = pkg.split("/")[-1].split("-")[0] if is_url else pkg.split("==")[0]
+    if verbose:
+        print(f"Installed {pkg_name}")
+
+
+def install_package_python(pkg, verbose=True):
+    """
+    Installs a package in a standard Python environment.
+    """
+    subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
+    if verbose:
+        print(f"Installed {pkg}")
+
 
 async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
     """
-    This function installs the packages listed in the requirements file for the notebook with the given name.
-    Args:
-        notebook_name (string): The name of the notebook for which to install packages.
-        requirements_path (string): The path to the requirements file.
-        verbose (bool): Whether to print the names of the installed packages and status of installation.
+    Installs the packages listed in the requirements file for the notebook with the given name.
     """
-    await micropip.install("pyyaml")
+    if IN_PYODIDE:
+        await micropip.install("pyyaml")
+    else:
+        install_package_python("pyyaml", verbose=verbose)
+
     import yaml
 
     requirements_hash = ""
@@ -51,14 +63,17 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
             break
 
     if packages is None:
-        raise ValueError(f"No packages found for notebook {notebook_name}")  
+        raise ValueError(f"No packages found for notebook {notebook_name}")
 
     if os.environ.get("requirements_hash") != requirements_hash:
         for package in packages:
-            await install_package(package)
+            if IN_PYODIDE:
+                await install_package_pyodide(package, verbose=verbose)
+            else:
+                install_package_python(package, verbose=verbose)
         if verbose:
             print("All packages installed.")
-    
+
     os.environ["requirements_hash"] = requirements_hash
 
 
@@ -94,7 +109,7 @@ def get_data(key):
     (function() {{
         if (window.requestDataFromHost) {{
             window.requestDataFromHost('{key}')
-            
+
 }} else {{
             console.error('requestDataFromHost function is not defined on the window object.')
         }}

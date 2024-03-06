@@ -1,7 +1,6 @@
 from IPython.display import display, Javascript
 import json
 import os
-import sys
 
 # Environment detection
 IN_PYODIDE = False
@@ -100,21 +99,38 @@ def set_data(key, value):
 
 def get_data(key):
     """
-    This function requests data from the host environment through a JavaScript function defined in the JupyterLite
-    extension `data_bridge`. The data is then returned to the Python environment.
+    This function either requests data from the host environment through a JavaScript function defined in the
+    JupyterLite extension `data_bridge` or reads the data directly from the `uploads` folder in a JupyterLab environment.
     Args:
-        key (string): The name under which data is expected to be received.
+        key (string): The name under which data is expected to be received or the file name to read in JupyterLab.
     """
-    js_code = f"""
-    (function() {{
-        if (window.requestDataFromHost) {{
-            window.requestDataFromHost('{key}')
+    if IN_PYODIDE:
+        # JupyterLite environment: Request data using JavaScript extension
+        js_code = f"""
+        (function() {{
+            if (window.requestDataFromHost) {{
+                window.requestDataFromHost('{key}')
+            }} else {{
+                console.error('requestDataFromHost function is not defined on the window object.')
+            }}
+        }})();
+        """
+        display(Javascript(js_code))
+        print(f"Status: {key} requested")
+    else:
+        # JupyterLab environment: Read data from the 'uploads' folder
+        try:
+            uploads_path = 'uploads'
+            materials = []
+            for filename in os.listdir(uploads_path):
+                if filename.endswith('.json'):
+                    with open(os.path.join(uploads_path, filename), 'r') as file:
+                        data = json.load(file)
+                    key = os.path.splitext(filename)[0]
+                    print(f"Data from {key} has been read successfully.")
+                    materials.append(data)
+            globals()[key] = materials
 
-}} else {{
-            console.error('requestDataFromHost function is not defined on the window object.')
-        }}
-}})();
-    """
+        except FileNotFoundError:
+            print(f"File {key} not found in 'uploads' folder.")
 
-    display(Javascript(js_code))
-    print(f"Status: {key} requested")

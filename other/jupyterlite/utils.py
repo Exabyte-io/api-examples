@@ -33,6 +33,7 @@ def install_package_python(pkg, verbose=True):
     """
     Installs a package in a standard Python environment.
     """
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
     subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
     if verbose:
         print(f"Installed {pkg}")
@@ -97,12 +98,13 @@ def set_data(key, value):
     print(f"Status: {key} sent to host.")
 
 
-def get_data(key):
+def get_data(key, globals_dict=None):
     """
     This function either requests data from the host environment through a JavaScript function defined in the
     JupyterLite extension `data_bridge` or reads the data directly from the `uploads` folder in a JupyterLab environment.
     Args:
-        key (string): The name under which data is expected to be received or the file name to read in JupyterLab.
+        key (string): The name under which data is expected to be received.
+        globals_dict (dict, optional): A dictionary to store the received data. Defaults to None.
     """
     if IN_PYODIDE:
         # JupyterLite environment: Request data using JavaScript extension
@@ -120,17 +122,16 @@ def get_data(key):
     else:
         # JupyterLab environment: Read data from the 'uploads' folder
         try:
-            uploads_path = 'uploads'
+            uploads_path = "uploads"
             materials = []
             for filename in os.listdir(uploads_path):
-                if filename.endswith('.json'):
-                    with open(os.path.join(uploads_path, filename), 'r') as file:
+                if filename.endswith(".json"):
+                    with open(os.path.join(uploads_path, filename), "r") as file:
                         data = json.load(file)
-                    key = os.path.splitext(filename)[0]
-                    print(f"Data from {key} has been read successfully.")
+                    name = os.path.splitext(filename)[0]
+                    print(f"Data from {name} has been read successfully.")
                     materials.append(data)
-            globals()[key] = materials
-
+            if globals_dict is not None:
+                globals_dict[key] = materials
         except FileNotFoundError:
-            print(f"File {key} not found in 'uploads' folder.")
-
+            print("No data found in the 'uploads' folder.")

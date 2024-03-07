@@ -2,6 +2,8 @@ from IPython.display import display, Javascript
 import json
 import os
 
+UPLOADS_FOLDER = "uploads"
+
 # Environment detection
 IN_PYODIDE = False
 
@@ -86,16 +88,29 @@ def set_data(key, value):
         key (string): The name under which data will be sent.
         value (Any): The value to send to the host environment.
     """
-    serialized_data = json.dumps({key: value})
-    js_code = f"""
-    (function() {{
-        window.sendDataToHost({serialized_data})
-        console.log({serialized_data})
-    }})();
-    """
-
-    display(Javascript(js_code))
-    print(f"Status: {key} sent to host.")
+    if IN_PYODIDE:
+        # Pyodide: Send data to host environment using JavaScript
+        serialized_data = json.dumps({key: value})
+        js_code = f"""
+          (function() {{
+              if (window.sendDataToHost) {{
+                  window.sendDataToHost({serialized_data});
+                  console.log('Data sent to host:', {serialized_data});
+              }} else {{
+                  console.error('sendDataToHost function is not defined on the window object.');
+              }}
+          }})();
+          """
+        display(Javascript(js_code))
+        print(f"Status: {key} sent to host.")
+    else:
+        # Standard Python environment: Write data to 'uploads' folder
+        if not os.path.exists(UPLOADS_FOLDER):
+            os.makedirs(UPLOADS_FOLDER)
+        file_path = os.path.join(UPLOADS_FOLDER, f"{key}.json")
+        with open(file_path, "w") as file:
+            json.dump(value, file)
+        print(f"Data for {key} written to {file_path}")
 
 
 def get_data(key, globals_dict=None):
@@ -122,11 +137,10 @@ def get_data(key, globals_dict=None):
     else:
         # JupyterLab environment: Read data from the 'uploads' folder
         try:
-            uploads_path = "uploads"
             materials = []
-            for filename in os.listdir(uploads_path):
+            for filename in os.listdir(UPLOADS_FOLDER):
                 if filename.endswith(".json"):
-                    with open(os.path.join(uploads_path, filename), "r") as file:
+                    with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
                         data = json.load(file)
                     name = os.path.splitext(filename)[0]
                     print(f"Data from {name} has been read successfully.")

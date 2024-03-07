@@ -52,23 +52,31 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
 
     import yaml
 
-    requirements_hash = ""
-
     with open(requirements_path, "r") as f:
         requirements = yaml.safe_load(f)
-        requirements_hash = str(hash(json.dumps(requirements)))
 
-    packages = None
-    for requirement in requirements:
-        if requirement["notebook"] == notebook_name:
-            packages = requirement["packages"]
+    requirements_hash = str(hash(json.dumps(requirements)))
+
+    # Extract default packages
+    default_packages = requirements.get("default", {}).get("packages", [])
+
+    # Install packages default to Python, but not loaded in Pyodide
+    for package in default_packages:
+        if IN_PYODIDE:
+            await install_package_pyodide(package, verbose=verbose)
+
+    # Find notebook-specific packages
+    notebook_packages = None
+    for notebook in requirements.get("notebooks", []):
+        if notebook.get("notebook") == notebook_name:
+            notebook_packages = notebook.get("packages", [])
             break
 
-    if packages is None:
+    if notebook_packages is None:
         raise ValueError(f"No packages found for notebook {notebook_name}")
 
     if os.environ.get("requirements_hash") != requirements_hash:
-        for package in packages:
+        for package in notebook_packages:
             if IN_PYODIDE:
                 await install_package_pyodide(package, verbose=verbose)
             else:
@@ -119,7 +127,7 @@ def get_data(key, globals_dict=None):
     JupyterLite extension `data_bridge` or reads the data directly from the `uploads` folder in a JupyterLab environment.
     Args:
         key (string): The name under which data is expected to be received.
-        globals_dict (dict, optional): A dictionary to store the received data. Defaults to None.
+        globals_dict (dict): A dictionary to store the received data. Defaults to None.
     """
     if IN_PYODIDE:
         # JupyterLite environment: Request data using JavaScript extension

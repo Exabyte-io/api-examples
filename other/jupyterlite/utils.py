@@ -21,7 +21,10 @@ if not IN_PYODIDE:
 
 async def install_package_pyodide(pkg, verbose=True):
     """
-    Installs a package in a Pyodide environment.
+    Install a package in a Pyodide environment.
+    Args:
+        pkg (string): The name of the package to install.
+        verbose (bool): Whether to print the name of the installed package.
     """
     is_url = pkg.startswith("http://") or pkg.startswith("https://")
     are_dependencies_installed = not is_url
@@ -33,7 +36,10 @@ async def install_package_pyodide(pkg, verbose=True):
 
 def install_package_python(pkg, verbose=True):
     """
-    Installs a package in a standard Python environment.
+    Install a package in a standard Python environment.
+    Args:
+        pkg (string): The name of the package to install.
+        verbose (bool): Whether to print the name of the installed package.
     """
     subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
     subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
@@ -43,7 +49,11 @@ def install_package_python(pkg, verbose=True):
 
 async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
     """
-    Installs the packages listed in the requirements file for the notebook with the given name.
+    Install the packages listed in the requirements file for the notebook with the given name.
+    Args:
+        notebook_name (string): The name of the notebook for which to install packages.
+        requirements_path (string): The path to the requirements file.
+        verbose (bool): Whether to print the names of the installed packages and status of installation.
     """
     if IN_PYODIDE:
         await micropip.install("pyyaml")
@@ -54,18 +64,16 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
 
     with open(requirements_path, "r") as f:
         requirements = yaml.safe_load(f)
-
+    # Hash the requirements to avoid re-installing packages
     requirements_hash = str(hash(json.dumps(requirements)))
 
-    # Extract default packages
     default_packages = requirements.get("default", {}).get("packages", [])
 
-    # Install packages default to Python, but not loaded in Pyodide
+    # Install packages in Pyodide that are loaded by default in Python
     for package in default_packages:
         if IN_PYODIDE:
             await install_package_pyodide(package, verbose=verbose)
 
-    # Find notebook-specific packages
     notebook_packages = None
     for notebook in requirements.get("notebooks", []):
         if notebook.get("notebook") == notebook_name:
@@ -123,8 +131,8 @@ def set_data(key, value):
 
 def get_data(key, globals_dict=None):
     """
-    This function either requests data from the host environment through a JavaScript function defined in the
-    JupyterLite extension `data_bridge` or reads the data directly from the `uploads` folder in a JupyterLab environment.
+    Request data from the host environment through a JavaScript function defined in the
+    JupyterLite extension `data_bridge` or read the data directly from the `uploads` folder in a JupyterLab environment.
     Args:
         key (string): The name under which data is expected to be received.
         globals_dict (dict): A dictionary to store the received data. Defaults to None.

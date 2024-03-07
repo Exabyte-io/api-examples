@@ -1,4 +1,9 @@
 # This manifest file is used to install the required packages for the corresponding notebook.
+default:
+  packages:
+    - lzma
+    - sqlite3
+notebooks:
 - notebook: create_interface_with_min_strain_zsl.ipynb
   packages:
     - https://files.mat3ra.com:44318/uploads/pymatgen-2023.9.10-py3-none-any.whl
@@ -8,9 +13,7 @@
     - networkx==3.2.1
     - monty==2023.11.3
     - scipy==1.11.2
-    - lzma
     - tabulate==0.9.0
-    - sqlite3
     - sympy==1.12
     - uncertainties==3.1.6
     - ipywidgets
@@ -28,9 +31,7 @@
     - networkx==3.2.1
     - monty==2023.11.3
     - scipy==1.11.2
-    - lzma
     - tabulate==0.9.0
-    - sqlite3
     - sympy==1.12
     - uncertainties==3.1.6
     - pandas==1.5.3
@@ -51,9 +52,7 @@
     - networkx==3.2.1
     - monty==2023.11.3
     - scipy==1.11.2
-    - lzma
     - tabulate==0.9.0
-    - sqlite3
     - sympy==1.12
     - uncertainties==3.1.6
     - pandas==1.5.3

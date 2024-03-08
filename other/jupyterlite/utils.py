@@ -1,5 +1,6 @@
 from IPython.display import display, Javascript
 import json
+import yaml
 import os
 from enum import Enum
 
@@ -45,10 +46,13 @@ def install_package_python(pkg, verbose=True):
         pkg (string): The name of the package to install.
         verbose (bool): Whether to print the name of the installed package.
     """
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
     subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
     if verbose:
         print(f"Installed {pkg}")
+
+
+# Set the install_package function based on the environment
+install_package = install_package_pyodide if ENVIRONMENT == Environment.PYODIDE else install_package_python
 
 
 async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
@@ -59,51 +63,31 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
         requirements_path (string): The path to the requirements file.
         verbose (bool): Whether to print the names of the installed packages and status of installation.
     """
-    if ENVIRONMENT == Environment.PYODIDE:
-        await micropip.install("pyyaml")
-    if ENVIRONMENT == Environment.PYTHON:
-        install_package_python("pyyaml")
-    import yaml
-
     with open(requirements_path, "r") as f:
         requirements = yaml.safe_load(f)
-
-    default_packages = requirements.get("default", {})
-    notebook_packages_common = None
-    notebook_packages = None
-    for notebook in requirements.get("notebooks", []):
-        if notebook.get("name") == notebook_name:
-            notebook_packages_common = notebook.get("packages", [])
-            packages_key = "packages_pyodide" if ENVIRONMENT == Environment.PYODIDE else "packages_python"
-            notebook_packages = notebook.get(packages_key, [])
-            break
 
     # Hash the requirements to avoid re-installing packages
     requirements_hash = str(hash(json.dumps(requirements)))
     if os.environ.get("requirements_hash") != requirements_hash:
-        if verbose:
-            print("Installing packages...")
-        for pkg in default_packages:
-            if ENVIRONMENT == Environment.PYODIDE:
-                await install_package_pyodide(pkg, verbose)
-            if ENVIRONMENT == Environment.PYTHON:
-                install_package_python(pkg, verbose)
-        if notebook_packages_common:
-            for pkg in notebook_packages_common:
-                if ENVIRONMENT == Environment.PYODIDE:
-                    await install_package_pyodide(pkg, verbose)
-                if ENVIRONMENT == Environment.PYTHON:
-                    install_package_python(pkg, verbose)
-        if notebook_packages:
-            for pkg in notebook_packages:
-                if ENVIRONMENT == Environment.PYODIDE:
-                    await install_package_pyodide(pkg, verbose)
-                if ENVIRONMENT == Environment.PYTHON:
-                    install_package_python(pkg, verbose)
-        if verbose:
-            print("Packages installed.")
+        packages = []
+        packages += requirements.get("default", {}).get("packages_common", [])
+        packages += requirements.get("default", {}).get(f"packages_{ENVIRONMENT.value}", [])
 
-    os.environ["requirements_hash"] = requirements_hash
+        notebook_requirements = next(
+            (cfg for cfg in requirements.get("notebooks", []) if cfg.get("name") == notebook_name), None
+        )
+        if notebook_requirements:
+            packages += notebook_requirements.get("packages_common", [])
+            packages += notebook_requirements.get(f"packages_{ENVIRONMENT.value}", [])
+        else:
+            raise ValueError(f"No packages found for notebook {notebook_name}")
+
+        for pkg in packages:
+            await install_package(pkg, verbose)
+
+        if verbose:
+            print("Packages installed successfully.")
+        os.environ["requirements_hash"] = requirements_hash
 
 
 def set_data(key, value):

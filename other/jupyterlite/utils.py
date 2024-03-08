@@ -7,19 +7,19 @@ from enum import Enum
 UPLOADS_FOLDER = "uploads"
 
 
-class Environment(Enum):
+class EnvironmentEnum(Enum):
     PYODIDE = "pyodide"
     PYTHON = "python"
 
 
 # Environment detection
 # default value for env.HOME from https://pyodide.org/en/stable/usage/api/js-api.html
-ENVIRONMENT = Environment.PYODIDE if os.environ.get("HOME") == "/home/pyodide" else Environment.PYTHON
+ENVIRONMENT = EnvironmentEnum.PYODIDE if os.environ.get("HOME") == "/home/pyodide" else EnvironmentEnum.PYTHON
 
-if ENVIRONMENT == Environment.PYODIDE:
+if ENVIRONMENT == EnvironmentEnum.PYODIDE:
     import micropip
 
-if ENVIRONMENT == Environment.PYTHON:
+if ENVIRONMENT == EnvironmentEnum.PYTHON:
     import subprocess
     import sys
 
@@ -52,7 +52,7 @@ def install_package_python(pkg, verbose=True):
 
 
 # Set the install_package function based on the environment
-install_package = install_package_pyodide if ENVIRONMENT == Environment.PYODIDE else install_package_python
+install_package = install_package_pyodide if ENVIRONMENT == EnvironmentEnum.PYODIDE else install_package_python
 
 
 async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
@@ -69,8 +69,7 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
     # Hash the requirements to avoid re-installing packages
     requirements_hash = str(hash(json.dumps(requirements)))
     if os.environ.get("requirements_hash") != requirements_hash:
-        packages = []
-        packages += requirements.get("default", {}).get("packages_common", [])
+        packages = requirements.get("default", {}).get("packages_common", [])
         packages += requirements.get("default", {}).get(f"packages_{ENVIRONMENT.value}", [])
 
         notebook_requirements = next(
@@ -90,73 +89,109 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
         os.environ["requirements_hash"] = requirements_hash
 
 
-def set_data(key, value):
+def set_data_pyodide(key, value):
     """
-    This function takes a Python object, serializes it to JSON, and sends it to the host environment
+    Take a Python object, serialize it to JSON, and send it to the host environment
     through a JavaScript function defined in the JupyterLite extension `data_bridge`.
 
     Args:
         key (string): The name under which data will be sent.
         value (Any): The value to send to the host environment.
     """
-    if ENVIRONMENT == Environment.PYODIDE:
-        # Pyodide: Send data to host environment using JavaScript
-        serialized_data = json.dumps({key: value})
-        js_code = f"""
-          (function() {{
-              if (window.sendDataToHost) {{
-                  window.sendDataToHost({serialized_data});
-                  console.log('Data sent to host:', {serialized_data});
-              }} else {{
-                  console.error('sendDataToHost function is not defined on the window object.');
-              }}
-          }})();
-          """
-        display(Javascript(js_code))
-        print(f"Status: {key} sent to host.")
-    elif ENVIRONMENT == Environment.PYTHON:
-        # Standard Python environment: Write data to 'uploads' folder
-        if not os.path.exists(UPLOADS_FOLDER):
-            os.makedirs(UPLOADS_FOLDER)
-        file_path = os.path.join(UPLOADS_FOLDER, f"{key}.json")
-        with open(file_path, "w") as file:
-            json.dump(value, file)
-        print(f"Data for {key} written to {file_path}")
+    serialized_data = json.dumps({key: value})
+    js_code = f"""
+      (function() {{
+          if (window.sendDataToHost) {{
+              window.sendDataToHost({serialized_data});
+              console.log('Data sent to host:', {serialized_data});
+          }} else {{
+              console.error('sendDataToHost function is not defined on the window object.');
+          }}
+      }})();
+      """
+    display(Javascript(js_code))
+    print(f"Status: {key} sent to host.")
 
 
-def get_data(key, globals_dict=None):
+def set_data_python(key, value):
+    """
+    Write data to the `uploads` folder in a JupyterLab environment.
+    Args:
+        key (string): The name under which data will be written.
+        value (Any): The value to write to the `uploads` folder.
+    """
+    if not os.path.exists(UPLOADS_FOLDER):
+        os.makedirs(UPLOADS_FOLDER)
+    file_path = os.path.join(UPLOADS_FOLDER, f"{key}.json")
+    with open(file_path, "w") as file:
+        json.dump(value, file)
+    print(f"Data for {key} written to {file_path}")
+
+
+def set_data(key, value):
+    """
+    Switch between the two functions `set_data_pyodide` and `set_data_python` based on the environment.
+    Args:
+        key (string): The name under which data will be written or sent.
+        value (Any): The value to write or send.
+    """
+    if ENVIRONMENT == EnvironmentEnum.PYODIDE:
+        set_data_pyodide(key, value)
+    elif ENVIRONMENT == EnvironmentEnum.PYTHON:
+        set_data_python(key, value)
+
+
+def get_data_pyodide(key, globals_dict=None):
     """
     Request data from the host environment through a JavaScript function defined in the
-    JupyterLite extension `data_bridge` or read the data directly from the `uploads` folder in a JupyterLab environment.
+    JupyterLite extension `data_bridge`.
     Args:
         key (string): The name under which data is expected to be received.
         globals_dict (dict): A dictionary to store the received data. Defaults to None.
     """
-    if ENVIRONMENT == Environment.PYODIDE:
-        # JupyterLite environment: Request data using JavaScript extension
-        js_code = f"""
-        (function() {{
-            if (window.requestDataFromHost) {{
-                window.requestDataFromHost('{key}')
-            }} else {{
-                console.error('requestDataFromHost function is not defined on the window object.')
-            }}
-        }})();
-        """
-        display(Javascript(js_code))
-        print(f"Status: {key} requested")
-    elif ENVIRONMENT == Environment.PYTHON:
-        # JupyterLab environment: Read data from the 'uploads' folder
-        try:
-            materials = []
-            for filename in os.listdir(UPLOADS_FOLDER):
-                if filename.endswith(".json"):
-                    with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
-                        data = json.load(file)
-                    name = os.path.splitext(filename)[0]
-                    print(f"Data from {name} has been read successfully.")
-                    materials.append(data)
-            if globals_dict is not None:
-                globals_dict[key] = materials
-        except FileNotFoundError:
-            print("No data found in the 'uploads' folder.")
+    js_code = f"""
+    (function() {{
+        if (window.requestDataFromHost) {{
+            window.requestDataFromHost('{key}')
+        }} else {{
+            console.error('requestDataFromHost function is not defined on the window object.')
+        }}
+    }})();
+    """
+    display(Javascript(js_code))
+    print(f"Status: {key} requested")
+
+
+def get_data_python(key, globals_dict=None):
+    """
+    Read data from the `uploads` folder in a JupyterLab environment.
+    Args:
+        key (string): The name under which data is expected to be received.
+        globals_dict (dict): A dictionary to store the received data. Defaults to None.
+    """
+    try:
+        materials = []
+        for filename in os.listdir(UPLOADS_FOLDER):
+            if filename.endswith(".json"):
+                with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
+                    data = json.load(file)
+                name = os.path.splitext(filename)[0]
+                print(f"Data from {name} has been read successfully.")
+                materials.append(data)
+        if globals_dict is not None:
+            globals_dict[key] = materials
+    except FileNotFoundError:
+        print("No data found in the 'uploads' folder.")
+
+
+def get_data(key, globals_dict=None):
+    """
+    Switch between the two functions `get_data_pyodide` and `get_data_python` based on the environment.
+    Args:
+        key (string): The name under which data is expected to be received.
+        globals_dict (dict): A dictionary to store the received data. Defaults to None.
+    """
+    if ENVIRONMENT == EnvironmentEnum.PYODIDE:
+        get_data_pyodide(key, globals_dict)
+    elif ENVIRONMENT == EnvironmentEnum.PYTHON:
+        get_data_python(key, globals_dict)

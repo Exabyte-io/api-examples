@@ -1,20 +1,24 @@
 from IPython.display import display, Javascript
 import json
 import os
+from enum import Enum
 
 UPLOADS_FOLDER = "uploads"
 
-# Environment detection
-IN_PYODIDE = False
 
-try:
+class Environment(Enum):
+    PYODIDE = "pyodide"
+    PYTHON = "python"
+
+
+# Environment detection
+# default value for env.HOME from https://pyodide.org/en/stable/usage/api/js-api.html
+ENVIRONMENT = Environment.PYODIDE if os.environ.get("HOME") == "/home/pyodide" else Environment.PYTHON
+
+if ENVIRONMENT == Environment.PYODIDE:
     import micropip
 
-    IN_PYODIDE = True
-except ImportError:
-    IN_PYODIDE = False
-
-if not IN_PYODIDE:
+if ENVIRONMENT == Environment.PYTHON:
     import subprocess
     import sys
 
@@ -55,42 +59,49 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
         requirements_path (string): The path to the requirements file.
         verbose (bool): Whether to print the names of the installed packages and status of installation.
     """
-    if IN_PYODIDE:
+    if ENVIRONMENT == Environment.PYODIDE:
         await micropip.install("pyyaml")
-    else:
-        install_package_python("pyyaml", verbose=verbose)
-
+    if ENVIRONMENT == Environment.PYTHON:
+        install_package_python("pyyaml")
     import yaml
 
     with open(requirements_path, "r") as f:
         requirements = yaml.safe_load(f)
-    # Hash the requirements to avoid re-installing packages
-    requirements_hash = str(hash(json.dumps(requirements)))
 
-    default_packages = requirements.get("default", {}).get("packages", [])
-
-    # Install packages in Pyodide that are loaded by default in Python
-    for package in default_packages:
-        if IN_PYODIDE:
-            await install_package_pyodide(package, verbose=verbose)
-
+    default_packages = requirements.get("default", {})
+    notebook_packages_common = None
     notebook_packages = None
     for notebook in requirements.get("notebooks", []):
-        if notebook.get("notebook") == notebook_name:
-            notebook_packages = notebook.get("packages", [])
+        if notebook.get("name") == notebook_name:
+            notebook_packages_common = notebook.get("packages", [])
+            packages_key = "packages_pyodide" if ENVIRONMENT == Environment.PYODIDE else "packages_python"
+            notebook_packages = notebook.get(packages_key, [])
             break
 
-    if notebook_packages is None:
-        raise ValueError(f"No packages found for notebook {notebook_name}")
-
+    # Hash the requirements to avoid re-installing packages
+    requirements_hash = str(hash(json.dumps(requirements)))
     if os.environ.get("requirements_hash") != requirements_hash:
-        for package in notebook_packages:
-            if IN_PYODIDE:
-                await install_package_pyodide(package, verbose=verbose)
-            else:
-                install_package_python(package, verbose=verbose)
         if verbose:
-            print("All packages installed.")
+            print("Installing packages...")
+        for pkg in default_packages:
+            if ENVIRONMENT == Environment.PYODIDE:
+                await install_package_pyodide(pkg, verbose)
+            if ENVIRONMENT == Environment.PYTHON:
+                install_package_python(pkg, verbose)
+        if notebook_packages_common:
+            for pkg in notebook_packages_common:
+                if ENVIRONMENT == Environment.PYODIDE:
+                    await install_package_pyodide(pkg, verbose)
+                if ENVIRONMENT == Environment.PYTHON:
+                    install_package_python(pkg, verbose)
+        if notebook_packages:
+            for pkg in notebook_packages:
+                if ENVIRONMENT == Environment.PYODIDE:
+                    await install_package_pyodide(pkg, verbose)
+                if ENVIRONMENT == Environment.PYTHON:
+                    install_package_python(pkg, verbose)
+        if verbose:
+            print("Packages installed.")
 
     os.environ["requirements_hash"] = requirements_hash
 
@@ -104,7 +115,7 @@ def set_data(key, value):
         key (string): The name under which data will be sent.
         value (Any): The value to send to the host environment.
     """
-    if IN_PYODIDE:
+    if ENVIRONMENT == Environment.PYODIDE:
         # Pyodide: Send data to host environment using JavaScript
         serialized_data = json.dumps({key: value})
         js_code = f"""
@@ -119,7 +130,7 @@ def set_data(key, value):
           """
         display(Javascript(js_code))
         print(f"Status: {key} sent to host.")
-    else:
+    elif ENVIRONMENT == Environment.PYTHON:
         # Standard Python environment: Write data to 'uploads' folder
         if not os.path.exists(UPLOADS_FOLDER):
             os.makedirs(UPLOADS_FOLDER)
@@ -137,7 +148,7 @@ def get_data(key, globals_dict=None):
         key (string): The name under which data is expected to be received.
         globals_dict (dict): A dictionary to store the received data. Defaults to None.
     """
-    if IN_PYODIDE:
+    if ENVIRONMENT == Environment.PYODIDE:
         # JupyterLite environment: Request data using JavaScript extension
         js_code = f"""
         (function() {{
@@ -150,7 +161,7 @@ def get_data(key, globals_dict=None):
         """
         display(Javascript(js_code))
         print(f"Status: {key} requested")
-    else:
+    elif ENVIRONMENT == Environment.PYTHON:
         # JupyterLab environment: Read data from the 'uploads' folder
         try:
             materials = []

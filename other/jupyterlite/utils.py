@@ -1,6 +1,5 @@
 from IPython.display import display, Javascript
 import json
-import yaml
 import os
 from enum import Enum
 
@@ -59,6 +58,10 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
         requirements_path (string): The path to the requirements file.
         verbose (bool): Whether to print the names of the installed packages and status of installation.
     """
+    if ENVIRONMENT == EnvironmentEnum.PYODIDE:
+        await micropip.install("pyyaml")
+    import yaml
+
     with open(requirements_path, "r") as f:
         requirements = yaml.safe_load(f)
 
@@ -141,13 +144,12 @@ def set_data(key, value):
         set_data_python(key, value)
 
 
-def get_data_pyodide(key, globals_dict=None):
+def get_data_pyodide(key):
     """
     Request data from the host environment through a JavaScript function defined in the
     JupyterLite extension `data_bridge`.
     Args:
         key (string): The name under which data is expected to be received.
-        globals_dict (dict): A dictionary to store the received data. Defaults to None.
     """
     js_code = f"""
     (function() {{
@@ -192,6 +194,6 @@ def get_data(key, globals_dict=None):
         globals_dict (dict): A dictionary to store the received data. Defaults to None.
     """
     if ENVIRONMENT == EnvironmentEnum.PYODIDE:
-        get_data_pyodide(key, globals_dict)
+        get_data_pyodide(key)
     elif ENVIRONMENT == EnvironmentEnum.PYTHON:
         get_data_python(key, globals_dict)

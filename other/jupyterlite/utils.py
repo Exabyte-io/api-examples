@@ -51,10 +51,6 @@ def install_package_python(pkg, verbose=True):
         print(f"Installed {pkg}")
 
 
-# Set the install_package function based on the environment
-install_package = install_package_pyodide if ENVIRONMENT == EnvironmentEnum.PYODIDE else install_package_python
-
-
 async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
     """
     Install the packages listed in the requirements file for the notebook with the given name.
@@ -69,20 +65,24 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
     # Hash the requirements to avoid re-installing packages
     requirements_hash = str(hash(json.dumps(requirements)))
     if os.environ.get("requirements_hash") != requirements_hash:
-        packages = requirements.get("default", {}).get("packages_common", [])
-        packages += requirements.get("default", {}).get(f"packages_{ENVIRONMENT.value}", [])
+        packages = []
+        packages += requirements.get("default", {}).get("packages_common", []) or []
+        packages += requirements.get("default", {}).get(f"packages_{ENVIRONMENT.value}", []) or []
 
         notebook_requirements = next(
             (cfg for cfg in requirements.get("notebooks", []) if cfg.get("name") == notebook_name), None
         )
         if notebook_requirements:
-            packages += notebook_requirements.get("packages_common", [])
-            packages += notebook_requirements.get(f"packages_{ENVIRONMENT.value}", [])
+            packages += notebook_requirements.get("packages_common", []) or []
+            packages += notebook_requirements.get(f"packages_{ENVIRONMENT.value}", []) or []
         else:
             raise ValueError(f"No packages found for notebook {notebook_name}")
 
         for pkg in packages:
-            await install_package(pkg, verbose)
+            if ENVIRONMENT == EnvironmentEnum.PYODIDE:
+                await install_package_pyodide(pkg, verbose)
+            elif ENVIRONMENT == EnvironmentEnum.PYTHON:
+                install_package_python(pkg, verbose)
 
         if verbose:
             print("Packages installed successfully.")

@@ -144,25 +144,16 @@ def set_data(key, value):
         set_data_python(key, value)
 
 
-def get_data_pyodide(key):
+def get_data_pyodide(key, globals_dict=None):
     """
-    Request data from the host environment through a JavaScript function defined in the
-    JupyterLite extension `data_bridge`.
+    Read data from the host environment through a JavaScript function defined in the JupyterLite extension `data_bridge`
+    and store it in a Python dictionary.
     Args:
         key (string): The name under which data is expected to be received.
+        globals_dict (dict): A dictionary to store the received data. Defaults to None.
     """
-    js_code = f"""
-    (function() {{
-        if (window.requestDataFromHost) {{
-            window.requestDataFromHost('{key}')
-        }} else {{
-            console.error('requestDataFromHost function is not defined on the window object.')
-        }}
-    }})();
-    """
-    display(Javascript(js_code))
-    print(f"Status: {key} requested")
-
+    if globals_dict is not None:
+        globals_dict[key] = globals_dict['data_from_host']
 
 def get_data_python(key, globals_dict=None):
     """
@@ -194,6 +185,6 @@ def get_data(key, globals_dict=None):
         globals_dict (dict): A dictionary to store the received data. Defaults to None.
     """
     if ENVIRONMENT == EnvironmentEnum.PYODIDE:
-        get_data_pyodide(key)
+        get_data_pyodide(key, globals_dict)
     elif ENVIRONMENT == EnvironmentEnum.PYTHON:
         get_data_python(key, globals_dict)

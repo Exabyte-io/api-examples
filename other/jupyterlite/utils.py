@@ -146,14 +146,14 @@ def set_data(key, value):
 
 def get_data_pyodide(key, globals_dict=None):
     """
-    Read data from the host environment through a JavaScript function defined in the JupyterLite extension `data_bridge`
-    and store it in a Python dictionary.
+    Load data from the host environment into globals()[key] variable.
     Args:
-        key (string): The name under which data is expected to be received.
-        globals_dict (dict): A dictionary to store the received data. Defaults to None.
+        key (string): global variable name to store the received data.
+        globals_dict (dict): globals() dictionary of the current scope.
     """
     if globals_dict is not None:
-        globals_dict[key] = globals_dict['data_from_host']
+        globals_dict[key] = globals_dict["data_from_host"]
+
 
 def get_data_python(key, globals_dict=None):
     """
@@ -163,16 +163,16 @@ def get_data_python(key, globals_dict=None):
         globals_dict (dict): A dictionary to store the received data. Defaults to None.
     """
     try:
-        materials = []
+        data_from_host = []
         for filename in os.listdir(UPLOADS_FOLDER):
             if filename.endswith(".json"):
                 with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
                     data = json.load(file)
                 name = os.path.splitext(filename)[0]
                 print(f"Data from {name} has been read successfully.")
-                materials.append(data)
+                data_from_host.append(data)
         if globals_dict is not None:
-            globals_dict[key] = materials
+            globals_dict[key] = data_from_host
     except FileNotFoundError:
         print("No data found in the 'uploads' folder.")
 

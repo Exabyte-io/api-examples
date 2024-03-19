@@ -68,18 +68,24 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
     # Hash the requirements to avoid re-installing packages
     requirements_hash = str(hash(json.dumps(requirements)))
     if os.environ.get("requirements_hash") != requirements_hash:
-        packages = []
-        packages += requirements.get("default", {}).get("packages_common", []) or []
-        packages += requirements.get("default", {}).get(f"packages_{ENVIRONMENT.value}", []) or []
+        packages_default_common = requirements.get("default", {}).get("packages_common", []) or []
+        packages_default_environment_specific = requirements.get("default", {}).get(f"packages_{ENVIRONMENT.value}", []) or []
 
         notebook_requirements = next(
             (cfg for cfg in requirements.get("notebooks", []) if cfg.get("name") == notebook_name), None
         )
         if notebook_requirements:
-            packages += notebook_requirements.get("packages_common", []) or []
-            packages += notebook_requirements.get(f"packages_{ENVIRONMENT.value}", []) or []
+            packages_notebook_common = notebook_requirements.get("packages_common", []) or []
+            packages_notebook_environment_specific= notebook_requirements.get(f"packages_{ENVIRONMENT.value}", []) or []
         else:
             raise ValueError(f"No packages found for notebook {notebook_name}")
+
+        packages = [
+            *packages_default_common,
+            *packages_default_environment_specific,
+            *packages_notebook_common,
+            *packages_notebook_environment_specific,
+        ]
 
         for pkg in packages:
             if ENVIRONMENT == EnvironmentEnum.PYODIDE:

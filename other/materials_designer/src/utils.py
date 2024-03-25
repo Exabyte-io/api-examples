@@ -333,3 +333,18 @@ def get_interfacial_energy(
     surface_energy_layer = get_surface_energy(layer_slab, layer_bulk, calculator)
     adhesion_energy = get_adhesion_energy(interface, substrate_slab, layer_slab, calculator)
     return surface_energy_layer + surface_energy_substrate - adhesion_energy
+
+
+def from_ase(atoms: Atoms):
+    """
+    Convert an ASE Atoms object to a material object in ESSE format.
+
+    Args:
+        atoms (ase.Atoms): The ASE Atoms object to convert.
+
+    Returns:
+        dict: A dictionary containing the material information in ESSE format.
+    """
+    structure = ase_to_pymatgen(atoms)
+    material = from_pymatgen(structure)
+    return material

@@ -1,14 +1,9 @@
-[build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "mat3ra-api-examples"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Mat3ra API Examples"
 readme = "README.md"
 requires-python = ">=3.8"
-
 dependencies = [
   "ase>=3.21.1",
   "exabyte-api-client>=2023.6.13.post0",
@@ -46,6 +41,13 @@ repository = "https://github.com/Exabyte-io/api-examples"
 
 [project.scripts]
 notebook-path = "utils.notebook:print_notebook_path"
+
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+git_describe_command = "git describe --tags --long"
 
 [tool.setuptools.packages.find]
 include = ["utils"]

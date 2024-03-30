@@ -6,6 +6,7 @@
 # The default packages are installed for all the notebooks.
 default:
   packages_common:
+    - pandas==1.5.3
     - ase==3.22.1
   packages_python:
     - pymatgen==2023.9.10
@@ -21,10 +22,10 @@ default:
     - tabulate==0.9.0
     - sympy==1.12
     - uncertainties==3.1.6
+    -
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:
-      - pandas==1.5.3
       - ipywidgets
       - plotly==5.18
       - nbformat>=4.2.0
@@ -32,7 +33,6 @@ notebooks:
     packages_pyodide:
   - name: import_material_from_jarvis_db_entry.ipynb
     packages_common:
-      - pandas==1.5.3
       - express-py==2024.2.2.post2
       - mat3ra-esse
       - jarvis-tools
@@ -44,7 +44,6 @@ notebooks:
       - https://files.mat3ra.com:44318/uploads/watchdog-2.3.1-py3-none-any.whl
   - name: import_materials_from_files.ipynb
     packages_common:
-      - pandas==1.5.3
       - express-py==2024.2.2.post2
       - mat3ra-esse
       - munch

@@ -9,23 +9,23 @@ description = "Mat3ra API Examples"
 readme = "README.md"
 requires-python = ">=3.8"
 
-[project.optional-dependencies]
-colab = [
+dependencies = [
   "ase>=3.21.1",
   "exabyte-api-client>=2023.6.13.post0",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen>=2023.5.31",
 ]
-localhost = [
-  "ase>=3.21.1",
-  "exabyte-api-client>=2023.6.13.post0",
-  "matplotlib>=3.4.1",
-  "pandas>=1.1.4",
-  "pymatgen>=2023.5.31",
+
+[project.optional-dependencies]
+# Install all above dependencies in colab
+colab = ["mat3ra-api-examples"]
+jupyterlab = [
   "jupyterlab>=3.0.17",
   "nbconvert>=6.0.7",
 ]
+# Install colab + jupyterlab on localhost
+localhost = ["mat3ra-api-examples[jupyterlab]"]
 dev = [
   "pre-commit>=3.3.3",
   "pip-tools>=6.13.0",

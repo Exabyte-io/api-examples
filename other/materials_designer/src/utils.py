@@ -348,3 +348,20 @@ def from_ase(atoms: Atoms):
     structure = ase_to_pymatgen(atoms)
     material = from_pymatgen(structure)
     return material
+
+
+def translate_to_bottom(structure):
+    """
+    Translate the structure to the bottom of the cell.
+    Args:
+        structure (Structure): The pymatgen Structure object to translate.
+
+    Returns:
+        Structure: The translated pymatgen Structure object.
+    """
+    min_c = min(site.c for site in structure)
+    translation_vector = [0, 0, -min_c]
+    translated_structure = structure.copy()
+    for site in translated_structure:
+        site.coords += translation_vector
+    return translated_structure

@@ -85,11 +85,13 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
             packages_notebook_common = []
             packages_notebook_environment_specific = []
 
+        # Note: environment specific packages have to be installed first,
+        # because in Pyodide common packages might depend on them
         packages = [
-            *packages_default_common,
             *packages_default_environment_specific,
-            *packages_notebook_common,
             *packages_notebook_environment_specific,
+            *packages_default_common,
+            *packages_notebook_common,
         ]
 
         for pkg in packages:

@@ -1,31 +1,26 @@
-[build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "mat3ra-api-examples"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Mat3ra API Examples"
 readme = "README.md"
 requires-python = ">=3.8"
-
-[project.optional-dependencies]
-colab = [
+dependencies = [
   "ase>=3.21.1",
   "exabyte-api-client>=2023.6.13.post0",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen>=2023.5.31",
 ]
-localhost = [
-  "ase>=3.21.1",
-  "exabyte-api-client>=2023.6.13.post0",
-  "matplotlib>=3.4.1",
-  "pandas>=1.1.4",
-  "pymatgen>=2023.5.31",
+
+[project.optional-dependencies]
+# Install all above dependencies in colab
+colab = ["mat3ra-api-examples"]
+jupyterlab = [
   "jupyterlab>=3.0.17",
   "nbconvert>=6.0.7",
 ]
+# Install colab + jupyterlab on localhost
+localhost = ["mat3ra-api-examples[jupyterlab]"]
 dev = [
   "pre-commit>=3.3.3",
   "pip-tools>=6.13.0",
@@ -46,6 +41,13 @@ repository = "https://github.com/Exabyte-io/api-examples"
 
 [project.scripts]
 notebook-path = "utils.notebook:print_notebook_path"
+
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+git_describe_command = "git describe --tags --long"
 
 [tool.setuptools.packages.find]
 include = ["utils"]

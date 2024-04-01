@@ -62,7 +62,13 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
         await micropip.install("pyyaml")
     import yaml
 
-    with open(requirements_path, "r") as f:
+    base_path = os.getcwd()
+    if requirements_path is None:
+        requirements_file = os.path.normpath(os.path.join(base_path, "./config.yml"))
+    else:
+        requirements_file = os.path.normpath(os.path.join(base_path, requirements_path))
+
+    with open(requirements_file, "r") as f:
         requirements = yaml.safe_load(f)
 
     # Hash the requirements to avoid re-installing packages

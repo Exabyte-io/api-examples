@@ -52,9 +52,3 @@ notebooks:
     packages_pyodide:
       - https://files.mat3ra.com:44318/uploads/paginate-0.5.6-py3-none-any.whl
       - https://files.mat3ra.com:44318/uploads/watchdog-2.3.1-py3-none-any.whl
-  - name: api_interoperability_showcase.ipynb
-    packages_pyodide:
-      - mp_api==0.31.1
-      - mpcontribs-client
-      - tqdm
-      - plotly

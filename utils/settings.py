@@ -49,8 +49,8 @@ ORGANIZATION_ID = os.getenv("ORGANIZATION_ID", settings_json_config.get("ORGANIZ
 # VERSION: RESTFul API version. Defaults to 2018-10-01.
 # SECURE: Whether to use secure connection. Defaults to True.
 
-PORT = 443
-SECURE = True
-VERSION = "2018-10-01"
-HOST = "platform.mat3ra.com"
+PORT = os.environ.get("API_PORT", 443)
+SECURE = os.environ.get("API_SECURE") != "false"
+VERSION = os.environ.get("API_VERSION", "2018-10-01")
+HOST = os.environ.get("API_HOST", "platform.mat3ra.com")
 ENDPOINT_ARGS = [HOST, PORT, ACCOUNT_ID, AUTH_TOKEN, VERSION, SECURE]

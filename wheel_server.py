@@ -4,8 +4,8 @@
 # The server will be available at http://localhost:8080, use micropip in pyodide to install wheel from that URL, i.e:
 # await micropip.install("http://localhost:8080/mat3ra_api_examples-2024.3.30.post2-py3-none-any.whl", deps=False)
 
-from http.server import HTTPServer, SimpleHTTPRequestHandler
 import os
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 
 class CORSHTTPRequestHandler(SimpleHTTPRequestHandler):

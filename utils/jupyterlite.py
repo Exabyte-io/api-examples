@@ -1,7 +1,8 @@
-from IPython.display import display, Javascript
 import json
 import os
 from enum import Enum
+
+from IPython.display import Javascript, display
 
 UPLOADS_FOLDER = "uploads"
 

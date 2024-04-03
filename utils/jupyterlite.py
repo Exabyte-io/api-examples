@@ -61,6 +61,7 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
     """
     if ENVIRONMENT == EnvironmentEnum.PYODIDE:
         await micropip.install("pyyaml")
+        # PyYAML has to be installed before being imported in Pyodide and can't appear at the top of the file
     import yaml
 
     base_path = os.getcwd()

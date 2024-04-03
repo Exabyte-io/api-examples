@@ -1,7 +1,8 @@
-from IPython.display import display, Javascript
 import json
 import os
 from enum import Enum
+
+from IPython.display import Javascript, display
 
 UPLOADS_FOLDER = "uploads"
 
@@ -60,9 +61,16 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
     """
     if ENVIRONMENT == EnvironmentEnum.PYODIDE:
         await micropip.install("pyyaml")
+        # PyYAML has to be installed before being imported in Pyodide and can't appear at the top of the file
     import yaml
 
-    with open(requirements_path, "r") as f:
+    base_path = os.getcwd()
+    if requirements_path is None:
+        requirements_file = os.path.normpath(os.path.join(base_path, "./config.yml"))
+    else:
+        requirements_file = os.path.normpath(os.path.join(base_path, requirements_path))
+
+    with open(requirements_file, "r") as f:
         requirements = yaml.safe_load(f)
 
     # Hash the requirements to avoid re-installing packages
@@ -82,7 +90,8 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
                 notebook_requirements.get(f"packages_{ENVIRONMENT.value}", []) or []
             )
         else:
-            raise ValueError(f"No packages found for notebook {notebook_name}")
+            packages_notebook_common = []
+            packages_notebook_environment_specific = []
 
         # Note: environment specific packages have to be installed first,
         # because in Pyodide common packages might depend on them

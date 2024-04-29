@@ -2,7 +2,7 @@ import plotly.graph_objs as go
 
 
 def plot_strain_vs_atoms(interface_data_holder, settings):
-    sorted_interfaces = interface_data_holder.data
+    sorted_interfaces = interface_data_holder.interfaces
 
     data = []
     for termination, interfaces in sorted_interfaces.items():

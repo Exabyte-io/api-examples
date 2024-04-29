@@ -14,7 +14,7 @@ def plot_strain_vs_atoms(interface_data_holder, settings):
 
             trace = go.Scatter(
                 x=[strain_percentage],
-                y=[num_sites],`
+                y=[num_sites],
                 text=[hover_text],
                 mode="markers",
                 hoverinfo="text",
@@ -23,11 +23,11 @@ def plot_strain_vs_atoms(interface_data_holder, settings):
             data.append(trace)
 
     layout = go.Layout(
-    xaxis=dict(title="Strain (%)", type=settings["X_SCALE"]),
-    yaxis=dict(title="Number of atoms", type=settings["Y_SCALE"]),
-    hovermode="closest",
-    height=settings["HEIGHT"],
-    legend_title_text="Interfaces Index Range",
+        xaxis=dict(title="Strain (%)", type=settings["X_SCALE"]),
+        yaxis=dict(title="Number of atoms", type=settings["Y_SCALE"]),
+        hovermode="closest",
+        height=settings["HEIGHT"],
+        legend_title_text="Interfaces Index Range",
     )
 
     fig = go.Figure(data=data, layout=layout)

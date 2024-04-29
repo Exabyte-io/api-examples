@@ -29,5 +29,6 @@ def plot_strain_vs_atoms(interface_data_holder, settings):
     height=settings["HEIGHT"],
     legend_title_text="Interfaces Index Range",
     )
+
     fig = go.Figure(data=data, layout=layout)
     fig.show()

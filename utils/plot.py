@@ -1,7 +1,17 @@
+from typing import Dict, Union
+
 import plotly.graph_objs as go
+from mat3ra.made.tools.build.interface import InterfaceDataHolder
 
 
-def plot_strain_vs_atoms(interface_data_holder, settings):
+def plot_strain_vs_atoms(interface_data_holder: InterfaceDataHolder, settings: Dict[str, Union[str, int]]):
+    """
+    Plot the strain vs the number of atoms for each interface.
+    Allows for visual inspection to find the most optimal interface for current task.
+    Args:
+        interface_data_holder (InterfaceDataHolder): The interface data holder object.
+        settings (Dict[str, Union[str, int]]): The settings for the plot.
+    """
     sorted_interfaces = interface_data_holder.interfaces
 
     data = []

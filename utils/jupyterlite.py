@@ -186,7 +186,7 @@ def get_data_python(key, globals_dict=None):
     """
     try:
         data_from_host = []
-        for filename in os.listdir(UPLOADS_FOLDER):
+        for filename in sorted(os.listdir(UPLOADS_FOLDER)):
             if filename.endswith(".json"):
                 with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
                     data = json.load(file)

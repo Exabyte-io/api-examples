@@ -31,7 +31,7 @@ notebooks:
       - nbformat>=4.2.0
     packages_python:
     packages_pyodide:
-      - annotated_types
+      - annotated_types>=0.6.0
       - https://files.mat3ra.com/uploads/pydantic_core-2.18.2-py3-none-any.whl
       - https://files.mat3ra.com/uploads/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-made

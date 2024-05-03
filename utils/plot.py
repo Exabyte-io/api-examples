@@ -12,10 +12,10 @@ def plot_strain_vs_atoms(interface_data_holder: InterfaceDataHolder, settings: D
         interface_data_holder (InterfaceDataHolder): The interface data holder object.
         settings (Dict[str, Union[str, int]]): The settings for the plot.
     """
-    sorted_interfaces = interface_data_holder.interfaces
+    sorted_interfaces = interface_data_holder.get_interfaces_for_termination(0)
 
     data = []
-    for termination, interfaces in sorted_interfaces.items():
+    for interfaces in sorted_interfaces.items():
         for index, interface in enumerate(interfaces):
             strain_percentage = interface.get_mean_abs_strain() * 100
             num_sites = interface.num_sites

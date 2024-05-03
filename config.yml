@@ -31,6 +31,10 @@ notebooks:
       - nbformat>=4.2.0
     packages_python:
     packages_pyodide:
+      - annotated_types
+      - https://files.mat3ra.com/uploads/pydantic_core-2.18.2-py3-none-any.whl
+      - https://files.mat3ra.com/uploads/pydantic-2.7.1-py3-none-any.whl
+      - mat3ra-made
   - name: import_material_from_jarvis_db_entry.ipynb
     packages_common:
       - express-py==2024.2.2.post2

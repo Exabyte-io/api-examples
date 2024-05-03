@@ -146,10 +146,11 @@ def set_data_python(key, value):
     """
     if not os.path.exists(UPLOADS_FOLDER):
         os.makedirs(UPLOADS_FOLDER)
-    file_path = os.path.join(UPLOADS_FOLDER, f"{key}.json")
-    with open(file_path, "w") as file:
-        json.dump(value, file)
-    print(f"Data for {key} written to {file_path}")
+    for item in value:
+        file_path = os.path.join(UPLOADS_FOLDER, f"{item['name']}.json")
+        with open(file_path, "w") as file:
+            json.dump(item, file)
+        print(f"Data for {key} written to {file_path}")
 
 
 def set_data(key, value):
@@ -185,7 +186,7 @@ def get_data_python(key, globals_dict=None):
     """
     try:
         data_from_host = []
-        for filename in os.listdir(UPLOADS_FOLDER):
+        for filename in sorted(os.listdir(UPLOADS_FOLDER)):
             if filename.endswith(".json"):
                 with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
                     data = json.load(file)

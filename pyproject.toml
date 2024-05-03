@@ -9,7 +9,8 @@ dependencies = [
   "exabyte-api-client>=2023.6.13.post0",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
-  "pymatgen>=2023.5.31",
+  "pymatgen>=2024.4.13",
+  "mat3ra-made>=2024.5.3.post0",
 ]
 
 [project.optional-dependencies]

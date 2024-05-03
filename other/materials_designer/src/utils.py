@@ -137,8 +137,9 @@ def ase_to_pymatgen(atoms: Atoms):
     Returns:
         Structure: pymatgen Structure object
     """
-    poscar = ase_to_poscar(atoms)
-    structure = Structure.from_str(poscar, fmt="poscar")
+
+    adaptor = AseAtomsAdaptor()
+    structure = adaptor.get_structure(atoms)
 
     return structure
 

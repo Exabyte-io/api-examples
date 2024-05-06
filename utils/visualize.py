@@ -10,7 +10,7 @@ from mat3ra.made.tools.convert import to_ase
 from mat3ra.utils.array import convert_to_array_if_not
 
 
-def get_material_visualization_html(material: Material, title: str, rotation="0x,0y,0z", supercell=[1, 1, 1]):
+def get_material_visualization_html(material: Material, title: str, rotation="0x,0y,0z", repetitions=[1, 1, 1]):
     """
     Returns an image of the material structure with the specified title.
 
@@ -18,15 +18,16 @@ def get_material_visualization_html(material: Material, title: str, rotation="0x
         material (Material): Material object to visualize.
         title (str): Title of the image.
         rotation (str): Rotation of the image.
-        supercell (list): Supercell to visualize.
+        repetitions (list): Repetitions alongside a,b,c lattice vectors.
 
     Returns:
         tuple: Tuple containing the image and the title.
     """
 
     material = to_ase(material)
-    # Repeat the material to visualize the supercell
-    material_repeat = make_supercell(material, supercell)
+    # Create supercell for visualization
+    supercell_matrix = [[repetitions[0], 0, 0], [0, repetitions[1], 0], [0, 0, repetitions[2]]]
+    material_repeat = make_supercell(material, supercell_matrix)
     text = f"{material.symbols} - {title}"
 
     # Write image to a buffer to display in HTML
@@ -70,7 +71,7 @@ def create_responsive_image_grid(image_tuples, max_columns=3):
 def visualize(
     materials: Union[List[Material], Material],
     title: str = "Material",
-    supercell=[1, 1, 1],
+    repetitions=[1, 1, 1],
     rotation="0x,0y,0z",
 ):
     """
@@ -78,7 +79,7 @@ def visualize(
     Args:
         materials (list|Material): Single Material or a List of Material objects to visualize.
         title (str): Title to add to each image.
-        supercell (list): Supercell to visualize.
+        repetitions (list): Repetitions alongside a,b,c lattice vectors.
         rotation (str): Rotation of the image, in degrees around the x, y, and z axes (e.g., "-90x,90y,0z").
 
     Returns:
@@ -86,7 +87,7 @@ def visualize(
     """
     materials = convert_to_array_if_not(materials)
     items = [
-        get_material_visualization_html(material, title=f"{title} {i}", rotation=rotation, supercell=supercell)
+        get_material_visualization_html(material, title=f"{title} {i}", rotation=rotation, repetitions=repetitions)
         for i, material in enumerate(materials)
     ]
 

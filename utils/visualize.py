@@ -11,7 +11,7 @@ from mat3ra.utils.array import convert_to_array_if_not
 
 
 def get_material_visualization_html(
-    material: Material, title: str, rotation: str = "0x", number_of_repetitions: int = 1
+    material: Material, title: str, rotation="0x,0y,0z", number_of_repetitions: int = 1
 ):
     """
     Returns an image of the material structure with the specified title.
@@ -70,10 +70,17 @@ def create_responsive_image_grid(image_tuples, max_columns=3):
     return grid
 
 
-def visualize(materials: Union[List[Material], Material], title: str = "Material", number_of_repetitions: int = 1):
+def visualize(
+    materials: Union[List[Material], Material],
+    title: str = "Material",
+    number_of_repetitions: int = 1,
+    rotation="0x,0y,0z",
+):
     materials = convert_to_array_if_not(materials)
     items = [
-        get_material_visualization_html(material, title=f"{title} {i}", number_of_repetitions=number_of_repetitions)
+        get_material_visualization_html(
+            material, title=f"{title} {i}", number_of_repetitions=number_of_repetitions, rotation=rotation
+        )
         for i, material in enumerate(materials)
     ]
 

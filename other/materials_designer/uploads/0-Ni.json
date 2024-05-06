@@ -1,0 +1,81 @@
+{
+  "name": "Ni, Nickel, FCC (Fm-3m) 3D (Bulk), mp-23",
+  "lattice": {
+    "a": 2.478974,
+    "b": 2.478974,
+    "c": 2.478974,
+    "alpha": 60,
+    "beta": 60,
+    "gamma": 60,
+    "units": {
+      "length": "angstrom",
+      "angle": "degree"
+    },
+    "type": "FCC",
+    "vectors": {
+      "a": [
+        2.146854,
+        0,
+        1.239487
+      ],
+      "b": [
+        0.7156182,
+        2.024074,
+        1.239487
+      ],
+      "c": [
+        0,
+        0,
+        2.478974
+      ],
+      "alat": 1,
+      "units": "angstrom"
+    }
+  },
+  "basis": {
+    "elements": [
+      {
+        "id": 0,
+        "value": "Ni"
+      }
+    ],
+    "coordinates": [
+      {
+        "id": 0,
+        "value": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "units": "crystal",
+    "cell": [
+      [
+        2.146854,
+        0,
+        1.239487
+      ],
+      [
+        0.7156182,
+        2.024074,
+        1.239487
+      ],
+      [
+        0,
+        0,
+        2.478974
+      ]
+    ],
+    "constraints": []
+  },
+  "external": {
+    "id": "mp-23",
+    "source": "Materials Project",
+    "doi": "10.17188/1199153",
+    "url": "https://next-gen.materialsproject.org/materials/mp-23",
+    "origin": true
+  },
+  "isNonPeriodic": false,
+  "isUpdated": true
+}

@@ -16,7 +16,7 @@ def plot_strain_vs_atoms(interface_data_holder: InterfaceDataHolder, settings: D
 
     data = []
     for index, interface in enumerate(sorted_interfaces):
-        strain_percentage = interface.interface_properties[StrainModes.mean_abs_strain]
+        strain_percentage = interface.interface_properties[StrainModes.mean_abs_strain] * 100
         num_sites = interface.num_sites
 
         hover_text = f"Index: {index}<br>Strain: {strain_percentage:.2f}%<br>Atoms: {num_sites}"

@@ -10,14 +10,14 @@ from mat3ra.made.tools.convert import to_ase
 from mat3ra.utils.array import convert_to_array_if_not
 
 
-def get_material_visualization_html(material: Material, title: str, rotation="0x,0y,0z", repetitions=[1, 1, 1]):
+def get_material_image(material: Material, title: str, rotation="0x,0y,0z", repetitions=[1, 1, 1]):
     """
     Returns an image of the material structure with the specified title.
 
     Args:
         material (Material): Material object to visualize.
         title (str): Title of the image.
-        rotation (str): Rotation of the image.
+        rotation (str): Rotation of the image, in degrees around the x, y, and z axes (e.g., "-90x,90y,0z").
         repetitions (list): Repetitions alongside a,b,c lattice vectors.
 
     Returns:
@@ -68,7 +68,7 @@ def create_responsive_image_grid(image_tuples, max_columns=3):
     return grid
 
 
-def visualize(
+def visualize_materials(
     materials: Union[List[Material], Material],
     title: str = "Material",
     repetitions=[1, 1, 1],
@@ -79,7 +79,7 @@ def visualize(
     Args:
         materials (list|Material): Single Material or a List of Material objects to visualize.
         title (str): Title to add to each image.
-        repetitions (list): Repetitions alongside a,b,c lattice vectors.
+        repetitions (List[int]): Repetitions alongside a,b,c lattice vectors.
         rotation (str): Rotation of the image, in degrees around the x, y, and z axes (e.g., "-90x,90y,0z").
 
     Returns:
@@ -87,7 +87,7 @@ def visualize(
     """
     materials = convert_to_array_if_not(materials)
     items = [
-        get_material_visualization_html(material, title=f"{title} {i}", rotation=rotation, repetitions=repetitions)
+        get_material_image(material, title=f"{title} {i}", rotation=rotation, repetitions=repetitions)
         for i, material in enumerate(materials)
     ]
 

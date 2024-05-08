@@ -34,12 +34,30 @@ def get_material_image(material: Material, title: str, rotation="0x,0y,0z", repe
     buf = io.BytesIO()
     write(buf, material_repeat, format="png", rotation=rotation)
     buf.seek(0)
-    return (buf.read(), text)
+    return buf.read(), text
+
+
+def create_image_widget(image_data, format="png", object_fit="contain"):
+    """
+    Creates an Image widget with specified layout settings.
+
+    Args:
+        image_data (bytes): The image data to be displayed.
+        format (str): The format of the image, default is 'png'.
+        object_fit (str): CSS object-fit property value, default is 'contain'.
+
+    Returns:
+        widgets.Image: A configured image widget.
+    """
+    image = widgets.Image(value=image_data, format=format)
+    image.layout.object_fit = object_fit
+    return image
 
 
 def create_responsive_image_grid(image_tuples, max_columns=3):
     """
     Create a responsive image grid that can display images from a specified folder.
+    Ensures images are displayed at their true sizes and limits the grid to a maximum of three columns.
 
     Args:
         image_tuples (list): List of tuples where each tuple contains an image and a title.
@@ -48,10 +66,11 @@ def create_responsive_image_grid(image_tuples, max_columns=3):
     items = [
         widgets.VBox(
             [
-                widgets.Label(value=title, layout=widgets.Layout(height="30px", overflow="hidden")),
-                widgets.Image(value=image, format="png", width="auto", height="auto"),
-            ]
-        )
+                widgets.Label(value=title, layout=widgets.Layout(height="30px", align_self="center")),
+                create_image_widget(image, object_fit="contain"),
+            ],
+            layout=widgets.Layout(align_items="center", padding="0px 0px 10px 0px"),
+        )  # Adjust padding as needed
         for image, title in image_tuples
     ]
 

@@ -12,11 +12,11 @@ def process_selected_index(selected_index_str: str, array: List[Any], element_na
         selected_index = int(selected_index_str)
     except ValueError:
         print("Invalid input. Please enter a valid integer.")
-        return None  # Return None to indicate failure
+        return None
 
     if selected_index < 0 or selected_index >= len(array):
         print("Invalid index.")
-        return None  # Return None to indicate failure
+        return None
 
     print(f"Selected {element_name}: ", array[selected_index])
     return array[selected_index]

@@ -7,7 +7,7 @@ def create_prompt_text(array: List[Any], element_name: str = "element", prompt_h
     return prompt_head + prompt_body
 
 
-def process_selected_index(selected_index_str: str, array: List[Any], element_name: str) -> Any:
+def get_integer_from_input(selected_index_str: str, array: List[Any]) -> Any:
     try:
         selected_index = int(selected_index_str)
     except ValueError:
@@ -17,29 +17,31 @@ def process_selected_index(selected_index_str: str, array: List[Any], element_na
     if selected_index < 0 or selected_index >= len(array):
         print("Invalid index.")
         return None
-
-    print(f"Selected {element_name}: ", array[selected_index])
-    return array[selected_index]
+    return selected_index
 
 
-def user_select_array_element_by_index(
+def ui_prompt_select_array_element_by_index(
     array: List[Any], element_name: str = "element", prompt_head: Optional[str] = None
 ) -> Any:
     prompt_text = create_prompt_text(array, element_name, prompt_head)
     selected_index_str = input(prompt_text)
-    result = process_selected_index(selected_index_str, array, element_name)
-    if result is None:
-        return user_select_array_element_by_index(array, element_name, prompt_head)
+    index = get_integer_from_input(selected_index_str, array)
+    if index is None:
+        return ui_prompt_select_array_element_by_index(array, element_name, prompt_head)
+    result = array[index]
+    print(f"Selected {element_name}: ", array[index])
     return result
 
 
-async def user_select_array_element_by_index_pyodide(
+async def ui_prompt_select_array_element_by_index_pyodide(
     array: List[Any], element_name: str = "element", prompt_head: Optional[str] = None
 ) -> Any:
     prompt_text = create_prompt_text(array, element_name, prompt_head)
     # `input()` in Pyodide returns PyodideFuture, which is not compatible with `int` in regular Python environment
     selected_index_str = await input(prompt_text)  # type: ignore
-    result = process_selected_index(selected_index_str, array, element_name)
-    if result is None:
-        return await user_select_array_element_by_index_pyodide(array, element_name, prompt_head)
+    index = get_integer_from_input(selected_index_str, array)
+    if index is None:
+        return await ui_prompt_select_array_element_by_index_pyodide(array, element_name, prompt_head)
+    result = array[index]
+    print(f"Selected {element_name}: ", array[index])
     return result

@@ -34,6 +34,7 @@ notebooks:
       - annotated_types>=0.6.0
       - https://files.mat3ra.com/uploads/pydantic_core-2.18.2-py3-none-any.whl
       - https://files.mat3ra.com/uploads/pydantic-2.7.1-py3-none-any.whl
+      - mat3ra-esse
       - mat3ra-made
   - name: import_material_from_jarvis_db_entry.ipynb
     packages_common:

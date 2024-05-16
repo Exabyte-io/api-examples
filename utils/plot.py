@@ -41,3 +41,24 @@ def plot_strain_vs_atoms(interface_data_holder: InterfaceDataHolder, settings: D
 
     fig = go.Figure(data=data, layout=layout)
     fig.show()
+
+
+import plotly.graph_objs as go
+from IPython.display import display
+from plotly.subplots import make_subplots
+
+
+def create_realtime_plot():
+    fig = make_subplots(rows=1, cols=1, specs=[[{"type": "scatter"}]])
+    scatter = go.Scatter(x=[], y=[], mode="lines+markers", name="Energy")
+    fig.add_trace(scatter)
+    fig.update_layout(title_text="Real-time Optimization Progress", xaxis_title="Step", yaxis_title="Energy (eV)")
+    f = go.FigureWidget(fig)
+    display(f)
+    return f
+
+
+def update_plot(f, steps, energies):
+    with f.batch_update():
+        f.data[0].x = steps
+        f.data[0].y = energies

@@ -1,5 +1,6 @@
 import io
-from typing import List, Union
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Union
 
 import ipywidgets as widgets
 from ase.build import make_supercell
@@ -87,27 +88,62 @@ def create_responsive_image_grid(image_tuples, max_columns=3):
     return grid
 
 
+@dataclass
+class MaterialViewProperties:
+    repetitions: List[int] = field(default_factory=lambda: [1, 1, 1])
+    rotation: str = "0x,0y,0z"
+    title: str = "Material"
+
+
 def visualize_materials(
-    materials: Union[List[Material], Material],
-    title: str = "Material",
-    repetitions=[1, 1, 1],
-    rotation="0x,0y,0z",
-):
+    materials_to_view: Union[List[Material], List[Dict[str, Union[Material, dict]]]],
+    repetitions: Optional[List[int]] = [1, 1, 1],
+    rotation: Optional[str] = "0x,0y,0z",
+    title: Optional[str] = "Material",
+) -> None:
     """
     Visualize the material(s) in the output cell.
     Args:
-        materials (list|Material): Single Material or a List of Material objects to visualize.
-        title (str): Title to add to each image.
-        repetitions (List[int]): Repetitions alongside a,b,c lattice vectors.
-        rotation (str): Rotation of the image, in degrees around the x, y, and z axes (e.g., "-90x,90y,0z").
+        materials_to_view: Mist of Materials or a list of dictionaries:
+        {"material": Material, "title": str,"repetitions": List[int], "rotation": str}.
+        repetitions (Optional[List[int]]): Repetitions alongside a, b, c lattice vectors.
+        rotation (Optional[str]): Rotation of the image, in degrees around the x, y, and z axes (e.g., "-90x,90y,0z").
+        title (Optional[str]): Title of the image.
 
     Returns:
-
+        None
     """
-    materials = convert_to_array_if_not(materials)
-    items = [
-        get_material_image(material, title=f"{title} {i}", rotation=rotation, repetitions=repetitions)
-        for i, material in enumerate(materials)
-    ]
+    materials_to_view = convert_to_array_if_not(materials_to_view)
+
+    if not materials_to_view:
+        print("No materials to visualize.")
+        return
+
+    default_properties = MaterialViewProperties(
+        title=title if title is not None else MaterialViewProperties.title,
+        repetitions=repetitions if repetitions is not None else MaterialViewProperties.repetitions,
+        rotation=rotation if rotation is not None else MaterialViewProperties.rotation,
+    )
+
+    items = []
+    for material_entry in materials_to_view:
+        if isinstance(material_entry, Material):
+            material = material_entry
+            properties = default_properties
+        elif isinstance(material_entry, dict) and "material" in material_entry:
+            material = material_entry["material"]
+            properties = MaterialViewProperties(
+                title=material_entry.get("title", default_properties.title),
+                repetitions=material_entry.get("repetitions", default_properties.repetitions),
+                rotation=material_entry.get("rotation", default_properties.rotation),
+            )
+        else:
+            print("Invalid material entry:", material_entry)
+            continue
+
+        image_data, image_title = get_material_image(
+            material, title=properties.title, rotation=properties.rotation, repetitions=properties.repetitions
+        )
+        items.append((image_data, image_title))
 
     display(create_responsive_image_grid(items))

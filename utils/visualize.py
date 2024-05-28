@@ -1,5 +1,4 @@
 import io
-from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Union
 
 import ipywidgets as widgets
@@ -9,6 +8,7 @@ from IPython.display import display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.convert import to_ase
 from mat3ra.utils.array import convert_to_array_if_not
+from pydantic import BaseModel
 
 
 def get_material_image(material: Material, title: str, rotation="0x,0y,0z", repetitions=[1, 1, 1]):
@@ -88,9 +88,8 @@ def create_responsive_image_grid(image_tuples, max_columns=3):
     return grid
 
 
-@dataclass
-class MaterialViewProperties:
-    repetitions: List[int] = field(default_factory=lambda: [1, 1, 1])
+class MaterialViewProperties(BaseModel):
+    repetitions: List[int] = [1, 1, 1]
     rotation: str = "0x,0y,0z"
     title: str = "Material"
 

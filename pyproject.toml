@@ -10,7 +10,7 @@ dependencies = [
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen>=2024.4.13",
-  "mat3ra-made@git+https://github.com/Exabyte-io/made.git@e958cf2254c0b8ad66e56fefad16528e0257065f",
+  "mat3ra-made@git+https://github.com/Exabyte-io/made.git@9a7c60df11f59e71a8f67faab9c51c7d87902b63",
   "mat3ra-utils>=2024.5.15.post0"
 ]
 

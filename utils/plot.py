@@ -1,7 +1,7 @@
 from typing import Dict, List, Union
 
 import plotly.graph_objs as go
-from express.properties.material import Material
+from mat3ra.made.material import Material
 from mat3ra.made.tools.build.interface import StrainModes
 
 
@@ -17,7 +17,6 @@ def plot_strain_vs_atoms(interfaces: List[Material], settings: Dict[str, Union[s
     data = []
     for index, interface in enumerate(interfaces):
         strain_percentage = interface.metadata[StrainModes.mean_abs_strain] * 100
-        print(interface.basis["coordinates"])
         num_sites = len(interface.basis["coordinates"])
 
         hover_text = f"Index: {index}<br>Strain: {strain_percentage:.2f}%<br>Atoms: {num_sites}"

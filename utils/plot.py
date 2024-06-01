@@ -2,7 +2,7 @@ from typing import Dict, List, Union
 
 import plotly.graph_objs as go
 from mat3ra.made.material import Material
-from mat3ra.made.tools.build.interface import StrainModes
+from mat3ra.made.tools.build.interface.enums import StrainModes
 
 
 def plot_strain_vs_atoms(interfaces: List[Material], settings: Dict[str, Union[str, int]]):

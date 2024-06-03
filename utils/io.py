@@ -56,7 +56,7 @@ def ui_prompt_select_array_element_by_index(
     selected_index_str = input(prompt_text)
     index = get_integer_from_input(selected_index_str, array)
     if index is None:
-        return ui_prompt_select_array_element_by_index(array, element_name, prompt_head)
+        return None
     result = array[index]
     print(f"Selected {element_name}: ", array[index])
     return result
@@ -81,7 +81,7 @@ async def ui_prompt_select_array_element_by_index_pyodide(
     selected_index_str = await input(prompt_text)  # type: ignore
     index = get_integer_from_input(selected_index_str, array)
     if index is None:
-        return await ui_prompt_select_array_element_by_index_pyodide(array, element_name, prompt_head)
+        return None
     result = array[index]
     print(f"Selected {element_name}: ", array[index])
     return result

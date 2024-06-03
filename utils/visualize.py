@@ -29,7 +29,7 @@ def get_material_image(material: Material, title: str, rotation="0x,0y,0z", repe
     # Create supercell for visualization
     supercell_matrix = [[repetitions[0], 0, 0], [0, repetitions[1], 0], [0, 0, repetitions[2]]]
     material_repeat = make_supercell(material, supercell_matrix)
-    text = f"{material.symbols} - {title}"
+    text = f"{material.symbols} - {title} - rotation: {rotation}"
 
     # Write image to a buffer to display in HTML
     buf = io.BytesIO()

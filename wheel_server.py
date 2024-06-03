@@ -1,3 +1,17 @@
+# This script is used to serve the static files from the 'dist' directory for installation of python wheels.
+# 1. Install deps with `pip install ".[dev]"`,
+# 2. Install build tool with `pip install build`
+# 3. Run `python -m build`
+# You should see something alongside:
+# ```Successfully built mat3ra_api_examples-dev9+g7c6e8d9.tar.gz and
+# mat3ra_api_examples-dev9+g7c6e8d9-py3-none-any.whl
+# ```
+# 4. Copy the wheel file name
+# 5. Run the server with `python wheel_server.py`
+# The server will be available at http://localhost:8080,
+# 6. use micropip in pyodide to install wheel from that URL `<server_url>/<wheel_file_name>`, i.e:
+# await micropip.install("http://localhost:8080/mat3ra_api_examples-dev9+g7c6e8d9-py3-none-any.whl", deps=False)
+
 import argparse
 import glob
 import os

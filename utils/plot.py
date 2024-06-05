@@ -1,6 +1,8 @@
 from typing import Dict, List, Union
 
 import plotly.graph_objs as go
+from ase.atoms import Atoms as ASEAtoms
+from ase.optimize import BFGS, FIRE
 from IPython.display import display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.build.interface.enums import StrainModes
@@ -46,6 +48,11 @@ def plot_strain_vs_atoms(interfaces: List[Material], settings: Dict[str, Union[s
 
 
 def create_realtime_plot():
+    """
+    Create a real-time plot for optimization progress.
+    Returns:
+        go.FigureWidget: The real-time plot.
+    """
     fig = make_subplots(rows=1, cols=1, specs=[[{"type": "scatter"}]])
     scatter = go.Scatter(x=[], y=[], mode="lines+markers", name="Energy")
     fig.add_trace(scatter)
@@ -55,13 +62,22 @@ def create_realtime_plot():
     return f
 
 
-def update_plot(f, steps, energies):
-    with f.batch_update():
-        f.data[0].x = steps
-        f.data[0].y = energies
+def plot_update_callback(
+    dyn: Union[BFGS, FIRE], ase_interface: ASEAtoms, fig: go.FigureWidget, steps: List[int], energies: List[int]
+):
+    """
+    Callback function for updating energies for steps in real-time.
+    Args:
+        dyn: The ASE dynamics object.
+        ase_interface: The ASE interface object.
+        fig: The plotly figure widget.
+        steps: The list of steps.
+        energies: The list of energies.
 
+    Returns:
+        function: The update function that is attached to the dynamics object and called each step.
+    """
 
-def plot_update_callback(dyn, ase_interface, fig, steps, energies):
     def update():
         step = dyn.nsteps
         energy = ase_interface.get_total_energy()
@@ -70,6 +86,8 @@ def plot_update_callback(dyn, ase_interface, fig, steps, energies):
         energies.append(energy)
 
         print(f"Step: {step}, Energy: {energy:.4f} eV")
-        update_plot(fig, steps, energies)
+        with fig.batch_update():
+            fig.data[0].x = steps
+            fig.data[0].y = energies
 
     return update

@@ -59,3 +59,17 @@ def update_plot(f, steps, energies):
     with f.batch_update():
         f.data[0].x = steps
         f.data[0].y = energies
+
+
+def plot_update_callback(dyn, ase_interface, fig, steps, energies):
+    def update():
+        step = dyn.nsteps
+        energy = ase_interface.get_total_energy()
+
+        steps.append(step)
+        energies.append(energy)
+
+        print(f"Step: {step}, Energy: {energy:.4f} eV")
+        update_plot(fig, steps, energies)
+
+    return update

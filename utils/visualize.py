@@ -25,11 +25,11 @@ def get_material_image(material: Material, title: str, rotation="0x,0y,0z", repe
         tuple: Tuple containing the image and the title.
     """
 
-    material = to_ase(material)
+    ase_atoms = to_ase(material)
     # Create supercell for visualization
     supercell_matrix = [[repetitions[0], 0, 0], [0, repetitions[1], 0], [0, 0, repetitions[2]]]
-    material_repeat = make_supercell(material, supercell_matrix)
-    text = f"{material.symbols} - {title} - rotation: {rotation}"
+    material_repeat = make_supercell(ase_atoms, supercell_matrix)
+    text = f"{ase_atoms.symbols} - {title} - rotation: {rotation}"
 
     # Write image to a buffer to display in HTML
     buf = io.BytesIO()

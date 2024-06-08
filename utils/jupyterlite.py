@@ -135,6 +135,7 @@ def set_data_pyodide(key, value):
       """
     display(Javascript(js_code))
     print(f"Status: {key} sent to host.")
+    set_data_python(key, value)
 
 
 def set_data_python(key, value):

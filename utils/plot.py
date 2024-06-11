@@ -63,14 +63,18 @@ def create_realtime_plot():
 
 
 def plot_update_callback(
-    dyn: Union[BFGS, FIRE], ase_interface: ASEAtoms, fig: go.FigureWidget, steps: List[int], energies: List[int]
+    dynamic_object: Union[BFGS, FIRE],
+    ase_interface: ASEAtoms,
+    plotly_figure: go.FigureWidget,
+    steps: List[int],
+    energies: List[int],
 ):
     """
     Callback function for updating energies for steps in real-time.
     Args:
-        dyn: The ASE dynamics object.
+        dynamic_object: The ASE dynamics object.
         ase_interface: The ASE interface object.
-        fig: The plotly figure widget.
+        plotly_figure: The plotly figure widget.
         steps: The list of steps.
         energies: The list of energies.
 
@@ -79,15 +83,15 @@ def plot_update_callback(
     """
 
     def update():
-        step = dyn.nsteps
+        step = dynamic_object.nsteps
         energy = ase_interface.get_total_energy()
 
         steps.append(step)
         energies.append(energy)
 
         print(f"Step: {step}, Energy: {energy:.4f} eV")
-        with fig.batch_update():
-            fig.data[0].x = steps
-            fig.data[0].y = energies
+        with plotly_figure.batch_update():
+            plotly_figure.data[0].x = steps
+            plotly_figure.data[0].y = energies
 
     return update

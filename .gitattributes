@@ -15,3 +15,4 @@ examples/workflow/get_workflows.ipynb !filter !diff !merge text
 images/*.png filter=lfs diff=lfs merge=lfs -text
 *.upf filter=lfs diff=lfs merge=lfs -text
 examples/assets/bash_workflow_template.json filter=lfs diff=lfs merge=lfs -text
+*.whl filter=lfs diff=lfs merge=lfs -text

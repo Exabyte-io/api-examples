@@ -57,3 +57,14 @@ notebooks:
     packages_pyodide:
       - emfs:/drive/api-examples/packages/paginate-0.5.6-py3-none-any.whl
       - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl
+  - name: create_point_defect.ipynb
+    packages_common:
+      - ipywidgets
+    packages_python:
+    packages_pyodide:
+      - annotated_types>=0.6.0
+      - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
+      - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
+      - pymatgen-analysis-defects
+      - mat3ra-esse
+      - mat3ra-made

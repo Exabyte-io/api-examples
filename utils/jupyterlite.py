@@ -31,7 +31,7 @@ async def install_package_pyodide(pkg, verbose=True):
         pkg (string): The name of the package to install.
         verbose (bool): Whether to print the name of the installed package.
     """
-    is_url = pkg.startswith("http://") or pkg.startswith("https://")
+    is_url = pkg.startswith("http://") or pkg.startswith("https://") or pkg.startswith("emfs:/")
     are_dependencies_installed = not is_url
     await micropip.install(pkg, deps=are_dependencies_installed)
     pkg_name = pkg.split("/")[-1].split("-")[0] if is_url else pkg.split("==")[0]

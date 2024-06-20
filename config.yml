@@ -13,9 +13,9 @@ default:
   packages_pyodide:
     - lzma
     - sqlite3
-    - https://files.mat3ra.com/uploads/pymatgen-2024.4.13-py3-none-any.whl
-    - https://files.mat3ra.com:44318/web/pyodide/spglib-2.0.2-py3-none-any.whl
-    - https://files.pythonhosted.org/packages/d9/0e/2a05efa11ea33513fbdf4a2e2576fe94fd8fa5ad226dbb9c660886390974/ruamel.yaml-0.17.32-py3-none-any.whl
+    - emfs:/drive/api-examples/packages/pymatgen-2024.4.13-py3-none-any.whl
+    - emfs:/drive/api-examples/packages/spglib-2.0.2-py3-none-any.whl
+    - emfs:/drive/api-examples/packages/ruamel.yaml-0.17.32-py3-none-any.whl
     - networkx==3.2.1
     - monty==2023.11.3
     - scipy==1.11.2
@@ -32,8 +32,8 @@ notebooks:
     packages_python:
     packages_pyodide:
       - annotated_types>=0.6.0
-      - https://files.mat3ra.com/uploads/pydantic_core-2.18.2-py3-none-any.whl
-      - https://files.mat3ra.com/uploads/pydantic-2.7.1-py3-none-any.whl
+      - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
+      - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-esse
       - mat3ra-made
   - name: import_material_from_jarvis_db_entry.ipynb
@@ -45,8 +45,8 @@ notebooks:
       - setuptools
     packages_python:
     packages_pyodide:
-      - https://files.mat3ra.com:44318/uploads/paginate-0.5.6-py3-none-any.whl
-      - https://files.mat3ra.com:44318/uploads/watchdog-2.3.1-py3-none-any.whl
+      - emfs:/drive/api-examples/packages/paginate-0.5.6-py3-none-any.whl
+      - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl
   - name: import_materials_from_files.ipynb
     packages_common:
       - express-py==2024.2.2.post2
@@ -55,5 +55,5 @@ notebooks:
       - setuptools
     packages_python:
     packages_pyodide:
-      - https://files.mat3ra.com:44318/uploads/paginate-0.5.6-py3-none-any.whl
-      - https://files.mat3ra.com:44318/uploads/watchdog-2.3.1-py3-none-any.whl
+      - emfs:/drive/api-examples/packages/paginate-0.5.6-py3-none-any.whl
+      - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl

@@ -1,6 +1,7 @@
 import json
 import os
 from enum import Enum
+from typing import Any, Dict, Optional
 
 from IPython.display import Javascript, display
 
@@ -24,7 +25,7 @@ if ENVIRONMENT == EnvironmentEnum.PYTHON:
     import sys
 
 
-async def install_package_pyodide(pkg, verbose=True):
+async def install_package_pyodide(pkg: str, verbose=True):
     """
     Install a package in a Pyodide environment.
     Args:
@@ -39,7 +40,7 @@ async def install_package_pyodide(pkg, verbose=True):
         print(f"Installed {pkg_name}")
 
 
-def install_package_python(pkg, verbose=True):
+def install_package_python(pkg: str, verbose=True):
     """
     Install a package in a standard Python environment.
     Args:
@@ -51,7 +52,7 @@ def install_package_python(pkg, verbose=True):
         print(f"Installed {pkg}")
 
 
-async def install_packages(notebook_name, requirements_path="config.yml", verbose=True):
+async def install_packages(notebook_name: str, requirements_path="config.yml", verbose=True):
     """
     Install the packages listed in the requirements file for the notebook with the given name.
     Args:
@@ -113,7 +114,7 @@ async def install_packages(notebook_name, requirements_path="config.yml", verbos
         os.environ["requirements_hash"] = requirements_hash
 
 
-def set_data_pyodide(key, value):
+def set_data_pyodide(key: str, value: Any):
     """
     Take a Python object, serialize it to JSON, and send it to the host environment
     through a JavaScript function defined in the JupyterLite extension `data_bridge`.
@@ -138,7 +139,7 @@ def set_data_pyodide(key, value):
     set_data_python(key, value)
 
 
-def set_data_python(key, value):
+def set_data_python(key: str, value: Any):
     """
     Write data to the `uploads` folder in a JupyterLab environment.
     Args:
@@ -154,7 +155,7 @@ def set_data_python(key, value):
         print(f"Data for {key} written to {file_path}")
 
 
-def set_data(key, value):
+def set_data(key: str, value: Any):
     """
     Switch between the two functions `set_data_pyodide` and `set_data_python` based on the environment.
     Args:
@@ -167,7 +168,7 @@ def set_data(key, value):
         set_data_python(key, value)
 
 
-def get_data_pyodide(key, globals_dict=None):
+def get_data_pyodide(key: str, globals_dict: Optional[Dict] = None):
     """
     Load data from the host environment into globals()[key] variable.
     Args:
@@ -178,7 +179,7 @@ def get_data_pyodide(key, globals_dict=None):
         globals_dict[key] = globals_dict["data_from_host"]
 
 
-def get_data_python(key, globals_dict=None):
+def get_data_python(key: str, globals_dict: Optional[Dict] = None):
     """
     Read data from the `uploads` folder in a JupyterLab environment.
     Args:
@@ -200,7 +201,7 @@ def get_data_python(key, globals_dict=None):
         print("No data found in the 'uploads' folder.")
 
 
-def get_data(key, globals_dict=None):
+def get_data(key: str, globals_dict: Optional[Dict] = None):
     """
     Switch between the two functions `get_data_pyodide` and `get_data_python` based on the environment.
     Args:

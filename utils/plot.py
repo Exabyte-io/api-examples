@@ -21,7 +21,7 @@ def plot_strain_vs_atoms(interfaces: List[Material], settings: Dict[str, Union[s
     data = []
     for index, interface in enumerate(interfaces):
         strain_percentage = interface.metadata[StrainModes.mean_abs_strain] * 100
-        num_sites = len(interface.basis["coordinates"])
+        num_sites = len(interface.basis.coordinates.values)
 
         hover_text = f"Index: {index}<br>Strain: {strain_percentage:.2f}%<br>Atoms: {num_sites}"
 

@@ -23,6 +23,7 @@ default:
     - sympy==1.12
     - uncertainties==3.1.6
     - jinja2
+    - pymatgen-analysis-defects
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:
@@ -65,6 +66,5 @@ notebooks:
       - annotated_types>=0.6.0
       - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
       - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
-      - pymatgen-analysis-defects
       - mat3ra-esse
       - mat3ra-made

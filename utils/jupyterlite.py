@@ -149,7 +149,8 @@ def set_data_python(key: str, value: Any):
     if not os.path.exists(UPLOADS_FOLDER):
         os.makedirs(UPLOADS_FOLDER)
     for item in value:
-        file_path = os.path.join(UPLOADS_FOLDER, f"{item['name']}.json")
+        safe_name = item["name"].replace("%", "pct").replace("/", ":")
+        file_path = os.path.join(UPLOADS_FOLDER, f"{safe_name}.json")
         with open(file_path, "w") as file:
             json.dump(item, file)
         print(f"Data for {key} written to {file_path}")

@@ -23,7 +23,7 @@ default:
     - sympy==1.12
     - uncertainties==3.1.6
     - jinja2
-    - pymatgen-analysis-defects
+    - pymatgen-analysis-defects<=2024.4.23
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:

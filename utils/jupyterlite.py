@@ -189,12 +189,14 @@ def get_data_python(key: str, globals_dict: Optional[Dict] = None):
     """
     try:
         data_from_host = []
+        index = 0
         for filename in sorted(os.listdir(UPLOADS_FOLDER)):
             if filename.endswith(".json"):
                 with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
                     data = json.load(file)
                 name = os.path.splitext(filename)[0]
-                print(f"Data from {name} has been read successfully.")
+                print(f"{index}: Data from {name} has been read successfully.")
+                index += 1
                 data_from_host.append(data)
         if globals_dict is not None:
             globals_dict[key] = data_from_host

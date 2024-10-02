@@ -238,3 +238,14 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Material]:
     else:
         print("No materials found.")
         return []
+
+
+def set_materials(materials: List[Material]):
+    """
+    Serialize and send a list of Material objects to the environment.
+
+    Args:
+        materials (List[Material]): The list of Material objects to send.
+    """
+    materials_data = [material.to_json() for material in materials]
+    set_data("materials", materials_data)

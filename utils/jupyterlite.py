@@ -1,9 +1,10 @@
 import json
 import os
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from IPython.display import Javascript, display
+from mat3ra.made.material import Material
 
 UPLOADS_FOLDER = "uploads"
 
@@ -215,3 +216,25 @@ def get_data(key: str, globals_dict: Optional[Dict] = None):
         get_data_pyodide(key, globals_dict)
     elif ENVIRONMENT == EnvironmentEnum.PYTHON:
         get_data_python(key, globals_dict)
+
+
+def get_materials(globals_dict: Optional[Dict] = None) -> List[Material]:
+    """
+    Retrieve materials from the environment and assign them to globals_dict["materials_in"].
+
+    Args:
+        globals_dict (dict): The globals dictionary to populate.
+
+    Returns:
+        List[Material]: A list of Material objects.
+    """
+    get_data("materials_in", globals_dict)
+    if globals_dict is None:
+        globals_dict = globals()
+    if "materials_in" in globals_dict and globals_dict["materials_in"]:
+        materials = [Material(item) for item in globals_dict["materials_in"]]
+        print(f"Retrieved {len(materials)} materials.")
+        return materials
+    else:
+        print("No materials found.")
+        return []

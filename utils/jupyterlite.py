@@ -258,3 +258,26 @@ def set_materials(materials: List[Material]):
     """
     materials_data = [material.to_json() for material in materials]
     set_data("materials", materials_data)
+
+
+def log(message: str, level: Optional[str] = None):
+    """
+    Log a message based on the VERBOSE flag in the caller's globals().
+
+    Args:
+        message (str): The message to log.
+        level (str): The severity level of the message (e.g., INFO, WARNING, ERROR).
+    """
+    frame = inspect.currentframe()
+    try:
+        caller_frame = frame.f_back  # type: ignore
+        caller_globals = caller_frame.f_globals  # type: ignore
+        verbose = caller_globals.get("VERBOSE", False)
+    finally:
+        del frame  # Avoid reference cycles
+
+    if verbose:
+        if level is None:
+            print(message)
+        else:
+            print(f"{level}: {message}")

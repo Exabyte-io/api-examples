@@ -1,3 +1,4 @@
+import inspect
 import json
 import os
 from enum import Enum
@@ -228,9 +229,17 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Material]:
     Returns:
         List[Material]: A list of Material objects.
     """
-    get_data("materials_in", globals_dict)
+
     if globals_dict is None:
-        globals_dict = globals()
+        frame = inspect.currentframe()
+        try:
+            caller_frame = frame.f_back
+            caller_globals = caller_frame.f_globals
+            globals_dict = caller_globals
+        finally:
+            del frame  # Avoid reference cycles
+    get_data("materials_in", globals_dict)
+
     if "materials_in" in globals_dict and globals_dict["materials_in"]:
         materials = [Material(item) for item in globals_dict["materials_in"]]
         print(f"Retrieved {len(materials)} materials.")

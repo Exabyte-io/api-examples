@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 
 from IPython.display import Javascript, display
 from mat3ra.made.material import Material
+from mat3ra.utils.array import convert_to_array_if_not
 
 UPLOADS_FOLDER = "uploads"
 
@@ -291,5 +292,6 @@ def set_materials(materials: List[Material]):
     Args:
         materials (List[Material]): The list of Material objects to send.
     """
+    materials = convert_to_array_if_not(materials)
     materials_data = [material.to_json() for material in materials]
     set_data("materials", materials_data)

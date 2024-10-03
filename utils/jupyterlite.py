@@ -15,6 +15,12 @@ class EnvironmentEnum(Enum):
     PYTHON = "python"
 
 
+class SeverityLevelEnum(Enum):
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+
+
 # Environment detection
 # default value for env.HOME from https://pyodide.org/en/stable/usage/api/js-api.html
 ENVIRONMENT = EnvironmentEnum.PYODIDE if os.environ.get("HOME") == "/home/pyodide" else EnvironmentEnum.PYTHON
@@ -260,13 +266,13 @@ def set_materials(materials: List[Material]):
     set_data("materials", materials_data)
 
 
-def log(message: str, level: Optional[str] = None):
+def log(message: str, level: Optional[SeverityLevelEnum] = None):
     """
     Log a message based on the VERBOSE flag in the caller's globals().
 
     Args:
         message (str): The message to log.
-        level (str): The severity level of the message (e.g., INFO, WARNING, ERROR).
+        level (SeverityLevelEnum): The severity level of the message (e.g., INFO, WARNING, ERROR).
     """
     frame = inspect.currentframe()
     try:
@@ -280,4 +286,4 @@ def log(message: str, level: Optional[str] = None):
         if level is None:
             print(message)
         else:
-            print(f"{level}: {message}")
+            print(f"{level.value}: {message}")

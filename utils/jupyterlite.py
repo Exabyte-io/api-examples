@@ -233,8 +233,8 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Material]:
     if globals_dict is None:
         frame = inspect.currentframe()
         try:
-            caller_frame = frame.f_back
-            caller_globals = caller_frame.f_globals
+            caller_frame = frame.f_back  # type: ignore
+            caller_globals = caller_frame.f_globals  # type: ignore
             globals_dict = caller_globals
         finally:
             del frame  # Avoid reference cycles

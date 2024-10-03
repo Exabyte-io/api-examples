@@ -45,7 +45,7 @@ async def install_package_pyodide(pkg: str, verbose=True):
     await micropip.install(pkg, deps=are_dependencies_installed)
     pkg_name = pkg.split("/")[-1].split("-")[0] if is_url else pkg.split("==")[0]
     if verbose:
-        print(f"Installed {pkg_name}")
+        log(f"Installed {pkg_name}", force_verbose=verbose)
 
 
 def install_package_python(pkg: str, verbose=True):
@@ -57,7 +57,7 @@ def install_package_python(pkg: str, verbose=True):
     """
     subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
     if verbose:
-        print(f"Installed {pkg}")
+        log(f"Installed {pkg}", force_verbose=verbose)
 
 
 async def install_packages(notebook_name: str, requirements_path="config.yml", verbose=True):
@@ -118,7 +118,7 @@ async def install_packages(notebook_name: str, requirements_path="config.yml", v
                 install_package_python(pkg, verbose)
 
         if verbose:
-            print("Packages installed successfully.")
+            log("Packages installed successfully.", force_verbose=verbose)
         os.environ["requirements_hash"] = requirements_hash
 
 
@@ -143,7 +143,7 @@ def set_data_pyodide(key: str, value: Any):
       }})();
       """
     display(Javascript(js_code))
-    print(f"Status: {key} sent to host.")
+    log(f"Data for {key} sent to host.")
     set_data_python(key, value)
 
 
@@ -161,7 +161,7 @@ def set_data_python(key: str, value: Any):
         file_path = os.path.join(UPLOADS_FOLDER, f"{safe_name}.json")
         with open(file_path, "w") as file:
             json.dump(item, file)
-        print(f"Data for {key} written to {file_path}")
+        log(f"Data for {key} written to {file_path}")
 
 
 def set_data(key: str, value: Any):
@@ -203,7 +203,7 @@ def get_data_python(key: str, globals_dict: Optional[Dict] = None):
                 with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
                     data = json.load(file)
                 name = os.path.splitext(filename)[0]
-                print(f"{index}: Data from {name} has been read successfully.")
+                log(f"{index}: Data from {name} has been read successfully.")
                 index += 1
                 data_from_host.append(data)
         if globals_dict is not None:
@@ -248,10 +248,10 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Material]:
 
     if "materials_in" in globals_dict and globals_dict["materials_in"]:
         materials = [Material(item) for item in globals_dict["materials_in"]]
-        print(f"Retrieved {len(materials)} materials.")
+        log(f"Retrieved {len(materials)} materials.")
         return materials
     else:
-        print("No materials found.")
+        log("No materials found.")
         return []
 
 
@@ -266,23 +266,29 @@ def set_materials(materials: List[Material]):
     set_data("materials", materials_data)
 
 
-def log(message: str, level: Optional[SeverityLevelEnum] = None):
+def log(message: str, level: Optional[SeverityLevelEnum] = None, force_verbose=None):
     """
     Log a message based on the VERBOSE flag in the caller's globals().
 
     Args:
         message (str): The message to log.
         level (SeverityLevelEnum): The severity level of the message (e.g., INFO, WARNING, ERROR).
+        force_verbose (bool): If True, log the message regardless of the VERBOSE flag in globals()
     """
-    frame = inspect.currentframe()
-    try:
-        caller_frame = frame.f_back  # type: ignore
-        caller_globals = caller_frame.f_globals  # type: ignore
-        verbose = caller_globals.get("VERBOSE", False)
-    finally:
-        del frame  # Avoid reference cycles
-
-    if verbose:
+    if force_verbose is True:
+        should_log = True
+    elif force_verbose is False:
+        should_log = False
+    else:
+        # Inspect the caller's globals to get VERBOSE flag
+        frame = inspect.currentframe()
+        try:
+            caller_frame = frame.f_back  # type: ignore
+            caller_globals = caller_frame.f_globals  # type: ignore
+            should_log = caller_globals.get("VERBOSE", False)
+        finally:
+            del frame  # Avoid reference cycles
+    if should_log:
         if level is None:
             print(message)
         else:

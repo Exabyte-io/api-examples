@@ -1,9 +1,21 @@
+import inspect
 import json
 import os
+import sys
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from IPython.display import Javascript, display
+
+
+async def install_setup():
+    if sys.platform == "emscripten":
+        import micropip
+
+        await micropip.install("mat3ra-made")
+        await micropip.install("mat3ra-code")
+        await micropip.install("mat3ra-utils")
+
 
 UPLOADS_FOLDER = "uploads"
 
@@ -11,6 +23,12 @@ UPLOADS_FOLDER = "uploads"
 class EnvironmentEnum(Enum):
     PYODIDE = "pyodide"
     PYTHON = "python"
+
+
+class SeverityLevelEnum(Enum):
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
 
 
 # Environment detection
@@ -22,7 +40,35 @@ if ENVIRONMENT == EnvironmentEnum.PYODIDE:
 
 if ENVIRONMENT == EnvironmentEnum.PYTHON:
     import subprocess
-    import sys
+
+
+def log(message: str, level: Optional[SeverityLevelEnum] = None, force_verbose=None):
+    """
+    Log a message based on the VERBOSE flag in the caller's globals().
+
+    Args:
+        message (str): The message to log.
+        level (SeverityLevelEnum): The severity level of the message (e.g., INFO, WARNING, ERROR).
+        force_verbose (bool): If True, log the message regardless of the VERBOSE flag in globals()
+    """
+    if force_verbose is True:
+        should_log = True
+    elif force_verbose is False:
+        should_log = False
+    else:
+        # Inspect the caller's globals to get VERBOSE flag
+        frame = inspect.currentframe()
+        try:
+            caller_frame = frame.f_back  # type: ignore
+            caller_globals = caller_frame.f_globals  # type: ignore
+            should_log = caller_globals.get("VERBOSE", os.environ.get("VERBOSE", True))
+        finally:
+            del frame  # Avoid reference cycles
+    if should_log:
+        if level is None:
+            print(message)
+        else:
+            print(f"{level.value}: {message}")
 
 
 async def install_package_pyodide(pkg: str, verbose=True):
@@ -37,7 +83,7 @@ async def install_package_pyodide(pkg: str, verbose=True):
     await micropip.install(pkg, deps=are_dependencies_installed)
     pkg_name = pkg.split("/")[-1].split("-")[0] if is_url else pkg.split("==")[0]
     if verbose:
-        print(f"Installed {pkg_name}")
+        log(f"Installed {pkg_name}", force_verbose=verbose)
 
 
 def install_package_python(pkg: str, verbose=True):
@@ -49,7 +95,7 @@ def install_package_python(pkg: str, verbose=True):
     """
     subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
     if verbose:
-        print(f"Installed {pkg}")
+        log(f"Installed {pkg}", force_verbose=verbose)
 
 
 async def install_packages(notebook_name: str, requirements_path="config.yml", verbose=True):
@@ -61,6 +107,7 @@ async def install_packages(notebook_name: str, requirements_path="config.yml", v
         verbose (bool): Whether to print the names of the installed packages and status of installation.
     """
     if ENVIRONMENT == EnvironmentEnum.PYODIDE:
+        await install_setup()
         await micropip.install("pyyaml")
         # PyYAML has to be installed before being imported in Pyodide and can't appear at the top of the file
     import yaml
@@ -110,7 +157,7 @@ async def install_packages(notebook_name: str, requirements_path="config.yml", v
                 install_package_python(pkg, verbose)
 
         if verbose:
-            print("Packages installed successfully.")
+            log("Packages installed successfully.", force_verbose=verbose)
         os.environ["requirements_hash"] = requirements_hash
 
 
@@ -135,7 +182,7 @@ def set_data_pyodide(key: str, value: Any):
       }})();
       """
     display(Javascript(js_code))
-    print(f"Status: {key} sent to host.")
+    log(f"Data for {key} sent to host.")
     set_data_python(key, value)
 
 
@@ -153,7 +200,7 @@ def set_data_python(key: str, value: Any):
         file_path = os.path.join(UPLOADS_FOLDER, f"{safe_name}.json")
         with open(file_path, "w") as file:
             json.dump(item, file)
-        print(f"Data for {key} written to {file_path}")
+        log(f"Data for {key} written to {file_path}")
 
 
 def set_data(key: str, value: Any):
@@ -195,7 +242,7 @@ def get_data_python(key: str, globals_dict: Optional[Dict] = None):
                 with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
                     data = json.load(file)
                 name = os.path.splitext(filename)[0]
-                print(f"{index}: Data from {name} has been read successfully.")
+                log(f"{index}: Data from {name} has been read successfully.")
                 index += 1
                 data_from_host.append(data)
         if globals_dict is not None:
@@ -215,3 +262,48 @@ def get_data(key: str, globals_dict: Optional[Dict] = None):
         get_data_pyodide(key, globals_dict)
     elif ENVIRONMENT == EnvironmentEnum.PYTHON:
         get_data_python(key, globals_dict)
+
+
+def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
+    """
+    Retrieve materials from the environment and assign them to globals_dict["materials_in"].
+
+    Args:
+        globals_dict (dict): The globals dictionary to populate.
+
+    Returns:
+        List[Material]: A list of Material objects.
+    """
+    from mat3ra.made.material import Material
+
+    if globals_dict is None:
+        frame = inspect.currentframe()
+        try:
+            caller_frame = frame.f_back  # type: ignore
+            caller_globals = caller_frame.f_globals  # type: ignore
+            globals_dict = caller_globals
+        finally:
+            del frame  # Avoid reference cycles
+    get_data("materials_in", globals_dict)
+
+    if "materials_in" in globals_dict and globals_dict["materials_in"]:
+        materials = [Material(item) for item in globals_dict["materials_in"]]
+        log(f"Retrieved {len(materials)} materials.")
+        return materials
+    else:
+        log("No materials found.")
+        return []
+
+
+def set_materials(materials: List[Any]):
+    """
+    Serialize and send a list of Material objects to the environment.
+
+    Args:
+        materials (List[Material]): The list of Material objects to send.
+    """
+    from mat3ra.utils.array import convert_to_array_if_not
+
+    materials = convert_to_array_if_not(materials)
+    materials_data = [material.to_json() for material in materials]
+    set_data("materials", materials_data)

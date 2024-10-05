@@ -1,12 +1,21 @@
 import inspect
 import json
 import os
+import sys
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from IPython.display import Javascript, display
-from mat3ra.made.material import Material
-from mat3ra.utils.array import convert_to_array_if_not
+
+
+async def install_setup():
+    if sys.platform == "emscripten":
+        import micropip
+
+        await micropip.install("mat3ra-made")
+        await micropip.install("mat3ra-code")
+        await micropip.install("mat3ra-utils")
+
 
 UPLOADS_FOLDER = "uploads"
 
@@ -31,7 +40,6 @@ if ENVIRONMENT == EnvironmentEnum.PYODIDE:
 
 if ENVIRONMENT == EnvironmentEnum.PYTHON:
     import subprocess
-    import sys
 
 
 def log(message: str, level: Optional[SeverityLevelEnum] = None, force_verbose=None):
@@ -99,6 +107,7 @@ async def install_packages(notebook_name: str, requirements_path="config.yml", v
         verbose (bool): Whether to print the names of the installed packages and status of installation.
     """
     if ENVIRONMENT == EnvironmentEnum.PYODIDE:
+        await install_setup()
         await micropip.install("pyyaml")
         # PyYAML has to be installed before being imported in Pyodide and can't appear at the top of the file
     import yaml
@@ -255,7 +264,7 @@ def get_data(key: str, globals_dict: Optional[Dict] = None):
         get_data_python(key, globals_dict)
 
 
-def get_materials(globals_dict: Optional[Dict] = None) -> List[Material]:
+def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
     """
     Retrieve materials from the environment and assign them to globals_dict["materials_in"].
 
@@ -265,6 +274,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Material]:
     Returns:
         List[Material]: A list of Material objects.
     """
+    from mat3ra.made.material import Material
 
     if globals_dict is None:
         frame = inspect.currentframe()
@@ -285,13 +295,15 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Material]:
         return []
 
 
-def set_materials(materials: List[Material]):
+def set_materials(materials: List[Any]):
     """
     Serialize and send a list of Material objects to the environment.
 
     Args:
         materials (List[Material]): The list of Material objects to send.
     """
+    from mat3ra.utils.array import convert_to_array_if_not
+
     materials = convert_to_array_if_not(materials)
     materials_data = [material.to_json() for material in materials]
     set_data("materials", materials_data)

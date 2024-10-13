@@ -316,6 +316,7 @@ def load_materials_from_folder(folder_path: Optional[str] = None):
     Args:
         folder_path (Optional[str]): The path to the folder containing material files.
                                      If not provided, defaults to the UPLOADS_FOLDER.
+        verbose: set to be verbose
 
     Returns:
         List[Material]: A list of Material objects loaded from the folder.
@@ -351,6 +352,29 @@ def load_materials_from_folder(folder_path: Optional[str] = None):
         log(f"No materials found in folder '{folder_path}'", SeverityLevelEnum.WARNING)
 
     return materials
+
+
+def load_material_from_folder(folder_path: str, name: str) -> Optional[Any]:
+    """
+    Load a single material from the specified folder by matching a substring of the name.
+
+    Args:
+        folder_path (str): The path to the folder containing material files.
+        name (str): The substring of the name of the material to load.
+
+    Returns:
+        Optional[Material]: The first Material object that contains the name substring, or None if not found.
+    """
+    materials = load_materials_from_folder(folder_path)
+    for material in materials:
+        if name.lower() in material.name.lower():
+            log(
+                f"Material containing '{name}' found: '{material.name}' in folder '{folder_path}'.",
+                SeverityLevelEnum.INFO,
+            )
+            return material
+    log(f"No material containing '{name}' found in folder '{folder_path}'.", SeverityLevelEnum.WARNING)
+    return None
 
 
 def write_materials_to_folder(materials: List[Any], folder_path: Optional[str] = None):

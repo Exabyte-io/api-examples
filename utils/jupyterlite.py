@@ -307,3 +307,47 @@ def set_materials(materials: List[Any]):
     materials = convert_to_array_if_not(materials)
     materials_data = [material.to_json() for material in materials]
     set_data("materials", materials_data)
+
+
+def load_materials_from_folder(folder_path: Optional[str] = None):
+    """
+    Load materials from the specified folder or from the UPLOADS_FOLDER by default.
+
+    Args:
+        folder_path (Optional[str]): The path to the folder containing material files.
+                                     If not provided, defaults to the UPLOADS_FOLDER.
+
+    Returns:
+        List[Material]: A list of Material objects loaded from the folder.
+    """
+    from mat3ra.made.material import Material
+
+    folder_path = folder_path or UPLOADS_FOLDER
+
+    if not os.path.exists(folder_path):
+        log(f"Folder '{folder_path}' does not exist.", SeverityLevelEnum.ERROR)
+        return []
+
+    data_from_host = []
+    try:
+        index = 0
+        for filename in sorted(os.listdir(folder_path)):
+            if filename.endswith(".json"):
+                with open(os.path.join(folder_path, filename), "r") as file:
+                    data = json.load(file)
+                name = os.path.splitext(filename)[0]
+                log(f"{index}: {name}")
+                index += 1
+                data_from_host.append(data)
+    except FileNotFoundError:
+        log(f"No data found in the '{folder_path}' folder.", SeverityLevelEnum.ERROR)
+        return []
+
+    materials = [Material(item) for item in data_from_host]
+
+    if materials:
+        log(f"Successfully loaded {len(materials)} materials from folder '{folder_path}'", SeverityLevelEnum.INFO)
+    else:
+        log(f"No materials found in folder '{folder_path}'", SeverityLevelEnum.WARNING)
+
+    return materials

@@ -351,3 +351,28 @@ def load_materials_from_folder(folder_path: Optional[str] = None):
         log(f"No materials found in folder '{folder_path}'", SeverityLevelEnum.WARNING)
 
     return materials
+
+
+def write_materials_to_folder(materials: List[Any], folder_path: Optional[str] = None):
+    """
+    Write materials to the specified folder or to the UPLOADS_FOLDER by default.
+
+    Args:
+        materials (List[Material]): The list of Material objects to write to the folder.
+        folder_path (Optional[str]): The path to the folder where the materials will be written.
+                                     If not provided, defaults to the UPLOADS_FOLDER.
+    """
+    from mat3ra.utils.array import convert_to_array_if_not
+
+    folder_path = folder_path or UPLOADS_FOLDER
+    materials = convert_to_array_if_not(materials)
+
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    for material in materials:
+        safe_name = material.name.replace("%", "pct").replace("/", ":")
+        file_path = os.path.join(folder_path, f"{safe_name}.json")
+        with open(file_path, "w") as file:
+            json.dump(material.to_json(), file)
+        log(f"Material '{material.name}' written to '{file_path}'")

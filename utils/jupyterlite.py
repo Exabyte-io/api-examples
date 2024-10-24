@@ -425,7 +425,7 @@ def write_materials_to_folder(materials: List[Any], folder_path: Optional[str] =
         log(f"Material '{material.name}' written to '{file_path}'", SeverityLevelEnum.INFO, force_verbose=verbose)
 
 
-def download(content: Any, filename: str):
+def download_content_to_file(content: Any, filename: str):
     """
     Download content to a file with the given filename.
 

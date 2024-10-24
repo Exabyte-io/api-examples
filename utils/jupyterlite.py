@@ -423,3 +423,21 @@ def write_materials_to_folder(materials: List[Any], folder_path: Optional[str] =
         with open(file_path, "w") as file:
             json.dump(material.to_json(), file)
         log(f"Material '{material.name}' written to '{file_path}'", SeverityLevelEnum.INFO, force_verbose=verbose)
+
+
+def download_content_to_file(content: Any, filename: str):
+    """
+    Download content to a file with the given filename.
+
+    Args:
+        content (Any): The content to download.
+        filename (str): The name of the file to download.
+    """
+    from IPython.display import FileLink
+
+    if isinstance(content, dict):
+        content = json.dumps(content, indent=4)
+
+    with open(filename, "w") as file:
+        file.write(content)
+    display(FileLink(filename))

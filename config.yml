@@ -8,6 +8,7 @@ default:
   packages_common:
     - pandas==1.5.3
     - ase==3.22.1
+    - ipywidgets
   packages_python:
     - pymatgen==2024.4.13
   packages_pyodide:
@@ -30,7 +31,6 @@ default:
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:
-      - ipywidgets
       - plotly==5.18
       - nbformat>=4.2.0
     packages_python:
@@ -60,7 +60,6 @@ notebooks:
       - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl
   - name: create_point_defect.ipynb
     packages_common:
-      - ipywidgets
     packages_python:
     packages_pyodide:
       - mat3ra-esse

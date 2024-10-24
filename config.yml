@@ -18,6 +18,7 @@ default:
     - emfs:/drive/api-examples/packages/ruamel.yaml-0.17.32-py3-none-any.whl
     - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
     - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
+    - annotated_types>=0.6.0
     - networkx==3.2.1
     - monty==2023.11.3
     - scipy==1.11.2
@@ -34,7 +35,6 @@ notebooks:
       - nbformat>=4.2.0
     packages_python:
     packages_pyodide:
-      - annotated_types>=0.6.0
       - mat3ra-esse
       - mat3ra-made
   - name: import_material_from_jarvis_db_entry.ipynb
@@ -63,6 +63,5 @@ notebooks:
       - ipywidgets
     packages_python:
     packages_pyodide:
-      - annotated_types>=0.6.0
       - mat3ra-esse
       - mat3ra-made

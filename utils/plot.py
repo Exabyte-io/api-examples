@@ -47,6 +47,30 @@ def plot_strain_vs_atoms(interfaces: List[Material], settings: Dict[str, Union[s
     fig.show()
 
 
+def plot_twisted_interface_solutions(interfaces):
+    data = []
+    for i, interface in enumerate(interfaces):
+        angle = interface.metadata.get("actual_twist_angle", 0)
+        size = len(interface.basis.elements.ids)
+
+        hover_text = f"Interface {i+1}<br>" f"Angle: {angle:.2f}°<br>" f"Atoms: {size}<br>"
+
+        trace = go.Scatter(
+            x=[angle], y=[size], text=[hover_text], mode="markers", hoverinfo="text", name=f"Interface {i+1}"
+        )
+        data.append(trace)
+
+    layout = go.Layout(
+        title="Twisted Interface Solutions",
+        xaxis=dict(title="Twist Angle (°)"),
+        yaxis=dict(title="Number of Atoms"),
+        hovermode="closest",
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    fig.show()
+
+
 def create_realtime_plot():
     """
     Create a real-time plot for optimization progress.

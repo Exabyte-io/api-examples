@@ -8,6 +8,7 @@ default:
   packages_common:
     - pandas==1.5.3
     - ase==3.22.1
+    - ipywidgets
   packages_python:
     - pymatgen==2024.4.13
   packages_pyodide:
@@ -16,6 +17,9 @@ default:
     - emfs:/drive/api-examples/packages/pymatgen-2024.4.13-py3-none-any.whl
     - emfs:/drive/api-examples/packages/spglib-2.0.2-py3-none-any.whl
     - emfs:/drive/api-examples/packages/ruamel.yaml-0.17.32-py3-none-any.whl
+    - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
+    - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
+    - annotated_types>=0.6.0
     - networkx==3.2.1
     - monty==2023.11.3
     - scipy==1.11.2
@@ -27,14 +31,10 @@ default:
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:
-      - ipywidgets
       - plotly==5.18
       - nbformat>=4.2.0
     packages_python:
     packages_pyodide:
-      - annotated_types>=0.6.0
-      - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
-      - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-esse
       - mat3ra-made
   - name: import_material_from_jarvis_db_entry.ipynb
@@ -60,11 +60,7 @@ notebooks:
       - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl
   - name: create_point_defect.ipynb
     packages_common:
-      - ipywidgets
     packages_python:
     packages_pyodide:
-      - annotated_types>=0.6.0
-      - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
-      - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-esse
       - mat3ra-made

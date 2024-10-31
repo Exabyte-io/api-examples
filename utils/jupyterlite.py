@@ -433,11 +433,23 @@ def download_content_to_file(content: Any, filename: str):
         content (Any): The content to download.
         filename (str): The name of the file to download.
     """
-    from IPython.display import FileLink
+    from mat3ra.made.material import Material
 
     if isinstance(content, dict):
         content = json.dumps(content, indent=4)
 
-    with open(filename, "w") as file:
-        file.write(content)
-    display(FileLink(filename))
+    if isinstance(content, Material):
+        content = content.to_json()
+
+    js_code = f"""
+    var content = `{content}`;
+    var filename = `{filename}`;
+    var blob = new Blob([content], {{ type: 'application/json' }});
+    var link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    """
+    display(Javascript(js_code))

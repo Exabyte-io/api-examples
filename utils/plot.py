@@ -47,7 +47,12 @@ def plot_strain_vs_atoms(interfaces: List[Material], settings: Dict[str, Union[s
     fig.show()
 
 
-def plot_twisted_interface_solutions(interfaces):
+def plot_twisted_interface_solutions(interfaces: List[Material]):
+    """
+    Plot the twisted interface solutions for number of atoms vs twist angle.
+    Args:
+        interfaces (List[Material]): The interfaces to plot.
+    """
     data = []
     for i, interface in enumerate(interfaces):
         angle = interface.metadata.get("actual_twist_angle", 0)

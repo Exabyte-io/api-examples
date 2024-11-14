@@ -9,7 +9,6 @@ default:
     - pandas==1.5.3
     - ase==3.22.1
     - ipywidgets
-    - mat3ra-standata
   packages_python:
     - pymatgen==2024.4.13
   packages_pyodide:
@@ -65,3 +64,6 @@ notebooks:
     packages_pyodide:
       - mat3ra-esse
       - mat3ra-made
+  - name: specific_examples
+    packages_common:
+      - mat3ra-standata

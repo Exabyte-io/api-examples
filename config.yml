@@ -64,3 +64,6 @@ notebooks:
     packages_pyodide:
       - mat3ra-esse
       - mat3ra-made
+  - name: specific_examples
+    packages_common:
+      - mat3ra-standata

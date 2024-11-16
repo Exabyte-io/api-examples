@@ -69,3 +69,6 @@ notebooks:
       - icosphere
     packages_python:
     packages_pyodide:
+  - name: specific_examples
+    packages_common:
+      - mat3ra-standata

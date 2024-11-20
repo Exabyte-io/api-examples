@@ -14,11 +14,12 @@ default:
   packages_pyodide:
     - lzma
     - sqlite3
-    - emfs:/drive/api-examples/packages/pymatgen-2024.4.13-py3-none-any.whl
-    - emfs:/drive/api-examples/packages/spglib-2.0.2-py3-none-any.whl
-    - emfs:/drive/api-examples/packages/ruamel.yaml-0.17.32-py3-none-any.whl
-    - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
-    - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
+    # The emfs packages are copied in https://github.com/Exabyte-io/jupyterlite/blob/main/scripts/build.sh#L38
+    - emfs:/drive/packages/pymatgen-2024.4.13-py3-none-any.whl
+    - emfs:/drive/packages/spglib-2.0.2-py3-none-any.whl
+    - emfs:/drive/packages/ruamel.yaml-0.17.32-py3-none-any.whl
+    - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
+    - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
     - annotated_types>=0.6.0
     - networkx==3.2.1
     - monty==2023.11.3
@@ -46,8 +47,8 @@ notebooks:
       - setuptools
     packages_python:
     packages_pyodide:
-      - emfs:/drive/api-examples/packages/paginate-0.5.6-py3-none-any.whl
-      - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl
+      - emfs:/drive/packages/paginate-0.5.6-py3-none-any.whl
+      - emfs:/drive/packages/watchdog-2.3.1-py3-none-any.whl
   - name: import_materials_from_files.ipynb
     packages_common:
       - express-py==2024.2.2.post2
@@ -56,8 +57,8 @@ notebooks:
       - setuptools
     packages_python:
     packages_pyodide:
-      - emfs:/drive/api-examples/packages/paginate-0.5.6-py3-none-any.whl
-      - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl
+      - emfs:/drive/packages/paginate-0.5.6-py3-none-any.whl
+      - emfs:/drive/packages/watchdog-2.3.1-py3-none-any.whl
   - name: create_point_defect.ipynb
     packages_common:
     packages_python:

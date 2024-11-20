@@ -100,7 +100,7 @@ def install_package_python(pkg: str, verbose: bool = True):
         log(f"Installed {pkg}", force_verbose=verbose)
 
 
-async def install_packages(notebook_name: str, requirements_path: str = "config.yml", verbose: bool = True):
+async def install_packages(notebook_name: str, requirements_path: str = "", verbose: bool = True):
     """
     Install the packages listed in the requirements file for the notebook with the given name.
 
@@ -116,8 +116,9 @@ async def install_packages(notebook_name: str, requirements_path: str = "config.
     import yaml
 
     base_path = os.getcwd()
-    if requirements_path is None:
-        requirements_file = os.path.normpath(os.path.join(base_path, "./config.yml"))
+    if requirements_path == "":
+        requirements_file = os.path.normpath(os.path.join("/drive/", "./config.yml"))
+        print(requirements_file)
     else:
         requirements_file = os.path.normpath(os.path.join(base_path, requirements_path))
 

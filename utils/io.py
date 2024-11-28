@@ -1,3 +1,4 @@
+import sys
 from typing import Any, List, Optional, Union
 
 
@@ -85,3 +86,46 @@ async def ui_prompt_select_array_element_by_index_pyodide(
     result = array[index]
     print(f"Selected {element_name}: ", array[index])
     return result
+
+
+async def select_coordination_threshold_emscripten(coordination_numbers, default_threshold):
+    coordination_threshold = default_threshold
+    prompt_text = f"\nCoordination numbers: {coordination_numbers}" f"\nEnter coordination threshold value: "
+    while True:
+        try:
+            value_str = await input(prompt_text)  # type: ignore
+            value = int(value_str)
+            if value in coordination_numbers:
+                coordination_threshold = value
+                break
+            else:
+                print(f"Invalid value. Please enter one of these coordination numbers: {coordination_numbers}")
+                break
+        except ValueError:
+            print(f"Please enter a valid integer value from: {coordination_numbers}")
+    return coordination_threshold
+
+
+def select_coordination_threshold_python(coordination_numbers, default_threshold):
+    coordination_threshold = default_threshold
+    prompt_text = f"\nCoordination numbers: {coordination_numbers}" f"\nEnter coordination threshold value: "
+    while True:
+        try:
+            value_str = input(prompt_text)
+            value = int(value_str)
+            if value in coordination_numbers:
+                coordination_threshold = value
+                break
+            else:
+                print(f"Invalid value. Please enter one of these coordination numbers: {coordination_numbers}")
+                break
+        except ValueError:
+            print(f"Please enter a valid integer value from: {coordination_numbers}")
+    return coordination_threshold
+
+
+async def select_coordination_threshold(coordination_numbers, default_threshold):
+    if sys.platform == "emscripten":
+        return await select_coordination_threshold_emscripten(coordination_numbers, default_threshold)
+    else:
+        return select_coordination_threshold_python(coordination_numbers, default_threshold)

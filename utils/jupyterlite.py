@@ -286,6 +286,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
     from mat3ra.made.material import Material
 
     if globals_dict is None:
+        # Get the globals of the caller for correct variable assignment during the execution of data_bridge extension
         frame = inspect.currentframe()
         try:
             caller_frame = frame.f_back  # type: ignore
@@ -300,7 +301,9 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
         log(f"Retrieved {len(materials)} materials.")
         return materials
     else:
-        log("No materials found.")
+        # Fallback to load materials from the UPLOADS_FOLDER if launched outside of Materials Designer
+        log(f"No input materials found. Loading from the {UPLOADS_FOLDER} folder.")
+        get_data_python("materials_in", globals_dict)
         return []
 
 

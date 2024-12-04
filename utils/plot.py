@@ -1,12 +1,16 @@
 from typing import Dict, List, Union
 
+import matplotlib.pyplot as plt
+import numpy as np
 import plotly.graph_objs as go
 from ase.atoms import Atoms as ASEAtoms
 from ase.optimize import BFGS, FIRE
 from IPython.display import display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.build.interface.enums import StrainModes
+from mat3ra.made.tools.convert import to_pymatgen
 from plotly.subplots import make_subplots
+from scipy.spatial.distance import pdist
 
 
 def plot_strain_vs_atoms(interfaces: List[Material], settings: Dict[str, Union[str, int]]):
@@ -124,3 +128,47 @@ def plot_update_callback(
             plotly_figure.data[0].y = energies
 
     return update
+
+
+def plot_rdf(material: Material, cutoff: float = 10.0, bin_size: float = 0.1):
+    """
+    Compute and plot the Radial Distribution Function (RDF) for a given material.
+
+    Parameters:
+    - material: The input material.
+    - cutoff (float): Maximum distance for RDF calculation.
+    - bin_size (float): Size of each bin in the histogram.
+
+    Returns:
+    - None
+    """
+    structure = to_pymatgen(material)
+
+    # Get the Cartesian coordinates of all atoms
+    coords = structure.cart_coords
+
+    # Compute pairwise distances
+    distances = pdist(coords)  # Pairwise distances
+    distances = distances[distances <= cutoff]  # Only consider distances within the cutoff
+
+    # Bin distances into a histogram
+    bins = np.arange(0, cutoff + bin_size, bin_size)  # Bin edges
+    hist, bin_edges = np.histogram(distances, bins=bins, density=False)
+
+    # Convert to radial distribution function
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    shell_volumes = (
+        (4 / 3) * np.pi * (np.power(bin_edges[1:], 3) - np.power(bin_edges[:-1], 3))
+    )  # Volume of spherical shells
+    density = len(coords) / structure.volume  # Atomic density (number of atoms per unit volume)
+    rdf = hist / (shell_volumes * density)  # Normalize histogram
+
+    # Plot the RDF
+    plt.figure(figsize=(8, 5))
+    plt.plot(bin_centers, rdf, label="Radial Distribution Function")
+    plt.xlabel("Distance (Å)")
+    plt.ylabel("g(r)")
+    plt.title("Radial Distribution Function (RDF)")
+    plt.legend()
+    plt.grid()
+    plt.show()

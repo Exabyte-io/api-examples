@@ -250,7 +250,7 @@ def get_data_python(key: str, globals_dict: Optional[Dict] = None):
                 with open(os.path.join(UPLOADS_FOLDER, filename), "r") as file:
                     data = json.load(file)
                 name = os.path.splitext(filename)[0]
-                log(f"{index}: Data from {name} has been read successfully.")
+                log(f"{index}: {name}")
                 index += 1
                 data_from_host.append(data)
         if globals_dict is not None:

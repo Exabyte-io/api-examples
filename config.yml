@@ -9,6 +9,7 @@ default:
     - pandas==1.5.3
     - ase==3.22.1
     - ipywidgets
+    - plotly==5.18
   packages_python:
     - pymatgen==2024.4.13
   packages_pyodide:

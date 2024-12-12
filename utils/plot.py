@@ -1,10 +1,12 @@
 from typing import Dict, List, Union
 
+import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 from ase.atoms import Atoms as ASEAtoms
 from ase.optimize import BFGS, FIRE
 from IPython.display import display
 from mat3ra.made.material import Material
+from mat3ra.made.tools.analyze.rdf import RadialDistributionFunction
 from mat3ra.made.tools.build.interface.enums import StrainModes
 from plotly.subplots import make_subplots
 
@@ -124,3 +126,28 @@ def plot_update_callback(
             plotly_figure.data[0].y = energies
 
     return update
+
+
+def plot_rdf(material: Material, cutoff: float = 10.0, bin_size: float = 0.1):
+    """
+    Compute and plot the Radial Distribution Function (RDF) for a given material.
+
+    Parameters:
+    - material: The input material.
+    - cutoff (float): Maximum distance for RDF calculation.
+    - bin_size (float): Size of each bin in the histogram.
+
+    Returns:
+    - None
+    """
+    rdf = RadialDistributionFunction.from_material(material, cutoff=cutoff, bin_size=bin_size)
+
+    # Plot the RDF
+    plt.figure(figsize=(8, 5))
+    plt.plot(rdf.bin_centers, rdf.rdf, label="Radial Distribution Function")
+    plt.xlabel("Distance (Å)")
+    plt.ylabel("g(r)")
+    plt.title("Radial Distribution Function (RDF)")
+    plt.legend()
+    plt.grid()
+    plt.show()

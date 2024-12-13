@@ -1,6 +1,7 @@
 import inspect
 import json
 import os
+import re
 import sys
 from enum import Enum
 from typing import Any, Dict, List, Optional
@@ -100,13 +101,13 @@ def install_package_python(pkg: str, verbose: bool = True):
         log(f"Installed {pkg}", force_verbose=verbose)
 
 
-async def install_packages(notebook_name: str, requirements_path: str = "", verbose: bool = True):
+async def install_packages(notebook_name_pattern: str, config_file_path: str = "", verbose: bool = True):
     """
     Install the packages listed in the requirements file for the notebook with the given name.
 
     Args:
-        notebook_name (str): The name of the notebook for which to install packages.
-        requirements_path (str): The path to the requirements file.
+        notebook_name_pattern (str): The name pattern of the notebook for which to install packages.
+        config_file_path (str): The path to the requirements file.
         verbose (bool): Whether to print the names of the installed packages and status of installation.
     """
     if ENVIRONMENT == EnvironmentEnum.PYODIDE:
@@ -116,44 +117,43 @@ async def install_packages(notebook_name: str, requirements_path: str = "", verb
     import yaml
 
     base_path = os.getcwd()
-    if requirements_path == "":
-        requirements_file = os.path.normpath(os.path.join("/drive/", "./config.yml"))
-        print(requirements_file)
-    else:
-        requirements_file = os.path.normpath(os.path.join(base_path, requirements_path))
+    config_file_full_path = os.path.normpath(os.path.join("/drive/", "./config.yml"))
+    if config_file_path != "":
+        config_file_full_path = os.path.normpath(os.path.join(base_path, config_file_path))
 
-    with open(requirements_file, "r") as f:
-        requirements = yaml.safe_load(f)
+    with open(config_file_full_path, "r") as f:
+        requirements_dict = yaml.safe_load(f)
+
+    packages_default_common = requirements_dict.get("default", {}).get("packages_common", [])
+    packages_default_environment_specific = (
+        requirements_dict.get("default", {}).get(f"packages_{ENVIRONMENT.value}", [])
+    )
+
+    matching_notebook_requirements_list = [cfg for cfg in requirements_dict.get("notebooks", []) if
+                                           re.search(cfg.get("name"), notebook_name_pattern)]
+    packages_notebook_common = []
+    packages_notebook_environment_specific = []
+
+    for notebook_requirements in matching_notebook_requirements_list:
+        packages_common = notebook_requirements.get("packages_common", [])
+        packages_environment_specific = notebook_requirements.get(f"packages_{ENVIRONMENT.value}", [])
+        if packages_common:
+            packages_notebook_common.extend(packages_common)
+        if packages_environment_specific:
+            packages_notebook_environment_specific.extend(packages_environment_specific)
+
+    # Note: environment specific packages have to be installed first,
+    # because in Pyodide common packages might depend on them
+    packages = [
+        *packages_default_environment_specific,
+        *packages_notebook_environment_specific,
+        *packages_default_common,
+        *packages_notebook_common,
+    ]
 
     # Hash the requirements to avoid re-installing packages
-    requirements_hash = str(hash(json.dumps(requirements)))
+    requirements_hash = str(hash(json.dumps(packages)))
     if os.environ.get("requirements_hash") != requirements_hash:
-        packages_default_common = requirements.get("default", {}).get("packages_common", []) or []
-        packages_default_environment_specific = (
-            requirements.get("default", {}).get(f"packages_{ENVIRONMENT.value}", []) or []
-        )
-
-        notebook_requirements = next(
-            (cfg for cfg in requirements.get("notebooks", []) if cfg.get("name") == notebook_name), None
-        )
-        if notebook_requirements:
-            packages_notebook_common = notebook_requirements.get("packages_common", []) or []
-            packages_notebook_environment_specific = (
-                notebook_requirements.get(f"packages_{ENVIRONMENT.value}", []) or []
-            )
-        else:
-            packages_notebook_common = []
-            packages_notebook_environment_specific = []
-
-        # Note: environment specific packages have to be installed first,
-        # because in Pyodide common packages might depend on them
-        packages = [
-            *packages_default_environment_specific,
-            *packages_notebook_environment_specific,
-            *packages_default_common,
-            *packages_notebook_common,
-        ]
-
         for pkg in packages:
             if ENVIRONMENT == EnvironmentEnum.PYODIDE:
                 await install_package_pyodide(pkg, verbose)
@@ -163,6 +163,9 @@ async def install_packages(notebook_name: str, requirements_path: str = "", verb
         if verbose:
             log("Packages installed successfully.", force_verbose=verbose)
         os.environ["requirements_hash"] = requirements_hash
+    else:
+        if verbose:
+            log("Packages are already installed.", force_verbose=verbose)
 
 
 def set_data_pyodide(key: str, value: Any):

@@ -125,12 +125,13 @@ async def install_packages(notebook_name_pattern: str, config_file_path: str = "
         requirements_dict = yaml.safe_load(f)
 
     packages_default_common = requirements_dict.get("default", {}).get("packages_common", [])
-    packages_default_environment_specific = (
-        requirements_dict.get("default", {}).get(f"packages_{ENVIRONMENT.value}", [])
+    packages_default_environment_specific = requirements_dict.get("default", {}).get(
+        f"packages_{ENVIRONMENT.value}", []
     )
 
-    matching_notebook_requirements_list = [cfg for cfg in requirements_dict.get("notebooks", []) if
-                                           re.search(cfg.get("name"), notebook_name_pattern)]
+    matching_notebook_requirements_list = [
+        cfg for cfg in requirements_dict.get("notebooks", []) if re.search(cfg.get("name"), notebook_name_pattern)
+    ]
     packages_notebook_common = []
     packages_notebook_environment_specific = []
 

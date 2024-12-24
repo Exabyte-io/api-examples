@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# TODO: Remove this file and use Made.Tools instead
 """
 This module is a modified version of the pymatgen CoherentInterfaceBuilder
 that adds strain information to the generated interfaces.
@@ -27,6 +28,7 @@ if TYPE_CHECKING:
 # This is a modified version of the pymatgen CoherentInterfaceBuilder
 # that adds strain information to the generated interfaces (line 249).
 # The original code can be found at: https://github.com/materialsproject/pymatgen/blob/v2024.1.27/pymatgen/analysis/interfaces/coherent_interfaces.py
+
 
 class CoherentInterfaceBuilder:
     """

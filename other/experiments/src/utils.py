@@ -7,6 +7,7 @@ from ase.io import read, write
 from ase.calculators.calculator import Calculator
 
 
+# TODO: Remove this file and use Made.Tools instead
 def to_pymatgen(material_data):
     """
     Converts material object in ESSE format to a pymatgen Structure object.

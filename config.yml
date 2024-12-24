@@ -8,14 +8,20 @@ default:
   packages_common:
     - pandas==1.5.3
     - ase==3.22.1
+    - ipywidgets
+    - plotly==5.18
   packages_python:
     - pymatgen==2024.4.13
   packages_pyodide:
     - lzma
     - sqlite3
-    - emfs:/drive/api-examples/packages/pymatgen-2024.11.13-cp311-cp311-emscripten_3_1_45_wasm32.whl
-    - emfs:/drive/api-examples/packages/spglib-2.0.2-py3-none-any.whl
-    - emfs:/drive/api-examples/packages/ruamel.yaml-0.17.32-py3-none-any.whl
+    # The emfs packages are copied in https://github.com/Exabyte-io/jupyterlite/blob/main/scripts/build.sh#L38
+    - emfs:/drive/packages/pymatgen-2024.11.13-cp311-cp311-emscripten_3_1_45_wasm32.whl
+    - emfs:/drive/packages/spglib-2.0.2-py3-none-any.whl
+    - emfs:/drive/packages/ruamel.yaml-0.17.32-py3-none-any.whl
+    - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
+    - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
+    - annotated_types>=0.6.0
     - networkx==3.2.1
     - monty==2023.11.3
     - scipy==1.11.2
@@ -27,14 +33,10 @@ default:
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:
-      - ipywidgets
       - plotly==5.18
       - nbformat>=4.2.0
     packages_python:
     packages_pyodide:
-      - annotated_types>=0.6.0
-      - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
-      - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-esse
       - mat3ra-made
   - name: import_material_from_jarvis_db_entry.ipynb
@@ -46,8 +48,8 @@ notebooks:
       - setuptools
     packages_python:
     packages_pyodide:
-      - emfs:/drive/api-examples/packages/paginate-0.5.6-py3-none-any.whl
-      - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl
+      - emfs:/drive/packages/paginate-0.5.6-py3-none-any.whl
+      - emfs:/drive/packages/watchdog-2.3.1-py3-none-any.whl
   - name: import_materials_from_files.ipynb
     packages_common:
       - express-py==2024.2.2.post2
@@ -56,15 +58,19 @@ notebooks:
       - setuptools
     packages_python:
     packages_pyodide:
-      - emfs:/drive/api-examples/packages/paginate-0.5.6-py3-none-any.whl
-      - emfs:/drive/api-examples/packages/watchdog-2.3.1-py3-none-any.whl
+      - emfs:/drive/packages/paginate-0.5.6-py3-none-any.whl
+      - emfs:/drive/packages/watchdog-2.3.1-py3-none-any.whl
   - name: create_point_defect.ipynb
     packages_common:
-      - ipywidgets
     packages_python:
     packages_pyodide:
-      - annotated_types>=0.6.0
-      - emfs:/drive/api-examples/packages/pydantic_core-2.18.2-py3-none-any.whl
-      - emfs:/drive/api-examples/packages/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-esse
       - mat3ra-made
+  - name: create_cluster_custom_shape.ipynb
+    packages_common:
+      - icosphere
+    packages_python:
+    packages_pyodide:
+  - name: specific_examples
+    packages_common:
+      - mat3ra-standata

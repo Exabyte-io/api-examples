@@ -13,7 +13,7 @@ default:
   packages_pyodide:
     - lzma
     - sqlite3
-    - emfs:/drive/api-examples/packages/pymatgen-2024.4.13-py3-none-any.whl
+    - emfs:/drive/api-examples/packages/pymatgen-2024.11.13-cp311-cp311-emscripten_3_1_45_wasm32.whl
     - emfs:/drive/api-examples/packages/spglib-2.0.2-py3-none-any.whl
     - emfs:/drive/api-examples/packages/ruamel.yaml-0.17.32-py3-none-any.whl
     - networkx==3.2.1

@@ -3,14 +3,14 @@ name = "mat3ra-api-examples"
 dynamic = ["version"]
 description = "Mat3ra API Examples"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
   "ase>=3.21.1",
   "exabyte-api-client>=2023.6.13.post0",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
-  "pymatgen>=2024.4.13; python_version > '3.8'",
-  "pymatgen; python_version < '3.8'",
+  # pinning pymatgen version to one used in API-examples for Pyodide
+  "pymatgen==2024.11.13",
   "mat3ra-made>=2024.6.11.post0",
   "mat3ra-utils>=2024.6.11.post0",
 ]

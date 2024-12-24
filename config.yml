@@ -11,12 +11,12 @@ default:
     - ipywidgets
     - plotly==5.18
   packages_python:
-    - pymatgen==2024.4.13
+    - pymatgen==2024.11.13
   packages_pyodide:
     - lzma
     - sqlite3
     # The emfs packages are copied in https://github.com/Exabyte-io/jupyterlite/blob/main/scripts/build.sh#L38
-    - emfs:/drive/packages/pymatgen-2024.4.13-py3-none-any.whl
+    - emfs:/drive/packages/pymatgen-2024.11.13-cp311-cp311-emscripten_3_1_45_wasm32.whl
     - emfs:/drive/packages/spglib-2.0.2-py3-none-any.whl
     - emfs:/drive/packages/ruamel.yaml-0.17.32-py3-none-any.whl
     - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl

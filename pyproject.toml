@@ -9,8 +9,7 @@ dependencies = [
   "exabyte-api-client>=2023.6.13.post0",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
-  # pinning pymatgen version to one used in API-examples for Pyodide
-  "pymatgen==2024.11.13",
+  "pymatgen==2024.4.13",
   "mat3ra-made>=2024.6.11.post0",
   "mat3ra-utils>=2024.6.11.post0",
 ]

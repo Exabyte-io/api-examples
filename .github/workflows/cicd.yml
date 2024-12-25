@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ["3.8.6"]
+        python-version: ["3.10.13"]
 
     steps:
       - name: Checkout this repository
@@ -49,7 +49,7 @@ jobs:
       - name: Publish python release
         uses: ./actions/py/publish
         with:
-          python-version: 3.8.x
+          python-version: 3.10.x
           github-token: ${{ secrets.BOT_GITHUB_TOKEN }}
           pypi-api-token: ${{ secrets.PYPI_API_TOKEN }}
 

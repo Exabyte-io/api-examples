@@ -11,7 +11,7 @@ default:
     - ipywidgets
     - plotly==5.18
   packages_python:
-    - pymatgen==2024.11.13
+    - pymatgen==2024.4.13
   packages_pyodide:
     - lzma
     - sqlite3

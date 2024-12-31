@@ -1,6 +1,7 @@
 from typing import Dict, List, Union
 
 import matplotlib.pyplot as plt
+import numpy as np
 import plotly.graph_objs as go
 from ase.atoms import Atoms as ASEAtoms
 from ase.optimize import BFGS, FIRE
@@ -151,3 +152,77 @@ def plot_rdf(material: Material, cutoff: float = 10.0, bin_size: float = 0.1):
     plt.legend()
     plt.grid()
     plt.show()
+
+
+def plot_energy_landscape(xy_matrix, energy_matrix, optimal_position=None):
+    """
+    Create a 3D surface plot of the energy landscape.
+
+    Args:
+        xy_matrix (List[np.ndarray]): X and Y coordinate matrices
+        energy_matrix (np.ndarray): Matrix of energy values
+        optimal_position (tuple, optional): The optimal (x,y) position to highlight
+    """
+    x_vals, y_vals = xy_matrix
+    X, Y = np.meshgrid(x_vals, y_vals)
+
+    # Create the 3D surface plot
+    fig = go.Figure(data=[go.Surface(x=X, y=Y, z=energy_matrix, colorscale="Viridis")])
+
+    # Add optimal position marker if provided
+    if optimal_position is not None:
+        x_opt, y_opt = optimal_position[0], optimal_position[1]
+        z_opt = np.min(energy_matrix)
+        fig.add_trace(
+            go.Scatter3d(
+                x=[x_opt],
+                y=[y_opt],
+                z=[z_opt],
+                mode="markers",
+                marker=dict(size=8, color="red"),
+                name="Optimal Position",
+            )
+        )
+
+    fig.update_layout(
+        title="Interface Energy Landscape",
+        scene=dict(xaxis_title="X Position", yaxis_title="Y Position", zaxis_title="Energy"),
+        width=800,
+        height=800,
+    )
+
+    fig.show()
+
+
+def plot_energy_heatmap(xy_matrix, energy_matrix, optimal_position=None):
+    """
+    Create a 2D heatmap of the energy landscape.
+
+    Args:
+        xy_matrix (List[np.ndarray]): X and Y coordinate matrices
+        energy_matrix (np.ndarray): Matrix of energy values
+        optimal_position (tuple, optional): The optimal (x,y) position to highlight
+    """
+    x_vals, y_vals = xy_matrix
+
+    fig = go.Figure(
+        data=go.Heatmap(x=x_vals, y=y_vals, z=energy_matrix, colorscale="Viridis", colorbar=dict(title="Energy"))
+    )
+
+    if optimal_position is not None:
+        x_opt, y_opt = optimal_position[0], optimal_position[1]
+        fig.add_trace(
+            go.Scatter(
+                x=[x_opt],
+                y=[y_opt],
+                mode="markers",
+                marker=dict(size=12, color="red", symbol="x"),
+                name="Optimal Position",
+            )
+        )
+
+    fig.update_layout(
+        title="Interface Energy Heatmap", xaxis_title="X Position", yaxis_title="Y Position", width=800, height=600
+    )
+
+    fig.show()

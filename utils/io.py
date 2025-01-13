@@ -91,10 +91,7 @@ async def ui_prompt_select_array_element_by_index_pyodide(
 async def select_coordination_threshold_emscripten(distribution, default_threshold):
     coordination_threshold = default_threshold
     coordination_numbers = list(distribution.keys())
-    prompt_text = (
-        f"\nCoordination numbers distribution: {distribution}"
-        f"\nEnter coordination threshold value: "
-    )
+    prompt_text = f"\nCoordination numbers distribution: {distribution}" f"\nEnter coordination threshold value: "
     while True:
         try:
             value_str = await input(prompt_text)  # type: ignore
@@ -113,10 +110,7 @@ async def select_coordination_threshold_emscripten(distribution, default_thresho
 def select_coordination_threshold_python(distribution, default_threshold):
     coordination_threshold = default_threshold
     coordination_numbers = list(distribution.keys())
-    prompt_text = (
-        f"\nCoordination numbers distribution: {distribution}"
-        f"\nEnter coordination threshold value: "
-    )
+    prompt_text = f"\nCoordination numbers distribution: {distribution}" f"\nEnter coordination threshold value: "
     while True:
         try:
             value_str = input(prompt_text)

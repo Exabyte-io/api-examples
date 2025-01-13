@@ -88,9 +88,13 @@ async def ui_prompt_select_array_element_by_index_pyodide(
     return result
 
 
-async def select_coordination_threshold_emscripten(coordination_numbers, default_threshold):
+async def select_coordination_threshold_emscripten(distribution, default_threshold):
     coordination_threshold = default_threshold
-    prompt_text = f"\nCoordination numbers: {coordination_numbers}" f"\nEnter coordination threshold value: "
+    coordination_numbers = list(distribution.keys())
+    prompt_text = (
+        f"\nCoordination numbers distribution: {distribution}"
+        f"\nEnter coordination threshold value: "
+    )
     while True:
         try:
             value_str = await input(prompt_text)  # type: ignore
@@ -106,9 +110,13 @@ async def select_coordination_threshold_emscripten(coordination_numbers, default
     return coordination_threshold
 
 
-def select_coordination_threshold_python(coordination_numbers, default_threshold):
+def select_coordination_threshold_python(distribution, default_threshold):
     coordination_threshold = default_threshold
-    prompt_text = f"\nCoordination numbers: {coordination_numbers}" f"\nEnter coordination threshold value: "
+    coordination_numbers = list(distribution.keys())
+    prompt_text = (
+        f"\nCoordination numbers distribution: {distribution}"
+        f"\nEnter coordination threshold value: "
+    )
     while True:
         try:
             value_str = input(prompt_text)
@@ -124,8 +132,8 @@ def select_coordination_threshold_python(coordination_numbers, default_threshold
     return coordination_threshold
 
 
-async def select_coordination_threshold(coordination_numbers, default_threshold):
+async def select_coordination_threshold(distribution, default_threshold):
     if sys.platform == "emscripten":
-        return await select_coordination_threshold_emscripten(coordination_numbers, default_threshold)
+        return await select_coordination_threshold_emscripten(distribution, default_threshold)
     else:
-        return select_coordination_threshold_python(coordination_numbers, default_threshold)
+        return select_coordination_threshold_python(distribution, default_threshold)

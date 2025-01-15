@@ -1,5 +1,5 @@
 import sys
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 
 def create_prompt_text(array: List[Any], element_name: str = "element", prompt_head: Optional[str] = None) -> str:
@@ -88,7 +88,15 @@ async def ui_prompt_select_array_element_by_index_pyodide(
     return result
 
 
-async def select_coordination_threshold_emscripten(distribution, default_threshold):
+async def select_coordination_threshold_emscripten(distribution: Dict[int, int], default_threshold: int) -> int:
+    """
+    Select the coordination threshold from the given distribution. Works in Pyodide environment.
+    Args:
+        distribution: The distribution of coordination numbers.
+        default_threshold: The default threshold value.
+    Returns:
+        int: The selected coordination threshold.
+    """
     coordination_threshold = default_threshold
     coordination_numbers = list(distribution.keys())
     prompt_text = f"\nCoordination numbers distribution: {distribution}" f"\nEnter coordination threshold value: "
@@ -107,7 +115,15 @@ async def select_coordination_threshold_emscripten(distribution, default_thresho
     return coordination_threshold
 
 
-def select_coordination_threshold_python(distribution, default_threshold):
+def select_coordination_threshold_python(distribution: Dict[int, int], default_threshold: int) -> int:
+    """
+    Select the coordination threshold from the given distribution. Works in regular Python environment.
+    Args:
+        distribution:  The distribution of coordination numbers.
+        default_threshold:  The default threshold value.
+    Returns:
+        int: The selected coordination threshold.
+    """
     coordination_threshold = default_threshold
     coordination_numbers = list(distribution.keys())
     prompt_text = f"\nCoordination numbers distribution: {distribution}" f"\nEnter coordination threshold value: "
@@ -126,7 +142,15 @@ def select_coordination_threshold_python(distribution, default_threshold):
     return coordination_threshold
 
 
-async def select_coordination_threshold(distribution, default_threshold):
+async def select_coordination_threshold(distribution: Dict[int, int], default_threshold: int) -> int:
+    """
+    Select the coordination threshold from the given distribution.
+    Args:
+        distribution:  The distribution of coordination numbers.
+        default_threshold:  The default threshold value.
+    Returns:
+        int: The selected coordination threshold.
+    """
     if sys.platform == "emscripten":
         return await select_coordination_threshold_emscripten(distribution, default_threshold)
     else:

@@ -9,7 +9,8 @@ default:
     - pandas==1.5.3
     - ase==3.22.1
     - ipywidgets
-    - plotly==5.18
+    - plotly>=5.18
+    - nbformat>=4.2.0
   packages_python:
     - pymatgen==2024.4.13
   packages_pyodide:
@@ -33,7 +34,7 @@ default:
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:
-      - plotly==5.18
+      - plotly>=5.18
       - nbformat>=4.2.0
     packages_python:
     packages_pyodide:

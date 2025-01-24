@@ -448,6 +448,7 @@ def download_content_to_file(content: Any, filename: str):
 
     if isinstance(content, Material):
         content = content.to_json()
+        content = json.dumps(content, indent=4)
 
     js_code = f"""
     var content = `{content}`;

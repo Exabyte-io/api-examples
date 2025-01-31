@@ -67,11 +67,6 @@ notebooks:
     packages_pyodide:
       - mat3ra-esse
       - mat3ra-made
-  - name: create_cluster_custom_shape.ipynb
-    packages_common:
-      - icosphere
-    packages_python:
-    packages_pyodide:
   - name: specific_examples
     packages_common:
       - mat3ra-standata

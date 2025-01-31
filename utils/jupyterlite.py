@@ -18,9 +18,6 @@ async def install_setup():
         await micropip.install("mat3ra-utils")
 
 
-UPLOADS_FOLDER = "uploads"
-
-
 class EnvironmentEnum(Enum):
     PYODIDE = "pyodide"
     PYTHON = "python"
@@ -39,8 +36,12 @@ ENVIRONMENT = EnvironmentEnum.PYODIDE if os.environ.get("HOME") == "/home/pyodid
 if ENVIRONMENT == EnvironmentEnum.PYODIDE:
     import micropip
 
+    UPLOADS_FOLDER = "/drive/made/uploads"
+
 if ENVIRONMENT == EnvironmentEnum.PYTHON:
     import subprocess
+
+    UPLOADS_FOLDER = "./uploads"
 
 
 def log(message: str, level: Optional[SeverityLevelEnum] = None, force_verbose: Optional[bool] = None):
@@ -259,6 +260,7 @@ def get_data_python(key: str, globals_dict: Optional[Dict] = None):
                 data_from_host.append(data)
         if globals_dict is not None:
             globals_dict[key] = data_from_host
+        return data_from_host
     except FileNotFoundError:
         print("No data found in the 'uploads' folder.")
 
@@ -307,8 +309,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
     else:
         # Fallback to load materials from the UPLOADS_FOLDER if launched outside of Materials Designer
         log(f"No input materials found. Loading from the {UPLOADS_FOLDER} folder.")
-        get_data_python("materials_in", globals_dict)
-        return []
+        return get_data_python("materials_in", globals_dict)
 
 
 def set_materials(materials: List[Any]):

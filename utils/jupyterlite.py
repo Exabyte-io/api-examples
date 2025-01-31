@@ -258,12 +258,8 @@ def get_data_python(key: str, globals_dict: Optional[Dict] = None):
                 log(f"{index}: {name}")
                 index += 1
                 data_from_host.append(data)
-                print("added material")
         if globals_dict is not None:
             globals_dict[key] = data_from_host
-            print("globals dict is not None")
-        else:
-            print("globals dict is None")
         return data_from_host
     except FileNotFoundError:
         print("No data found in the 'uploads' folder.")
@@ -359,7 +355,6 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
                     data = json.load(file)
                 name = os.path.splitext(filename)[0]
                 log(f"{index}: {name}", SeverityLevelEnum.INFO, force_verbose=verbose)
-                print("-----")
                 index += 1
                 data_from_host.append(data)
     except FileNotFoundError:

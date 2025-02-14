@@ -70,3 +70,6 @@ notebooks:
   - name: specific_examples
     packages_common:
       - mat3ra-standata
+  - name: api_examples
+    packages_common:
+      - mat3ra-standata

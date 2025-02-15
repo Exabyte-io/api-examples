@@ -1,10 +1,11 @@
 import inspect
+import io
 import json
 import os
 import re
 import sys
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from IPython.display import Javascript, display
 
@@ -463,3 +464,125 @@ def download_content_to_file(content: Any, filename: str):
     document.body.removeChild(link);
     """
     display(Javascript(js_code))
+
+
+def read_from_url_python(url: str) -> str:
+    """
+    Fetch, read and decode content from a URL in a Python environment.
+
+    Args:
+        url (str): The URL to fetch from.
+
+    Returns:
+        str: The content as a decoded string.
+    """
+    import urllib.request
+
+    with urllib.request.urlopen(url) as response:
+        return response.read().decode("utf-8")
+
+
+async def read_from_url_pyodide(url: str) -> str:
+    """
+    Fetch and read content from a URL in a Pyodide environment.
+
+    Args:
+        url (str): The URL to fetch from.
+
+    Returns:
+        str: The content as a string.
+    """
+    from pyodide.http import open_url
+
+    response = open_url(url)
+    return response.getvalue()
+
+
+async def read_from_url(url: str) -> str:
+    """
+    Read content from a URL, handling both Python and Pyodide environments.
+
+    Args:
+        url (str): The URL to fetch from.
+
+    Returns:
+        str: The content as a string.
+    """
+    response = None
+    if ENVIRONMENT == EnvironmentEnum.PYODIDE:
+        response = await read_from_url_pyodide(url)
+    elif ENVIRONMENT == EnvironmentEnum.PYTHON:
+        response = read_from_url_python(url)
+
+    return response
+
+
+async def write_to_file(file_name: str, file_content, mode: str = "wb"):
+    """
+    Write content to a file, handling both Python and Pyodide environments.
+
+    Args:
+        file_name (str): The name of the file to write.
+        file_content (str | bytes | io.StringIO | io.BytesIO): The content to write.
+        mode (str): The mode to open the file in. Defaults to "wb" (write bytes).
+
+    Returns:
+        str: The absolute path of the saved file.
+    """
+    if isinstance(file_content, io.StringIO):
+        file_content = file_content.getvalue().encode("utf-8")
+
+    elif isinstance(file_content, io.BytesIO):
+        file_content = file_content.getvalue()
+
+    if "b" in mode and isinstance(file_content, str):
+        file_content = file_content.encode("utf-8")
+
+    with open(file_name, mode) as file:
+        file.write(file_content)
+
+    return os.path.abspath(file_name)
+
+
+class Response:
+    """Mimics urllib.response interface for both environments"""
+
+    def __init__(self, content: Union[str, bytes]):
+        self._content = content.encode("utf-8") if isinstance(content, str) else content
+
+    def read(self) -> bytes:
+        """Returns content as bytes, matching urllib.response.read()"""
+        return self._content
+
+    def decode(self, encoding: str = "utf-8") -> str:
+        """Decodes bytes to string, matching urllib.response.read().decode()"""
+        return self._content.decode(encoding)
+
+
+class URLHandler:
+    """URL handler that works in both environments with urllib-like interface"""
+
+    @staticmethod
+    def urlopen(url: str) -> Response:
+        """
+        Open a URL, handling both environments. Mimics urllib.request.urlopen.
+
+        Args:
+            url (str): URL to open
+
+        Returns:
+            Response: A response object with read() and decode() methods
+        """
+        if ENVIRONMENT == EnvironmentEnum.PYODIDE:
+            from pyodide.http import open_url
+
+            pyodide_response = open_url(url)
+            return Response(pyodide_response.read())
+        else:
+            import urllib.request
+
+            with urllib.request.urlopen(url) as response:
+                return Response(response.read())
+
+
+request = URLHandler()

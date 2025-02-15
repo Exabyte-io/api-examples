@@ -517,7 +517,7 @@ async def read_from_url(url: str) -> str:
     return response
 
 
-async def write_to_file(file_name: str, file_content, mode: str = "wb"):
+async def write_to_file(file_name: str, file_content, mode: str = "w"):
     """
     Write content to a file, handling both Python and Pyodide environments.
 

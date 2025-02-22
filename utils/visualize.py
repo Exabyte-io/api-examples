@@ -101,49 +101,65 @@ class MaterialViewProperties(BaseModel):
     title: str = "Material"
 
 
-def renderWave(material, width=600, height=600):
-    # Adding a timestamp to the div id to avoid update conflict with other wave instances
+default_div_id = "wave"
+
+
+def get_wave_html(div_id=default_div_id, width=600, height=600):
+    size = min(width, height)  # Make it square by using the smaller dimension
+    return f"""
+    <div id="{div_id}" style="width:{size}px; height:{size}px; border:1px solid #333;"></div>
+    """
+
+
+def get_wave_js(material_json, div_id=default_div_id):
+    return (
+        f"""
+    const materialConfig={material_json};
+    const container = document.getElementById('{div_id}');
+        """
+        + """
+    (async function() {
+            const module = await import('https://exabyte-io.github.io/wave.js/main.js');
+            window.renderThreeDEditor(materialConfig, container);
+    })();
+    document.head.insertAdjacentHTML(
+        'beforeend',
+        '<link rel="stylesheet" href="https://exabyte-io.github.io/wave.js/main.css"/>');
+    """
+    )
+
+
+def render_wave(material, width=600, height=600):
     timestamp = time.time()
     material_json = json.dumps(material.to_json(), indent=2)
-    display(
-        HTML(
-            f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    </head>
-    <body>
-        <div id="root-{timestamp}" style="width:{width}px; height:{height}px; border:1px solid #333;"></div>
-    </body>
-    </html>
-    """
-        )
-    )
-    display(
-        Javascript(
-            f"""
-    const materialConfig={material_json};
-    """
-            + f"""
-    const container = document.getElementById('root-{timestamp}');"""
-            + """
-    var script = document.createElement('script');
-    script.type="module";
-    script.src = "https://exabyte-io.github.io/wave.js/main.js";
-    script.onload = () => {
-        if (window.renderThreeDEditor) {
-            window.renderThreeDEditor(materialConfig, container);
-        }
-    };
-    document.head.appendChild(script);
+    div_id = f"wave-{timestamp}"
 
-    var cssLink = document.createElement("link");
-    cssLink.rel = "stylesheet";
-    cssLink.href = "https://exabyte-io.github.io/wave.js/main.css";
-    document.head.appendChild(cssLink);
-    """
-        )
+    display(HTML(get_wave_html(div_id, width, height)))
+    display(Javascript(get_wave_js(material_json, div_id)))
+
+
+def render_wave_grid(materials, width=600, height=600, max_columns=3):
+    html_items = []
+    js_items = []
+    # column_width = f"minmax(100px, {100 / max_columns}%)"
+
+    for i, material in enumerate(materials):
+        html = get_wave_html(f"wave-{i}", width, height)
+        js = get_wave_js(json.dumps(material.to_json(), indent=2), f"wave-{i}")
+        html_items.append(widgets.HTML(html))
+        js_items.append(Javascript(js))
+
+    grid = widgets.GridBox(
+        html_items,
+        layout=widgets.Layout(
+            grid_template_columns=f"repeat({max_columns}, 1fr)",
+            grid_gap="10px",
+            width="100%",
+        ),
     )
+    display(grid)
+    for js in js_items:
+        display(js)
 
 
 def process_material_entry(
@@ -207,10 +223,11 @@ def visualize_materials(
     )
 
     if viewer == ViewersEnum.wave:
+        wave_materials = []
         for material_entry in materials:
             material, _ = process_material_entry(material_entry, default_properties)
-            if material:
-                renderWave(material)
+            wave_materials.append(material)
+        render_wave_grid(wave_materials)
 
     else:
         items = []

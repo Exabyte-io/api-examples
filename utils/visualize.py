@@ -102,6 +102,7 @@ class MaterialViewProperties(BaseModel):
 
 
 def renderWave(material, width=600, height=600):
+    # Adding a timestamp to the div id to avoid update conflict with other wave instances
     timestamp = time.time()
     material_json = json.dumps(material.to_json(), indent=2)
     display(
@@ -112,7 +113,7 @@ def renderWave(material, width=600, height=600):
     <head>
     </head>
     <body>
-        <div id="root-{timestamp}" style="width:{width}px; height:{height}px; border:1px solid #ccc;"></div>
+        <div id="root-{timestamp}" style="width:{width}px; height:{height}px; border:1px solid #333;"></div>
     </body>
     </html>
     """
@@ -210,6 +211,7 @@ def visualize_materials(
             material, _ = process_material_entry(material_entry, default_properties)
             if material:
                 renderWave(material)
+
     else:
         items = []
         for material_entry in materials:

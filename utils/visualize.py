@@ -141,11 +141,12 @@ def render_wave(material, width=600, height=600):
 def render_wave_grid(materials, width=600, height=600, max_columns=3):
     html_items = []
     js_items = []
+    timestamp = time.time()
     # column_width = f"minmax(100px, {100 / max_columns}%)"
 
     for i, material in enumerate(materials):
-        html = get_wave_html(f"wave-{i}", width, height)
-        js = get_wave_js(json.dumps(material.to_json(), indent=2), f"wave-{i}")
+        html = get_wave_html(f"wave-{i}-{timestamp}", width, height)
+        js = get_wave_js(json.dumps(material.to_json(), indent=2), f"wave-{i}-{timestamp}")
         html_items.append(widgets.HTML(html))
         js_items.append(Javascript(js))
 

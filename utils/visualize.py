@@ -2,7 +2,7 @@ import io
 import json
 import time
 from enum import Enum
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import ipywidgets as widgets
 from ase.build import make_supercell
@@ -145,8 +145,36 @@ def renderWave(material, width=600, height=600):
     )
 
 
+def process_material_entry(
+    material_entry: Union[Material, Dict], default_properties: MaterialViewProperties
+) -> Tuple[Material, MaterialViewProperties]:
+    """
+    Process the material entry and return the material and properties.
+    Args:
+        material_entry: Material or a dictionary containing the material and properties.
+        default_properties: Default properties to use if not specified in the material entry.
+
+    Returns:
+        Tuple[Material, MaterialViewProperties]: Material and properties.
+
+    """
+    if isinstance(material_entry, Material):
+        material = material_entry
+        properties = default_properties
+    elif isinstance(material_entry, dict) and "material" in material_entry:
+        material = material_entry["material"]
+        properties = MaterialViewProperties(
+            title=material_entry.get("title", default_properties.title),
+            repetitions=material_entry.get("repetitions", default_properties.repetitions),
+            rotation=material_entry.get("rotation", default_properties.rotation),
+        )
+    else:
+        raise ValueError("Invalid material entry")
+    return material, properties
+
+
 def visualize_materials(
-    materials_to_view: Union[List[Material], List[Dict[str, Union[Material, dict]]]],
+    materials: Union[List[Material], List[Dict[str, Union[Material, dict]]]],
     repetitions: Optional[List[int]] = [1, 1, 1],
     rotation: Optional[str] = "0x,0y,0z",
     title: Optional[str] = "Material",
@@ -155,18 +183,19 @@ def visualize_materials(
     """
     Visualize the material(s) in the output cell.
     Args:
-        materials_to_view: Mist of Materials or a list of dictionaries:
+        materials: Mist of Materials or a list of dictionaries:
         {"material": Material, "title": str,"repetitions": List[int], "rotation": str}.
         repetitions (Optional[List[int]]): Repetitions alongside a, b, c lattice vectors.
         rotation (Optional[str]): Rotation of the image, in degrees around the x, y, and z axes (e.g., "-90x,90y,0z").
         title (Optional[str]): Title of the image.
+        viewer (ViewersEnum): Viewer to use for visualization. "ase" or "wave".
 
     Returns:
         None
     """
-    materials_to_view = convert_to_array_if_not(materials_to_view)
+    materials = convert_to_array_if_not(materials)
 
-    if not materials_to_view:
+    if not materials:
         print("No materials to visualize.")
         return
 
@@ -177,36 +206,18 @@ def visualize_materials(
     )
 
     if viewer == ViewersEnum.wave:
-        for material_entry in materials_to_view:
-            if isinstance(material_entry, Material):
-                material = material_entry
-            elif isinstance(material_entry, dict) and "material" in material_entry:
-                material = material_entry["material"]
-            else:
-                print("Invalid material entry:", material_entry)
-                continue
-
-            renderWave(material)
+        for material_entry in materials:
+            material, _ = process_material_entry(material_entry, default_properties)
+            if material:
+                renderWave(material)
     else:
         items = []
-        for material_entry in materials_to_view:
-            if isinstance(material_entry, Material):
-                material = material_entry
-                properties = default_properties
-            elif isinstance(material_entry, dict) and "material" in material_entry:
-                material = material_entry["material"]
-                properties = MaterialViewProperties(
-                    title=material_entry.get("title", default_properties.title),
-                    repetitions=material_entry.get("repetitions", default_properties.repetitions),
-                    rotation=material_entry.get("rotation", default_properties.rotation),
+        for material_entry in materials:
+            material, properties = process_material_entry(material_entry, default_properties)
+            if material:
+                image_data, image_title = get_material_image(
+                    material, title=properties.title, rotation=properties.rotation, repetitions=properties.repetitions
                 )
-            else:
-                print("Invalid material entry:", material_entry)
-                continue
-
-            image_data, image_title = get_material_image(
-                material, title=properties.title, rotation=properties.rotation, repetitions=properties.repetitions
-            )
-            items.append((image_data, image_title))
+                items.append((image_data, image_title))
 
         display(create_responsive_image_grid(items))

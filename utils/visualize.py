@@ -138,7 +138,7 @@ def render_wave(material, width=600, height=600):
     display(Javascript(get_wave_js(material_json, div_id)))
 
 
-def render_wave_grid(materials, width=600, height=600, max_columns=3):
+def render_wave_grid(materials, width=400, height=400, max_columns=3):
     html_items = []
     js_items = []
     timestamp = time.time()
@@ -229,6 +229,9 @@ def visualize_materials(
             material, _ = process_material_entry(material_entry, default_properties)
             wave_materials.append(material)
         render_wave_grid(wave_materials)
+        if len(wave_materials) == 1:
+            # Render single material in the wave viewer, larger size and hotkeys working
+            render_wave(wave_materials[0])
 
     else:
         items = []

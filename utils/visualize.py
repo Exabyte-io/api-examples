@@ -228,10 +228,11 @@ def visualize_materials(
         for material_entry in materials:
             material, _ = process_material_entry(material_entry, default_properties)
             wave_materials.append(material)
-        render_wave_grid(wave_materials)
         if len(wave_materials) == 1:
             # Render single material in the wave viewer, larger size and hotkeys working
             render_wave(wave_materials[0])
+        else:
+            render_wave_grid(wave_materials)
 
     else:
         items = []

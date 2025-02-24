@@ -104,9 +104,10 @@ class MaterialViewProperties(BaseModel):
 default_div_id = "wave"
 
 
-def get_wave_html(div_id=default_div_id, width=600, height=600):
+def get_wave_html(div_id=default_div_id, width=600, height=600, title="Material"):
     size = min(width, height)  # Make it square by using the smaller dimension
     return f"""
+    <h2>{title}</h2>
     <div id="{div_id}" style="width:{size}px; height:{size}px; border:1px solid #333;"></div>
     """
 
@@ -129,23 +130,23 @@ def get_wave_js(material_json, div_id=default_div_id):
     )
 
 
-def render_wave(material, width=600, height=600):
+def render_wave(material, properties, width=600, height=600):
     timestamp = time.time()
     material_json = json.dumps(material.to_json(), indent=2)
     div_id = f"wave-{timestamp}"
 
-    display(HTML(get_wave_html(div_id, width, height)))
+    display(HTML(get_wave_html(div_id, width, height, properties.title)))
     display(Javascript(get_wave_js(material_json, div_id)))
 
 
-def render_wave_grid(materials, width=400, height=400, max_columns=3):
+def render_wave_grid(materials, properties, width=400, height=400, max_columns=3):
     html_items = []
     js_items = []
     timestamp = time.time()
     # column_width = f"minmax(100px, {100 / max_columns}%)"
 
     for i, material in enumerate(materials):
-        html = get_wave_html(f"wave-{i}-{timestamp}", width, height)
+        html = get_wave_html(f"wave-{i}-{timestamp}", width, height, title=properties.title)
         js = get_wave_js(json.dumps(material.to_json(), indent=2), f"wave-{i}-{timestamp}")
         html_items.append(widgets.HTML(html))
         js_items.append(Javascript(js))
@@ -226,13 +227,13 @@ def visualize_materials(
     if viewer == ViewersEnum.wave:
         wave_materials = []
         for material_entry in materials:
-            material, _ = process_material_entry(material_entry, default_properties)
+            material, properties = process_material_entry(material_entry, default_properties)
             wave_materials.append(material)
         if len(wave_materials) == 1:
             # Render single material in the wave viewer, larger size and hotkeys working
-            render_wave(wave_materials[0])
+            render_wave(wave_materials[0], properties=properties)
         else:
-            render_wave_grid(wave_materials)
+            render_wave_grid(materials=wave_materials, properties=properties)
 
     else:
         items = []

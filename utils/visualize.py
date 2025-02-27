@@ -1,14 +1,22 @@
 import io
-from typing import Dict, List, Optional, Union
+import json
+import time
+from enum import Enum
+from typing import Dict, List, Optional, Tuple, Union
 
 import ipywidgets as widgets
 from ase.build import make_supercell
 from ase.io import write
-from IPython.display import display
+from IPython.display import HTML, Javascript, display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.convert import to_ase
 from mat3ra.utils.array import convert_to_array_if_not
 from pydantic import BaseModel
+
+
+class ViewersEnum(str, Enum):
+    wave = "wave"
+    ase = "ase"
 
 
 def get_material_image(material: Material, title: str, rotation="0x,0y,0z", repetitions=[1, 1, 1]):
@@ -71,12 +79,11 @@ def create_responsive_image_grid(image_tuples, max_columns=3):
                 create_image_widget(image, object_fit="contain"),
             ],
             layout=widgets.Layout(align_items="center", padding="0px 0px 10px 0px"),
-        )  # Adjust padding as needed
+        )
         for image, title in image_tuples
     ]
 
     column_width = f"minmax(100px, {100 / max_columns}%)"
-
     grid = widgets.GridBox(
         items,
         layout=widgets.Layout(
@@ -94,27 +101,120 @@ class MaterialViewProperties(BaseModel):
     title: str = "Material"
 
 
+default_div_id = "wave"
+
+
+def get_wave_html(div_id=default_div_id, width=600, height=600, title="Material"):
+    size = min(width, height)  # Make it square by using the smaller dimension
+    return f"""
+    <h2>{title}</h2>
+    <div id="{div_id}" style="width:{size}px; height:{size}px; border:1px solid #333;"></div>
+    """
+
+
+def get_wave_js(material_json, div_id=default_div_id):
+    return (
+        f"""
+    const materialConfig={material_json};
+    const container = document.getElementById('{div_id}');
+        """
+        + """
+    (async function() {
+            const module = await import('https://exabyte-io.github.io/wave.js/main.js');
+            window.renderThreeDEditor(materialConfig, container);
+    })();
+    document.head.insertAdjacentHTML(
+        'beforeend',
+        '<link rel="stylesheet" href="https://exabyte-io.github.io/wave.js/main.css"/>');
+    """
+    )
+
+
+def render_wave(material, properties, width=600, height=600):
+    timestamp = time.time()
+    material_json = json.dumps(material.to_json(), indent=2)
+    div_id = f"wave-{timestamp}"
+
+    display(HTML(get_wave_html(div_id, width, height, properties.title)))
+    display(Javascript(get_wave_js(material_json, div_id)))
+
+
+def render_wave_grid(materials, properties, width=400, height=400, max_columns=3):
+    html_items = []
+    js_items = []
+    timestamp = time.time()
+    # column_width = f"minmax(100px, {100 / max_columns}%)"
+
+    for i, material in enumerate(materials):
+        html = get_wave_html(f"wave-{i}-{timestamp}", width, height, title=properties.title)
+        js = get_wave_js(json.dumps(material.to_json(), indent=2), f"wave-{i}-{timestamp}")
+        html_items.append(widgets.HTML(html))
+        js_items.append(Javascript(js))
+
+    grid = widgets.GridBox(
+        html_items,
+        layout=widgets.Layout(
+            grid_template_columns=f"repeat({max_columns}, 1fr)",
+            grid_gap="10px",
+            width="100%",
+        ),
+    )
+    display(grid)
+    for js in js_items:
+        display(js)
+
+
+def process_material_entry(
+    material_entry: Union[Material, Dict], default_properties: MaterialViewProperties
+) -> Tuple[Material, MaterialViewProperties]:
+    """
+    Process the material entry and return the material and properties.
+    Args:
+        material_entry: Material or a dictionary containing the material and properties.
+        default_properties: Default properties to use if not specified in the material entry.
+
+    Returns:
+        Tuple[Material, MaterialViewProperties]: Material and properties.
+
+    """
+    if isinstance(material_entry, Material):
+        material = material_entry
+        properties = default_properties
+    elif isinstance(material_entry, dict) and "material" in material_entry:
+        material = material_entry["material"]
+        properties = MaterialViewProperties(
+            title=material_entry.get("title", default_properties.title),
+            repetitions=material_entry.get("repetitions", default_properties.repetitions),
+            rotation=material_entry.get("rotation", default_properties.rotation),
+        )
+    else:
+        raise ValueError("Invalid material entry")
+    return material, properties
+
+
 def visualize_materials(
-    materials_to_view: Union[List[Material], List[Dict[str, Union[Material, dict]]]],
+    materials: Union[List[Material], List[Dict[str, Union[Material, dict]]]],
     repetitions: Optional[List[int]] = [1, 1, 1],
     rotation: Optional[str] = "0x,0y,0z",
     title: Optional[str] = "Material",
+    viewer: ViewersEnum = ViewersEnum.ase,
 ) -> None:
     """
     Visualize the material(s) in the output cell.
     Args:
-        materials_to_view: Mist of Materials or a list of dictionaries:
+        materials: Mist of Materials or a list of dictionaries:
         {"material": Material, "title": str,"repetitions": List[int], "rotation": str}.
         repetitions (Optional[List[int]]): Repetitions alongside a, b, c lattice vectors.
         rotation (Optional[str]): Rotation of the image, in degrees around the x, y, and z axes (e.g., "-90x,90y,0z").
         title (Optional[str]): Title of the image.
+        viewer (ViewersEnum): Viewer to use for visualization. "ase" or "wave".
 
     Returns:
         None
     """
-    materials_to_view = convert_to_array_if_not(materials_to_view)
+    materials = convert_to_array_if_not(materials)
 
-    if not materials_to_view:
+    if not materials:
         print("No materials to visualize.")
         return
 
@@ -124,25 +224,25 @@ def visualize_materials(
         rotation=rotation if rotation is not None else MaterialViewProperties.rotation,
     )
 
-    items = []
-    for material_entry in materials_to_view:
-        if isinstance(material_entry, Material):
-            material = material_entry
-            properties = default_properties
-        elif isinstance(material_entry, dict) and "material" in material_entry:
-            material = material_entry["material"]
-            properties = MaterialViewProperties(
-                title=material_entry.get("title", default_properties.title),
-                repetitions=material_entry.get("repetitions", default_properties.repetitions),
-                rotation=material_entry.get("rotation", default_properties.rotation),
-            )
+    if viewer == ViewersEnum.wave:
+        wave_materials = []
+        for material_entry in materials:
+            material, properties = process_material_entry(material_entry, default_properties)
+            wave_materials.append(material)
+        if len(wave_materials) == 1:
+            # Render single material in the wave viewer, larger size and hotkeys working
+            render_wave(wave_materials[0], properties=properties)
         else:
-            print("Invalid material entry:", material_entry)
-            continue
+            render_wave_grid(materials=wave_materials, properties=properties)
 
-        image_data, image_title = get_material_image(
-            material, title=properties.title, rotation=properties.rotation, repetitions=properties.repetitions
-        )
-        items.append((image_data, image_title))
+    else:
+        items = []
+        for material_entry in materials:
+            material, properties = process_material_entry(material_entry, default_properties)
+            if material:
+                image_data, image_title = get_material_image(
+                    material, title=properties.title, rotation=properties.rotation, repetitions=properties.repetitions
+                )
+                items.append((image_data, image_title))
 
-    display(create_responsive_image_grid(items))
+        display(create_responsive_image_grid(items))

@@ -5,9 +5,10 @@ from IPython.display import display, Image as IPImage
 
 from .font_manager import FontManager
 
+
 class GIFProcessor:
     """Processes GIF files with various transformations and overlays"""
-    
+
     def __init__(self, gif_path):
         """
         Initialize with path to GIF file
@@ -40,7 +41,7 @@ class GIFProcessor:
             GIFProcessor: Self for method chaining
         """
         self.frames = [frame.resize((width, height), Image.Resampling.LANCZOS)
-                      for frame in self.frames]
+                       for frame in self.frames]
         return self
 
     def make_square(self, size=None):
@@ -81,7 +82,7 @@ class GIFProcessor:
         # Resize if size is specified
         if size is not None:
             self.frames = [frame.resize((size, size), Image.Resampling.LANCZOS)
-                         for frame in self.frames]
+                           for frame in self.frames]
 
         return self
 
@@ -110,7 +111,7 @@ class GIFProcessor:
             frame_rgba = frame.convert('RGBA')
             draw = ImageDraw.Draw(frame_rgba)
             draw.text(position, text, font=font, fill=color,
-                     stroke_width=stroke_width, stroke_fill=stroke_fill)
+                      stroke_width=stroke_width, stroke_fill=stroke_fill)
             self.frames[i] = frame_rgba
         return self
 
@@ -172,10 +173,10 @@ class GIFProcessor:
         """
         if not self.frames:
             return
-            
+
         if optimize:
             self.optimize(quality)
-            
+
         rgb_frames = [frame.convert('RGB') for frame in self.frames]
 
         # Save with optimization
@@ -226,5 +227,4 @@ class GIFProcessor:
                     format='GIF'
                 )
                 return buffer.tell()
-        return 0 
-    
+        return 0

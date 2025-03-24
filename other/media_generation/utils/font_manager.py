@@ -1,6 +1,7 @@
 import matplotlib.font_manager as fm
 from PIL import ImageFont
 
+
 class FontManager:
     """Manages fonts for the GIF processor"""
 
@@ -46,7 +47,7 @@ class FontManager:
 
             # Try fuzzy match (e.g., "arial-bold" matches "arial")
             fuzzy_matches = [path for name, path in self.fonts.items()
-                           if font_name in name and name != 'default']
+                             if font_name in name and name != 'default']
             if fuzzy_matches:
                 return ImageFont.truetype(fuzzy_matches[0], size)
 
@@ -73,4 +74,3 @@ class FontManager:
         query = query.lower()
         matches = [name for name in self.fonts.keys() if query in name]
         return sorted(matches)
-    

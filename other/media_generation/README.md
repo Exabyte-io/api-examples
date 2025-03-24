@@ -2,7 +2,7 @@
 
 ## 1. Setup materials
 
-1.1. Generate materials in Mat3ra JSON format with [Materials Designer](https://materials-designer.mat3ra.com/) or use a script.
+1.1. Generate materials in Mat3ra JSON format with [Materials Designer](https://mat3ra-materials-designer.netlify.app/) or use a script.
 
 1.2. Place materials JSON files in the `uploads` directory.
 

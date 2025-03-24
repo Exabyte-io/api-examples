@@ -2,9 +2,11 @@
 
 ## 1. Setup materials
 
-1.1. Place materials JSON files in the `input` directory.
+1.1. Generate materials in Mat3ra JSON format with [Materials Designer](https://materials-designer.mat3ra.com/) or use a script.
 
-1.2. Name them with a short name that will appear at bottom left of GIF.
+1.2. Place materials JSON files in the `uploads` directory.
+
+1.3. Name them with a short name that will appear at bottom left of GIF.
 
 Alternatively, you can use `create_materials` notebook that has functionality for random generation of some types of materials. Since it's random, verification of the generated materials is necessary.
 

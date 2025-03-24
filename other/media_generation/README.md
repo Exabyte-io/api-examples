@@ -26,11 +26,6 @@ This notebook will generate GIFs for all JSON materials in the `uploads` directo
 
 4.1. Store any media files (e.g. images, videos) you want to overlay on the GIFs in the `assets` directory.
 
-4.2. Run `gif_processing_multiple.ipynb` to add overlays and generate final GIFs.
+4.2. Run `gif_processing.ipynb` to add overlays and generate final GIFs.
 
 This notebook will move the GIFs from the top level to the `output` directory, removing any duplications (judging by the file name), and add overlays with the material names.
-
-
-## Single GIF processing
-
-If you created a GIF with Materials Designer manually, you can use the `gif_processing.ipynb` notebook to add overlays and generate the final GIF.

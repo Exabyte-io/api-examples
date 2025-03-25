@@ -10,9 +10,9 @@
 
 ## 2. Start wave.js
 
-2.1. Run wave.js (from PR: https://github.com/Exabyte-io/wave.js/pull/165) locally (default port 3002 -- used in notebooks).
+2.1. Run wave.js (from GitHub: https://github.com/Exabyte-io/wave.js) locally (default port 3002 -- used in notebooks).
 
-Or keep URL of the Netlify deployment in the notebook.
+Or keep URL of the web deployment in the notebook.
 
 ## 3. Record material GIFs
 

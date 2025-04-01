@@ -1,5 +1,4 @@
 import io
-import json
 import time
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
@@ -132,7 +131,7 @@ def get_wave_js(material_json, div_id=default_div_id):
 
 def render_wave(material, properties, width=600, height=600):
     timestamp = time.time()
-    material_json = json.dumps(material.to_json(), indent=2)
+    material_json = material.to_json()
     div_id = f"wave-{timestamp}"
 
     display(HTML(get_wave_html(div_id, width, height, properties.title)))
@@ -147,7 +146,7 @@ def render_wave_grid(materials, properties, width=400, height=400, max_columns=3
 
     for i, material in enumerate(materials):
         html = get_wave_html(f"wave-{i}-{timestamp}", width, height, title=properties.title)
-        js = get_wave_js(json.dumps(material.to_json(), indent=2), f"wave-{i}-{timestamp}")
+        js = get_wave_js(material.to_json(), f"wave-{i}-{timestamp}")
         html_items.append(widgets.HTML(html))
         js_items.append(Javascript(js))
 

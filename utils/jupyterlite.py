@@ -142,7 +142,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
     get_data("materials_in", globals_dict)
 
     if "materials_in" in globals_dict and globals_dict["materials_in"]:
-        materials = [Material(item) for item in globals_dict["materials_in"]]
+        materials = [Material.create(item) for item in globals_dict["materials_in"]]
         log(f"Retrieved {len(materials)} materials.")
         return materials
     else:
@@ -161,7 +161,7 @@ def set_materials(materials: List[Any]):
     from mat3ra.utils.array import convert_to_array_if_not
 
     materials = convert_to_array_if_not(materials)
-    materials_data = [material.to_json() for material in materials]
+    materials_data = [json.loads(material.to_json()) for material in materials]
     set_data("materials", materials_data)
 
 
@@ -200,7 +200,7 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
         log(f"No data found in the '{folder_path}' folder.", SeverityLevelEnum.ERROR, force_verbose=verbose)
         return []
 
-    materials = [Material(item) for item in data_from_host]
+    materials = [Material.create(item) for item in data_from_host]
 
     if materials:
         log(
@@ -269,7 +269,7 @@ def write_materials_to_folder(materials: List[Any], folder_path: Optional[str] =
         safe_name = material.name.replace("%", "pct").replace("/", ":")
         file_path = os.path.join(folder_path, f"{safe_name}.json")
         with open(file_path, "w") as file:
-            json.dump(material.to_json(), file)
+            json.dump(material.to_dict(), file)
         log(f"Material '{material.name}' written to '{file_path}'", SeverityLevelEnum.INFO, force_verbose=verbose)
 
 

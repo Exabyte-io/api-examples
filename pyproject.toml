@@ -10,7 +10,7 @@ dependencies = [
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen==2024.4.13",
-  "mat3ra-made>=2024.6.11.post0",
+  "mat3ra-made>=2025.4.4.post0",
   "mat3ra-utils>=2024.6.11.post0",
 ]
 

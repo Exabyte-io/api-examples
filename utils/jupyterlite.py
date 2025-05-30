@@ -18,17 +18,25 @@ def set_data_pyodide(key: str, value: Any):
         key (str): The name under which data will be sent.
         value (Any): The value to send to the host environment.
     """
-    serialized_data = json.dumps({key: value})
-    js_code = f"""
-      (function() {{
-          if (window.sendDataToHost) {{
-              window.sendDataToHost({serialized_data});
-              console.log('Data sent to host:', {serialized_data});
-          }} else {{
+    # Create the data object and serialize it properly
+    data_obj = {key: value}
+
+    # Use a more controlled approach to avoid f-string issues with complex JSON
+    js_code = (
+        """
+      (function() {
+          if (window.sendDataToHost) {
+              var data = """
+        + json.dumps(data_obj)
+        + """;
+              window.sendDataToHost(data);
+              console.log('Data sent to host:', data);
+          } else {
               console.error('sendDataToHost function is not defined on the window object.');
-          }}
-      }})();
+          }
+      })();
       """
+    )
     display(Javascript(js_code))
     log(f"Data for {key} sent to host.")
     set_data_python(key, value)
@@ -151,6 +159,40 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
         return get_data_python("materials_in", globals_dict)
 
 
+def _fix_nested_json_strings(data):
+    """
+    Recursively fix nested JSON strings that would cause double escaping.
+
+    This handles cases where configuration objects store materials as JSON strings,
+    which then get escaped again during serialization.
+
+    Args:
+        data: The data structure to fix (dict, list, or primitive)
+
+    Returns:
+        Fixed data structure with JSON strings converted back to objects
+    """
+    if isinstance(data, dict):
+        fixed_data = {}
+        for key, value in data.items():
+            # Check if this looks like a JSON string that should be parsed
+            if isinstance(value, str) and key == "crystal" and value.startswith("{"):
+                try:
+                    # Try to parse as JSON - if successful, keep as object to avoid escaping
+                    parsed_value = json.loads(value)
+                    fixed_data[key] = _fix_nested_json_strings(parsed_value)
+                except (json.JSONDecodeError, ValueError):
+                    # If parsing fails, keep as string
+                    fixed_data[key] = value
+            else:
+                fixed_data[key] = _fix_nested_json_strings(value)
+        return fixed_data
+    elif isinstance(data, list):
+        return [_fix_nested_json_strings(item) for item in data]
+    else:
+        return data
+
+
 def set_materials(materials: List[Any]):
     """
     Serialize and send a list of Material objects to the environment.
@@ -161,7 +203,13 @@ def set_materials(materials: List[Any]):
     from mat3ra.utils.array import convert_to_array_if_not
 
     materials = convert_to_array_if_not(materials)
-    materials_data = [json.loads(material.to_json()) for material in materials]
+    # Use to_json() which properly handles enums and complex objects, then parse to dict
+    materials_data = []
+    for material in materials:
+        material_dict = json.loads(material.to_json())
+        # Fix nested JSON strings to prevent double escaping
+        fixed_material_dict = _fix_nested_json_strings(material_dict)
+        materials_data.append(fixed_material_dict)
     set_data("materials", materials_data)
 
 

@@ -129,6 +129,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
         List[Material]: A list of Material objects.
     """
     from mat3ra.made.material import Material
+    from mat3ra.made.tools.build import MaterialWithBuildMetadata
 
     if globals_dict is None:
         # Get the globals of the caller for correct variable assignment during the execution of data_bridge extension
@@ -142,7 +143,12 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
     get_data("materials_in", globals_dict)
 
     if "materials_in" in globals_dict and globals_dict["materials_in"]:
-        materials = [Material.create(item) for item in globals_dict["materials_in"]]
+        materials = []
+        for item in globals_dict["materials_in"]:
+            try:
+                materials.append(MaterialWithBuildMetadata.create(item))
+            except Exception:
+                materials.append(Material.create(item))
         log(f"Retrieved {len(materials)} materials.")
         return materials
     else:

@@ -38,7 +38,10 @@ jobs:
       - name: Get wheel filename
         id: get_filename
         run: |
-          echo "whl_file=$(ls dist/*.whl)" >> $GITHUB_OUTPUT
+          whl_file=$(ls dist/*.whl)
+          whl_name=$(basename "$whl_file")
+          echo "whl_file=$whl_file" >> $GITHUB_OUTPUT
+          echo "whl_name=$whl_name" >> $GITHUB_OUTPUT
 
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v4

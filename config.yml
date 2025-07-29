@@ -39,12 +39,12 @@ notebooks:
       - nbformat>=4.2.0
     packages_python:
     packages_pyodide:
-      - mat3ra-esse
+      - mat3ra-esse@git+https://github.com/Exabyte-io/esse.git@epic/SOF-7623
       - mat3ra-made@git+https://github.com/Exabyte-io/made.git@epic/SOF-7623
   - name: import_material_from_jarvis_db_entry.ipynb
     packages_common:
       - express-py==2024.2.2.post2
-      - mat3ra-esse
+      - mat3ra-esse@git+https://github.com/Exabyte-io/esse.git@epic/SOF-7623
       - jarvis-tools
       - munch
       - setuptools
@@ -55,7 +55,7 @@ notebooks:
   - name: import_materials_from_files.ipynb
     packages_common:
       - express-py==2024.2.2.post2
-      - mat3ra-esse
+      - mat3ra-esse@git+https://github.com/Exabyte-io/esse.git@epic/SOF-7623
       - munch
       - setuptools
     packages_python:
@@ -66,7 +66,7 @@ notebooks:
     packages_common:
     packages_python:
     packages_pyodide:
-      - mat3ra-esse
+      - mat3ra-esse@git+https://github.com/Exabyte-io/esse.git@epic/SOF-7623
       - mat3ra-made@git+https://github.com/Exabyte-io/made.git@epic/SOF-7623
   - name: specific_examples
     packages_common:

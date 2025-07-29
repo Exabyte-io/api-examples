@@ -1,0 +1,43 @@
+name: Build Wheel
+
+on:
+  workflow_dispatch:
+    inputs:
+      python_version:
+        description: 'Python version to use for the build'
+        required: true
+        default: '3.10'
+      branch:
+        description: 'Branch to checkout'
+        required: true
+        default: 'main'
+
+jobs:
+  build_wheel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ github.event.inputs.python_version }}
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build wheel
+        run: python -m build --wheel
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-wheel
+          path: dist/*.whl  # Upload all .whl files from the 'dist' directory
+

@@ -42,10 +42,10 @@ jobs:
           whl_name=$(basename "$whl_file")
           echo "whl_file=$whl_file" >> $GITHUB_OUTPUT
           echo "whl_name=$whl_name" >> $GITHUB_OUTPUT
-
+      
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.get_filename.outputs.whl_file }}
+          name: ${{ steps.get_filename.outputs.whl_name }}
           path: ${{ steps.get_filename.outputs.whl_file }}
           if-no-files-found: error

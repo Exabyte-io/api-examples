@@ -1,4 +1,4 @@
-name: Build and Release Wheel
+name: Build and Publish Wheel to GitHub Pages
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ on:
         default: 'v0.1.0'
 
 jobs:
-  build_and_release:
+  build_and_publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -40,19 +40,18 @@ jobs:
           echo "whl_file=$whl_file" >> $GITHUB_OUTPUT
           echo "whl_name=$whl_name" >> $GITHUB_OUTPUT
 
-      - name: Create and push tag
+      - name: Prepare gh-pages content
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag ${{ github.event.inputs.tag_name }}
-          git push origin ${{ github.event.inputs.tag_name }}
+          mkdir -p public/
+          cp "${{ steps.get_filename.outputs.whl_file }}" public/
+          # Optional: create index.html for a browsable listing
+          echo "<html><body><a href='${{ steps.get_filename.outputs.whl_name }}'>${{ steps.get_filename.outputs.whl_name }}</a></body></html>" > public/index.html
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          tag_name: ${{ github.event.inputs.tag_name }}
-          name: Release ${{ github.event.inputs.tag_name }}
-          files: ${{ steps.get_filename.outputs.whl_file }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          commit_message: "Publish wheel ${{ steps.get_filename.outputs.whl_name }} for ${{ github.event.inputs.tag_name }}"
 

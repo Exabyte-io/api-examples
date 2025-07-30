@@ -31,7 +31,7 @@ default:
     - uncertainties==3.1.6
     - jinja2
     - pymatgen-analysis-defects<=2024.4.23
-    - https://exabyte-io.github.io/made/mat3ra_made-0.1.dev1+g5e92152-py3-none-any.whl # mat3ra-made
+    - https://exabyte-io.github.io/made/mat3ra_made-0.1.dev1+gcf48fd4-py3-none-any.whl # mat3ra-made
     - mat3ra-code
     - mat3ra-esse
 notebooks:

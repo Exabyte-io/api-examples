@@ -7,7 +7,7 @@
 default:
   packages_common:
     - pandas==1.5.3
-    - ase==3.22.1
+    - ase==3.25.0
     - ipywidgets
     - plotly>=5.18
     - nbformat>=4.2.0

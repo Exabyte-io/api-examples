@@ -129,7 +129,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
         List[Material]: A list of Material objects.
     """
     from mat3ra.made.material import Material
-    from mat3ra.made.tools.build import MaterialWithBuildMetadata
+    from mat3ra.made.tools.build.metadata import MaterialWithBuildMetadata
 
     if globals_dict is None:
         # Get the globals of the caller for correct variable assignment during the execution of data_bridge extension

@@ -54,4 +54,3 @@ jobs:
           publish_dir: ./public
           publish_branch: gh-pages
           commit_message: "Publish wheel ${{ steps.get_filename.outputs.whl_name }} for ${{ github.event.inputs.tag_name }}"
-

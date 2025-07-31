@@ -184,6 +184,7 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
         List[Material]: A list of Material objects loaded from the folder.
     """
     from mat3ra.made.material import Material
+    from mat3ra.made.tools.build.metadata import MaterialWithBuildMetadata
 
     folder_path = folder_path or UPLOADS_FOLDER
 
@@ -205,8 +206,10 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
     except FileNotFoundError:
         log(f"No data found in the '{folder_path}' folder.", SeverityLevelEnum.ERROR, force_verbose=verbose)
         return []
-
-    materials = [Material.create(item) for item in data_from_host]
+    try:
+        materials = [MaterialWithBuildMetadata.create(item) for item in data_from_host]
+    except Exception:
+        materials = [Material.create(item) for item in data_from_host]
 
     if materials:
         log(

@@ -288,11 +288,12 @@ def download_content_to_file(content: Any, filename: str):
         filename (str): The name of the file to download.
     """
     from mat3ra.made.material import Material
+    from mat3ra.made.tools.build.metadata import MaterialWithBuildMetadata
 
     if isinstance(content, dict):
         content = json.dumps(content, indent=4)
 
-    if isinstance(content, Material):
+    if isinstance(content, (Material, MaterialWithBuildMetadata)):
         content = content.to_json()
         content = json.dumps(content, indent=4)
 

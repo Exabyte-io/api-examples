@@ -154,7 +154,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
     else:
         # Fallback to load materials from the UPLOADS_FOLDER if launched outside of Materials Designer
         log(f"No input materials found. Loading from the {UPLOADS_FOLDER} folder.")
-        return get_data_python("materials_in", globals_dict)
+        return load_materials_from_folder()
 
 
 def set_materials(materials: List[Any]):

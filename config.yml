@@ -31,15 +31,14 @@ default:
     - uncertainties==3.1.6
     - jinja2
     - pymatgen-analysis-defects<=2024.4.23
-    - https://exabyte-io.github.io/made/mat3ra_made-0.1.dev1+g3662f70-py3-none-any.whl # mat3ra-made
-    - mat3ra-code
-    - mat3ra-esse
+    - mat3ra-made==2025.8.1.post0
+#    - mat3ra-code
+#    - mat3ra-esse
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:
       - plotly>=5.18
       - nbformat>=4.2.0
-    packages_python:
     packages_pyodide:
   - name: import_material_from_jarvis_db_entry.ipynb
     packages_common:
@@ -47,7 +46,6 @@ notebooks:
       - jarvis-tools
       - munch
       - setuptools
-    packages_python:
     packages_pyodide:
       - emfs:/drive/packages/paginate-0.5.6-py3-none-any.whl
       - emfs:/drive/packages/watchdog-2.3.1-py3-none-any.whl
@@ -56,14 +54,9 @@ notebooks:
       - express-py==2024.2.2.post2
       - munch
       - setuptools
-    packages_python:
     packages_pyodide:
       - emfs:/drive/packages/paginate-0.5.6-py3-none-any.whl
       - emfs:/drive/packages/watchdog-2.3.1-py3-none-any.whl
-  - name: create_point_defect.ipynb
-    packages_common:
-    packages_python:
-    packages_pyodide:
   - name: specific_examples
     packages_common:
       - mat3ra-standata

@@ -31,7 +31,7 @@ default:
     - uncertainties==3.1.6
     - jinja2
     - pymatgen-analysis-defects<=2024.4.23
-    - mat3ra-made
+    - mat3ra-made==2025.7.29.post0
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:

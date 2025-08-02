@@ -1,17 +1,17 @@
 from typing import Dict, List, Union
 
 from mat3ra.made.material import Material
+from mat3ra.made.tools.analyze.interface import ZSLMatchHolder
 from mat3ra.made.tools.analyze.rdf import RadialDistributionFunction
-from mat3ra.made.tools.build.interface.enums import StrainModes
 from mat3ra.utils.jupyterlite.plot import plot_distribution_function, scatter_plot_2d
 
 
-def plot_strain_vs_atoms(interfaces: List["Material"], settings: Dict[str, Union[str, int]]) -> None:
+def plot_strain_vs_area(matches: List["ZSLMatchHolder"], settings: Dict[str, Union[str, int]]) -> None:
     """
     Plot strain vs number of atoms for interfaces.
 
     Args:
-        interfaces: List of interfaces to plot.
+        matches: List of interface matches to plot.
         settings: Plot settings.
 
     """
@@ -20,18 +20,18 @@ def plot_strain_vs_atoms(interfaces: List["Material"], settings: Dict[str, Union
     hover_texts = []
     trace_names = []
 
-    for index, interface in enumerate(interfaces):
-        strain_percentage = interface.metadata[StrainModes.mean_abs_strain] * 100
-        num_sites = len(interface.basis.coordinates.values)
+    for index, match in enumerate(matches):
+        strain_percentage = match.total_strain_percentage
+        match_area = match.match_area
 
         x_values.append(strain_percentage)
-        y_values.append(num_sites)
-        hover_texts.append(f"Index: {index}<br>Strain: {strain_percentage:.2f}%<br>Atoms: {num_sites}")
+        y_values.append(match_area)
+        hover_texts.append(f"Index: {index}<br>Strain: {strain_percentage:.2f}%<br>Area: {match_area:.2f} Å²")
         trace_names.append(f"Index: {index}")
 
     plot_settings = {
         "x_title": "Strain (%)",
-        "y_title": "Number of atoms",
+        "y_title": "Area (Å²)",
         "x_scale": settings["X_SCALE"],
         "y_scale": settings["Y_SCALE"],
         "height": settings["HEIGHT"],

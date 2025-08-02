@@ -5,12 +5,12 @@ description = "Mat3ra API Examples"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-  "ase>=3.21.1",
+  "ase>=3.25.10",
   "exabyte-api-client>=2023.6.13.post0",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen==2024.4.13",
-  "mat3ra-made>=2025.4.4.post0",
+  "mat3ra-made>=2025.8.1.post1",
   "mat3ra-utils>=2024.6.11.post0",
 ]
 

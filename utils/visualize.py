@@ -138,14 +138,22 @@ def render_wave(material, properties, width=600, height=600):
     display(Javascript(get_wave_js(material_json, div_id)))
 
 
-def render_wave_grid(materials, properties, width=400, height=400, max_columns=3):
+def render_wave_grid(
+    materials: List[Material],
+    list_of_properties_configs: List[MaterialViewProperties],
+    width=400,
+    height=400,
+    max_columns=3,
+):
     html_items = []
     js_items = []
     timestamp = time.time()
     # column_width = f"minmax(100px, {100 / max_columns}%)"
 
     for i, material in enumerate(materials):
-        html = get_wave_html(f"wave-{i}-{timestamp}", width, height, title=properties.title)
+        properties_config = list_of_properties_configs[i]
+        title = properties_config.title
+        html = get_wave_html(f"wave-{i}-{timestamp}", width, height, title=title)
         js = get_wave_js(material.to_json(), f"wave-{i}-{timestamp}")
         html_items.append(widgets.HTML(html))
         js_items.append(Javascript(js))
@@ -225,14 +233,16 @@ def visualize_materials(
 
     if viewer == ViewersEnum.wave:
         wave_materials = []
+        wave_properties_list = []
         for material_entry in materials:
-            material, properties = process_material_entry(material_entry, default_properties)
+            material, material_properties = process_material_entry(material_entry, default_properties)
             wave_materials.append(material)
+            wave_properties_list.append(material_properties)
         if len(wave_materials) == 1:
             # Render single material in the wave viewer, larger size and hotkeys working
-            render_wave(wave_materials[0], properties=properties)
+            render_wave(wave_materials[0], properties=wave_properties_list[0])
         else:
-            render_wave_grid(materials=wave_materials, properties=properties)
+            render_wave_grid(materials=wave_materials, list_of_properties_configs=wave_properties_list)
 
     else:
         items = []

@@ -31,9 +31,9 @@ default:
     - uncertainties==3.1.6
     - jinja2
     - pymatgen-analysis-defects<=2024.4.23
-    - mat3ra-made==2025.8.1.post1
-#    - mat3ra-code
-#    - mat3ra-esse
+    - https://exabyte-io.github.io/made/mat3ra_made-0.1.dev1+g5326929-py3-none-any.whl # mat3ra-made==2025.8.1.post1
+    - mat3ra-code
+    - mat3ra-esse
 notebooks:
   - name: create_interface_with_min_strain_zsl.ipynb
     packages_common:

@@ -129,7 +129,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
         List[Material]: A list of Material objects.
     """
     from mat3ra.made.material import Material
-    from mat3ra.made.tools.build.metadata import MaterialWithBuildMetadata
+    from mat3ra.made.tools.build_components import MaterialWithBuildMetadata
 
     if globals_dict is None:
         # Get the globals of the caller for correct variable assignment during the execution of data_bridge extension
@@ -184,7 +184,7 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
         List[Material]: A list of Material objects loaded from the folder.
     """
     from mat3ra.made.material import Material
-    from mat3ra.made.tools.build.metadata import MaterialWithBuildMetadata
+    from mat3ra.made.tools.build_components import MaterialWithBuildMetadata
 
     folder_path = folder_path or UPLOADS_FOLDER
 
@@ -291,7 +291,7 @@ def download_content_to_file(content: Any, filename: str):
         filename (str): The name of the file to download.
     """
     from mat3ra.made.material import Material
-    from mat3ra.made.tools.build.metadata import MaterialWithBuildMetadata
+    from mat3ra.made.tools.build_components import MaterialWithBuildMetadata
 
     if isinstance(content, dict):
         content = json.dumps(content, indent=4)

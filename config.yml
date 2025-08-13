@@ -31,7 +31,7 @@ default:
     - uncertainties==3.1.6
     - jinja2
     - pymatgen-analysis-defects<=2024.4.23
-    - mat3ra-made==2025.8.9.post0
+    - mat3ra-made==2025.8.13.post0
 # packages below are used when made is installed from GH wheel
 #    - mat3ra-code
 #    - mat3ra-esse

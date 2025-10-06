@@ -37,6 +37,12 @@ docs = [
   "mkdocs-jupyter>=0.24.1",
   "nbstripout>=0.6.1",
 ]
+forcefields = [
+  "mattersim>=1.2.0",
+  # WARNING: mattersim will automatically upgrade numpy and pymatgen
+  # This WILL conflict with base project dependencies
+  # Use this optional dependency ONLY in isolated environments
+]
 
 [project.urls]
 homepage = "https://exabyte-io.github.io/api-examples"

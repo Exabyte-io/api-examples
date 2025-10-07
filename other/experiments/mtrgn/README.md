@@ -12,11 +12,16 @@ pip install . -e
 
 ### 1.1. Fix torch compatibility
 
-In case of compatibility issues with torch and torch-scatter, you can try to reinstall specific versions:
+In case of compatibility issues with torch and torch-scatter, you can try to reinstall specific versions.
+
+Below are the directives for Apple Silicon, 12.6 OSX:
 
 ```bash
 pip install --no-cache-dir --force-reinstall "torch==2.4.1"
+```
 
+In case `torch-scatter` installation fails, try:
+```bash
 pip install --no-cache-dir --force-reinstall  torch-scatter -f https://data.pyg.org/whl/torch-2.4.1.html
 ```
 
@@ -24,7 +29,7 @@ pip install --no-cache-dir --force-reinstall  torch-scatter -f https://data.pyg.
 
 For Apple Silicon devices (M-series chips) set fallback to CPU:
 ```bash
-export MATTERGEN_DEVICE=cpu 
+export MATTERGEN_DEVICE=cpu
 export PYTORCH_ENABLE_MPS_FALLBACK=1;
 ```
 
@@ -33,7 +38,7 @@ export PYTORCH_ENABLE_MPS_FALLBACK=1;
 Set model name and results path:
 ```bash
 export MODEL_NAME=chemical_system_energy_above_hull
-export RESULTS_PATH="results/$MODEL_NAME/"  
+export RESULTS_PATH="results/$MODEL_NAME/"
 ```
 
 Run generation:

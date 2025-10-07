@@ -21,7 +21,7 @@ source .venv-3.10.12/bin/activate
 Try this approach first:
 
 ```bash
-pip install . -e
+pip install -e .
 ```
 
 In case of issues, try using `uv`:

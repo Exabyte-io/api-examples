@@ -46,7 +46,7 @@ Run generation:
 mattergen-generate $RESULTS_PATH --pretrained-name=$MODEL_NAME --batch_size=1 --properties_to_condition_on="{'chemical_system': 'Si-O'}" --diffusion_guidance_factor=2.0
 ```
 
-### 3.0. Results
+## 3.0. Results
 
 File structure expected to be like:
 ```
@@ -70,3 +70,9 @@ O        2.86109621       2.03830726       2.83004283
 O        1.84533000       3.12136774       5.01444792
 O        3.87107245       0.94328279       6.87403968
 ```
+
+## 4.0. Run relaxation (optional)
+
+To relax the generated structures, you can use the [Relaxation Notebook](../mtrsm/relax_generated_material.ipynb).
+
+Copy the generated `extxyz` file to the `mtrsm/data/` folder and run the notebook.

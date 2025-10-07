@@ -14,10 +14,24 @@ git clone https://github.com/Exabyte-io/mattergen.git && cd mattergen
 pyenv local 3.10.12
 python -m venv .venv-3.10.12
 source .venv-3.10.12/bin/activate
+```
+
+### 1.2. Install the package
+
+Try this approach first:
+
+```bash
 pip install . -e
 ```
 
-### 1.2. Fix torch compatibility
+In case of issues, try using `uv`:
+
+```bash
+pip install uv
+uv pip install -e .
+```
+
+### 1.3. Fix torch compatibility
 
 In case of compatibility issues with torch and torch-scatter, you can try to reinstall specific versions.
 
@@ -32,7 +46,7 @@ In case `torch-scatter` installation fails, try:
 pip install --no-cache-dir --force-reinstall  torch-scatter -f https://data.pyg.org/whl/torch-2.4.1.html
 ```
 
-### 1.3. Set environment variables
+### 1.4. Set environment variables
 
 For Apple Silicon devices (M-series chips) set fallback to CPU:
 ```bash

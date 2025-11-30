@@ -129,6 +129,7 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
         List[Material]: A list of Material objects.
     """
     from mat3ra.made.material import Material
+    from mat3ra.made.tools.build_components import MaterialWithBuildMetadata
 
     if globals_dict is None:
         # Get the globals of the caller for correct variable assignment during the execution of data_bridge extension
@@ -142,13 +143,18 @@ def get_materials(globals_dict: Optional[Dict] = None) -> List[Any]:
     get_data("materials_in", globals_dict)
 
     if "materials_in" in globals_dict and globals_dict["materials_in"]:
-        materials = [Material.create(item) for item in globals_dict["materials_in"]]
+        materials = []
+        for item in globals_dict["materials_in"]:
+            try:
+                materials.append(MaterialWithBuildMetadata.create(item))
+            except Exception:
+                materials.append(Material.create(item))
         log(f"Retrieved {len(materials)} materials.")
         return materials
     else:
         # Fallback to load materials from the UPLOADS_FOLDER if launched outside of Materials Designer
         log(f"No input materials found. Loading from the {UPLOADS_FOLDER} folder.")
-        return get_data_python("materials_in", globals_dict)
+        return load_materials_from_folder()
 
 
 def set_materials(materials: List[Any]):
@@ -178,6 +184,7 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
         List[Material]: A list of Material objects loaded from the folder.
     """
     from mat3ra.made.material import Material
+    from mat3ra.made.tools.build_components import MaterialWithBuildMetadata
 
     folder_path = folder_path or UPLOADS_FOLDER
 
@@ -199,8 +206,10 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
     except FileNotFoundError:
         log(f"No data found in the '{folder_path}' folder.", SeverityLevelEnum.ERROR, force_verbose=verbose)
         return []
-
-    materials = [Material.create(item) for item in data_from_host]
+    try:
+        materials = [MaterialWithBuildMetadata.create(item) for item in data_from_host]
+    except Exception:
+        materials = [Material.create(item) for item in data_from_host]
 
     if materials:
         log(
@@ -282,11 +291,12 @@ def download_content_to_file(content: Any, filename: str):
         filename (str): The name of the file to download.
     """
     from mat3ra.made.material import Material
+    from mat3ra.made.tools.build_components import MaterialWithBuildMetadata
 
     if isinstance(content, dict):
         content = json.dumps(content, indent=4)
 
-    if isinstance(content, Material):
+    if isinstance(content, (Material, MaterialWithBuildMetadata)):
         content = content.to_json()
         content = json.dumps(content, indent=4)
 

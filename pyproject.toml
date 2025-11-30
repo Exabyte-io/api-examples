@@ -5,12 +5,14 @@ description = "Mat3ra API Examples"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-  "ase>=3.21.1",
+  # ase >=3.25.0 is required for supercell to be generated,
+  # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
+  "ase>=3.25.0",
   "exabyte-api-client>=2023.6.13.post0",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen==2024.4.13",
-  "mat3ra-made>=2025.4.4.post0",
+  "mat3ra-made>=2025.8.13.post0",
   "mat3ra-utils>=2024.6.11.post0",
 ]
 
@@ -34,6 +36,12 @@ docs = [
   "mkdocs-exclude>=1.0.2",
   "mkdocs-jupyter>=0.24.1",
   "nbstripout>=0.6.1",
+]
+forcefields = [
+  "mattersim>=1.2.0",
+  # WARNING: mattersim will automatically upgrade numpy and pymatgen
+  # This WILL conflict with base project dependencies
+  # Use this optional dependency ONLY in isolated environments
 ]
 
 [project.urls]

@@ -5,17 +5,19 @@ import os
 import time
 import urllib.request
 import uuid
+from types import SimpleNamespace
 from typing import List, Union
 
+from IPython.display import HTML, display
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 from exabyte_api_client.endpoints.properties import PropertiesEndpoints
-from IPython.display import HTML, display
 from pandas import DataFrame
 from pandas.io.formats.style import Styler
 from tabulate import tabulate
 
 from . import settings
+
 
 # GENERIC UTILITIES
 
@@ -223,3 +225,13 @@ def display_JSON(
         )
     else:
         print(json.dumps(obj, indent=4))
+
+
+# Helper function to convert dictionaries to SimpleNamespace objects for dot notation access
+def dict_to_namespace(obj):
+    if isinstance(obj, dict):
+        return SimpleNamespace(**{k: dict_to_namespace(v) for k, v in obj.items()})
+    elif isinstance(obj, list):
+        return [dict_to_namespace(item) for item in obj]
+    else:
+        return obj

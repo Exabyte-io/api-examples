@@ -66,3 +66,4 @@ notebooks:
     packages_common:
       - mat3ra-standata
       - exabyte-api-client
+      - requests

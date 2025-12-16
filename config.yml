@@ -31,7 +31,7 @@ default:
     - uncertainties==3.1.6
     - jinja2
     - pymatgen-analysis-defects<=2024.4.23
-    - mat3ra-made==2025.11.24.post0
+    - mat3ra-made==2025.12.16.post0
 # packages below are used when made is installed from GH wheel (made should be installed from below)
 #    - https://exabyte-io.github.io/made/mat3ra_made-0.1.dev1+ge64d360b8-py3-none-any.whl
 #    - mat3ra-code
@@ -66,3 +66,4 @@ notebooks:
     packages_common:
       - mat3ra-standata
       - exabyte-api-client
+      - requests

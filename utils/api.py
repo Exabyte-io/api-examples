@@ -1,8 +1,9 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 from exabyte_api_client.endpoints.materials import MaterialEndpoints
 from exabyte_api_client.endpoints.projects import ProjectEndpoints
 from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
+from mat3ra.wode.workflows import Workflow
 
 from .settings import ACCOUNT_ID, ENDPOINT_ARGS
 
@@ -21,14 +22,17 @@ def create_material(material: Any, owner_id: Optional[str] = None) -> Dict[str, 
     endpoint = MaterialEndpoints(*ENDPOINT_ARGS)
     owner = owner_id or ACCOUNT_ID
 
-    raw_config = material.to_dict()
+    if isinstance(material, dict):
+        raw_config = material
+    else:
+        raw_config = material.to_dict()
     fields = ["name", "lattice", "basis"]
     config = {key: raw_config[key] for key in fields}
 
     return endpoint.create(config, owner)
 
 
-def create_workflow(workflow: Any, owner_id: Optional[str] = None) -> Dict[str, Any]:
+def create_workflow(workflow: Union[Workflow, Dict], owner_id: Optional[str] = None) -> Dict[str, Any]:
     """
     Creates a workflow on the platform.
 
@@ -41,8 +45,10 @@ def create_workflow(workflow: Any, owner_id: Optional[str] = None) -> Dict[str, 
     """
     endpoint = WorkflowEndpoints(*ENDPOINT_ARGS)
     owner = owner_id or ACCOUNT_ID
-
-    config = workflow.to_dict()
+    if isinstance(workflow, dict):
+        config = workflow
+    else:
+        config = workflow.to_dict()
 
     return endpoint.create(config, owner)
 

@@ -71,7 +71,8 @@ def get_default_project(owner_id: Optional[str] = None) -> str:
 def _get_api_base_url() -> str:
     protocol = "https" if SECURE else "http"
     port_str = f":{PORT}" if PORT not in [80, 443] else ""
-    return f"{protocol}://{HOST}{port_str}/api/{VERSION}"
+    api_version = "v1" if VERSION == "2018-10-01" else VERSION
+    return f"{protocol}://{HOST}{port_str}/api/{api_version}"
 
 
 def _make_oidc_request(method: str, endpoint: str, data: Optional[Dict] = None) -> Union[Dict[str, Any], List[Any]]:
@@ -89,27 +90,50 @@ def _make_oidc_request(method: str, endpoint: str, data: Optional[Dict] = None) 
     return response.json()
 
 
+def get_user_account_id_oidc() -> str:
+    """
+    Gets the default account ID for the authenticated user.
+
+    Returns:
+        str: The user's default account ID
+    """
+    user_info = _make_oidc_request("GET", "users/me")
+    account_id = user_info["data"]["user"]["entity"]["defaultAccountId"]
+    os.environ["ACCOUNT_ID"] = account_id
+    return account_id
+
+
 def create_material_oidc(material: Any, owner_id: Optional[str] = None) -> Dict[str, Any]:
     owner = owner_id or ACCOUNT_ID
     raw_config = material.to_dict()
     fields = ["name", "lattice", "basis"]
-    config = {key: raw_config[key] for key in fields}
-    config["owner"] = {"_id": owner}
-    return _make_oidc_request("PUT", "materials/create", config)
+    material_config = {key: raw_config[key] for key in fields}
+    request_body = {
+        "accountId": owner,
+        "material": material_config,
+    }
+    return _make_oidc_request("POST", "materials", request_body)
 
 
 def create_workflow_oidc(workflow: Any, owner_id: Optional[str] = None) -> Dict[str, Any]:
     owner = owner_id or ACCOUNT_ID
     config = workflow.to_dict()
-    config["owner"] = {"_id": owner}
-    return _make_oidc_request("PUT", "workflows/create", config)
+    workflow_data = {
+        "accountId": owner,
+        "workflow": config,
+    }
+    return _make_oidc_request("POST", "workflows", workflow_data)
 
 
 def get_default_project_oidc(owner_id: Optional[str] = None) -> str:
     owner = owner_id or ACCOUNT_ID
-    response = _make_oidc_request("GET", f"projects?isDefault=true&owner._id={owner}")
-    if isinstance(response, list):
+    response = _make_oidc_request("GET", f"projects?isDefault=true")
+    if isinstance(response, dict) and "data" in response:
+        projects = response["data"]
+    elif isinstance(response, list):
         projects = response
     else:
-        projects = response.get("data", [])
+        projects = []
+    if not projects:
+        raise Exception("No default project found")
     return projects[0]["_id"]

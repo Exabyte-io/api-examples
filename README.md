@@ -104,6 +104,21 @@ If you would like to add new examples or adjust existing ones, please consider t
 
     Check more details about `pre-commit` [here](https://pre-commit.com/).
 
+## Development
+
+To run NBs locally with JupyterLite use `https://github.com/Exabyte-io/jupyterlite` repo to build and run the server.
+
+
+For local API development with WebApp set the variables in the first cell of the notebooks as follows:
+
+```python
+API_HOST = "localhost"
+API_PORT = "3000"
+API_SECURE = "false"
+API_VERSION = "2018-10-01"
+```
+
+
 ## Links
 
 1. Mat3ra.com RESTful API, description in the online documentation: [link](https://docs.mat3ra.com/rest-api/overview/)

@@ -163,22 +163,22 @@ def list_jobs(query: Optional[Dict[str, Any]] = None, owner_id: Optional[str] = 
 
 
 def create_job(
-    material_ids: List[str],
-    workflow_id: str,
-    project_id: str,
-    name: str,
-    compute: Dict[str, Any],
-    owner_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    materials,
+    workflow_id,
+    project_id,
+    name,
+    compute,
+    owner_id=None,
+):
     _, _, job_endpoints, _ = _create_endpoints_with_auth()
     owner = owner_id or get_owner_id()
 
-    return job_endpoints.create(
-        material_ids=material_ids,
+    return job_endpoints.create_by_ids(
+        materials=materials,
         workflow_id=workflow_id,
         project_id=project_id,
         owner_id=owner,
-        name=name,
+        prefix=name,
         compute=compute,
     )
 

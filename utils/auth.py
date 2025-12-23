@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 import time
 
@@ -10,7 +11,7 @@ OIDC_BASE_URL = "http://localhost:3000/oidc"  # Your OIDC server URL
 CLIENT_ID = "default-client"  # Your OAuth client ID
 CLIENT_SECRET = "default-secret"  # Your OAuth client secret
 SCOPE = "openid profile email"  # Requested scopes
-
+# TODO: get from api client
 # Environment Variable Names
 ACCESS_TOKEN_ENV_VAR = "OIDC_ACCESS_TOKEN"
 REFRESH_TOKEN_ENV_VAR = "OIDC_REFRESH_TOKEN"
@@ -35,14 +36,17 @@ def request_device_flow_state(oidc_base_url: str, client_id: str, client_secret:
 
 
 def show_device_flow_popup(verification_uri_complete: str, user_code: str) -> None:
+    from IPython.display import HTML
+
     display(
-        Javascript(
-            "alert("
-            + repr(f"Open the login page and enter this code:\\n\\n{user_code}")
-            + ");"
-            + f"window.open({verification_uri_complete!r}, '_blank');"
+        HTML(
+            f"<div style='padding: 15px; background: #e3f2fd; border-left: 4px solid #2196f3; margin: 10px 0;'>"
+            f"<strong>Authentication Required</strong><br/>"
+            f"Enter this code: <strong style='font-size: 1.2em; color: #1976d2;'>{user_code}</strong>"
+            f"</div>"
         )
     )
+    display(Javascript(f"window.open({verification_uri_complete!r}, '_blank');"))
 
 
 def store_token_data_in_environment(token_data: dict) -> None:
@@ -78,7 +82,7 @@ async def _poll_for_token_data(
     raise Exception("Timeout waiting for authorization.")
 
 
-async def authenticate(
+async def authenticate_oidc(
     oidc_base_url=OIDC_BASE_URL,
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
@@ -96,3 +100,24 @@ async def authenticate(
     )
     store_token_data_in_environment(token_data)
     return token_data
+
+
+async def authenticate_jupyterlite():
+    apiConfig = data_from_host.get("apiConfig")  # type: ignore  # noqa: F821
+    os.environ.update(data_from_host.get("environ", {}))  # noqa: F821
+    os.environ.update(
+        dict(
+            ACCOUNT_ID=apiConfig.get("accountId"),
+            AUTH_TOKEN=apiConfig.get("authToken"),
+            ORGANIZATION_ID=apiConfig.get("organizationId", ""),
+            CLUSTERS=json.dumps(apiConfig.get("clusters", [])),
+        )
+    )
+
+
+async def authenticate():
+    if "data_from_host" in globals():
+        await authenticate_jupyterlite()
+    else:
+        if ACCESS_TOKEN_ENV_VAR not in os.environ:
+            await authenticate_oidc()

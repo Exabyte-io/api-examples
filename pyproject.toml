@@ -8,13 +8,14 @@ dependencies = [
   # ase >=3.25.0 is required for supercell to be generated,
   # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
   "ase>=3.25.0",
-  "exabyte-api-client>=2023.6.13.post0",
+  "exabyte-api-client",
+  "mat3ra-api-client @ git+https://github.com/Exabyte-io/api-client.git@2805be6ac1611ea24f827ffa0714c94267ce2a96",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen==2024.4.13",
   "mat3ra-made>=2025.8.13.post0",
   "mat3ra-utils>=2024.6.11.post0",
-  "mat3ra-wode @ git+https://github.com/Exabyte-io/wode.git@ffc88d15184b2bedae558c47c2a7ba2e49624c52"
+  "mat3ra-wode"
 ]
 
 [project.optional-dependencies]

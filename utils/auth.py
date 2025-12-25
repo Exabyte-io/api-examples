@@ -2,19 +2,18 @@ import asyncio
 import json
 import os
 import time
+from typing import Optional
 
 import requests
 from IPython.display import Javascript, display
+from mat3ra.api_client.client import ACCESS_TOKEN_ENV_VAR, CLIENT_ID, CLIENT_SECRET, SCOPE, APIEnv, _build_oidc_base_url
 
-# Default OIDC Configuration
-OIDC_BASE_URL = "http://localhost:3000/oidc"  # Your OIDC server URL
-CLIENT_ID = "default-client"  # Your OAuth client ID
-CLIENT_SECRET = "default-secret"  # Your OAuth client secret
-SCOPE = "openid profile email"  # Requested scopes
-# TODO: get from api client
-# Environment Variable Names
-ACCESS_TOKEN_ENV_VAR = "OIDC_ACCESS_TOKEN"
 REFRESH_TOKEN_ENV_VAR = "OIDC_REFRESH_TOKEN"
+
+
+def get_oidc_base_url() -> str:
+    env = APIEnv.from_env()
+    return _build_oidc_base_url(env.host, env.port, env.secure)
 
 
 def request_device_flow_state(oidc_base_url: str, client_id: str, client_secret: str, scope: str) -> dict:
@@ -83,11 +82,13 @@ async def _poll_for_token_data(
 
 
 async def authenticate_oidc(
-    oidc_base_url=OIDC_BASE_URL,
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET,
-    scope=SCOPE,
+    oidc_base_url: Optional[str] = None,
+    client_id: str = CLIENT_ID,
+    client_secret: str = CLIENT_SECRET,
+    scope: str = SCOPE,
 ) -> dict:
+    if oidc_base_url is None:
+        oidc_base_url = get_oidc_base_url()
     device_flow_state = request_device_flow_state(oidc_base_url, client_id, client_secret, scope)
     show_device_flow_popup(device_flow_state["verification_uri_complete"], device_flow_state["user_code"])
     token_data = await _poll_for_token_data(

@@ -8,16 +8,15 @@ import uuid
 from types import SimpleNamespace
 from typing import List, Union
 
-from IPython.display import HTML, display
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from exabyte_api_client.endpoints.jobs import JobEndpoints
 from exabyte_api_client.endpoints.properties import PropertiesEndpoints
+from IPython.display import HTML, display
 from pandas import DataFrame
 from pandas.io.formats.style import Styler
 from tabulate import tabulate
 
 from . import settings
-
 
 # GENERIC UTILITIES
 
@@ -235,3 +234,8 @@ def dict_to_namespace(obj):
         return [dict_to_namespace(item) for item in obj]
     else:
         return obj
+
+
+def get_cluster_name(name: str = "cluster-001") -> str:
+    clusters = json.loads(os.environ.get("CLUSTERS", "[]") or "[]")
+    return clusters[0] if clusters else name

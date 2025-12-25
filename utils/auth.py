@@ -115,9 +115,9 @@ async def authenticate_jupyterlite():
     )
 
 
-async def authenticate():
+async def authenticate(force=False):
     if "data_from_host" in globals():
         await authenticate_jupyterlite()
     else:
-        if ACCESS_TOKEN_ENV_VAR not in os.environ:
+        if ACCESS_TOKEN_ENV_VAR not in os.environ or force:
             await authenticate_oidc()

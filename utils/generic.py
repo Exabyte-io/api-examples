@@ -5,6 +5,7 @@ import os
 import time
 import urllib.request
 import uuid
+from types import SimpleNamespace
 from typing import List, Union
 
 from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
@@ -223,3 +224,18 @@ def display_JSON(
         )
     else:
         print(json.dumps(obj, indent=4))
+
+
+# Helper function to convert dictionaries to SimpleNamespace objects for dot notation access
+def dict_to_namespace(obj):
+    if isinstance(obj, dict):
+        return SimpleNamespace(**{k: dict_to_namespace(v) for k, v in obj.items()})
+    elif isinstance(obj, list):
+        return [dict_to_namespace(item) for item in obj]
+    else:
+        return obj
+
+
+def get_cluster_name(name: str = "cluster-001") -> str:
+    clusters = json.loads(os.environ.get("CLUSTERS", "[]") or "[]")
+    return clusters[0] if clusters else name

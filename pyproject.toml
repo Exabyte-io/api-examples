@@ -8,6 +8,7 @@ dependencies = [
   # ase >=3.25.0 is required for supercell to be generated,
   # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
   "ase>=3.25.0",
+  # TODO: remove in favor of the mat3ra-api-client package
   "exabyte-api-client",
   "mat3ra-api-client",
   "matplotlib>=3.4.1",

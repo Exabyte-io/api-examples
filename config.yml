@@ -68,3 +68,5 @@ notebooks:
       - exabyte-api-client
       - mat3ra-api-client
       - requests
+      - mat3ra-ade
+      - mat3ra-wode

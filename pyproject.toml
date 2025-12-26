@@ -9,7 +9,7 @@ dependencies = [
   # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
   "ase>=3.25.0",
   "exabyte-api-client",
-  "mat3ra-api-client @ git+https://github.com/Exabyte-io/api-client.git@2805be6ac1611ea24f827ffa0714c94267ce2a96",
+  "mat3ra-api-client",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen==2024.4.13",

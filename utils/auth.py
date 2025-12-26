@@ -17,6 +17,26 @@ def get_oidc_base_url() -> str:
 
 
 def request_device_flow_state(oidc_base_url: str, client_id: str, scope: str) -> dict:
+    """
+    Request an OAuth/OIDC Device Authorization flow state.
+
+    This calls the authorization server's device endpoint and returns the values needed to:
+    - display a user-facing verification URL + code
+    - poll the token endpoint until authorization completes
+
+    Args:
+        oidc_base_url: Base OIDC URL.
+        client_id: OAuth client identifier for the device flow.
+        scope: Space-separated scopes to request (e.g. "openid profile email").
+
+    Returns:
+        A dict with:
+        - device_code: Device code used to poll for token issuance.
+        - user_code: Short code the user enters in the verification UI.
+        - verification_uri_complete: URL to open for user authorization.
+        - polling_interval_seconds: Recommended polling interval.
+        - expires_in_seconds: Device code lifetime.
+    """
     device_response = requests.post(
         f"{oidc_base_url}/device/auth",
         data={"client_id": client_id, "scope": scope},

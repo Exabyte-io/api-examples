@@ -225,32 +225,44 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
 
 def load_material_from_folder(folder_path: str, name: str, verbose: bool = True) -> Optional[Any]:
     """
-    Load a single material from the specified folder by matching a substring of the name.
+    Load a single material from the specified folder by matching a substring of the name or filename.
 
     Args:
         folder_path (str): The path to the folder containing material files.
-        name (str): The substring of the name of the material to load.
+        name (str): The substring to match against material names or filenames (case-insensitive).
         verbose (bool): Whether to log verbose messages.
 
     Returns:
-        Optional[Material]: The first Material object that contains the name substring, or None if not found.
+        Optional[Material]: The first Material object that matches, or None if not found.
     """
-    # Reuse the existing function to load all materials from the folder
-    materials = load_materials_from_folder(folder_path, verbose=verbose)
-    for material in materials:
-        if name.lower() in material.name.lower():
-            log(
-                f"Found: '{material.name}'",
-                SeverityLevelEnum.INFO,
-                force_verbose=verbose,
-            )
-            return material
+    from mat3ra.made.material import Material
+    from mat3ra.made.tools.build_components import MaterialWithBuildMetadata
 
-    log(
-        f"No material containing '{name}' found in folder '{folder_path}'.",
-        SeverityLevelEnum.WARNING,
-        force_verbose=verbose,
-    )
+    name_lower = name.lower()
+    resulting_material = None
+
+    for filename in sorted(os.listdir(folder_path)):
+        if filename.endswith(".json") and name_lower in os.path.splitext(filename)[0].lower():
+            with open(os.path.join(folder_path, filename), "r") as file:
+                data = json.load(file)
+            try:
+                resulting_material = MaterialWithBuildMetadata.create(data)
+            except Exception:
+                resulting_material = Material.create(data)
+            break
+
+    if not resulting_material:
+        materials = load_materials_from_folder(folder_path, verbose=verbose)
+        for material in materials:
+            if name_lower in material.name.lower():
+                resulting_material = material
+                break
+
+    if resulting_material:
+        log(f"Found: '{resulting_material.name}'", SeverityLevelEnum.INFO, force_verbose=verbose)
+        return resulting_material
+
+    log(f"No material containing '{name}' found in '{folder_path}'.", SeverityLevelEnum.WARNING, force_verbose=verbose)
     return None
 
 

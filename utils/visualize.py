@@ -12,6 +12,8 @@ from mat3ra.made.tools.convert import to_ase
 from mat3ra.utils.array import convert_to_array_if_not
 from pydantic import BaseModel
 
+from .generic import display_JSON
+
 
 class ViewersEnum(str, Enum):
     wave = "wave"
@@ -255,3 +257,18 @@ def visualize_materials(
                 items.append((image_data, image_title))
 
         display(create_responsive_image_grid(items))
+
+
+def visualize_workflow(workflow, level: int = 2) -> None:
+    """
+    Visualize a workflow by displaying its JSON configuration.
+
+    Args:
+        workflow: Workflow object with a to_dict() method
+        level: Expansion level for the JSON viewer (default: 2)
+
+    Returns:
+        None
+    """
+    workflow_config = workflow.to_dict()
+    display_JSON(workflow_config, level=level)

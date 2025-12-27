@@ -24,8 +24,7 @@ import numpy as np
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from utils.generic import ensure_packages_are_installed, save_files
-ensure_packages_are_installed()
+from utils.api import save_files
 from utils.material import get_all_slabs_and_terms
 from utils.material import get_vasp_total_energy, get_slab_area, get_surface_energy
 from settings import MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID

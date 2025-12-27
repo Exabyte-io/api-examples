@@ -12,7 +12,7 @@ from mat3ra.made.tools.convert import to_ase
 from mat3ra.utils.array import convert_to_array_if_not
 from pydantic import BaseModel
 
-from .generic import display_JSON
+from utils.generic import display_JSON
 
 
 class ViewersEnum(str, Enum):

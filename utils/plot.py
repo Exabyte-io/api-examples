@@ -2,12 +2,12 @@ import io
 import sys
 from typing import Dict, List, Union
 
-import matplotlib
 from IPython.display import Image, display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.analyze.interface import ZSLMatchHolder
 from mat3ra.made.tools.analyze.rdf import RadialDistributionFunction
 from mat3ra.utils.jupyterlite.plot import plot_distribution_function, scatter_plot_2d
+from matplotlib import pyplot as plt
 
 
 def plot_strain_vs_area(matches: List["ZSLMatchHolder"], settings: Dict[str, Union[str, int]]) -> None:
@@ -79,7 +79,7 @@ def plot_rdf(material: "Material", cutoff: float = 10.0, bin_size: float = 0.1) 
     """
     is_pyodide = sys.platform == "emscripten"
     if is_pyodide:
-        matplotlib.use("Agg")
+        plt.switch_backend("Agg")
 
     rdf = RadialDistributionFunction.from_material(material, cutoff=cutoff, bin_size=bin_size)
     plot_distribution_function(
@@ -87,8 +87,6 @@ def plot_rdf(material: "Material", cutoff: float = 10.0, bin_size: float = 0.1) 
     )
 
     if is_pyodide:
-        import matplotlib.pyplot as plt
-
         buf = io.BytesIO()
         plt.savefig(buf, format="png")
         buf.seek(0)

@@ -3,7 +3,7 @@ import sys
 from typing import Dict, List, Union
 
 import matplotlib
-import matplotlib.pyplot as plt
+from IPython.display import Image, display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.analyze.interface import ZSLMatchHolder
 from mat3ra.made.tools.analyze.rdf import RadialDistributionFunction
@@ -87,7 +87,7 @@ def plot_rdf(material: "Material", cutoff: float = 10.0, bin_size: float = 0.1) 
     )
 
     if is_pyodide:
-        from IPython.display import Image, display
+        import matplotlib.pyplot as plt
 
         buf = io.BytesIO()
         plt.savefig(buf, format="png")

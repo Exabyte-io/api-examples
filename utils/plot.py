@@ -1,9 +1,13 @@
+import io
+import sys
 from typing import Dict, List, Union
 
+from IPython.display import Image, display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.analyze.interface import ZSLMatchHolder
 from mat3ra.made.tools.analyze.rdf import RadialDistributionFunction
 from mat3ra.utils.jupyterlite.plot import plot_distribution_function, scatter_plot_2d
+from matplotlib import pyplot as plt
 
 
 def plot_strain_vs_area(matches: List["ZSLMatchHolder"], settings: Dict[str, Union[str, int]]) -> None:
@@ -60,8 +64,8 @@ def plot_twisted_interface_solutions(interfaces: List["Material"]) -> None:
 
         x_values.append(angle)
         y_values.append(size)
-        hover_texts.append(f"Interface {i+1}<br>Angle: {angle:.2f}°<br>Atoms: {size}<br>")
-        trace_names.append(f"Interface {i+1}")
+        hover_texts.append(f"Interface {i + 1}<br>Angle: {angle:.2f}°<br>Atoms: {size}<br>")
+        trace_names.append(f"Interface {i + 1}")
 
     plot_settings = {"x_title": "Twist Angle (°)", "y_title": "Number of Atoms", "title": "Twisted Interface Solutions"}
 
@@ -73,7 +77,20 @@ def plot_rdf(material: "Material", cutoff: float = 10.0, bin_size: float = 0.1) 
     """
     Plot RDF for a material.
     """
+    is_pyodide = sys.platform == "emscripten"
+    if is_pyodide:
+        # This is needed so that plt is adjusted before import to work in Pyodide environment
+        plt.switch_backend("Agg")
+
     rdf = RadialDistributionFunction.from_material(material, cutoff=cutoff, bin_size=bin_size)
     plot_distribution_function(
         rdf.bin_centers, rdf.rdf, xlabel="Distance (Å)", ylabel="g(r)", title="Radial Distribution Function (RDF)"
     )
+
+    if is_pyodide:
+        # Necessary to display the plot in Pyodide environment
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png")
+        buf.seek(0)
+        display(Image(buf.read()))
+        plt.close()

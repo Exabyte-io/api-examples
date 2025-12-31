@@ -79,6 +79,7 @@ def plot_rdf(material: "Material", cutoff: float = 10.0, bin_size: float = 0.1) 
     """
     is_pyodide = sys.platform == "emscripten"
     if is_pyodide:
+        # This is needed so that plt is adjusted before import to work in Pyodide environment
         plt.switch_backend("Agg")
 
     rdf = RadialDistributionFunction.from_material(material, cutoff=cutoff, bin_size=bin_size)
@@ -87,6 +88,7 @@ def plot_rdf(material: "Material", cutoff: float = 10.0, bin_size: float = 0.1) 
     )
 
     if is_pyodide:
+        # Necessary to display the plot in Pyodide environment
         buf = io.BytesIO()
         plt.savefig(buf, format="png")
         buf.seek(0)

@@ -75,7 +75,7 @@ print(f"Detected Slab 1 (left) boundaries: z = {z_min_1:.3f} to {z_max_1:.3f} Å
 print(f"Detected Slab 2 (right) boundaries: z = {z_min_2:.3f} to {z_max_2:.3f} Å")
 
 # Data from context: macroscopic average potential profile
-CHECKPOINT_FILE = "./.mat3ra/checkpoint.json"
+CHECKPOINT_FILE = "./.mat3ra/checkpoint"
 with open(CHECKPOINT_FILE, "r") as f:
     checkpoint_data = json.load(f)
     profile_interface = SimpleNamespace(

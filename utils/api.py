@@ -5,9 +5,9 @@ import time
 import urllib.request
 from typing import List
 
-from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
-from exabyte_api_client.endpoints.jobs import JobEndpoints
-from exabyte_api_client.endpoints.properties import PropertiesEndpoints
+from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
+from mat3ra.api_client.endpoints.jobs import JobEndpoints
+from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
 from tabulate import tabulate
 
 

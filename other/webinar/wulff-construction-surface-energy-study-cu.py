@@ -30,11 +30,11 @@ from utils.material import get_vasp_total_energy, get_slab_area, get_surface_ene
 from settings import MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client
-from exabyte_api_client.endpoints.jobs import JobEndpoints
-from exabyte_api_client.endpoints.projects import ProjectEndpoints
-from exabyte_api_client.endpoints.materials import MaterialEndpoints
-from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
-from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
+from mat3ra.api_client.endpoints.jobs import JobEndpoints
+from mat3ra.api_client.endpoints.projects import ProjectEndpoints
+from mat3ra.api_client.endpoints.materials import MaterialEndpoints
+from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
+from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 
 
 # # Get Unit Cells

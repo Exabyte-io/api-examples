@@ -278,7 +278,7 @@ for job in jobs:
                       "nodes": n_nodes,
                       "time_limit": "12:00:00",
                       "cluster": "cluster-007"}
-        compute = job.job_endpoint.get_compute(**job_config)
+        compute = job.job_endpoint.build_compute_config(**job_config)
         
         workflow_id = workflow["_id"]
         material = material_endpoint.get(material_id)

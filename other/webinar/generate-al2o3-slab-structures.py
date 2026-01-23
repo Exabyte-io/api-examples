@@ -121,7 +121,7 @@ job_config = {"ppn": 16,
               "nodes": 1,
               "time_limit": "00:20:00",
               "cluster": "cluster-007"}
-compute = exabyte_jobs_endpoint.get_compute(**job_config)
+compute = exabyte_jobs_endpoint.build_compute_config(**job_config)
 
 # Create the Al2O3 job
 al2o3_job = exabyte_jobs_endpoint.create_by_ids([al2o3_cell_material],

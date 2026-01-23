@@ -38,11 +38,11 @@ from utils.material import get_all_slabs_and_terms, freeze_center_bulk
 from settings import ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client
-from exabyte_api_client.endpoints.jobs import JobEndpoints
-from exabyte_api_client.endpoints.projects import ProjectEndpoints
-from exabyte_api_client.endpoints.materials import MaterialEndpoints
-from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
-from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
+from mat3ra.api_client.endpoints.jobs import JobEndpoints
+from mat3ra.api_client.endpoints.projects import ProjectEndpoints
+from mat3ra.api_client.endpoints.materials import MaterialEndpoints
+from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
+from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 
 
 # # Visualize the Unit Cell
@@ -121,7 +121,7 @@ job_config = {"ppn": 16,
               "nodes": 1,
               "time_limit": "00:20:00",
               "cluster": "cluster-007"}
-compute = exabyte_jobs_endpoint.get_compute(**job_config)
+compute = exabyte_jobs_endpoint.build_compute_config(**job_config)
 
 # Create the Al2O3 job
 al2o3_job = exabyte_jobs_endpoint.create_by_ids([al2o3_cell_material],

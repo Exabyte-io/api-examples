@@ -66,7 +66,6 @@ notebooks:
   - name: api_examples
     packages_common:
       - mat3ra-standata
-      - exabyte-api-client
       - mat3ra-api-client
       - requests
       - mat3ra-ade

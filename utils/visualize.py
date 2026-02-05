@@ -3,6 +3,7 @@ import json
 import os
 import time
 import uuid
+import urllib.parse
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -335,3 +336,64 @@ def visualize_workflow(workflow, level: int = 2) -> None:
     """
     workflow_config = workflow.to_dict()
     display_JSON(workflow_config, level=level)
+
+
+default_prove_div_id = "prove"
+
+
+def get_prove_html(div_id=default_prove_div_id, width=900, title="Properties"):
+    return f"""
+    <h2>{title}</h2>
+    <div id="{div_id}" style="width:{width}px; border:1px solid #ddd; padding:12px;"></div>
+    """
+
+
+def get_prove_js(results_json, div_id=default_prove_div_id, bundle_url=None, title=None):
+    title_json = json.dumps(title) if title is not None else "undefined"
+
+    return (
+        f"""
+    const results={results_json};
+    const container = document.getElementById('{div_id}');
+        """
+        + f"""
+    (async function() {{
+        try {{
+            await import('{bundle_url}');
+            if (!window.renderResults) {{
+                throw new Error('Prove bundle loaded, but window.renderResults is missing.');
+            }}
+            window.renderResults(results, container, {{ title: {title_json} }});
+        }} catch (e) {{
+            console.error('[prove] failed to render', e);
+            if (container) {{
+                container.innerHTML =
+                    '<pre style=\"white-space:pre-wrap;color:#b00020;\">' + String(e) + '</pre>';
+            }}
+        }}
+    }})();
+    """
+    )
+
+def render_prove(results, bundle_url, width=900, title="Properties"):
+    """
+    Render Prove results viewer in a notebook (Jupyter / Colab / Pyodide).
+    
+    Args:
+        results: List[dict] of property JSON objects (or a single dict).
+        bundle_url: URL to the Prove bundle JS file.
+            Examples:
+              - Dev:   "http://localhost:3003/prove/build/main.js"
+              - Prod:  "https://cdn.example.com/prove/main.js"
+        width: Container width in pixels.
+        title: Title displayed above the viewer.
+    """
+    if isinstance(results, dict):
+        results = [results]
+    
+    timestamp = time.time()
+    div_id = f"prove-{timestamp}"
+    results_json = json.dumps(results)
+    
+    display(HTML(get_prove_html(div_id, width, title)))
+    display(Javascript(get_prove_js(results_json, div_id, bundle_url, title)))

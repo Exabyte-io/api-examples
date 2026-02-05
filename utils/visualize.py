@@ -165,42 +165,97 @@ class MaterialViewProperties(BaseModel):
     title: str = "Material"
 
 
-default_div_id = "wave"
+def get_viewer_html(div_id, width, height=None, title="Viewer", custom_styles=""):
+    """
+    Generate HTML container for a viewer.
 
+    Args:
+        div_id: Unique ID for the container div
+        width: Width in pixels
+        height: Height in pixels (optional, if not provided only width is set)
+        title: Title to display above the viewer
+        custom_styles: Additional inline CSS styles
+    """
+    if height is not None:
+        size_style = f"width:{width}px; height:{height}px;"
+    else:
+        size_style = f"width:{width}px;"
 
-def get_wave_html(div_id=default_div_id, width=600, height=600, title="Material"):
-    size = min(width, height)  # Make it square by using the smaller dimension
     return f"""
     <h2>{title}</h2>
-    <div id="{div_id}" style="width:{size}px; height:{size}px; border:1px solid #333;"></div>
+    <div id="{div_id}" style="{size_style} {custom_styles}"></div>
     """
 
 
-def get_wave_js(material_json, div_id=default_div_id):
-    return (
+def get_viewer_js(
+    data_json,
+    div_id,
+    bundle_url,
+    render_function,
+    data_var_name="data",
+    extra_config_json=None,
+    css_url=None,
+):
+    """
+    Generate JavaScript to load and render a viewer bundle.
+
+    Args:
+        data_json: JSON string of data to render
+        div_id: Container div ID
+        bundle_url: URL to the JS bundle
+        render_function: Name of the window function to call (e.g., 'renderThreeDEditor', 'renderResults')
+        data_var_name: Variable name for the data (e.g., 'materialConfig', 'results')
+        extra_config_json: Optional extra config as JSON string
+        css_url: Optional CSS file URL to load
+    """
+    extra_config_arg = f", {extra_config_json}" if extra_config_json else ""
+    css_loader = (
         f"""
-    const materialConfig={material_json};
-    const container = document.getElementById('{div_id}');
-        """
-        + """
-    (async function() {
-            const module = await import('https://exabyte-io.github.io/wave.js/main.js');
-            window.renderThreeDEditor(materialConfig, container);
-    })();
     document.head.insertAdjacentHTML(
         'beforeend',
-        '<link rel="stylesheet" href="https://exabyte-io.github.io/wave.js/main.css"/>');
+        '<link rel="stylesheet" href="{css_url}"/>');
     """
+        if css_url
+        else ""
     )
+
+    return f"""
+    const {data_var_name}={data_json};
+    const container = document.getElementById('{div_id}');
+    (async function() {{
+        await import('{bundle_url}');
+        window.{render_function}({data_var_name}, container{extra_config_arg});
+    }})();
+    {css_loader}
+    """
+
+
+def get_wave_viewer(material, div_id, width, height, title):
+    size = min(width, height)
+    html = get_viewer_html(
+        div_id=div_id,
+        width=size,
+        height=size,
+        title=title,
+        custom_styles="border:1px solid #333;",
+    )
+    js = get_viewer_js(
+        data_json=material.to_json(),
+        div_id=div_id,
+        bundle_url="https://exabyte-io.github.io/wave.js/main.js",
+        render_function="renderThreeDEditor",
+        data_var_name="materialConfig",
+        css_url="https://exabyte-io.github.io/wave.js/main.css",
+    )
+    return html, js
 
 
 def render_wave(material, properties, width=600, height=600):
     timestamp = time.time()
-    material_json = material.to_json()
     div_id = f"wave-{timestamp}"
-
-    display(HTML(get_wave_html(div_id, width, height, properties.title)))
-    display(Javascript(get_wave_js(material_json, div_id)))
+    html, js = get_wave_viewer(material, div_id, width, height, properties.title)
+    display(HTML(html))
+    display(Javascript(js))
 
 
 def render_wave_grid(
@@ -213,13 +268,11 @@ def render_wave_grid(
     html_items = []
     js_items = []
     timestamp = time.time()
-    # column_width = f"minmax(100px, {100 / max_columns}%)"
 
     for i, material in enumerate(materials):
         properties_config = list_of_properties_configs[i]
-        title = properties_config.title
-        html = get_wave_html(f"wave-{i}-{timestamp}", width, height, title=title)
-        js = get_wave_js(material.to_json(), f"wave-{i}-{timestamp}")
+        div_id = f"wave-{i}-{timestamp}"
+        html, js = get_wave_viewer(material, div_id, width, height, properties_config.title)
         html_items.append(widgets.HTML(html))
         js_items.append(Javascript(js))
 
@@ -337,42 +390,12 @@ def visualize_workflow(workflow, level: int = 2) -> None:
     display_JSON(workflow_config, level=level)
 
 
-default_prove_div_id = "prove"
-prove_bundle_url = "https://exabyte-io.github.io/prove/main.js"
-
-
-def get_prove_html(div_id=default_prove_div_id, width=900, title="Properties"):
-    return f"""
-    <h2>{title}</h2>
-    <div id="{div_id}" style="width:{width}px; border:1px solid #ddd; padding:12px; background:#fff; color:#111;"></div>
-    """
-
-
-def get_prove_js(results_json, div_id=default_prove_div_id, bundle_url=prove_bundle_url, extra_config_json=None):
-    extra_config_json = extra_config_json or "undefined"
-    return (
-        f"""
-    const results={results_json};
-    const container = document.getElementById('{div_id}');
-        """
-        + f"""
-    (async function() {{
-        const url = '{bundle_url}';
-        if (!container || !url) return;
-        await import(url);
-        window.renderResults(results, container, {extra_config_json});
-    }})();
-    """
-    )
-
-
-def render_prove(results, bundle_url=prove_bundle_url, width=900, title="Properties", extra_config=None):
+def render_prove(results, width=900, title="Properties", extra_config=None):
     """
     Render Prove results viewer in a notebook (Jupyter / Colab / Pyodide).
 
     Args:
         results: List[dict] of property JSON objects (or a single dict).
-        bundle_url: URL to the Prove bundle JS file (default: GitHub Pages).
         width: Container width in pixels.
         title: Title displayed above the viewer.
         extra_config: Optional dict with materials, components, callbacks, etc.
@@ -383,7 +406,22 @@ def render_prove(results, bundle_url=prove_bundle_url, width=900, title="Propert
     timestamp = time.time()
     div_id = f"prove-{timestamp}"
     results_json = json.dumps(results)
-    extra_config_json = json.dumps(extra_config) if extra_config else None
+    extra_config_json = json.dumps(extra_config) if extra_config else "undefined"
 
-    display(HTML(get_prove_html(div_id, width, title)))
-    display(Javascript(get_prove_js(results_json, div_id, bundle_url, extra_config_json)))
+    html = get_viewer_html(
+        div_id=div_id,
+        width=width,
+        title=title,
+        custom_styles="border:1px solid #ddd; padding:12px; background:#fff; color:#111;",
+    )
+    js = get_viewer_js(
+        data_json=results_json,
+        div_id=div_id,
+        bundle_url="https://exabyte-io.github.io/prove/main.js",
+        render_function="renderResults",
+        data_var_name="results",
+        extra_config_json=extra_config_json,
+    )
+
+    display(HTML(html))
+    display(Javascript(js))

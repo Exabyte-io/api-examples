@@ -350,30 +350,28 @@ def get_prove_html(div_id=default_prove_div_id, width=900, title="Properties"):
 
 def get_prove_js(results_json, div_id=default_prove_div_id, bundle_url=None, title=None):
     title_json = json.dumps(title) if title is not None else "undefined"
+    return f"""
+    (function() {{
+        const results = {results_json};
+        const element = document.getElementById('{div_id}');
+        const url = '{bundle_url}';
+        const options = {{ title: {title_json} }};
 
-    return (
-        f"""
-    const results={results_json};
-    const container = document.getElementById('{div_id}');
-        """
-        + f"""
-    (async function() {{
-        try {{
-            await import('{bundle_url}');
-            if (!window.renderResults) {{
-                throw new Error('Prove bundle loaded, but window.renderResults is missing.');
-            }}
-            window.renderResults(results, container, {{ title: {title_json} }});
-        }} catch (e) {{
-            console.error('[prove] failed to render', e);
-            if (container) {{
-                container.innerHTML =
-                    '<pre style=\"white-space:pre-wrap;color:#b00020;\">' + String(e) + '</pre>';
-            }}
-        }}
+        if (!element) return;
+        const fail = () => (element.innerHTML = '<pre style="white-space:pre-wrap;color:#b00020;">Failed to render Prove.</pre>');
+        const render = () => (window.renderResults ? window.renderResults(results, element, options) : fail());
+
+        if (!url) return fail();
+        if (window.renderResults) return render();
+
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = url + (url.includes('?') ? '&' : '?') + 'cb=' + Date.now();
+        script.onload = render;
+        script.onerror = fail;
+        document.head.appendChild(script);
     }})();
     """
-    )
 
 def render_prove(results, bundle_url, width=900, title="Properties"):
     """

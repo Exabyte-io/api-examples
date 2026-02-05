@@ -3,7 +3,6 @@ import json
 import os
 import time
 import uuid
-import urllib.parse
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -350,33 +349,26 @@ def get_prove_html(div_id=default_prove_div_id, width=900, title="Properties"):
 
 def get_prove_js(results_json, div_id=default_prove_div_id, bundle_url=None, title=None):
     title_json = json.dumps(title) if title is not None else "undefined"
-    return f"""
-    (function() {{
-        const results = {results_json};
-        const element = document.getElementById('{div_id}');
+    return (
+        f"""
+    const results={results_json};
+    const container = document.getElementById('{div_id}');
+        """
+        + f"""
+    (async function() {{
         const url = '{bundle_url}';
-        const options = {{ title: {title_json} }};
-
-        if (!element) return;
-        const fail = () => (element.innerHTML = '<pre style="white-space:pre-wrap;color:#b00020;">Failed to render Prove.</pre>');
-        const render = () => (window.renderResults ? window.renderResults(results, element, options) : fail());
-
-        if (!url) return fail();
-        if (window.renderResults) return render();
-
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = url + (url.includes('?') ? '&' : '?') + 'cb=' + Date.now();
-        script.onload = render;
-        script.onerror = fail;
-        document.head.appendChild(script);
+        if (!container || !url) return;
+        await import(url);
+        window.renderResults(results, container, {{ title: {title_json} }});
     }})();
     """
+    )
+
 
 def render_prove(results, bundle_url, width=900, title="Properties"):
     """
     Render Prove results viewer in a notebook (Jupyter / Colab / Pyodide).
-    
+
     Args:
         results: List[dict] of property JSON objects (or a single dict).
         bundle_url: URL to the Prove bundle JS file.
@@ -388,10 +380,10 @@ def render_prove(results, bundle_url, width=900, title="Properties"):
     """
     if isinstance(results, dict):
         results = [results]
-    
+
     timestamp = time.time()
     div_id = f"prove-{timestamp}"
     results_json = json.dumps(results)
-    
+
     display(HTML(get_prove_html(div_id, width, title)))
     display(Javascript(get_prove_js(results_json, div_id, bundle_url, title)))

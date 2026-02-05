@@ -344,7 +344,7 @@ prove_bundle_url = "https://exabyte-io.github.io/prove/main.js"
 def get_prove_html(div_id=default_prove_div_id, width=900, title="Properties"):
     return f"""
     <h2>{title}</h2>
-    <div id="{div_id}" style="width:{width}px; border:1px solid #ddd; padding:12px;"></div>
+    <div id="{div_id}" style="width:{width}px; border:1px solid #ddd; padding:12px; background:#fff; color:#111;"></div>
     """
 
 
@@ -366,16 +366,13 @@ def get_prove_js(results_json, div_id=default_prove_div_id, bundle_url=prove_bun
     )
 
 
-def render_prove(results, bundle_url, width=900, title="Properties", extra_config=None):
+def render_prove(results, bundle_url=prove_bundle_url, width=900, title="Properties", extra_config=None):
     """
     Render Prove results viewer in a notebook (Jupyter / Colab / Pyodide).
 
     Args:
         results: List[dict] of property JSON objects (or a single dict).
-        bundle_url: URL to the Prove bundle JS file.
-            Examples:
-              - Dev:   "http://localhost:8008/main.js"
-              - Prod:  "https://exabyte-io.github.io/prove/main.js"
+        bundle_url: URL to the Prove bundle JS file (default: GitHub Pages).
         width: Container width in pixels.
         title: Title displayed above the viewer.
         extra_config: Optional dict with materials, components, callbacks, etc.

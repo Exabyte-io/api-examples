@@ -338,6 +338,7 @@ def visualize_workflow(workflow, level: int = 2) -> None:
 
 
 default_prove_div_id = "prove"
+prove_bundle_url = "https://exabyte-io.github.io/prove/main.js"
 
 
 def get_prove_html(div_id=default_prove_div_id, width=900, title="Properties"):
@@ -347,8 +348,8 @@ def get_prove_html(div_id=default_prove_div_id, width=900, title="Properties"):
     """
 
 
-def get_prove_js(results_json, div_id=default_prove_div_id, bundle_url=None, title=None):
-    title_json = json.dumps(title) if title is not None else "undefined"
+def get_prove_js(results_json, div_id=default_prove_div_id, bundle_url=prove_bundle_url, extra_config_json=None):
+    extra_config_json = extra_config_json or "undefined"
     return (
         f"""
     const results={results_json};
@@ -359,13 +360,13 @@ def get_prove_js(results_json, div_id=default_prove_div_id, bundle_url=None, tit
         const url = '{bundle_url}';
         if (!container || !url) return;
         await import(url);
-        window.renderResults(results, container, {{ title: {title_json} }});
+        window.renderResults(results, container, {extra_config_json});
     }})();
     """
     )
 
 
-def render_prove(results, bundle_url, width=900, title="Properties"):
+def render_prove(results, bundle_url, width=900, title="Properties", extra_config=None):
     """
     Render Prove results viewer in a notebook (Jupyter / Colab / Pyodide).
 
@@ -373,10 +374,11 @@ def render_prove(results, bundle_url, width=900, title="Properties"):
         results: List[dict] of property JSON objects (or a single dict).
         bundle_url: URL to the Prove bundle JS file.
             Examples:
-              - Dev:   "http://localhost:3003/prove/build/main.js"
-              - Prod:  "https://cdn.example.com/prove/main.js"
+              - Dev:   "http://localhost:8008/main.js"
+              - Prod:  "https://exabyte-io.github.io/prove/main.js"
         width: Container width in pixels.
         title: Title displayed above the viewer.
+        extra_config: Optional dict with materials, components, callbacks, etc.
     """
     if isinstance(results, dict):
         results = [results]
@@ -384,6 +386,7 @@ def render_prove(results, bundle_url, width=900, title="Properties"):
     timestamp = time.time()
     div_id = f"prove-{timestamp}"
     results_json = json.dumps(results)
+    extra_config_json = json.dumps(extra_config) if extra_config else None
 
     display(HTML(get_prove_html(div_id, width, title)))
-    display(Javascript(get_prove_js(results_json, div_id, bundle_url, title)))
+    display(Javascript(get_prove_js(results_json, div_id, bundle_url, extra_config_json)))

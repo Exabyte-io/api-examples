@@ -70,3 +70,4 @@ notebooks:
       - requests
       - mat3ra-ade
       - mat3ra-wode
+      - mat3ra-prode

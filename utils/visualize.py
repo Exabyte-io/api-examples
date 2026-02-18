@@ -403,6 +403,9 @@ def render_prove(results, width=900, title="Properties", extra_config=None):
     if isinstance(results, dict):
         results = [results]
 
+    # Only keep the properties we can display
+    results = [r for r in results if "value" in r or "values" in r]
+
     timestamp = time.time()
     div_id = f"prove-{timestamp}"
     results_json = json.dumps(results)

@@ -3,11 +3,13 @@ import json
 import os
 import time
 import urllib.request
-from typing import List
+from typing import List, Optional
 
 from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from mat3ra.api_client.endpoints.jobs import JobEndpoints
+from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
+from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
 from tabulate import tabulate
 
 
@@ -123,3 +125,26 @@ def get_property_by_subworkflow_and_unit_indicies(
 def get_cluster_name(name: str = "cluster-001") -> str:
     clusters = json.loads(os.environ.get("CLUSTERS", "[]") or "[]")
     return clusters[0] if clusters else name
+
+
+def get_or_create_material(endpoint: MaterialEndpoints, material, owner_id: str) -> dict:
+    """
+    Returns an existing material from the collection if one with the same structural hash
+    exists under the given owner, otherwise creates a new one.
+    Uses the client-side hash (mat3ra-made Material.hash) to avoid unnecessary DB writes.
+
+    Args:
+        endpoint (MaterialEndpoints): Material endpoint from the API client.
+        material: mat3ra-made Material object (must have a .hash property).
+        owner_id (str): Account ID under which to search and create.
+
+    Returns:
+        dict: The material dict (existing or newly created).
+    """
+    existing = endpoint.list({"hash": material.hash, "owner._id": owner_id})
+    if existing:
+        print(f"♻️  Reusing already existing Material: {existing[0]['_id']}")
+        return existing[0]
+    created = endpoint.create(material.to_dict(), owner_id=owner_id)
+    print(f"✅ Material created: {created['_id']}")
+    return created

@@ -148,3 +148,82 @@ def get_or_create_material(endpoint: MaterialEndpoints, material, owner_id: str)
     created = endpoint.create(material.to_dict(), owner_id=owner_id)
     print(f"✅ Material created: {created['_id']}")
     return created
+
+
+def get_or_create_workflow(endpoint: WorkflowEndpoints, workflow, owner_id: str) -> dict:
+    """
+    Creates the workflow on the server, then uses the server-assigned hash to check for
+    pre-existing duplicates. If a duplicate exists, deletes the new entry and returns the
+    original. The server is the authoritative source for structural deduplication.
+
+    Args:
+        endpoint (WorkflowEndpoints): Workflow endpoint from the API client.
+        workflow: mat3ra-wode Workflow object with a .to_dict() method.
+        owner_id (str): Account ID under which to search and create.
+
+    Returns:
+        dict: The workflow dict (existing or newly created).
+    """
+    # TODO: calculate the hash in wode, client side
+    created = endpoint.create(workflow.to_dict(), owner_id=owner_id)
+    duplicates = endpoint.list({"hash": created["hash"], "owner._id": owner_id})
+    if len(duplicates) > 1:
+        original = next(w for w in duplicates if w["_id"] != created["_id"])
+        endpoint.delete(created["_id"])
+        print(f"♻️  Workflow already exists: {original['_id']}")
+        return original
+    print(f"✅ Workflow created: {created['_id']}")
+    return created
+
+
+def create_job(
+    jobs_endpoint: JobEndpoints,
+    materials: List[dict],
+    workflow_id_or_dict,
+    project_id: str,
+    owner_id: str,
+    prefix: str,
+    compute: Optional[dict] = None,
+    save_to_collection: bool = True,
+) -> List[dict]:
+    """
+    Creates jobs for each material using either collection references or an embedded workflow.
+
+    Args:
+        jobs_endpoint (JobEndpoints): Job endpoint from the API client.
+        materials (list[dict]): List of material dicts (must include _id and formula).
+        workflow_id_or_dict: Workflow _id (str) if save_to_collection=True,
+                             or full workflow dict if save_to_collection=False.
+        project_id (str): Project ID.
+        owner_id (str): Account ID.
+        prefix (str): Job name prefix.
+        compute (dict, optional): Compute configuration dict.
+        save_to_collection (bool): If True, uses create_by_ids; otherwise embeds the workflow.
+
+    Returns:
+        list[dict]: List of created job dicts.
+    """
+    if save_to_collection:
+        return jobs_endpoint.create_by_ids(
+            materials=materials,
+            workflow_id=workflow_id_or_dict,
+            project_id=project_id,
+            prefix=prefix,
+            owner_id=owner_id,
+            compute=compute,
+        )
+    jobs = []
+    for material in materials:
+        job_name = " ".join((prefix, material["formula"]))
+        embedded_workflow = {k: v for k, v in workflow_id_or_dict.items() if k != "_id"}
+        config = {
+            "_project": {"_id": project_id},
+            "workflow": embedded_workflow,
+            "_material": {"_id": material["_id"]},
+            "owner": {"_id": owner_id},
+            "name": job_name,
+        }
+        if compute:
+            config["compute"] = compute
+        jobs.append(jobs_endpoint.create(config))
+    return jobs

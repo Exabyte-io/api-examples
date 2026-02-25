@@ -390,9 +390,9 @@ def visualize_workflow(workflow, level: int = 2) -> None:
     display_JSON(workflow_config, level=level)
 
 
-def render_prove(results, width=900, title="Properties", extra_config=None):
+def visualize_properties(results, width=900, title="Properties", extra_config=None):
     """
-    Render Prove results viewer in a notebook (Jupyter / Colab / Pyodide).
+    Visualize properties using a Prove viewer.
 
     Args:
         results: List[dict] of property JSON objects (or a single dict).
@@ -402,6 +402,9 @@ def render_prove(results, width=900, title="Properties", extra_config=None):
     """
     if isinstance(results, dict):
         results = [results]
+
+    # Only keep the properties we can display
+    results = [r for r in results if "value" in r or "values" in r]
 
     timestamp = time.time()
     div_id = f"prove-{timestamp}"

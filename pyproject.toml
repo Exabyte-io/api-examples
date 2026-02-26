@@ -15,8 +15,8 @@ dependencies = [
   "mat3ra-utils>=2024.6.11.post0",
   "mat3ra-wode",
   "mat3ra-prode",
-  "mat3ra-ide @ git+https://github.com/Exabyte-io/ide.git@f2b3c31852d659fd1e8412302330a9b4ac84a677",
-  "mat3ra-api-client @ git+https://github.com/Exabyte-io/api-client.git@141d7dba220f07844e97557dda3ee74087b38c31",
+  "mat3ra-ide @ git+https://github.com/Exabyte-io/ide.git@15dbf8c8ea8284e3481b97ef6e65bfd6d3318352",
+  "mat3ra-api-client @ git+https://github.com/Exabyte-io/api-client.git@b30965041557d9e27fcfca1f1bd26726910a9e63",
 ]
 
 [project.optional-dependencies]

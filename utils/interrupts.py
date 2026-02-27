@@ -1,10 +1,11 @@
 import asyncio
 import inspect
-import sys
 import uuid
 from dataclasses import dataclass
 from functools import wraps
 from typing import Any, Awaitable, Callable
+
+from mat3ra.utils.jupyterlite.environment import ENVIRONMENT, EnvironmentsEnum
 
 try:
     from IPython.display import HTML, display  # type: ignore
@@ -99,7 +100,7 @@ class BroadcastChannelAbortController:
         self._on_message_proxy = None
 
     def start(self) -> None:
-        if sys.platform != "emscripten":
+        if ENVIRONMENT != EnvironmentsEnum.PYODIDE:
             return
         if self._broadcast_channel is not None:
             return
@@ -115,7 +116,7 @@ class BroadcastChannelAbortController:
                 self.is_aborted = True
 
         self._on_message_proxy = create_proxy(on_message)
-        self._broadcast_channel.onmessage = self._on_message_proxy
+        self._broadcast_channel.onmessage = self._on_message_proxy  # type: ignore
 
     def stop(self) -> None:
         if self._broadcast_channel is None:
@@ -151,7 +152,7 @@ async def run_interruptible_loop_async(
     broadcast_channel_abort_controller = BroadcastChannelAbortController(channel_name=channel_name)
     broadcast_channel_abort_controller.start()
 
-    if show_controls and sys.platform == "emscripten":
+    if show_controls and ENVIRONMENT != EnvironmentsEnum.PYODIDE:
         display_abort_controls_in_current_cell_output(channel_name=channel_name, abort_button_text="Abort")
 
     try:
@@ -171,7 +172,14 @@ async def run_interruptible_loop_async(
         broadcast_channel_abort_controller.stop()
 
 
-def interruptible_polling_loop(poll_interval_kwarg_name: str = "poll_interval"):
+def interruptible_polling_loop(
+    poll_interval_kwarg_name: str = "poll_interval",
+    *,
+    default_poll_interval_seconds: float = 10.0,
+    channel_name: str = "mat3ra_abort_channel",
+    check_interval_seconds: float = 0.05,
+    show_controls: bool = True,
+):
     """
     Decorator for single-iteration polling functions.
 
@@ -179,37 +187,29 @@ def interruptible_polling_loop(poll_interval_kwarg_name: str = "poll_interval"):
       - return True to continue
       - return False to stop
 
-    poll_interval is passed at call time.
+    The decorated function becomes an `async def` that runs the polling loop until completion.
+
+    The polling interval can be passed at call time using `poll_interval_kwarg_name` (defaults to
+    `"poll_interval"`). If not provided, `default_poll_interval_seconds` is used.
     """
 
     def decorator(poll_step_function: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(poll_step_function)
         async def wrapped(*args: Any, **kwargs: Any) -> None:
-            poll_interval_seconds = kwargs.pop(poll_interval_kwarg_name)
+            poll_interval_seconds = float(kwargs.pop(poll_interval_kwarg_name, default_poll_interval_seconds))
 
-            broadcast_channel_abort_controller = BroadcastChannelAbortController()
-            broadcast_channel_abort_controller.start()
+            async def loop_body() -> bool:
+                result = poll_step_function(*args, **kwargs)
+                should_continue = await result if inspect.isawaitable(result) else result
+                return bool(should_continue)
 
-            if sys.platform == "emscripten":
-                display_abort_controls_in_current_cell_output()
-
-            try:
-                while True:
-                    result = poll_step_function(*args, **kwargs)
-                    should_continue = await result if inspect.isawaitable(result) else result
-
-                    if not should_continue:
-                        return
-
-                    remaining_seconds = float(poll_interval_seconds)
-                    while remaining_seconds > 0:
-                        if broadcast_channel_abort_controller.is_aborted:
-                            raise UserAbortError("Aborted by user.")
-                        await asyncio.sleep(min(0.05, remaining_seconds))
-                        remaining_seconds -= 0.05
-
-            finally:
-                broadcast_channel_abort_controller.stop()
+            await run_interruptible_loop_async(
+                loop_body,
+                poll_interval_seconds,
+                channel_name=channel_name,
+                check_interval_seconds=check_interval_seconds,
+                show_controls=show_controls,
+            )
 
         return wrapped
 

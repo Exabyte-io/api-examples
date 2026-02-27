@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-import time
 import urllib.request
 from typing import List, Optional
 
@@ -11,6 +10,8 @@ from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
 from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
 from tabulate import tabulate
+
+from utils.interrupts import interruptible_polling_loop
 
 
 def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:
@@ -57,7 +58,8 @@ def get_jobs_statuses_by_ids(endpoint: JobEndpoints, job_ids: List[str]) -> List
     return [job["status"] for job in jobs]
 
 
-def wait_for_jobs_to_finish(endpoint: JobEndpoints, job_ids: list, poll_interval: int = 10) -> None:
+@interruptible_polling_loop()
+def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: list) -> bool:
     """
     Waits for jobs to finish and prints their statuses.
     A job is considered finished if it is not in "pre-submission", "submitted", or, "active" status.
@@ -67,23 +69,19 @@ def wait_for_jobs_to_finish(endpoint: JobEndpoints, job_ids: list, poll_interval
         job_ids (list): list of job IDs to wait for
         poll_interval (int): poll interval for job information in seconds. Defaults to 10.
     """
-    print("Wait for jobs to finish, poll interval: {0} sec".format(poll_interval))
-    while True:
-        statuses = get_jobs_statuses_by_ids(endpoint, job_ids)
+    statuses = get_jobs_statuses_by_ids(endpoint, job_ids)
 
-        errored_jobs = len([status for status in statuses if status == "error"])
-        active_jobs = len([status for status in statuses if status == "active"])
-        finished_jobs = len([status for status in statuses if status == "finished"])
-        submitted_jobs = len([status for status in statuses if status == "submitted"])
+    errored_jobs = sum(status == "error" for status in statuses)
+    active_jobs = sum(status == "active" for status in statuses)
+    finished_jobs = sum(status == "finished" for status in statuses)
+    submitted_jobs = sum(status == "submitted" for status in statuses)
 
-        headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
-        now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
-        row = [now, submitted_jobs, active_jobs, finished_jobs, errored_jobs]
-        print(tabulate([row], headers, tablefmt="grid", stralign="center"))
+    headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
+    now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+    row = [now, submitted_jobs, active_jobs, finished_jobs, errored_jobs]
+    print(tabulate([row], headers, tablefmt="grid", stralign="center"))
 
-        if all([status not in ["pre-submission", "submitted", "active"] for status in statuses]):
-            break
-        time.sleep(poll_interval)
+    return any(status in ["pre-submission", "submitted", "active"] for status in statuses)
 
 
 def copy_bank_workflow_by_system_name(endpoint: BankWorkflowEndpoints, system_name: str, account_id: str) -> dict:

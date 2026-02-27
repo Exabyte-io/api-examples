@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import urllib.request
+from collections import Counter
 from typing import List, Optional
 
 from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
@@ -58,8 +59,21 @@ def get_jobs_statuses_by_ids(endpoint: JobEndpoints, job_ids: List[str]) -> List
     return [job["status"] for job in jobs]
 
 
+def _print_jobs_status_table(counts: Counter) -> None:
+    headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
+    now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+    row = [
+        now,
+        counts.get("submitted", 0),
+        counts.get("active", 0),
+        counts.get("finished", 0),
+        counts.get("error", 0),
+    ]
+    print(tabulate([row], headers, tablefmt="grid", stralign="center"))
+
+
 @interruptible_polling_loop()
-def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: list) -> bool:
+def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: List[str]) -> bool:
     """
     Waits for jobs to finish and prints their statuses.
     A job is considered finished if it is not in "pre-submission", "submitted", or, "active" status.
@@ -67,21 +81,13 @@ def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: list) -> bool
     Args:
         endpoint (JobEndpoints): Job endpoint object from the Exabyte API Client
         job_ids (list): list of job IDs to wait for
-        poll_interval (int): poll interval for job information in seconds. Defaults to 10.
     """
     statuses = get_jobs_statuses_by_ids(endpoint, job_ids)
+    counts = Counter(statuses)
+    _print_jobs_status_table(counts)
 
-    errored_jobs = sum(status == "error" for status in statuses)
-    active_jobs = sum(status == "active" for status in statuses)
-    finished_jobs = sum(status == "finished" for status in statuses)
-    submitted_jobs = sum(status == "submitted" for status in statuses)
-
-    headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
-    now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
-    row = [now, submitted_jobs, active_jobs, finished_jobs, errored_jobs]
-    print(tabulate([row], headers, tablefmt="grid", stralign="center"))
-
-    return any(status in ["pre-submission", "submitted", "active"] for status in statuses)
+    active_statuses = {"pre-submission", "submitted", "active"}
+    return any(status in active_statuses for status in statuses)
 
 
 def copy_bank_workflow_by_system_name(endpoint: BankWorkflowEndpoints, system_name: str, account_id: str) -> dict:

@@ -1,11 +1,11 @@
 import asyncio
 import inspect
 import uuid
-from dataclasses import dataclass
 from functools import wraps
 from typing import Any, Awaitable, Callable
 
 from mat3ra.utils.jupyterlite.environment import ENVIRONMENT, EnvironmentsEnum
+from pydantic import BaseModel
 
 try:
     from IPython.display import HTML, display  # type: ignore
@@ -85,8 +85,7 @@ def display_abort_controls_in_current_cell_output(
     )
 
 
-@dataclass
-class BroadcastChannelAbortController:
+class BroadcastChannelAbortController(BaseModel):
     """
     WebWorker-side receiver. Works only in pyodide (emscripten).
     In regular Python: start() does nothing and is_aborted stays False.

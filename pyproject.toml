@@ -13,10 +13,10 @@ dependencies = [
   "pymatgen==2024.4.13",
   "mat3ra-made>=2025.8.13.post0",
   "mat3ra-utils>=2024.6.11.post0",
-  "mat3ra-wode",
+  "mat3ra-wode @ git+https://github.com/Exabyte-io/wode.git@5ead5c3c8fbdd871bac56d0d072b352f78e75642",
   "mat3ra-prode",
-  "mat3ra-ide @ git+https://github.com/Exabyte-io/ide.git@15dbf8c8ea8284e3481b97ef6e65bfd6d3318352",
-  "mat3ra-api-client @ git+https://github.com/Exabyte-io/api-client.git@b30965041557d9e27fcfca1f1bd26726910a9e63",
+  "mat3ra-ide",
+  "mat3ra-api-client"
 ]
 
 [project.optional-dependencies]

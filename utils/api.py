@@ -168,14 +168,11 @@ def get_or_create_workflow(endpoint: WorkflowEndpoints, workflow, owner_id: str)
     Returns:
         dict: The workflow dict (existing or newly created).
     """
-    # TODO: calculate the hash in wode, client side
+    existing = endpoint.list({"hash": workflow.hash, "owner._id": owner_id})
+    if existing:
+        print(f"♻️  Reusing already existing Workflow: {existing[0]['_id']}")
+        return existing[0]
     created = endpoint.create(workflow.to_dict(), owner_id=owner_id)
-    duplicates = endpoint.list({"hash": created["hash"], "owner._id": owner_id})
-    if len(duplicates) > 1:
-        original = next(w for w in duplicates if w["_id"] != created["_id"])
-        endpoint.delete(created["_id"])
-        print(f"♻️  Workflow already exists: {original['_id']}")
-        return original
     print(f"✅ Workflow created: {created['_id']}")
     return created
 

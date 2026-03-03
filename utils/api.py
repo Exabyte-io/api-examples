@@ -10,7 +10,7 @@ from mat3ra.api_client.endpoints.jobs import JobEndpoints
 from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
 from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
-from tabulate import tabulate
+from mat3ra.utils.extra.tabulate import pretty_print
 
 from utils.interrupts import interruptible_polling_loop
 
@@ -59,19 +59,6 @@ def get_jobs_statuses_by_ids(endpoint: JobEndpoints, job_ids: List[str]) -> List
     return [job["status"] for job in jobs]
 
 
-def _print_jobs_status_table(counts: Counter) -> None:
-    headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
-    now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
-    row = [
-        now,
-        counts.get("submitted", 0),
-        counts.get("active", 0),
-        counts.get("finished", 0),
-        counts.get("error", 0),
-    ]
-    print(tabulate([row], headers, tablefmt="grid", stralign="center"))
-
-
 @interruptible_polling_loop()
 def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: List[str]) -> bool:
     """
@@ -84,7 +71,16 @@ def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: List[str]) ->
     """
     statuses = get_jobs_statuses_by_ids(endpoint, job_ids)
     counts = Counter(statuses)
-    _print_jobs_status_table(counts)
+    headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
+    now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+    row = [
+        now,
+        counts.get("submitted", 0),
+        counts.get("active", 0),
+        counts.get("finished", 0),
+        counts.get("error", 0),
+    ]
+    pretty_print([row], headers, tablefmt="grid", stralign="center")
 
     active_statuses = {"pre-submission", "submitted", "active"}
     return any(status in active_statuses for status in statuses)

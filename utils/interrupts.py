@@ -139,7 +139,7 @@ async def run_interruptible_loop_async(
     show_controls: bool = True,
 ) -> None:
     """
-    Minimal wrapper.
+    Wraps an async loop around a "poll" function that returns True to continue, False to stop.
 
     loop_body():
       - do one "poll" iteration
@@ -181,16 +181,9 @@ def interruptible_polling_loop(
     show_controls: bool = True,
 ):
     """
-    Decorator for single-iteration polling functions.
-
-    The decorated function must:
-      - return True to continue
-      - return False to stop
-
-    The decorated function becomes an `async def` that runs the polling loop until completion.
-
-    The polling interval can be passed at call time using `poll_interval_kwarg_name` (defaults to
-    `"poll_interval"`). If not provided, `default_poll_interval_seconds` is used.
+    Turns a poll-step function into an async loop. Wrapped fn returns True to continue, False to stop.
+    Sleeps in small slices so ESC/Abort (notebooks) or Ctrl+C can raise UserAbortError.
+    Poll interval: kwarg poll_interval_kwarg_name, else default_poll_interval_seconds.
     """
 
     def decorator(poll_step_function: Callable[..., Any]) -> Callable[..., Any]:

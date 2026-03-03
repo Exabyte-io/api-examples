@@ -11,8 +11,7 @@ from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
 from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
 from mat3ra.utils.extra.tabulate import pretty_print
-
-from utils.interrupts import interruptible_polling_loop
+from mat3ra.utils.jupyterlite.interrupts import interruptible_polling_loop
 
 
 def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:

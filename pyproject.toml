@@ -12,8 +12,8 @@ dependencies = [
   "pandas>=1.5.3",
   "pymatgen==2024.4.13",
   "mat3ra-made>=2025.8.13.post0",
-  "mat3ra-utils @ git+https://github.com/Exabyte-io/utils.git@ca01a047040c077cb4769149c72d1dbb8ce3f2cf",
-  "mat3ra-wode @ git+https://github.com/Exabyte-io/wode.git@9537b9b520317d815480f934946edb10e99247a0",
+  "mat3ra-utils",
+  "mat3ra-wode",
   "mat3ra-prode",
   "mat3ra-ide",
   "mat3ra-api-client"

@@ -176,7 +176,7 @@ def get_or_create_workflow(endpoint: WorkflowEndpoints, workflow, owner_id: str)
 def create_job(
     jobs_endpoint: JobEndpoints,
     materials: List[dict],
-    workflow_id_or_dict,
+    workflow_dict,
     project_id: str,
     owner_id: str,
     prefix: str,
@@ -188,8 +188,7 @@ def create_job(
     Args:
         jobs_endpoint (JobEndpoints): Job endpoint from the API client.
         materials (list[dict]): List of material dicts (must include _id and formula).
-        workflow_id_or_dict: Workflow _id (str) if save_to_collection=True,
-                             or full workflow dict if save_to_collection=False.
+        workflow_dict: Workflow dictionary.
         project_id (str): Project ID.
         owner_id (str): Account ID.
         prefix (str): Job name prefix.
@@ -201,7 +200,7 @@ def create_job(
     jobs = []
     for material in materials:
         job_name = " ".join((prefix, material["formula"]))
-        embedded_workflow = {k: v for k, v in workflow_id_or_dict.items() if k != "_id"}
+        embedded_workflow = {k: v for k, v in workflow_dict.items() if k != "_id"}
         config = {
             "_project": {"_id": project_id},
             "workflow": embedded_workflow,

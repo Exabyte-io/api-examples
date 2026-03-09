@@ -181,7 +181,6 @@ def create_job(
     owner_id: str,
     prefix: str,
     compute: Optional[dict] = None,
-    save_to_collection: bool = True,
 ) -> List[dict]:
     """
     Creates jobs for each material using either collection references or an embedded workflow.
@@ -195,20 +194,10 @@ def create_job(
         owner_id (str): Account ID.
         prefix (str): Job name prefix.
         compute (dict, optional): Compute configuration dict.
-        save_to_collection (bool): If True, uses create_by_ids; otherwise embeds the workflow.
 
     Returns:
         list[dict]: List of created job dicts.
     """
-    if save_to_collection:
-        return jobs_endpoint.create_by_ids(
-            materials=materials,
-            workflow_id=workflow_id_or_dict,
-            project_id=project_id,
-            prefix=prefix,
-            owner_id=owner_id,
-            compute=compute,
-        )
     jobs = []
     for material in materials:
         job_name = " ".join((prefix, material["formula"]))

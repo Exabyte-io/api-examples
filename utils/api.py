@@ -3,6 +3,7 @@ import json
 import os
 import time
 import urllib.request
+from types import SimpleNamespace
 from typing import List, Optional
 
 from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
@@ -11,6 +12,8 @@ from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
 from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
 from tabulate import tabulate
+
+from utils.generic import namespace_to_dict
 
 
 def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:
@@ -188,7 +191,7 @@ def create_job(
     Args:
         jobs_endpoint (JobEndpoints): Job endpoint from the API client.
         materials (list[dict]): List of material dicts (must include _id and formula).
-        workflow_dict: Workflow dictionary.
+        workflow_dict: Workflow dictionary or namespace object.
         project_id (str): Project ID.
         owner_id (str): Account ID.
         prefix (str): Job name prefix.
@@ -197,6 +200,9 @@ def create_job(
     Returns:
         list[dict]: List of created job dicts.
     """
+    if isinstance(workflow_dict, SimpleNamespace):
+        workflow_dict = namespace_to_dict(workflow_dict)
+
     jobs = []
     for material in materials:
         job_name = " ".join((prefix, material["formula"]))

@@ -3,6 +3,7 @@ import json
 import os
 import urllib.request
 from collections import Counter
+from types import SimpleNamespace
 from typing import List, Optional
 
 from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
@@ -12,6 +13,8 @@ from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
 from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
 from mat3ra.utils.extra.tabulate import pretty_print
 from mat3ra.utils.jupyterlite.interrupts import interruptible_polling_loop
+
+from utils.generic import namespace_to_dict
 
 
 def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:
@@ -175,12 +178,11 @@ def get_or_create_workflow(endpoint: WorkflowEndpoints, workflow, owner_id: str)
 def create_job(
     jobs_endpoint: JobEndpoints,
     materials: List[dict],
-    workflow_id_or_dict,
+    workflow_dict,
     project_id: str,
     owner_id: str,
     prefix: str,
     compute: Optional[dict] = None,
-    save_to_collection: bool = True,
 ) -> List[dict]:
     """
     Creates jobs for each material using either collection references or an embedded workflow.
@@ -188,30 +190,22 @@ def create_job(
     Args:
         jobs_endpoint (JobEndpoints): Job endpoint from the API client.
         materials (list[dict]): List of material dicts (must include _id and formula).
-        workflow_id_or_dict: Workflow _id (str) if save_to_collection=True,
-                             or full workflow dict if save_to_collection=False.
+        workflow_dict: Workflow dictionary or namespace object.
         project_id (str): Project ID.
         owner_id (str): Account ID.
         prefix (str): Job name prefix.
         compute (dict, optional): Compute configuration dict.
-        save_to_collection (bool): If True, uses create_by_ids; otherwise embeds the workflow.
 
     Returns:
         list[dict]: List of created job dicts.
     """
-    if save_to_collection:
-        return jobs_endpoint.create_by_ids(
-            materials=materials,
-            workflow_id=workflow_id_or_dict,
-            project_id=project_id,
-            prefix=prefix,
-            owner_id=owner_id,
-            compute=compute,
-        )
+    if isinstance(workflow_dict, SimpleNamespace):
+        workflow_dict = namespace_to_dict(workflow_dict)
+
     jobs = []
     for material in materials:
         job_name = " ".join((prefix, material["formula"]))
-        embedded_workflow = {k: v for k, v in workflow_id_or_dict.items() if k != "_id"}
+        embedded_workflow = {k: v for k, v in workflow_dict.items() if k != "_id"}
         config = {
             "_project": {"_id": project_id},
             "workflow": embedded_workflow,

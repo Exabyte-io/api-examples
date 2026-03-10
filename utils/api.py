@@ -153,9 +153,9 @@ def get_or_create_material(api_client: APIClient, material, owner_id: str) -> di
 
 def get_or_create_workflow(api_client: APIClient, workflow, owner_id: str) -> dict:
     """
-    Creates the workflow on the server, then uses the server-assigned hash to check for
-    pre-existing duplicates. If a duplicate exists, deletes the new entry and returns the
-    original. The server is the authoritative source for structural deduplication.
+    Creates a workflow from the given mat3ra-wode Workflow object if a workflow doesn't exist.
+    Returns an existing workflow from the collection if one with the same hash exists under the given owner.
+    Important settings are preserved on the workflow.
 
     Args:
         api_client (APIClient): API client instance carrying the authorization context.
@@ -168,7 +168,9 @@ def get_or_create_workflow(api_client: APIClient, workflow, owner_id: str) -> di
     existing = api_client.workflows.list({"hash": workflow.hash, "owner._id": owner_id})
     if existing:
         print(f"♻️  Reusing already existing Workflow: {existing[0]['_id']}")
-        return existing[0]
+        # We only add reference to the existing workflow ID, keeping any client changes to the WF
+        workflow.id = existing[0]["id"]
+        return workflow
     created = api_client.workflows.create(workflow.to_dict(), owner_id=owner_id)
     print(f"✅ Workflow created: {created['_id']}")
     return created

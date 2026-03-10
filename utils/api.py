@@ -3,16 +3,15 @@ import json
 import os
 import time
 import urllib.request
-from types import SimpleNamespace
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from mat3ra.api_client import APIClient
 from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from mat3ra.api_client.endpoints.jobs import JobEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
+from mat3ra.made.material import Material
+from mat3ra.wode import Workflow
 from tabulate import tabulate
-
-from utils.generic import namespace_to_dict
 
 
 def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:
@@ -176,9 +175,9 @@ def get_or_create_workflow(api_client: APIClient, workflow, owner_id: str) -> di
 
 
 def create_job(
-    jobs_endpoint: JobEndpoints,
-    materials: List[dict],
-    workflow_dict,
+    api_client: APIClient,
+    materials: List[Union[dict, Material]],
+    workflow: Union[dict, Workflow],
     project_id: str,
     owner_id: str,
     prefix: str,
@@ -188,9 +187,9 @@ def create_job(
     Creates jobs for each material using either collection references or an embedded workflow.
 
     Args:
-        jobs_endpoint (JobEndpoints): Job endpoint from the API client.
-        materials (list[dict]): List of material dicts (must include _id and formula).
-        workflow_dict: Workflow dictionary or namespace object.
+        api_client (APIClient): API client instance carrying the authorization context.
+        materials (list): List of material dicts or mat3ra-made Material objects to create jobs for.
+        workflow: Workflow dictionaru or mat3ra-wode Workflow object to use for the jobs.
         project_id (str): Project ID.
         owner_id (str): Account ID.
         prefix (str): Job name prefix.
@@ -199,21 +198,24 @@ def create_job(
     Returns:
         list[dict]: List of created job dicts.
     """
-    if isinstance(workflow_dict, SimpleNamespace):
-        workflow_dict = namespace_to_dict(workflow_dict)
-
-    jobs = []
+    material_dicts = []
     for material in materials:
-        job_name = " ".join((prefix, material["formula"]))
-        embedded_workflow = {k: v for k, v in workflow_dict.items() if k != "_id"}
-        config = {
-            "_project": {"_id": project_id},
-            "workflow": embedded_workflow,
-            "_material": {"_id": material["_id"]},
-            "owner": {"_id": owner_id},
-            "name": job_name,
-        }
-        if compute:
-            config["compute"] = compute
-        jobs.append(jobs_endpoint.create(config))
-    return jobs
+        if isinstance(material, Material):
+            material_dicts.append(material.to_dict())
+        else:
+            material_dicts.append(material)
+
+    workflow_dict = workflow.to_dict() if isinstance(workflow, Workflow) else workflow
+
+    formulas = set(material["formula"] for material in material_dicts)
+    job_name = " ".join((prefix, ", ".join(formulas)))
+    config = {
+        "_project": {"_id": project_id},
+        "workflow": workflow_dict,
+        "_material": {"_id": material_dicts[0]["_id"]},
+        "owner": {"_id": owner_id},
+        "name": job_name,
+    }
+    if compute:
+        config["compute"] = compute
+    return api_client.jobs.create(config)

@@ -208,14 +208,20 @@ def create_job(
             material_dicts.append(material)
 
     workflow_dict = workflow.to_dict() if isinstance(workflow, Workflow) else workflow
+    is_multimaterial = workflow_dict.get("isMultimaterial", False)
 
     config = {
         "_project": {"_id": project_id},
         "workflow": workflow_dict,
-        "_material": {"_id": material_dicts[0]["_id"]},
         "owner": {"_id": owner_id},
         "name": prefix,
     }
+
+    if is_multimaterial:
+        config["_materials"] = [{"_id": mid} for mid in {md["_id"] for md in material_dicts}]
+    else:
+        config["_material"] = {"_id": material_dicts[0]["_id"]}
+
     if compute:
         config["compute"] = compute
     return api_client.jobs.create(config)

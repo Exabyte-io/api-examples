@@ -16,7 +16,7 @@ dependencies = [
   "mat3ra-wode",
   "mat3ra-prode",
   "mat3ra-ide",
-  "mat3ra-api-client"
+  "mat3ra-api-client",
 ]
 
 [project.optional-dependencies]

@@ -3,18 +3,16 @@ import json
 import os
 import urllib.request
 from collections import Counter
-from types import SimpleNamespace
-from typing import List, Optional
+from typing import List, Optional, Union
 
+from mat3ra.api_client import APIClient
 from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from mat3ra.api_client.endpoints.jobs import JobEndpoints
-from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
-from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
+from mat3ra.made.material import Material
 from mat3ra.utils.extra.tabulate import pretty_print
 from mat3ra.utils.jupyterlite.interrupts import interruptible_polling_loop
-
-from utils.generic import namespace_to_dict
+from mat3ra.wode import Workflow
 
 
 def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:
@@ -129,56 +127,58 @@ def get_cluster_name(name: str = "cluster-001") -> str:
     return clusters[0] if clusters else name
 
 
-def get_or_create_material(endpoint: MaterialEndpoints, material, owner_id: str) -> dict:
+def get_or_create_material(api_client: APIClient, material, owner_id: str) -> dict:
     """
     Returns an existing material from the collection if one with the same structural hash
     exists under the given owner, otherwise creates a new one.
     Uses the client-side hash (mat3ra-made Material.hash) to avoid unnecessary DB writes.
 
     Args:
-        endpoint (MaterialEndpoints): Material endpoint from the API client.
+        api_client (APIClient): API client instance carrying the authorization context.
         material: mat3ra-made Material object (must have a .hash property).
         owner_id (str): Account ID under which to search and create.
 
     Returns:
         dict: The material dict (existing or newly created).
     """
-    existing = endpoint.list({"hash": material.hash, "owner._id": owner_id})
+    existing = api_client.materials.list({"hash": material.hash, "owner._id": owner_id})
     if existing:
         print(f"♻️  Reusing already existing Material: {existing[0]['_id']}")
         return existing[0]
-    created = endpoint.create(material.to_dict(), owner_id=owner_id)
+    created = api_client.materials.create(material.to_dict(), owner_id=owner_id)
     print(f"✅ Material created: {created['_id']}")
     return created
 
 
-def get_or_create_workflow(endpoint: WorkflowEndpoints, workflow, owner_id: str) -> dict:
+def get_or_create_workflow(api_client: APIClient, workflow, owner_id: str) -> dict:
     """
-    Creates the workflow on the server, then uses the server-assigned hash to check for
-    pre-existing duplicates. If a duplicate exists, deletes the new entry and returns the
-    original. The server is the authoritative source for structural deduplication.
+    Creates a workflow from the given mat3ra-wode Workflow object if a workflow doesn't exist.
+    Returns an existing workflow from the collection if one with the same hash exists under the given owner.
+    Important settings are preserved on the workflow.
 
     Args:
-        endpoint (WorkflowEndpoints): Workflow endpoint from the API client.
+        api_client (APIClient): API client instance carrying the authorization context.
         workflow: mat3ra-wode Workflow object with a .to_dict() method.
         owner_id (str): Account ID under which to search and create.
 
     Returns:
         dict: The workflow dict (existing or newly created).
     """
-    existing = endpoint.list({"hash": workflow.hash, "owner._id": owner_id})
+    existing = api_client.workflows.list({"hash": workflow.hash, "owner._id": owner_id})
     if existing:
         print(f"♻️  Reusing already existing Workflow: {existing[0]['_id']}")
-        return existing[0]
-    created = endpoint.create(workflow.to_dict(), owner_id=owner_id)
+        # We only add reference to the existing workflow ID, keeping any client changes to the WF
+        workflow.id = existing[0]["id"]
+        return workflow
+    created = api_client.workflows.create(workflow.to_dict(), owner_id=owner_id)
     print(f"✅ Workflow created: {created['_id']}")
     return created
 
 
 def create_job(
-    jobs_endpoint: JobEndpoints,
-    materials: List[dict],
-    workflow_dict,
+    api_client: APIClient,
+    materials: List[Union[dict, Material]],
+    workflow: Union[dict, Workflow],
     project_id: str,
     owner_id: str,
     prefix: str,
@@ -188,9 +188,9 @@ def create_job(
     Creates jobs for each material using either collection references or an embedded workflow.
 
     Args:
-        jobs_endpoint (JobEndpoints): Job endpoint from the API client.
-        materials (list[dict]): List of material dicts (must include _id and formula).
-        workflow_dict: Workflow dictionary or namespace object.
+        api_client (APIClient): API client instance carrying the authorization context.
+        materials (list): List of material dicts or mat3ra-made Material objects to create jobs for.
+        workflow: Workflow dictionaru or mat3ra-wode Workflow object to use for the jobs.
         project_id (str): Project ID.
         owner_id (str): Account ID.
         prefix (str): Job name prefix.
@@ -199,21 +199,28 @@ def create_job(
     Returns:
         list[dict]: List of created job dicts.
     """
-    if isinstance(workflow_dict, SimpleNamespace):
-        workflow_dict = namespace_to_dict(workflow_dict)
-
-    jobs = []
+    material_dicts = []
     for material in materials:
-        job_name = " ".join((prefix, material["formula"]))
-        embedded_workflow = {k: v for k, v in workflow_dict.items() if k != "_id"}
-        config = {
-            "_project": {"_id": project_id},
-            "workflow": embedded_workflow,
-            "_material": {"_id": material["_id"]},
-            "owner": {"_id": owner_id},
-            "name": job_name,
-        }
-        if compute:
-            config["compute"] = compute
-        jobs.append(jobs_endpoint.create(config))
-    return jobs
+        if isinstance(material, Material):
+            material_dicts.append(material.to_dict())
+        else:
+            material_dicts.append(material)
+
+    workflow_dict = workflow.to_dict() if isinstance(workflow, Workflow) else workflow
+    is_multimaterial = workflow_dict.get("isMultimaterial", False)
+
+    config = {
+        "_project": {"_id": project_id},
+        "workflow": workflow_dict,
+        "owner": {"_id": owner_id},
+        "name": prefix,
+    }
+
+    if is_multimaterial:
+        config["_materials"] = [{"_id": mid} for mid in {md["_id"] for md in material_dicts}]
+    else:
+        config["_material"] = {"_id": material_dicts[0]["_id"]}
+
+    if compute:
+        config["compute"] = compute
+    return api_client.jobs.create(config)

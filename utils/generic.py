@@ -38,12 +38,3 @@ def dict_to_namespace(obj):
         return [dict_to_namespace(item) for item in obj]
     else:
         return obj
-
-
-def namespace_to_dict(obj):
-    if isinstance(obj, SimpleNamespace):
-        return {k: namespace_to_dict(v) for k, v in vars(obj).items()}
-    elif isinstance(obj, list):
-        return [namespace_to_dict(item) for item in obj]
-    else:
-        return obj

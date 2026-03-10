@@ -207,14 +207,12 @@ def create_job(
 
     workflow_dict = workflow.to_dict() if isinstance(workflow, Workflow) else workflow
 
-    formulas = set(material["formula"] for material in material_dicts)
-    job_name = " ".join((prefix, ", ".join(formulas)))
     config = {
         "_project": {"_id": project_id},
         "workflow": workflow_dict,
         "_material": {"_id": material_dicts[0]["_id"]},
         "owner": {"_id": owner_id},
-        "name": job_name,
+        "name": prefix,
     }
     if compute:
         config["compute"] = compute

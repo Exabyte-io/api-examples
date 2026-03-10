@@ -6,11 +6,10 @@ import urllib.request
 from types import SimpleNamespace
 from typing import List, Optional
 
+from mat3ra.api_client import APIClient
 from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from mat3ra.api_client.endpoints.jobs import JobEndpoints
-from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
-from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
 from tabulate import tabulate
 
 from utils.generic import namespace_to_dict
@@ -130,48 +129,48 @@ def get_cluster_name(name: str = "cluster-001") -> str:
     return clusters[0] if clusters else name
 
 
-def get_or_create_material(endpoint: MaterialEndpoints, material, owner_id: str) -> dict:
+def get_or_create_material(api_client: APIClient, material, owner_id: str) -> dict:
     """
     Returns an existing material from the collection if one with the same structural hash
     exists under the given owner, otherwise creates a new one.
     Uses the client-side hash (mat3ra-made Material.hash) to avoid unnecessary DB writes.
 
     Args:
-        endpoint (MaterialEndpoints): Material endpoint from the API client.
+        api_client (APIClient): API client instance carrying the authorization context.
         material: mat3ra-made Material object (must have a .hash property).
         owner_id (str): Account ID under which to search and create.
 
     Returns:
         dict: The material dict (existing or newly created).
     """
-    existing = endpoint.list({"hash": material.hash, "owner._id": owner_id})
+    existing = api_client.materials.list({"hash": material.hash, "owner._id": owner_id})
     if existing:
         print(f"♻️  Reusing already existing Material: {existing[0]['_id']}")
         return existing[0]
-    created = endpoint.create(material.to_dict(), owner_id=owner_id)
+    created = api_client.materials.create(material.to_dict(), owner_id=owner_id)
     print(f"✅ Material created: {created['_id']}")
     return created
 
 
-def get_or_create_workflow(endpoint: WorkflowEndpoints, workflow, owner_id: str) -> dict:
+def get_or_create_workflow(api_client: APIClient, workflow, owner_id: str) -> dict:
     """
     Creates the workflow on the server, then uses the server-assigned hash to check for
     pre-existing duplicates. If a duplicate exists, deletes the new entry and returns the
     original. The server is the authoritative source for structural deduplication.
 
     Args:
-        endpoint (WorkflowEndpoints): Workflow endpoint from the API client.
+        api_client (APIClient): API client instance carrying the authorization context.
         workflow: mat3ra-wode Workflow object with a .to_dict() method.
         owner_id (str): Account ID under which to search and create.
 
     Returns:
         dict: The workflow dict (existing or newly created).
     """
-    existing = endpoint.list({"hash": workflow.hash, "owner._id": owner_id})
+    existing = api_client.workflows.list({"hash": workflow.hash, "owner._id": owner_id})
     if existing:
         print(f"♻️  Reusing already existing Workflow: {existing[0]['_id']}")
         return existing[0]
-    created = endpoint.create(workflow.to_dict(), owner_id=owner_id)
+    created = api_client.workflows.create(workflow.to_dict(), owner_id=owner_id)
     print(f"✅ Workflow created: {created['_id']}")
     return created
 

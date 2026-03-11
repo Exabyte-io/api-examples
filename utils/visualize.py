@@ -403,8 +403,8 @@ def visualize_properties(results, width=900, title="Properties", extra_config=No
     if isinstance(results, dict):
         results = [results]
 
-    # Only keep the properties we can display
-    results = [r for r in results if "value" in r or "values" in r]
+    DATA_KEYS = {"value", "values", "xDataArray"}
+    results = [r for r in results if DATA_KEYS & r.keys()]
 
     timestamp = time.time()
     div_id = f"prove-{timestamp}"

@@ -150,17 +150,6 @@ def get_or_create_material(api_client: APIClient, material, owner_id: str) -> di
     return created
 
 
-def _clean_workflow_dict(workflow: Workflow) -> dict:
-    """Returns workflow dict with all unit contexts stripped, for saving to the platform.
-    Unit-level context (kpath, kgrid, cutoffs, etc.) is job-specific and must not be persisted
-    on the base workflow in the collection."""
-    workflow_dict = workflow.to_dict()
-    for swf in workflow_dict.get("subworkflows", []):
-        for unit in swf.get("units", []):
-            unit["context"] = {}
-    return workflow_dict
-
-
 def get_or_create_workflow(api_client: APIClient, workflow: Workflow, owner_id: str) -> dict:
     """
     Creates a workflow in the collection if none with the same hash exists under the given owner.
@@ -179,7 +168,7 @@ def get_or_create_workflow(api_client: APIClient, workflow: Workflow, owner_id: 
     if existing:
         print(f"♻️  Reusing already existing Workflow: {existing[0]['_id']}")
         return existing[0]
-    created = api_client.workflows.create(_clean_workflow_dict(workflow), owner_id=owner_id)
+    created = api_client.workflows.create(workflow.to_clean_dict(), owner_id=owner_id)
     print(f"✅ Workflow created: {created['_id']}")
     return created
 

@@ -6,7 +6,7 @@ from typing import Optional
 
 import requests
 from IPython.display import Javascript, display
-from mat3ra.api_client import ACCESS_TOKEN_ENV_VAR, CLIENT_ID, SCOPE, APIEnv, build_oidc_base_url
+from mat3ra.api_client import ACCESS_TOKEN_ENV_VAR, CLIENT_ID, SCOPE, APIClient, APIEnv, build_oidc_base_url
 
 REFRESH_TOKEN_ENV_VAR = "OIDC_REFRESH_TOKEN"
 
@@ -141,3 +141,13 @@ async def authenticate(force=False):
     else:
         if ACCESS_TOKEN_ENV_VAR not in os.environ or force:
             await authenticate_oidc()
+
+
+async def get_authenticated_client(access_token: Optional[str] = None) -> APIClient:
+    if access_token is not None:
+        os.environ[ACCESS_TOKEN_ENV_VAR] = access_token
+    else:
+        await authenticate()
+        if ACCESS_TOKEN_ENV_VAR in os.environ:
+            print(f"Access token (copy to reuse in case of notebook refresh):\n{os.environ[ACCESS_TOKEN_ENV_VAR]}")
+    return APIClient.authenticate()

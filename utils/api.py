@@ -10,9 +10,12 @@ from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from mat3ra.api_client.endpoints.jobs import JobEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
 from mat3ra.made.material import Material
+from mat3ra.prode import PropertyName
 from mat3ra.utils.extra.tabulate import pretty_print
 from mat3ra.utils.jupyterlite.interrupts import interruptible_polling_loop
 from mat3ra.wode import Workflow
+
+from .job_properties import get_fermi_energy_flowchart_id
 
 
 def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:
@@ -150,17 +153,6 @@ def get_or_create_material(api_client: APIClient, material, owner_id: str) -> di
     return created
 
 
-def _clean_workflow_dict(workflow: Workflow) -> dict:
-    """Returns workflow dict with all unit contexts stripped, for saving to the platform.
-    Unit-level context (kpath, kgrid, cutoffs, etc.) is job-specific and must not be persisted
-    on the base workflow in the collection."""
-    workflow_dict = workflow.to_dict()
-    for swf in workflow_dict.get("subworkflows", []):
-        for unit in swf.get("units", []):
-            unit["context"] = {}
-    return workflow_dict
-
-
 def get_or_create_workflow(api_client: APIClient, workflow: Workflow, owner_id: str) -> dict:
     """
     Creates a workflow in the collection if none with the same hash exists under the given owner.
@@ -179,9 +171,33 @@ def get_or_create_workflow(api_client: APIClient, workflow: Workflow, owner_id: 
     if existing:
         print(f"♻️  Reusing already existing Workflow: {existing[0]['_id']}")
         return existing[0]
-    created = api_client.workflows.create(_clean_workflow_dict(workflow), owner_id=owner_id)
+    created = api_client.workflows.create(workflow.to_dict_without_special_keys(), owner_id=owner_id)
     print(f"✅ Workflow created: {created['_id']}")
     return created
+
+
+FERMI_ENERGY_PROPERTIES = {
+    PropertyName.non_scalar.band_structure.value,
+    PropertyName.non_scalar.density_of_states.value,
+}
+
+
+def get_properties_for_job(client: APIClient, job_id: str, property_name: Optional[str] = None) -> List[dict]:
+    """
+    Fetch properties for a job, automatically enriching band_structure/DOS results with fermiEnergy.
+    Use instead of client.properties.get_for_job when passing results to visualize_properties.
+    """
+    job = client.jobs.get(job_id)
+    properties = client.properties.get_for_job(job_id, property_name)
+    if property_name not in FERMI_ENERGY_PROPERTIES:
+        return properties
+    flowchart_id = get_fermi_energy_flowchart_id(job)
+    fermi_energy = None
+    if flowchart_id:
+        fe_props = client.properties.get_for_job(job_id, PropertyName.scalar.fermi_energy.value, flowchart_id)
+        if fe_props:
+            fermi_energy = fe_props[0].get("value")
+    return [{**prop, "fermiEnergy": fermi_energy} for prop in properties]
 
 
 def create_job(

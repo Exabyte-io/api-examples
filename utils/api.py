@@ -10,6 +10,7 @@ from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 from mat3ra.api_client.endpoints.jobs import JobEndpoints
 from mat3ra.api_client.endpoints.properties import PropertiesEndpoints
 from mat3ra.made.material import Material
+from mat3ra.prode import PropertyName
 from mat3ra.utils.extra.tabulate import pretty_print
 from mat3ra.utils.jupyterlite.interrupts import interruptible_polling_loop
 from mat3ra.wode import Workflow
@@ -171,6 +172,45 @@ def get_or_create_workflow(api_client: APIClient, workflow: Workflow, owner_id: 
     created = api_client.workflows.create(workflow.to_clean_dict(), owner_id=owner_id)
     print(f"✅ Workflow created: {created['_id']}")
     return created
+
+
+FERMI_ENERGY_PROPERTIES = {
+    PropertyName.non_scalar.band_structure.value,
+    PropertyName.non_scalar.density_of_states.value,
+}
+
+
+def get_fermi_energy_for_job(client: APIClient, job_id: str, job: dict) -> Optional[float]:
+    """
+    Find the fermi_energy value for a job, mirroring calculateFermiEnergy in the web app.
+    Finds the last unit in any subworkflow that declares fermi_energy in its results and returns its value.
+    """
+    for swf in job.get("workflow", {}).get("subworkflows", []):
+        units_with_fe = [
+            u
+            for u in swf.get("units", [])
+            if any(r.get("name") == PropertyName.scalar.fermi_energy.value for r in u.get("results", []))
+        ]
+        if not units_with_fe:
+            continue
+        last_unit_flowchart_id = units_with_fe[-1].get("flowchartId")
+        fe_props = client.properties.get_for_job(job_id, PropertyName.scalar.fermi_energy.value, last_unit_flowchart_id)
+        if fe_props:
+            return fe_props[0].get("value")
+    return None
+
+
+def get_properties_for_job(client: APIClient, job_id: str, property_name: Optional[str] = None) -> List[dict]:
+    """
+    Fetch properties for a job, automatically enriching band_structure/DOS results with fermiEnergy.
+    Use instead of client.properties.get_for_job when passing results to visualize_properties.
+    """
+    job = client.jobs.get(job_id)
+    properties = client.properties.get_for_job(job_id, property_name)
+    if property_name not in FERMI_ENERGY_PROPERTIES:
+        return properties
+    fermi_energy = get_fermi_energy_for_job(client, job_id, job)
+    return [{**prop, "fermiEnergy": fermi_energy} for prop in properties]
 
 
 def create_job(

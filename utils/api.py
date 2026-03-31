@@ -3,7 +3,7 @@ import json
 import os
 import urllib.request
 from collections import Counter
-from typing import List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 from mat3ra.api_client import APIClient
 from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
@@ -208,7 +208,7 @@ def create_job(
     owner_id: str,
     prefix: str,
     compute: Optional[dict] = None,
-) -> List[dict]:
+) -> Union[dict, List[dict]]:
     """
     Creates jobs for each material using an embedded workflow with any context (important settings)
     already applied. The workflow _id is stripped so the server uses the embedded dict as-is,
@@ -255,3 +255,68 @@ def create_job(
     if compute:
         config["compute"] = compute
     return api_client.jobs.create(config)
+
+
+def create_jobs_for_materials(
+    api_client: APIClient,
+    materials: List[Union[dict, Material]],
+    workflow: Union[dict, Workflow],
+    project_id: str,
+    owner_id: str,
+    prefix: str,
+    compute: Optional[dict] = None,
+    job_name_getter: Optional[Callable[[Union[dict, Material], int], str]] = None,
+) -> List[dict]:
+    """
+    Creates one job per material using the same workflow and compute configuration.
+
+    Args:
+        api_client (APIClient): API client instance carrying the authorization context.
+        materials (list): List of material dicts or mat3ra-made Material objects.
+        workflow: Workflow dict or Workflow object with important settings already applied.
+        project_id (str): Project ID.
+        owner_id (str): Account ID.
+        prefix (str): Job name prefix.
+        compute (dict, optional): Compute configuration dict.
+        job_name_getter (callable, optional): Custom job name builder receiving
+            `(material, index)` and returning a string.
+
+    Returns:
+        list[dict]: List of created job dicts.
+    """
+    jobs = []
+    for index, material in enumerate(materials):
+        if job_name_getter:
+            job_name = job_name_getter(material, index)
+        else:
+            material_name = (
+                material.name if isinstance(material, Material) else material.get("name", f"material-{index + 1}")
+            )
+            job_name = f"{prefix} | {material_name}"
+
+        response = create_job(
+            api_client=api_client,
+            materials=[material],
+            workflow=workflow,
+            project_id=project_id,
+            owner_id=owner_id,
+            prefix=job_name,
+            compute=compute,
+        )
+        if isinstance(response, list):
+            jobs.extend(response)
+        else:
+            jobs.append(response)
+    return jobs
+
+
+def submit_jobs(endpoint: JobEndpoints, job_ids: List[str]) -> None:
+    """
+    Submits jobs by IDs.
+
+    Args:
+        endpoint (JobEndpoints): Job endpoint object from the Exabyte API Client.
+        job_ids (list[str]): Job IDs to submit.
+    """
+    for job_id in job_ids:
+        endpoint.submit(job_id)

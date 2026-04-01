@@ -7,17 +7,6 @@ from mat3ra.made.tools.build_components.operations.core.modifications.strain.hel
 )
 
 
-def get_material_label(material: Material) -> str:
-    """
-    Returns a readable label for a material.
-    """
-    if material.name:
-        return material.name
-    if getattr(material, "formula", None):
-        return material.formula
-    return "Material"
-
-
 def scale_material(
     material: Material,
     scale_factor: float,
@@ -39,7 +28,7 @@ def scale_material(
 
     scaled_material = create_strain(material, get_isotropic_strain_matrix(scale_factor))
 
-    base_name = get_material_label(material)
+    base_name = material.name
     scaled_material.name = name_template.format(base_name=base_name, scale_factor=scale_factor)
     return scaled_material
 
@@ -53,7 +42,7 @@ def build_eos_candidate_records(materials: Sequence[Material], scale_factors: Se
         records.append(
             {
                 "scale_factor": scale_factor,
-                "material_name": get_material_label(material),
+                "material_name": material.name,
                 "volume": material.lattice.cell_volume,
                 "atoms": material.basis.number_of_atoms,
             }

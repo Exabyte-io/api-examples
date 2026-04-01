@@ -44,7 +44,6 @@ def build_eos_candidate_records(materials: Sequence[Material], scale_factors: Se
                 "scale_factor": scale_factor,
                 "material_name": material.name,
                 "volume": material.lattice.cell_volume,
-                "atoms": material.basis.number_of_atoms,
             }
         )
     return records

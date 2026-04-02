@@ -11,7 +11,7 @@ dependencies = [
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
   "pymatgen==2024.4.13",
-  "mat3ra-made>=2026.4.1.post0",
+  "mat3ra-made>=2026.4.2.post0",
   "mat3ra-utils>=2026.3.6.post0",
   "mat3ra-wode",
   "mat3ra-prode",

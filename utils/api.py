@@ -208,7 +208,7 @@ def create_job(
     owner_id: str,
     prefix: str,
     compute: Optional[dict] = None,
-) -> List[dict]:
+) -> Union[dict, List[dict]]:
     """
     Creates jobs for each material using an embedded workflow with any context (important settings)
     already applied. The workflow _id is stripped so the server uses the embedded dict as-is,
@@ -255,3 +255,15 @@ def create_job(
     if compute:
         config["compute"] = compute
     return api_client.jobs.create(config)
+
+
+def submit_jobs(endpoint: JobEndpoints, job_ids: List[str]) -> None:
+    """
+    Submits jobs by IDs.
+
+    Args:
+        endpoint (JobEndpoints): Job endpoint object from the Exabyte API Client.
+        job_ids (list[str]): Job IDs to submit.
+    """
+    for job_id in job_ids:
+        endpoint.submit(job_id)

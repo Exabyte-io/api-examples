@@ -86,7 +86,7 @@ def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: List[str]) ->
     pretty_print([row], headers, tablefmt="grid", stralign="center")
 
     active_statuses = {"pre-submission", "submitted", "active"}
-    return any(status in active_statuses for status in statuses)
+    return not statuses or any(status in active_statuses for status in statuses)
 
 
 def copy_bank_workflow_by_system_name(endpoint: BankWorkflowEndpoints, system_name: str, account_id: str) -> dict:

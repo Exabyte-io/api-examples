@@ -8,7 +8,7 @@ import numpy as np
 import pymatgen.core.surface
 import pymatgen.io.ase
 import pymatgen.symmetry.analyzer
-from exabyte_api_client.endpoints.jobs import JobEndpoints
+from mat3ra.api_client.endpoints.jobs import JobEndpoints
 
 
 def download_file_by_name(job_id: str, job_endpoint: JobEndpoints, target: str, pattern: str) -> None:

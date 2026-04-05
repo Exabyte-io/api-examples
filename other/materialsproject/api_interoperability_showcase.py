@@ -55,12 +55,12 @@ if "COLAB_JUPYTER_IP" in os.environ:
 
 
 from utils.settings import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
-from utils.generic import display_JSON
+from utils.visualize import display_JSON
 
 import ase.io
 from pymatgen.ext.matproj import MPRester
 
-from exabyte_api_client.endpoints.materials import MaterialEndpoints
+from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 
 
 # # Query the Materials Project

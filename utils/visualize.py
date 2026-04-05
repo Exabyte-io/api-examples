@@ -1,5 +1,8 @@
 import io
+import json
+import os
 import time
+import uuid
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -10,12 +13,74 @@ from IPython.display import HTML, Javascript, display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.convert import to_ase
 from mat3ra.utils.array import convert_to_array_if_not
+from pandas import DataFrame
+from pandas.io.formats.style import Styler
 from pydantic import BaseModel
+
+from utils import settings
 
 
 class ViewersEnum(str, Enum):
     wave = "wave"
     ase = "ase"
+
+
+def dataframe_to_html(df: DataFrame, text_align: str = "center") -> Styler:
+    """
+    Converts Pandas dataframe to HTML.
+    See https://pandas.pydata.org/pandas-docs/stable/style.html for more information about styling.
+
+    Args:
+        df (pd.DataFrame): Pandas dataframe.
+        text_align (str): text align. Defaults to center.
+    """
+    styles = [
+        dict(selector="th", props=[("text-align", text_align)]),
+        dict(selector="td", props=[("text-align", text_align)]),
+    ]
+    return df.style.set_table_styles(styles)
+
+
+def display_JSON(
+    obj: Union[dict, list], interactive_viewer: bool = settings.use_interactive_JSON_viewer, level: int = 2
+) -> None:
+    """
+    Displays JSON, either interactively or via a text dump to Stdout.
+
+    The interactive viewer is based on https://github.com/mljar/mercury/blob/main/mercury/widgets/json.py.
+
+    Args:
+        obj (dict): Object to display as nicely-formatted JSON
+        interactive_viewer (bool): Whether to use the interactive viewer or not
+        level (int): The level to which the JSON should be expanded by default
+    """
+    if interactive_viewer:
+        if isinstance(obj, (dict, list)):
+            json_str = json.dumps(obj)
+        else:
+            json_str = obj
+
+        id = str(uuid.uuid4())
+
+        web_dir = os.path.join(os.path.dirname(__file__), "web")
+
+        with open(os.path.join(web_dir, "renderjson.css")) as fp:
+            css = fp.read()
+
+        with open(os.path.join(web_dir, "renderjson.js")) as fp:
+            js = fp.read()
+
+        display(HTML(f'<style>{css}</style><div id="{id}"></div>'))
+        display(
+            HTML(
+                f"<script>{js} "
+                f"renderjson.set_show_to_level({str(level)}); "
+                f'renderjson.set_icons("▸","▾"); '
+                f'document.getElementById("{id}").appendChild(renderjson({json_str}))</script>'
+            )
+        )
+    else:
+        print(json.dumps(obj, indent=4))
 
 
 def get_material_image(material: Material, title: str, rotation="0x,0y,0z", repetitions=[1, 1, 1]):
@@ -100,42 +165,97 @@ class MaterialViewProperties(BaseModel):
     title: str = "Material"
 
 
-default_div_id = "wave"
+def get_viewer_html(div_id, width, height=None, title="Viewer", custom_styles=""):
+    """
+    Generate HTML container for a viewer.
 
+    Args:
+        div_id: Unique ID for the container div
+        width: Width in pixels
+        height: Height in pixels (optional, if not provided only width is set)
+        title: Title to display above the viewer
+        custom_styles: Additional inline CSS styles
+    """
+    if height is not None:
+        size_style = f"width:{width}px; height:{height}px;"
+    else:
+        size_style = f"width:{width}px;"
 
-def get_wave_html(div_id=default_div_id, width=600, height=600, title="Material"):
-    size = min(width, height)  # Make it square by using the smaller dimension
     return f"""
     <h2>{title}</h2>
-    <div id="{div_id}" style="width:{size}px; height:{size}px; border:1px solid #333;"></div>
+    <div id="{div_id}" style="{size_style} {custom_styles}"></div>
     """
 
 
-def get_wave_js(material_json, div_id=default_div_id):
-    return (
+def get_viewer_js(
+    data_json,
+    div_id,
+    bundle_url,
+    render_function,
+    data_var_name="data",
+    extra_config_json=None,
+    css_url=None,
+):
+    """
+    Generate JavaScript to load and render a viewer bundle.
+
+    Args:
+        data_json: JSON string of data to render
+        div_id: Container div ID
+        bundle_url: URL to the JS bundle
+        render_function: Name of the window function to call (e.g., 'renderThreeDEditor', 'renderResults')
+        data_var_name: Variable name for the data (e.g., 'materialConfig', 'results')
+        extra_config_json: Optional extra config as JSON string
+        css_url: Optional CSS file URL to load
+    """
+    extra_config_arg = f", {extra_config_json}" if extra_config_json else ""
+    css_loader = (
         f"""
-    const materialConfig={material_json};
-    const container = document.getElementById('{div_id}');
-        """
-        + """
-    (async function() {
-            const module = await import('https://exabyte-io.github.io/wave.js/main.js');
-            window.renderThreeDEditor(materialConfig, container);
-    })();
     document.head.insertAdjacentHTML(
         'beforeend',
-        '<link rel="stylesheet" href="https://exabyte-io.github.io/wave.js/main.css"/>');
+        '<link rel="stylesheet" href="{css_url}"/>');
     """
+        if css_url
+        else ""
     )
+
+    return f"""
+    const {data_var_name}={data_json};
+    const container = document.getElementById('{div_id}');
+    (async function() {{
+        await import('{bundle_url}');
+        window.{render_function}({data_var_name}, container{extra_config_arg});
+    }})();
+    {css_loader}
+    """
+
+
+def get_wave_viewer(material, div_id, width, height, title):
+    size = min(width, height)
+    html = get_viewer_html(
+        div_id=div_id,
+        width=size,
+        height=size,
+        title=title,
+        custom_styles="border:1px solid #333;",
+    )
+    js = get_viewer_js(
+        data_json=material.to_json(),
+        div_id=div_id,
+        bundle_url="https://exabyte-io.github.io/wave.js/main.js",
+        render_function="renderThreeDEditor",
+        data_var_name="materialConfig",
+        css_url="https://exabyte-io.github.io/wave.js/main.css",
+    )
+    return html, js
 
 
 def render_wave(material, properties, width=600, height=600):
     timestamp = time.time()
-    material_json = material.to_json()
     div_id = f"wave-{timestamp}"
-
-    display(HTML(get_wave_html(div_id, width, height, properties.title)))
-    display(Javascript(get_wave_js(material_json, div_id)))
+    html, js = get_wave_viewer(material, div_id, width, height, properties.title)
+    display(HTML(html))
+    display(Javascript(js))
 
 
 def render_wave_grid(
@@ -148,13 +268,11 @@ def render_wave_grid(
     html_items = []
     js_items = []
     timestamp = time.time()
-    # column_width = f"minmax(100px, {100 / max_columns}%)"
 
     for i, material in enumerate(materials):
         properties_config = list_of_properties_configs[i]
-        title = properties_config.title
-        html = get_wave_html(f"wave-{i}-{timestamp}", width, height, title=title)
-        js = get_wave_js(material.to_json(), f"wave-{i}-{timestamp}")
+        div_id = f"wave-{i}-{timestamp}"
+        html, js = get_wave_viewer(material, div_id, width, height, properties_config.title)
         html_items.append(widgets.HTML(html))
         js_items.append(Javascript(js))
 
@@ -255,3 +373,58 @@ def visualize_materials(
                 items.append((image_data, image_title))
 
         display(create_responsive_image_grid(items))
+
+
+def visualize_workflow(workflow, level: int = 2) -> None:
+    """
+    Visualize a workflow by displaying its JSON configuration.
+
+    Args:
+        workflow: Workflow object with a to_dict() method
+        level: Expansion level for the JSON viewer (default: 2)
+
+    Returns:
+        None
+    """
+    workflow_config = workflow.to_dict()
+    display_JSON(workflow_config, level=level)
+
+
+def visualize_properties(results, width=900, title="Properties", extra_config=None):
+    """
+    Visualize properties using a Prove viewer.
+
+    Args:
+        results: List[dict] of property JSON objects (or a single dict).
+        width: Container width in pixels.
+        title: Title displayed above the viewer.
+        extra_config: Optional dict with materials, components, callbacks, etc.
+    """
+    if isinstance(results, dict):
+        results = [results]
+
+    DATA_KEYS = {"value", "values", "xDataArray"}
+    results = [r for r in results if DATA_KEYS & r.keys()]
+
+    timestamp = time.time()
+    div_id = f"prove-{timestamp}"
+    results_json = json.dumps(results)
+    extra_config_json = json.dumps(extra_config) if extra_config else "undefined"
+
+    html = get_viewer_html(
+        div_id=div_id,
+        width=width,
+        title=title,
+        custom_styles="border:1px solid #ddd; padding:12px; background:#fff; color:#111;",
+    )
+    js = get_viewer_js(
+        data_json=results_json,
+        div_id=div_id,
+        bundle_url="https://exabyte-io.github.io/prove/main.js",
+        render_function="renderResults",
+        data_var_name="results",
+        extra_config_json=extra_config_json,
+    )
+
+    display(HTML(html))
+    display(Javascript(js))

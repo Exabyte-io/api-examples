@@ -24,18 +24,17 @@ import numpy as np
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from utils.generic import ensure_packages_are_installed, save_files
-ensure_packages_are_installed()
+from utils.api import save_files
 from utils.material import get_all_slabs_and_terms
 from utils.material import get_vasp_total_energy, get_slab_area, get_surface_energy
 from settings import MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client
-from exabyte_api_client.endpoints.jobs import JobEndpoints
-from exabyte_api_client.endpoints.projects import ProjectEndpoints
-from exabyte_api_client.endpoints.materials import MaterialEndpoints
-from exabyte_api_client.endpoints.workflows import WorkflowEndpoints
-from exabyte_api_client.endpoints.bank_workflows import BankWorkflowEndpoints
+from mat3ra.api_client.endpoints.jobs import JobEndpoints
+from mat3ra.api_client.endpoints.projects import ProjectEndpoints
+from mat3ra.api_client.endpoints.materials import MaterialEndpoints
+from mat3ra.api_client.endpoints.workflows import WorkflowEndpoints
+from mat3ra.api_client.endpoints.bank_workflows import BankWorkflowEndpoints
 
 
 # # Get Unit Cells
@@ -151,7 +150,7 @@ job_config = {"ppn": 4,
               "nodes": 1,
               "time_limit": "00:10:00",
               "cluster": "cluster-001"}
-compute = exabyte_jobs_endpoint.get_compute(**job_config)
+compute = exabyte_jobs_endpoint.build_compute_config(**job_config)
 
 # Create the Cu job
 cu_job = exabyte_jobs_endpoint.create_by_ids([cu_cell_material],
@@ -324,7 +323,7 @@ for miller_index, term_dict in cu_slabs.items():
                       "nodes": n_nodes,
                       "time_limit": "12:00:00",
                       "cluster": "cluster-007"}
-        compute = exabyte_jobs_endpoint.get_compute(**job_config)
+        compute = exabyte_jobs_endpoint.build_compute_config(**job_config)
 
         # Determine what we should name these jobs
         job_prefix = f"cu_slab_{miller_index}_Term{term}"

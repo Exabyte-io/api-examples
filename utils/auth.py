@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import json
 import os
 import time
@@ -7,6 +8,9 @@ from typing import Optional
 import requests
 from IPython.display import Javascript, display
 from mat3ra.api_client import ACCESS_TOKEN_ENV_VAR, CLIENT_ID, SCOPE, APIEnv, build_oidc_base_url
+from mat3ra.utils.jupyterlite.environment import ENVIRONMENT, EnvironmentsEnum
+
+from utils.jupyterlite import get_data
 
 REFRESH_TOKEN_ENV_VAR = "OIDC_REFRESH_TOKEN"
 
@@ -122,22 +126,30 @@ async def authenticate_oidc(
     return token_data
 
 
-async def authenticate_jupyterlite():
-    apiConfig = data_from_host.get("apiConfig")  # type: ignore  # noqa: F821
-    os.environ.update(data_from_host.get("environ", {}))  # noqa: F821
+async def authenticate_jupyterlite(data_from_host: dict) -> None:
+    apiConfig = data_from_host.get("apiConfig")
+    os.environ.update(data_from_host.get("environ", {}))
     os.environ.update(
         dict(
-            ACCOUNT_ID=apiConfig.get("accountId"),
-            AUTH_TOKEN=apiConfig.get("authToken"),
-            ORGANIZATION_ID=apiConfig.get("organizationId", ""),
-            CLUSTERS=json.dumps(apiConfig.get("clusters", [])),
+            ACCOUNT_ID=apiConfig.get("accountId"),  # type: ignore
+            AUTH_TOKEN=apiConfig.get("authToken"),  # type: ignore
+            ORGANIZATION_ID=apiConfig.get("organizationId", ""),  # type: ignore
+            CLUSTERS=json.dumps(apiConfig.get("clusters", [])),  # type: ignore
         )
     )
 
 
-async def authenticate(force=False):
-    if "data_from_host" in globals():
-        await authenticate_jupyterlite()
-    else:
-        if ACCESS_TOKEN_ENV_VAR not in os.environ or force:
-            await authenticate_oidc()
+async def authenticate(force=False, globals_dict=None):
+    if globals_dict is None:
+        frame = inspect.currentframe()
+        try:
+            globals_dict = frame.f_back.f_globals  # type: ignore
+        finally:
+            del frame
+    if ENVIRONMENT == EnvironmentsEnum.PYODIDE:
+        get_data("data_from_host", globals_dict)
+    data_from_host = globals_dict.get("data_from_host")
+    if data_from_host:
+        await authenticate_jupyterlite(data_from_host)
+    elif ACCESS_TOKEN_ENV_VAR not in os.environ or force:
+        await authenticate_oidc()

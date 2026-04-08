@@ -257,6 +257,24 @@ def create_job(
     return api_client.jobs.create(config)
 
 
+def get_convergence_series(client: APIClient, job_id: str, subworkflow_index: int = 0) -> List[dict]:
+    """
+    Returns the convergence series from a finished convergence job.
+
+    Args:
+        client: API client instance.
+        job_id: ID of the finished convergence job.
+        subworkflow_index: Index of the convergence subworkflow (default 0).
+
+    Returns:
+        List of dicts with keys "x", "parameter", "y".
+    """
+    finished_job = client.jobs.get(job_id)
+    job_workflow = Workflow.create(finished_job["workflow"])
+    subworkflow = job_workflow.subworkflows[subworkflow_index]
+    return subworkflow.convergence_series(finished_job.get("scopeTrack"))
+
+
 def submit_jobs(endpoint: JobEndpoints, job_ids: List[str]) -> None:
     """
     Submits jobs by IDs.

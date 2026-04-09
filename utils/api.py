@@ -238,7 +238,7 @@ def create_job(
     # Strip _id so the server uses the embedded workflow as-is instead of fetching from DB,
     # which would discard any unit-level context (kpath, kgrid, cutoffs, etc.).
     job_workflow_dict.pop("_id", None)
-    is_multimaterial = job_workflow_dict.get("isMultimaterial", False)
+    is_multimaterial = job_workflow_dict.get("isMultiMaterial", False)
 
     config = {
         "_project": {"_id": project_id},
@@ -248,7 +248,11 @@ def create_job(
     }
 
     if is_multimaterial:
-        config["_materials"] = [{"_id": mid} for mid in {md["_id"] for md in material_dicts}]
+        # Some API environments still validate `_material._id` even for
+        # multi-material workflows, so provide the first material as a
+        # compatibility fallback while preserving the full ordered list.
+        config["_material"] = {"_id": material_dicts[0]["_id"]}
+        config["_materials"] = [{"_id": m["_id"]} for m in material_dicts]
     else:
         config["_material"] = {"_id": material_dicts[0]["_id"]}
 

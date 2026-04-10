@@ -390,6 +390,45 @@ def visualize_workflow(workflow, level: int = 2) -> None:
     display_JSON(workflow_config, level=level)
 
 
+def _build_file_content_extra_config(results):
+    files = []
+    for result in results:
+        if result.get("name") != "file_content":
+            continue
+        signed_url = result.get("signedUrl") or result.get("signedURL") or result.get("url")
+        basename = result.get("basename")
+        key = result.get("objectData", {}).get("NAME") or basename
+        if signed_url and key:
+            files.append({"basename": basename, "key": key, "signedUrl": signed_url})
+
+    if not files:
+        return None
+
+    files_json = json.dumps(files)
+    return f"""{{
+        getFileContent: function(data, onSuccess) {{
+            const files = {files_json};
+            const file = files.find((item) =>
+                (data && data.objectData && data.objectData.NAME && item.key === data.objectData.NAME) ||
+                (data && data.basename && item.basename === data.basename)
+            );
+            if (!file) {{
+                console.warn("No signed URL found for file_content result", data);
+                return;
+            }}
+            const fileMetadata = {{ key: file.key, signedUrl: file.signedUrl }};
+            if (data && data.filetype === "image") {{
+                onSuccess("", fileMetadata);
+                return;
+            }}
+            fetch(file.signedUrl)
+                .then((response) => response.text())
+                .then((content) => onSuccess(content, fileMetadata))
+                .catch((error) => console.error("Failed to load file content", error));
+        }}
+    }}"""
+
+
 def visualize_properties(results, width=900, title="Properties", extra_config=None):
     """
     Visualize properties using a Prove viewer.
@@ -403,13 +442,18 @@ def visualize_properties(results, width=900, title="Properties", extra_config=No
     if isinstance(results, dict):
         results = [results]
 
-    DATA_KEYS = {"value", "values", "xDataArray"}
+    DATA_KEYS = {"value", "values", "xDataArray", "objectData"}
     results = [r for r in results if DATA_KEYS & r.keys()]
 
     timestamp = time.time()
     div_id = f"prove-{timestamp}"
     results_json = json.dumps(results)
-    extra_config_json = json.dumps(extra_config) if extra_config else "undefined"
+    if isinstance(extra_config, str):
+        extra_config_json = extra_config
+    elif extra_config:
+        extra_config_json = json.dumps(extra_config)
+    else:
+        extra_config_json = _build_file_content_extra_config(results) or "undefined"
 
     html = get_viewer_html(
         div_id=div_id,

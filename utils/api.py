@@ -78,14 +78,14 @@ def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: List[str]) ->
     now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
     row = [
         now,
-        counts.get("submitted", 0),
+        counts.get("submitted", 0) + counts.get("queued", 0),
         counts.get("active", 0),
         counts.get("finished", 0),
         counts.get("error", 0),
     ]
     pretty_print([row], headers, tablefmt="grid", stralign="center")
 
-    active_statuses = {"pre-submission", "submitted", "active"}
+    active_statuses = {"pre-submission", "submitted", "queued", "active"}
     return not statuses or any(status in active_statuses for status in statuses)
 
 

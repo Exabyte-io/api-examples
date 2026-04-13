@@ -71,6 +71,17 @@ torch.Tensor.__array__ = _tensor_array_compat
 torch.Tensor.numpy = lambda self: np.array(self.detach().tolist())
 
 
+# Fix torch.compiler.is_compiling for Pyodide
+# torch.compiler exists in the WASM build but is_compiling is absent;
+# mace.modules.utils.prepare_graph calls it unconditionally.
+if not hasattr(torch, "compiler"):
+    import types
+
+    torch.compiler = types.ModuleType("torch.compiler")
+if not hasattr(torch.compiler, "is_compiling"):
+    torch.compiler.is_compiling = lambda: False
+
+
 # Keep the SciPy LU patches we made earlier just in case
 import scipy.linalg  # noqa: E402
 

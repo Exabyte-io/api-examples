@@ -1,3 +1,14 @@
+"""
+Patches for torch to work in Pyodide environment.
+
+This module provides patches for torch.linalg functions to use NumPy/SciPy implementations,
+fixes torch.Tensor.__array__ and .numpy() methods, and adds torch.compiler.is_compiling.
+
+Usage:
+    from utils.patch_torch import apply_patches
+    apply_patches()
+"""
+
 from collections import namedtuple
 
 import numpy as np
@@ -6,6 +17,7 @@ import torch
 # Define return types to mimic PyTorch's named tuples
 EigRet = namedtuple("linalg_eig", ["eigenvalues", "eigenvectors"])  # type: ignore
 EighRet = namedtuple("linalg_eigh", ["eigenvalues", "eigenvectors"])  # type: ignore
+LUFactorReturn = namedtuple("LUFactorReturn", ["LU", "pivots"])
 
 
 def _to_np(tensor):
@@ -21,74 +33,41 @@ def _to_torch(array, device, dtype=None):
 # --- Define the Patches ---
 
 
-def patch_solve(A, B, *args, **kwargs):
+def _patch_solve(A, B, *args, **kwargs):
     return _to_torch(np.linalg.solve(_to_np(A), _to_np(B)), A.device)
 
 
-def patch_inv(A, *args, **kwargs):
+def _patch_inv(A, *args, **kwargs):
     return _to_torch(np.linalg.inv(_to_np(A)), A.device)
 
 
-def patch_det(A, *args, **kwargs):
+def _patch_det(A, *args, **kwargs):
     return _to_torch(np.linalg.det(_to_np(A)), A.device)
 
 
-def patch_cholesky(A, *args, **kwargs):
-    # NumPy's cholesky operates on the lower triangle by default, same as PyTorch
+def _patch_cholesky(A, *args, **kwargs):
     return _to_torch(np.linalg.cholesky(_to_np(A)), A.device)
 
 
-def patch_eig(A, *args, **kwargs):
+def _patch_eig(A, *args, **kwargs):
     vals, vecs = np.linalg.eig(_to_np(A))
     return EigRet(_to_torch(vals, A.device), _to_torch(vecs, A.device))
 
 
-def patch_eigh(A, UPLO="L", *args, **kwargs):
+def _patch_eigh(A, UPLO="L", *args, **kwargs):
     vals, vecs = np.linalg.eigh(_to_np(A), UPLO=UPLO)
     return EighRet(_to_torch(vals, A.device), _to_torch(vecs, A.device))
 
 
-# --- Apply the Patches to PyTorch ---
-
-torch.linalg.solve = patch_solve
-torch.linalg.inv = patch_inv
-torch.inverse = patch_inv  # Alias
-torch.linalg.det = patch_det
-torch.det = patch_det  # Alias
-torch.linalg.cholesky = patch_cholesky
-torch.linalg.eig = patch_eig
-torch.linalg.eigh = patch_eigh
-
-
-# Fix numpy
 def _tensor_array_compat(self, dtype=None):
     """Replacement for Tensor.__array__ in Pyodide where tensor.numpy() is unavailable."""
     arr = np.array(self.tolist())
     return arr.astype(dtype) if dtype is not None else arr
 
 
-torch.Tensor.__array__ = _tensor_array_compat
-torch.Tensor.numpy = lambda self: np.array(self.detach().tolist())
+def _patch_lu_factor(A, *args, **kwargs):
+    import scipy.linalg
 
-
-# Fix torch.compiler.is_compiling for Pyodide
-# torch.compiler exists in the WASM build but is_compiling is absent;
-# mace.modules.utils.prepare_graph calls it unconditionally.
-if not hasattr(torch, "compiler"):
-    import types
-
-    torch.compiler = types.ModuleType("torch.compiler")
-if not hasattr(torch.compiler, "is_compiling"):
-    torch.compiler.is_compiling = lambda: False
-
-
-# Keep the SciPy LU patches we made earlier just in case
-import scipy.linalg  # noqa: E402
-
-LUFactorReturn = namedtuple("LUFactorReturn", ["LU", "pivots"])
-
-
-def patch_lu_factor(A, *args, **kwargs):
     A_np = _to_np(A)
     if A_np.ndim > 2:
         orig_shape = A_np.shape
@@ -105,7 +84,9 @@ def patch_lu_factor(A, *args, **kwargs):
     return LUFactorReturn(_to_torch(LU_np, A.device, A.dtype), _to_torch(piv_np, A.device, torch.int32))
 
 
-def patch_lu_solve(LU, pivots, B, *args, **kwargs):
+def _patch_lu_solve(LU, pivots, B, *args, **kwargs):
+    import scipy.linalg
+
     LU_np, piv_np, B_np = _to_np(LU), _to_np(pivots), _to_np(B)
     if LU_np.ndim > 2:
         orig_shape_B = B_np.shape
@@ -122,7 +103,37 @@ def patch_lu_solve(LU, pivots, B, *args, **kwargs):
     return _to_torch(X_np, B.device, B.dtype)
 
 
-torch.linalg.lu_factor = patch_lu_factor
-torch.linalg.lu_solve = patch_lu_solve
+def patch_torch():
+    """
+    Apply all torch patches for Pyodide compatibility.
 
-print("All major torch.linalg functions successfully patched to use NumPy/SciPy!")
+    This function patches torch.linalg functions to use NumPy/SciPy implementations,
+    fixes torch.Tensor.__array__ and .numpy() methods, and adds torch.compiler.is_compiling.
+
+    Call this function once after importing torch in Pyodide environment.
+    """
+    # Patch linalg functions
+    torch.linalg.solve = _patch_solve
+    torch.linalg.inv = _patch_inv
+    torch.inverse = _patch_inv  # Alias
+    torch.linalg.det = _patch_det
+    torch.det = _patch_det  # Alias
+    torch.linalg.cholesky = _patch_cholesky
+    torch.linalg.eig = _patch_eig
+    torch.linalg.eigh = _patch_eigh
+    torch.linalg.lu_factor = _patch_lu_factor
+    torch.linalg.lu_solve = _patch_lu_solve
+
+    # Fix numpy compatibility
+    torch.Tensor.__array__ = _tensor_array_compat
+    torch.Tensor.numpy = lambda self: np.array(self.detach().tolist())
+
+    # Fix torch.compiler.is_compiling for Pyodide
+    if not hasattr(torch, "compiler"):
+        import types
+
+        torch.compiler = types.ModuleType("torch.compiler")
+    if not hasattr(torch.compiler, "is_compiling"):
+        torch.compiler.is_compiling = lambda: False
+
+    print("Torch patches for Pyodide applied successfully!")

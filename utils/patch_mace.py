@@ -3,7 +3,12 @@ Patches for MACE to work in Pyodide environment.
 
 This module stubs out missing modules and C-extension packages that are not available
 in Pyodide's WASM build but are required by MACE imports.
+
+Usage:
+    from utils.patch_mace import apply_patches
+    apply_patches()
 """
+
 import sys
 import types
 
@@ -30,7 +35,7 @@ def _capture_logs_stub(*args, **kwargs):
     return _LoggingTensorModeStub()
 
 
-def patch_mace_for_pyodide():
+def patch_mace():
     """Stub modules absent in pyodide's stripped torch build and missing C-extension packages."""
 
     # Stub torch.testing._internal modules
@@ -87,8 +92,3 @@ def patch_mace_for_pyodide():
         _tg.data = _tg_data
     except Exception:
         pass
-
-
-# Auto-apply patches on import
-patch_mace_for_pyodide()
-print("MACE patches for Pyodide successfully applied!")

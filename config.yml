@@ -77,3 +77,19 @@ notebooks:
       - emfs:/drive/packages/torch-2.1.0a0-cp311-cp311-emscripten_3_1_45_wasm32.whl
       # Needed by MACE
       - ssl
+  - name: mace
+    packages_pyodide:
+      - torch-dftd
+      - opt_einsum
+      - opt_einsum_fx
+      - e3nn==0.4.4
+      - prettytable
+      - torch_ema
+      - lightning-utilities
+      - torchmetrics
+      - ssl
+      - h5py
+      - lmdb
+      - orjson
+      - anywidget
+      - mace-torch

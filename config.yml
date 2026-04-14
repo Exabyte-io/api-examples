@@ -79,17 +79,19 @@ notebooks:
       - ssl
   - name: mace
     packages_pyodide:
-      - torch-dftd
+      # Packages with dependencies
       - opt_einsum
-      - opt_einsum_fx
-      - e3nn==0.4.4
       - prettytable
-      - torch_ema
-      - lightning-utilities
-      - torchmetrics
+      - orjson
+      - anywidget
+      # Packages without dependencies (using nodeps: prefix)
+      - nodeps:opt_einsum_fx
+      - nodeps:e3nn==0.4.4
+      - nodeps:torch_ema
+      - nodeps:lightning-utilities
+      - nodeps:torchmetrics
+      - nodeps:mace-torch
+      # Stubbed packages (will be patched by torch_pyodide)
       - ssl
       - h5py
       - lmdb
-      - orjson
-      - anywidget
-      - mace-torch

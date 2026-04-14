@@ -75,8 +75,6 @@ notebooks:
   - name: torch
     packages_pyodide:
       - emfs:/drive/packages/torch-2.1.0a0-cp311-cp311-emscripten_3_1_45_wasm32.whl
-      # Needed by MACE
-      - ssl
   - name: mace
     packages_pyodide:
       # Packages with dependencies

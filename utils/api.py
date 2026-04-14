@@ -200,6 +200,48 @@ def get_properties_for_job(client: APIClient, job_id: str, property_name: Option
     return [{**prop, "fermiEnergy": fermi_energy} for prop in properties]
 
 
+def get_property_holder_for_job(
+    client: APIClient, job_id: str, property_name: str, unit_id: Optional[str] = None
+) -> dict:
+    """
+    Fetch the first full property holder for a job/property pair.
+
+    Args:
+        client (APIClient): API client instance.
+        job_id (str): Job ID.
+        property_name (str): Property name.
+        unit_id (str, optional): Unit flowchart ID.
+
+    Returns:
+        dict: Full property holder document.
+    """
+    query = {
+        "source.info.jobId": job_id,
+        "data.name": property_name,
+    }
+    if unit_id:
+        query["source.info.unitId"] = unit_id
+    holders = client.properties.list(query=query)
+    if not holders:
+        raise ValueError(f"Property '{property_name}' not found for job '{job_id}'")
+    return holders[0]
+
+
+def update_property_holder_value(client: APIClient, property_holder_id: str, value: float) -> dict:
+    """
+    Update a scalar property's data.value.
+
+    Args:
+        client (APIClient): API client instance.
+        property_holder_id (str): Property holder ID.
+        value (float): New scalar value.
+
+    Returns:
+        dict: Server response payload.
+    """
+    return client.properties.update(property_holder_id, {"$set": {"data.value": value}})
+
+
 def create_job(
     api_client: APIClient,
     materials: List[Union[dict, Material]],

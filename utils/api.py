@@ -200,40 +200,6 @@ def get_properties_for_job(client: APIClient, job_id: str, property_name: Option
     return [{**prop, "fermiEnergy": fermi_energy} for prop in properties]
 
 
-def attach_signed_url_to_file_property(client: APIClient, job_id: str, file_property: dict) -> dict:
-    """
-    Enrich a file_content property with a signed URL from the job file listing.
-
-    Args:
-        client (APIClient): API client instance.
-        job_id (str): Job ID.
-        file_property (dict): Property record, typically a file_content result.
-
-    Returns:
-        dict: Property dict with signedUrl added when a matching job file is found.
-    """
-    property_with_url = dict(file_property)
-    object_name = property_with_url.get("objectData", {}).get("NAME")
-    basename = property_with_url.get("basename")
-    job_files = client.jobs.list_files(job_id)
-
-    matching_job_file = next(
-        (
-            file
-            for file in job_files
-            if file.get("key") == object_name
-            or file.get("name") == basename
-            or file.get("key", "").endswith(f"/{basename}")
-            or file.get("key", "") == basename
-        ),
-        None,
-    )
-    if matching_job_file:
-        property_with_url["signedUrl"] = matching_job_file.get("signedUrl") or matching_job_file.get("signedURL")
-
-    return property_with_url
-
-
 def create_job(
     api_client: APIClient,
     materials: List[Union[dict, Material]],

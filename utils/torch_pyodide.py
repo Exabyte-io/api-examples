@@ -20,6 +20,7 @@ Usage:
     patch_lmdb_h5py()
     patch_mace_tools()
 """
+
 import sys
 import types
 from collections import namedtuple
@@ -230,7 +231,7 @@ def patch_matscipy():
 # ==============================================================================
 
 
-def patch_lmdb_h5py():
+def patch_mace_training():
     """
     Stub lmdb and h5py packages.
 
@@ -277,6 +278,6 @@ def apply_all_patches():
     patch_torch_linalg()
     patch_torch_testing()
     patch_matscipy()
-    patch_lmdb_h5py()
+    patch_mace_training()
     patch_mace_tools()
     print("\n✅ All Pyodide patches applied successfully!")

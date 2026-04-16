@@ -1,0 +1,38 @@
+# Include essential files
+include README.md
+include pyproject.toml
+
+# Include utils package data
+recursive-include utils *.py *.json *.js *.css
+
+# Exclude large directories from source distribution
+prune packages
+prune other
+prune examples
+prune images
+prune extra
+prune scripts
+prune .github
+prune actions
+
+# Exclude generated wheel files
+global-exclude *.whl
+
+# Exclude git files
+global-exclude .git*
+
+# Exclude Python bytecode and cache
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *$py.class
+
+# Exclude testing and development files
+global-exclude .pre-commit-config.yaml
+global-exclude .lycheeignore
+
+# Exclude documentation build artifacts
+prune site
+
+# Exclude IDE and editor files
+global-exclude .idea
+global-exclude .DS_Store

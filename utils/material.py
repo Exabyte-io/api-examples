@@ -9,6 +9,64 @@ import pymatgen.core.surface
 import pymatgen.io.ase
 import pymatgen.symmetry.analyzer
 from mat3ra.api_client.endpoints.jobs import JobEndpoints
+from mat3ra.made.material import Material
+
+from utils.api import get_or_create_material
+
+
+def get_exact_bulk_material(api_client: Any, slab_material: Material, owner_id: str, create_if_missing: bool = True):
+    slab_dict = slab_material.to_dict()
+    metadata = slab_dict.get("metadata") or {}
+    bulk_crystal = None
+
+    if metadata.get("bulkId") is not None:
+        bulk_query = {"_id": metadata["bulkId"]}
+    else:
+        for build_step in reversed(metadata.get("build") or []):
+            try:
+                bulk_crystal = build_step["configuration"]["stack_components"][0]["crystal"]
+                break
+            except (KeyError, IndexError, TypeError):
+                continue
+
+        if bulk_crystal is None:
+            raise ValueError(
+                "No metadata.build[*].configuration.stack_components[0].crystal entry was found on the slab."
+            )
+
+        if bulk_crystal.get("_id") is not None:
+            bulk_query = {"_id": bulk_crystal["_id"]}
+        elif bulk_crystal.get("scaledHash") is not None:
+            bulk_query = {"scaledHash": bulk_crystal["scaledHash"]}
+        elif bulk_crystal.get("hash") is not None:
+            bulk_query = {"hash": bulk_crystal["hash"]}
+        else:
+            try:
+                bulk_query = {"hash": Material.create(bulk_crystal).hash}
+            except Exception as exc:
+                raise ValueError("Could not resolve a bulk query from the slab metadata.") from exc
+
+    matches = api_client.materials.list(bulk_query)
+    bulk_material_response = next(
+        (item for item in matches if item.get("owner", {}).get("_id") == owner_id),
+        None,
+    ) or (matches[0] if matches else None)
+
+    if bulk_material_response is None:
+        if not create_if_missing:
+            raise ValueError("The bulk representation from slab metadata is not present on the platform.")
+        if bulk_query.get("_id") is not None:
+            raise ValueError("The slab metadata points to a bulkId/_id that is not present on the platform.")
+
+        exact_bulk_material = Material.create(bulk_crystal)
+        if "(from slab metadata)" not in exact_bulk_material.name:
+            exact_bulk_material.name = f"{exact_bulk_material.name} (from slab metadata)"
+        bulk_material_response = get_or_create_material(api_client, exact_bulk_material, owner_id)
+        print(f"Created exact bulk material from slab metadata: {bulk_material_response['_id']}")
+    else:
+        print(f"Reusing exact bulk material: {bulk_material_response['_id']}")
+
+    return bulk_query, bulk_material_response, Material.create(bulk_material_response)
 
 
 def download_file_by_name(job_id: str, job_endpoint: JobEndpoints, target: str, pattern: str) -> None:

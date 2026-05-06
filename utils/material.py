@@ -11,10 +11,8 @@ import pymatgen.symmetry.analyzer
 from mat3ra.api_client.endpoints.jobs import JobEndpoints
 from mat3ra.made.material import Material
 
-from utils.api import get_or_create_material
 
-
-def get_exact_bulk_material(api_client: Any, slab_material: Material, owner_id: str, create_if_missing: bool = True):
+def get_bulk_material(api_client: Any, slab_material: Material, owner_id: str):
     slab_dict = slab_material.to_dict()
     metadata = slab_dict.get("metadata") or {}
     bulk_crystal = None
@@ -53,18 +51,12 @@ def get_exact_bulk_material(api_client: Any, slab_material: Material, owner_id: 
     ) or (matches[0] if matches else None)
 
     if bulk_material_response is None:
-        if not create_if_missing:
-            raise ValueError("The bulk representation from slab metadata is not present on the platform.")
-        if bulk_query.get("_id") is not None:
-            raise ValueError("The slab metadata points to a bulkId/_id that is not present on the platform.")
+        raise ValueError(
+            "The bulk material resolved from slab metadata is not present on the platform. "
+            "Run the Total Energy notebook for that bulk material first, then rerun this notebook."
+        )
 
-        exact_bulk_material = Material.create(bulk_crystal)
-        if "(from slab metadata)" not in exact_bulk_material.name:
-            exact_bulk_material.name = f"{exact_bulk_material.name} (from slab metadata)"
-        bulk_material_response = get_or_create_material(api_client, exact_bulk_material, owner_id)
-        print(f"Created exact bulk material from slab metadata: {bulk_material_response['_id']}")
-    else:
-        print(f"Reusing exact bulk material: {bulk_material_response['_id']}")
+    print(f"Found exact bulk material: {bulk_material_response['_id']}")
 
     return bulk_query, bulk_material_response, Material.create(bulk_material_response)
 

@@ -7,8 +7,8 @@
 default:
   packages_common:
     - pandas==1.5.3
-    - ase==3.25.0
-    - ipywidgets
+    - emfs:/drive/packages/ase-3.25.0-py3-none-any.whl
+    - emfs:/drive/packages/ipywidgets-8.1.8-py3-none-any.whl
     - plotly>=5.18
     - nbformat>=4.2.0
   packages_python:
@@ -22,15 +22,17 @@ default:
     - emfs:/drive/packages/ruamel.yaml-0.17.32-py3-none-any.whl
     - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
     - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
-    - annotated_types>=0.6.0
-    - networkx==3.2.1
-    - monty==2023.11.3
+    - emfs:/drive/packages/annotated_types-0.7.0-py3-none-any.whl
+    - emfs:/drive/packages/networkx-3.2.1-py3-none-any.whl
+    - emfs:/drive/packages/monty-2023.11.3-py3-none-any.whl
     - scipy==1.11.2
-    - tabulate==0.9.0
-    - sympy==1.12
-    - uncertainties==3.1.6
-    - jinja2
-    - pymatgen-analysis-defects<=2024.4.23
+    - emfs:/drive/packages/tabulate-0.9.0-py3-none-any.whl
+    - emfs:/drive/packages/sympy-1.12-py3-none-any.whl
+    - emfs:/drive/packages/mpmath-1.4.1-py3-none-any.whl
+    - emfs:/drive/packages/uncertainties-3.1.6-py2.py3-none-any.whl
+    - emfs:/drive/packages/future-1.0.0-py3-none-any.whl
+    - emfs:/drive/packages/jinja2-3.1.6-py3-none-any.whl
+    - emfs:/drive/packages/pymatgen_analysis_defects-2024.4.23-py3-none-any.whl
     - mat3ra-periodic-table
     - mat3ra-made>=2025.12.29.post0
 # packages below are used when made is installed from GH wheel (made should be installed from below)
@@ -72,6 +74,8 @@ notebooks:
       - mat3ra-ade
       - mat3ra-wode
       - mat3ra-prode
+  - name: api_client
+      - mat3ra-api-client
   - name: torch
     packages_pyodide:
       - emfs:/drive/packages/torch-2.1.0a0-cp311-cp311-emscripten_3_1_45_wasm32.whl

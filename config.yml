@@ -7,30 +7,24 @@
 default:
   packages_common:
     - pandas==1.5.3
-    - ase==3.25.0
     - ipywidgets
     - plotly>=5.18
     - nbformat>=4.2.0
   packages_python:
     - pymatgen==2024.4.13
+    - ase==3.25.0
   packages_pyodide:
-    - lzma
-    - sqlite3
     # The emfs packages are copied in https://github.com/Exabyte-io/jupyterlite/blob/main/scripts/build.sh#L38
     - emfs:/drive/packages/pymatgen-2024.4.13-py3-none-any.whl
     - emfs:/drive/packages/spglib-2.0.2-py3-none-any.whl
     - emfs:/drive/packages/ruamel.yaml-0.17.32-py3-none-any.whl
     - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
     - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
+    - emfs:/drive/packages/ase-3.25.0-py3-none-any.whl
+    - emfs:/drive/packages/pymatgen_analysis_defects-2024.4.23-py3-none-any.whl
     - annotated_types>=0.6.0
-    - networkx==3.2.1
     - monty==2023.11.3
-    - scipy==1.11.2
     - tabulate==0.9.0
-    - sympy==1.12
-    - uncertainties==3.1.6
-    - jinja2
-    - pymatgen-analysis-defects<=2024.4.23
     - mat3ra-periodic-table
     - mat3ra-made>=2025.12.29.post0
 # packages below are used when made is installed from GH wheel (made should be installed from below)

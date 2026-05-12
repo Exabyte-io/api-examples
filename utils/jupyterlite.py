@@ -197,8 +197,17 @@ def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool 
         index = 0
         for filename in sorted(os.listdir(folder_path)):
             if filename.endswith(".json"):
-                with open(os.path.join(folder_path, filename), "r") as file:
-                    data = json.load(file)
+                file_path = os.path.join(folder_path, filename)
+                try:
+                    with open(file_path, "r") as file:
+                        data = json.load(file)
+                except (json.JSONDecodeError, OSError) as error:
+                    log(
+                        f"Skipping invalid JSON file '{file_path}': {error}",
+                        SeverityLevelEnum.WARNING,
+                        force_verbose=verbose,
+                    )
+                    continue
                 name = os.path.splitext(filename)[0]
                 log(f"{index}: {name}", SeverityLevelEnum.INFO, force_verbose=verbose)
                 index += 1

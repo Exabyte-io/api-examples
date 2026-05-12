@@ -72,8 +72,6 @@ notebooks:
       - mat3ra-ade
       - mat3ra-wode
       - mat3ra-prode
-  - name: api_client
-      - mat3ra-api-client
   - name: torch
     packages_pyodide:
       - emfs:/drive/packages/torch-2.1.0a0-cp311-cp311-emscripten_3_1_45_wasm32.whl

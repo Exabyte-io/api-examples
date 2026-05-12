@@ -33,8 +33,7 @@ def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, 
     """
     files = job_endpoint.list_files(job_id)
     for file in files:
-        filename = file["key"].split("/")[-1]
-        if filename_on_cloud == filename:
+        if filename_on_cloud in file["key"]:
             file_metadata = file
 
     # Get a download URL for the CONTCAR

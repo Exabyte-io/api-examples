@@ -32,9 +32,9 @@ import pymatgen.symmetry.analyzer
 module_path = os.path.abspath(os.path.join(".."))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from utils.api import save_files
-from utils.io import display_JSON
-from utils.material import get_all_slabs_and_terms, freeze_center_bulk
+from mat3ra.notebooks.utils.other.api import save_files
+from mat3ra.notebooks.utils import display_JSON
+from mat3ra.notebooks.utils.other.material import get_all_slabs_and_terms, freeze_center_bulk
 from settings import ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client

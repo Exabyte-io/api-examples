@@ -1555,7 +1555,28 @@
                 ]
             }
         ],
-        "labels": [],
+        "labels": [
+            {
+                "id": 0,
+                "value": 0
+            },
+            {
+                "id": 1,
+                "value": 0
+            },
+            {
+                "id": 2,
+                "value": 0
+            },
+            {
+                "id": 3,
+                "value": 1
+            },
+            {
+                "id": 4,
+                "value": 1
+            }
+        ],
         "constraints": []
     },
     "lattice": {
@@ -1593,5 +1614,5 @@
     "schemaVersion": "2022.8.16",
     "hash": "e3839748107e4e4d372b32c990599a3b",
     "formula": "Ni3C2",
-    "unitCellFormula": "Ni3 C2",
+    "unitCellFormula": "Ni3 C2"
 }

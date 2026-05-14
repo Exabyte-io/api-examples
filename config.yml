@@ -6,7 +6,7 @@
 # The default packages are installed for all the notebooks.
 default:
     packages_pyodide:
-      - http://localhost:8090/mat3ra_notebooks-2026.5.12.post6.dev17+g21cafa3-py3-none-any.whl
+      - mat3ra-notebooks-utils
 notebooks:
   - name: made
     packages_pyodide:

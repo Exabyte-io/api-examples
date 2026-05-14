@@ -6,7 +6,7 @@
 # The default packages are installed for all the notebooks.
 default:
     packages_pyodide:
-      - https://exabyte-io.github.io/api-examples/mat3ra_notebooks_utils-0.1.dev1+g1c38b9566-py3-none-any.whl
+      - https://exabyte-io.github.io/api-examples/mat3ra_notebooks_utils-0.1.dev1+g1e019a2ab-py3-none-any.whl
 notebooks:
   - name: made
     packages_pyodide:
@@ -52,7 +52,7 @@ notebooks:
   - name: specific_examples
     packages_pyodide:
       - mat3ra-standata
-#      - https://exabyte-io.github.io/api-examples/mat3ra_notebooks_utils-0.1.dev1+g1c38b9566-py3-none-any.whl[utils_standata]
+#      - https://exabyte-io.github.io/api-examples/mat3ra_notebooks_utils-0.1.dev1+g1e019a2ab-py3-none-any.whl[utils_standata]
   - name: api
     packages_pyodide:
       - annotated_types>=0.6.0

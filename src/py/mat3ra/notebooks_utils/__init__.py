@@ -1,5 +1,5 @@
-from .core.json import display_JSON
-from .core.settings import (
+from .python.core.json import display_JSON
+from .python.other.api.settings import (
     ACCOUNT_ID,
     AUTH_TOKEN,
     ENDPOINT_ARGS,
@@ -11,12 +11,11 @@ from .core.settings import (
     VERSION,
     absolute_path_to_settings_json_file,
     settings_json_config,
-    use_interactive_JSON_viewer,
 )
+from .settings import UPLOADS_FOLDER
 
 __all__ = [
     "display_JSON",
-    "use_interactive_JSON_viewer",
     "absolute_path_to_settings_json_file",
     "settings_json_config",
     "ACCOUNT_ID",
@@ -28,4 +27,5 @@ __all__ = [
     "VERSION",
     "HOST",
     "ENDPOINT_ARGS",
+    "UPLOADS_FOLDER",
 ]

@@ -1,7 +1,7 @@
 [project]
-name = "mat3ra-notebooks"
+name = "mat3ra-notebooks-utils"
 dynamic = ["version"]
-description = "Mat3ra notebooks"
+description = "Mat3ra notebooks utilities."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []

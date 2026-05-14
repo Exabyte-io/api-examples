@@ -24,14 +24,14 @@ utils_standata = [
 materials = [
   # ase >=3.25.0 is required for supercell to be generated,
   # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
-  "mat3ra-notebooks[auxilary]",
-  "mat3ra-notebooks[utils_standata]",
+  "mat3ra-notebooks-utils[auxilary]",
+  "mat3ra-notebooks-utils[utils_standata]",
   "ase>=3.25.0",
   "pymatgen==2024.4.13",
   "mat3ra-made>=2026.4.2.post0",
 ]
 workflows = [
-  "mat3ra-notebooks[materials]",
+  "mat3ra-notebooks-utils[materials]",
   "mat3ra-wode",
   "mat3ra-prode",
   "mat3ra-ide",
@@ -39,7 +39,7 @@ workflows = [
 ]
 
 # Install all above dependencies in colab
-colab = ["mat3ra-notebooks"]
+colab = ["mat3ra-notebooks-utils"]
 
 # ToDo: figure out necessary packages
 jupyterlab = [
@@ -47,7 +47,7 @@ jupyterlab = [
   "nbconvert>=6.0.7",
 ]
 # Install colab + jupyterlab on localhost
-localhost = ["mat3ra-notebooks[jupyterlab]"]
+localhost = ["mat3ra-notebooks-utils[jupyterlab]"]
 dev = [
   "pre-commit>=3.3.3",
   "pip-tools>=6.13.0",

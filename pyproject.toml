@@ -12,10 +12,10 @@ auxilary = [
   "pandas>=1.5.3",
 ]
 jupyterlite = [
-    "pyyaml",
-    "matplotlib>=3.4.1",
-    "plotly>=5.18",
-    "ipython>=8.0",
+  "pyyaml",
+  "matplotlib>=3.4.1",
+  "plotly>=5.18",
+  "ipython>=8.0",
 ]
 utils_standata = [
   "mat3ra-utils>=2026.3.6.post0",
@@ -51,6 +51,10 @@ localhost = ["mat3ra-notebooks-utils[jupyterlab]"]
 dev = [
   "pre-commit>=3.3.3",
   "pip-tools>=6.13.0",
+]
+tests = [
+  "pytest",
+  "pytest-asyncio",
 ]
 docs = [
   "mkdocs>=1.4.3",

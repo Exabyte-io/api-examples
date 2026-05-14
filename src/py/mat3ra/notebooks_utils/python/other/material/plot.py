@@ -51,10 +51,10 @@ def plot_twisted_interface_solutions(interfaces: List["Material"]) -> None:
     Args:
         interfaces: List of interfaces to plot.
     """
-    x_values = []
-    y_values = []
-    hover_texts = []
-    trace_names = []
+    x_values: List[Union[float, int]] = []
+    y_values: List[Union[float, int]] = []
+    hover_texts: List[str] = []
+    trace_names: List[str] = []
 
     for i, interface in enumerate(interfaces):
         angle = interface.metadata.get("actual_twist_angle", 0)

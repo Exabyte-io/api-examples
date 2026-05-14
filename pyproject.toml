@@ -91,8 +91,8 @@ where = ["src/py"]
 
 [tool.setuptools.package-data]
 "mat3ra.notebooks_utils" = [
-  "core/settings.json",
-  "core/web/renderjson.*",
+  "python/other/api/settings.json",
+  "python/core/web/renderjson.*",
 ]
 
 

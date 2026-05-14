@@ -6,7 +6,7 @@
 # The default packages are installed for all the notebooks.
 default:
     packages_pyodide:
-      - https://exabyte-io.github.io/api-examples/mat3ra_notebooks_utils-0.1.dev1+gd4030f89e-py3-none-any.whl
+      - https://exabyte-io.github.io/api-examples/mat3ra_notebooks_utils-0.1.dev1+g51c438ebc-py3-none-any.whl
 notebooks:
   - name: made
     packages_pyodide:
@@ -52,11 +52,11 @@ notebooks:
   - name: specific_examples
     packages_pyodide:
       - mat3ra-standata
-#      - https://exabyte-io.github.io/api-examples/mat3ra_notebooks_utils-0.1.dev1+gd4030f89e-py3-none-any.whl[utils_standata]
+#      - https://exabyte-io.github.io/api-examples/mat3ra_notebooks_utils-0.1.dev1+g51c438ebc-py3-none-any.whl[utils_standata]
   - name: api
     packages_pyodide:
       - annotated_types>=0.6.0
-    # needed to override typing-extensions
+    # needed for pydantic models
       - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
       - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-api-client

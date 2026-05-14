@@ -54,8 +54,8 @@ if "COLAB_JUPYTER_IP" in os.environ:
 # In[ ]:
 
 
-from mat3ra.notebooks.utils import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
-from mat3ra.notebooks.utils import display_JSON
+from mat3ra.notebooks_utils import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
+from mat3ra.notebooks_utils import display_JSON
 
 from mat3ra.api_client.endpoints.materials import MaterialEndpoints
 

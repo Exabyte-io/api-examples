@@ -56,8 +56,8 @@ if "COLAB_JUPYTER_IP" in os.environ:
 # In[ ]:
 
 
-from mat3ra.notebooks.utils import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
-from mat3ra.notebooks.utils import display_JSON
+from mat3ra.notebooks_utils import ENDPOINT_ARGS, MATERIALS_PROJECT_API_KEY
+from mat3ra.notebooks_utils import display_JSON
 
 import ase.io
 from pymatgen.ext.matproj import MPRester

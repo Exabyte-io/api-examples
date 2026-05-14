@@ -86,7 +86,7 @@ git_describe_command = "git describe --tags --long"
 where = ["src/py"]
 
 [tool.setuptools.package-data]
-"mat3ra.notebooks.utils" = [
+"mat3ra.notebooks_utils" = [
   "core/settings.json",
   "core/web/renderjson.*",
 ]

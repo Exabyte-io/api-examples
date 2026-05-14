@@ -10,7 +10,7 @@ from ase.io import write
 from IPython.display import HTML, Javascript, display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.convert import to_ase
-from mat3ra.notebooks.utils.core.json import display_JSON
+from mat3ra.notebooks_utils.core.json import display_JSON
 from mat3ra.utils.array import convert_to_array_if_not
 from pydantic import BaseModel
 

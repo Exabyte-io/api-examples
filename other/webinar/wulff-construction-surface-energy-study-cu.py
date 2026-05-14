@@ -24,9 +24,9 @@ import numpy as np
 module_path = os.path.abspath(os.path.join(".."))
 if module_path not in sys.path:
     sys.path.append(module_path)
-from mat3ra.notebooks.utils.other.api import save_files
-from mat3ra.notebooks.utils.other.material import get_all_slabs_and_terms
-from mat3ra.notebooks.utils.other.material import get_vasp_total_energy, get_slab_area, get_surface_energy
+from mat3ra.notebooks_utils.other.api import save_files
+from mat3ra.notebooks_utils.other.material import get_all_slabs_and_terms
+from mat3ra.notebooks_utils.other.material import get_vasp_total_energy, get_slab_area, get_surface_energy
 from settings import MATERIALS_PROJECT_API_KEY, ENDPOINT_ARGS, ORGANIZATION_ID
 
 # Import relevant portions of the API client

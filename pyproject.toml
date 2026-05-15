@@ -21,6 +21,9 @@ utils_standata = [
   "mat3ra-utils @ git+https://github.com/Exabyte-io/utils.git@796a302415b8bb886819c6429bdae77db0a83e79",
   "mat3ra-standata",
 ]
+api = [
+  "mat3ra-api-client",
+]
 materials = [
   # ase >=3.25.0 is required for supercell to be generated,
   # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
@@ -35,7 +38,7 @@ workflows = [
   "mat3ra-wode",
   "mat3ra-prode",
   "mat3ra-ide",
-  "mat3ra-api-client",
+  "mar3ra-notebooks-utils[api]",
 ]
 
 # Install all above dependencies in colab

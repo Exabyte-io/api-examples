@@ -7,7 +7,7 @@ from .ipython.packages.install import get_packages_list, install_package_python
 from .primitive.enums import EnvironmentsEnum
 from .primitive.environment import ENVIRONMENT, is_pyodide_environment
 from .primitive.logger import log
-from .pyodide.packages.install import get_config_yml_file_path, install_init
+from .pyodide.packages.install import get_config_yml_file_path, install_init, install_package_pyodide
 
 
 async def install_package(pkg: str, verbose: bool = True):
@@ -19,8 +19,6 @@ async def install_package(pkg: str, verbose: bool = True):
         verbose (bool): Whether to print the name of the installed package.
     """
     if ENVIRONMENT == EnvironmentsEnum.PYODIDE:
-        from .pyodide.packages.install import install_package_pyodide
-
         await install_package_pyodide(pkg, verbose)
     elif ENVIRONMENT == EnvironmentsEnum.PYTHON:
         install_package_python(pkg, verbose)

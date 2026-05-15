@@ -11,11 +11,9 @@ from .core.api.settings import (
     absolute_path_to_settings_json_file,
     settings_json_config,
 )
-from .ipython.ui import display_JSON
 from .settings import UPLOADS_FOLDER
 
 __all__ = [
-    "display_JSON",
     "absolute_path_to_settings_json_file",
     "settings_json_config",
     "ACCOUNT_ID",

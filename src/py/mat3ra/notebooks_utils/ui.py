@@ -1,9 +1,9 @@
 from typing import Dict
 
+from .core.prompt import select_coordination_threshold_emscripten
 from .ipython.ui import dataframe_to_html, display_JSON
 from .primitive.environment import is_pyodide_environment
 from .primitive.prompt import select_coordination_threshold_python
-from .pyodide.ui import select_coordination_threshold_emscripten
 
 
 async def select_coordination_threshold(distribution: Dict[int, int], default_threshold: int) -> int:

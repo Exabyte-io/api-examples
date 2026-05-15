@@ -3,8 +3,7 @@ import json
 import os
 from typing import List
 
-from src.py.mat3ra.notebooks_utils.ipython.packages.install import get_packages_list, install_package_python
-
+from .ipython.packages.install import get_packages_list, install_package_python
 from .primitive.enums import EnvironmentsEnum
 from .primitive.environment import ENVIRONMENT, is_pyodide_environment
 from .primitive.logger import log

@@ -18,7 +18,7 @@ jupyterlite = [
   "ipython>=8.0",
 ]
 utils_standata = [
-  "mat3ra-utils @ git+https://github.com/Exabyte-io/utils.git@796a302415b8bb886819c6429bdae77db0a83e79",
+  "mat3ra-utils",
   "mat3ra-standata",
 ]
 api = [

@@ -4,12 +4,6 @@
 import json
 import os
 
-# General settings. For how the notebooks operate.
-
-# use_interactive_JSON_viewer: Whether to use the IPython interactive viewer, or print in plaintext.
-
-use_interactive_JSON_viewer = True
-
 # Account settings. Need a one-time adjustment for examples to work. These should be set in settings.json
 
 # ACCOUNT_ID: Account ID. See get_authentication_params.ipynb example for more information.

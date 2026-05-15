@@ -5,7 +5,7 @@ This module provides patches for various torch-related packages that don't work
 in Pyodide's WASM environment, organized by functionality.
 
 Usage:
-    from utils.torch_pyodide import (
+    from mat3ra.notebooks_utils.other.torch_pyodide import (
         patch_torch_linalg,
         patch_torch_testing,
         patch_matscipy,

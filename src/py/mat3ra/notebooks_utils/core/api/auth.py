@@ -1,6 +1,4 @@
 import asyncio
-import inspect
-import json
 import os
 import time
 from typing import Optional
@@ -8,9 +6,6 @@ from typing import Optional
 import requests
 from IPython.display import Javascript, display
 from mat3ra.api_client import ACCESS_TOKEN_ENV_VAR, CLIENT_ID, SCOPE, APIEnv, build_oidc_base_url
-from mat3ra.utils.jupyterlite.environment import ENVIRONMENT, EnvironmentsEnum
-
-from utils.jupyterlite import get_data
 
 REFRESH_TOKEN_ENV_VAR = "OIDC_REFRESH_TOKEN"
 
@@ -24,22 +19,14 @@ def request_device_flow_state(oidc_base_url: str, client_id: str, scope: str) ->
     """
     Request an OAuth/OIDC Device Authorization flow state.
 
-    This calls the authorization server's device endpoint and returns the values needed to:
-    - display a user-facing verification URL + code
-    - poll the token endpoint until authorization completes
-
     Args:
         oidc_base_url: Base OIDC URL.
         client_id: OAuth client identifier for the device flow.
         scope: Space-separated scopes to request (e.g. "openid profile email").
 
     Returns:
-        A dict with:
-        - device_code: Device code used to poll for token issuance.
-        - user_code: Short code the user enters in the verification UI.
-        - verification_uri_complete: URL to open for user authorization.
-        - polling_interval_seconds: Recommended polling interval.
-        - expires_in_seconds: Device code lifetime.
+        A dict with device_code, user_code, verification_uri_complete,
+        polling_interval_seconds, expires_in_seconds.
     """
     device_response = requests.post(
         f"{oidc_base_url}/device/auth",
@@ -124,32 +111,3 @@ async def authenticate_oidc(
     )
     store_token_data_in_environment(token_data)
     return token_data
-
-
-async def authenticate_jupyterlite(data_from_host: dict) -> None:
-    apiConfig = data_from_host.get("apiConfig")
-    os.environ.update(data_from_host.get("environ", {}))
-    os.environ.update(
-        dict(
-            ACCOUNT_ID=apiConfig.get("accountId"),  # type: ignore
-            AUTH_TOKEN=apiConfig.get("authToken"),  # type: ignore
-            ORGANIZATION_ID=apiConfig.get("organizationId", ""),  # type: ignore
-            CLUSTERS=json.dumps(apiConfig.get("clusters", [])),  # type: ignore
-        )
-    )
-
-
-async def authenticate(force=False, globals_dict=None):
-    if globals_dict is None:
-        frame = inspect.currentframe()
-        try:
-            globals_dict = frame.f_back.f_globals  # type: ignore
-        finally:
-            del frame
-    if ENVIRONMENT == EnvironmentsEnum.PYODIDE:
-        get_data("data_from_host", globals_dict)
-    data_from_host = globals_dict.get("data_from_host")
-    if data_from_host:
-        await authenticate_jupyterlite(data_from_host)
-    elif ACCESS_TOKEN_ENV_VAR not in os.environ or force:
-        await authenticate_oidc()

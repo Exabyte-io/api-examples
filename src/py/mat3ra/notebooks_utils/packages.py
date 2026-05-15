@@ -8,6 +8,7 @@ from src.py.mat3ra.notebooks_utils.ipython.packages.install import get_packages_
 from .primitive.enums import EnvironmentsEnum
 from .primitive.environment import ENVIRONMENT, is_pyodide_environment
 from .primitive.logger import log
+from .pyodide.packages.install import get_config_yml_file_path, install_init
 
 
 async def install_package(pkg: str, verbose: bool = True):
@@ -60,11 +61,7 @@ async def install_packages(notebook_name_pattern: str, config_file_path: str = "
         verbose (bool): Whether to print install progress.
     """
     if is_pyodide_environment():
-        from .pyodide.packages.install import install_init
-
         await install_init()
-
-    from .pyodide.packages.install import get_config_yml_file_path
 
     yaml = importlib.import_module("yaml")
     with open(get_config_yml_file_path(config_file_path), "r") as f:

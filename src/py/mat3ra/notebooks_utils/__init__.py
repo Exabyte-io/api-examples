@@ -1,4 +1,4 @@
-from .python.core.json import display_JSON
+from .python.core.ui import display_JSON
 from .python.other.api.settings import (
     ACCOUNT_ID,
     AUTH_TOKEN,

@@ -1,10 +1,9 @@
 import asyncio
 import os
 import time
-from typing import Optional
+from typing import Callable, Optional
 
 import requests
-from IPython.display import Javascript, display
 from mat3ra.api_client import ACCESS_TOKEN_ENV_VAR, CLIENT_ID, SCOPE, APIEnv, build_oidc_base_url
 
 REFRESH_TOKEN_ENV_VAR = "OIDC_REFRESH_TOKEN"
@@ -45,20 +44,6 @@ def request_device_flow_state(oidc_base_url: str, client_id: str, scope: str) ->
     }
 
 
-def show_device_flow_popup(verification_uri_complete: str, user_code: str) -> None:
-    from IPython.display import HTML
-
-    display(
-        HTML(
-            f"<div style='padding: 15px; background: #e3f2fd; border-left: 4px solid #2196f3; margin: 10px 0;'>"
-            f"<strong>Authentication Required</strong><br/>"
-            f"Enter this code: <strong style='font-size: 1.2em; color: #1976d2;'>{user_code}</strong>"
-            f"</div>"
-        )
-    )
-    display(Javascript(f"window.open({verification_uri_complete!r}, '_blank');"))
-
-
 def store_token_data_in_environment(token_data: dict) -> None:
     os.environ[ACCESS_TOKEN_ENV_VAR] = token_data["access_token"]
     if "refresh_token" in token_data:
@@ -97,11 +82,13 @@ async def authenticate_oidc(
     oidc_base_url: Optional[str] = None,
     client_id: str = CLIENT_ID,
     scope: str = SCOPE,
+    show_popup: Optional[Callable[[str, str], None]] = None,
 ) -> dict:
     if oidc_base_url is None:
         oidc_base_url = get_oidc_base_url()
     device_flow_state = request_device_flow_state(oidc_base_url, client_id, scope)
-    show_device_flow_popup(device_flow_state["verification_uri_complete"], device_flow_state["user_code"])
+    if show_popup is not None:
+        show_popup(device_flow_state["verification_uri_complete"], device_flow_state["user_code"])
     token_data = await _poll_for_token_data(
         oidc_base_url=oidc_base_url,
         client_id=client_id,

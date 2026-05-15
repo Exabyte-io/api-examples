@@ -1,5 +1,4 @@
 import io
-import json
 import time
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
@@ -10,9 +9,9 @@ from ase.io import write
 from IPython.display import HTML, Javascript, display
 from mat3ra.made.material import Material
 from mat3ra.made.tools.convert import to_ase
-from mat3ra.notebooks_utils.core.json import display_JSON
 from mat3ra.utils.array import convert_to_array_if_not
-from pydantic import BaseModel
+
+from ..visualize import MaterialViewProperties, create_responsive_image_grid, get_viewer_html, get_viewer_js
 
 
 class ViewersEnum(str, Enum):
@@ -45,126 +44,6 @@ def get_material_image(material: Material, title: str, rotation="0x,0y,0z", repe
     write(buf, material_repeat, format="png", rotation=rotation)
     buf.seek(0)
     return buf.read(), text
-
-
-def create_image_widget(image_data, format="png", object_fit="contain"):
-    """
-    Creates an Image widget with specified layout settings.
-
-    Args:
-        image_data (bytes): The image data to be displayed.
-        format (str): The format of the image, default is 'png'.
-        object_fit (str): CSS object-fit property value, default is 'contain'.
-
-    Returns:
-        widgets.Image: A configured image widget.
-    """
-    image = widgets.Image(value=image_data, format=format)
-    image.layout.object_fit = object_fit
-    return image
-
-
-def create_responsive_image_grid(image_tuples, max_columns=3):
-    """
-    Create a responsive image grid that can display images from a specified folder.
-    Ensures images are displayed at their true sizes and limits the grid to a maximum of three columns.
-
-    Args:
-        image_tuples (list): List of tuples where each tuple contains an image and a title.
-        max_columns (int): Maximum number of columns in the grid.
-    """
-    items = [
-        widgets.VBox(
-            [
-                widgets.Label(value=title, layout=widgets.Layout(height="30px", align_self="center")),
-                create_image_widget(image, object_fit="contain"),
-            ],
-            layout=widgets.Layout(align_items="center", padding="0px 0px 10px 0px"),
-        )
-        for image, title in image_tuples
-    ]
-
-    column_width = f"minmax(100px, {100 / max_columns}%)"
-    grid = widgets.GridBox(
-        items,
-        layout=widgets.Layout(
-            grid_template_columns=f"repeat({max_columns}, {column_width})",
-            grid_gap="10px",
-            width="100%",
-        ),
-    )
-    return grid
-
-
-class MaterialViewProperties(BaseModel):
-    repetitions: List[int] = [1, 1, 1]
-    rotation: str = "0x,0y,0z"
-    title: str = "Material"
-
-
-def get_viewer_html(div_id, width, height=None, title="Viewer", custom_styles=""):
-    """
-    Generate HTML container for a viewer.
-
-    Args:
-        div_id: Unique ID for the container div
-        width: Width in pixels
-        height: Height in pixels (optional, if not provided only width is set)
-        title: Title to display above the viewer
-        custom_styles: Additional inline CSS styles
-    """
-    if height is not None:
-        size_style = f"width:{width}px; height:{height}px;"
-    else:
-        size_style = f"width:{width}px;"
-
-    return f"""
-    <h2>{title}</h2>
-    <div id="{div_id}" style="{size_style} {custom_styles}"></div>
-    """
-
-
-def get_viewer_js(
-    data_json,
-    div_id,
-    bundle_url,
-    render_function,
-    data_var_name="data",
-    extra_config_json=None,
-    css_url=None,
-):
-    """
-    Generate JavaScript to load and render a viewer bundle.
-
-    Args:
-        data_json: JSON string of data to render
-        div_id: Container div ID
-        bundle_url: URL to the JS bundle
-        render_function: Name of the window function to call (e.g., 'renderThreeDEditor', 'renderResults')
-        data_var_name: Variable name for the data (e.g., 'materialConfig', 'results')
-        extra_config_json: Optional extra config as JSON string
-        css_url: Optional CSS file URL to load
-    """
-    extra_config_arg = f", {extra_config_json}" if extra_config_json else ""
-    css_loader = (
-        f"""
-    document.head.insertAdjacentHTML(
-        'beforeend',
-        '<link rel="stylesheet" href="{css_url}"/>');
-    """
-        if css_url
-        else ""
-    )
-
-    return f"""
-    const {data_var_name}={data_json};
-    const container = document.getElementById('{div_id}');
-    (async function() {{
-        await import('{bundle_url}');
-        window.{render_function}({data_var_name}, container{extra_config_arg});
-    }})();
-    {css_loader}
-    """
 
 
 def get_wave_viewer(material, div_id, width, height, title):
@@ -310,58 +189,3 @@ def visualize_materials(
                 items.append((image_data, image_title))
 
         display(create_responsive_image_grid(items))
-
-
-def visualize_workflow(workflow, level: int = 2) -> None:
-    """
-    Visualize a workflow by displaying its JSON configuration.
-
-    Args:
-        workflow: Workflow object with a to_dict() method
-        level: Expansion level for the JSON viewer (default: 2)
-
-    Returns:
-        None
-    """
-    workflow_config = workflow.to_dict()
-    display_JSON(workflow_config, level=level)
-
-
-def visualize_properties(results, width=900, title="Properties", extra_config=None):
-    """
-    Visualize properties using a Prove viewer.
-
-    Args:
-        results: List[dict] of property JSON objects (or a single dict).
-        width: Container width in pixels.
-        title: Title displayed above the viewer.
-        extra_config: Optional dict with materials, components, callbacks, etc.
-    """
-    if isinstance(results, dict):
-        results = [results]
-
-    DATA_KEYS = {"value", "values", "xDataArray"}
-    results = [r for r in results if DATA_KEYS & r.keys()]
-
-    timestamp = time.time()
-    div_id = f"prove-{timestamp}"
-    results_json = json.dumps(results)
-    extra_config_json = json.dumps(extra_config) if extra_config else "undefined"
-
-    html = get_viewer_html(
-        div_id=div_id,
-        width=width,
-        title=title,
-        custom_styles="border:1px solid #ddd; padding:12px; background:#fff; color:#111;",
-    )
-    js = get_viewer_js(
-        data_json=results_json,
-        div_id=div_id,
-        bundle_url="https://exabyte-io.github.io/prove/main.js",
-        render_function="renderResults",
-        data_var_name="results",
-        extra_config_json=extra_config_json,
-    )
-
-    display(HTML(html))
-    display(Javascript(js))

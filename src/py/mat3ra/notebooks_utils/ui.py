@@ -1,6 +1,6 @@
 from typing import Dict
 
-from src.py.mat3ra.notebooks_utils.python.core.ui import select_coordination_threshold_python
+from src.py.mat3ra.notebooks_utils.python.core.prompt import select_coordination_threshold_python
 
 from .environment import is_pyodide_environment
 from .jupyterlite.ui import select_coordination_threshold_emscripten

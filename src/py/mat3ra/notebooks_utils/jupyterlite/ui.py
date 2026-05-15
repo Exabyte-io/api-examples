@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from ..python.core.ui import create_prompt_text, get_integer_from_input
+from ..python.core.prompt import create_prompt_text, get_integer_from_input
 
 
 async def ui_prompt_select_array_element_by_index_pyodide(

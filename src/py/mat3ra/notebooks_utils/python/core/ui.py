@@ -1,89 +1,50 @@
-from typing import Any, Dict, List, Optional, Union
+import json
+import os
+import uuid
+from typing import Union
+
+from IPython.display import HTML, display
+
+from ...settings import use_interactive_JSON_viewer
 
 
-def create_prompt_text(array: List[Any], element_name: str = "element", prompt_head: Optional[str] = None) -> str:
+def display_JSON(
+    obj: Union[dict, list], interactive_viewer: bool = use_interactive_JSON_viewer, level: int = 2
+) -> None:
     """
-    Create a prompt text for selecting an element from an array.
+    Displays JSON, either interactively or via a text dump to Stdout.
+
+    The interactive viewer is based on https://github.com/mljar/mercury/blob/main/mercury/widgets/json.py.
+
     Args:
-        array (List[Any]): The array (list) of elements to select from.
-        element_name (str): The name of the element to be used in the prompt text (e.g., "transformation", "interface")
-        prompt_head: The prompt text to be displayed before the list of elements.
-
-    Returns:
-        str: The prompt text.
+        obj (dict): Object to display as nicely-formatted JSON
+        interactive_viewer (bool): Whether to use the interactive viewer or not
+        level (int): The level to which the JSON should be expanded by default
     """
-    prompt_head = prompt_head or f"Select {element_name} by index:\n"
-    prompt_body = "\n".join(f"{i}: {t}" for i, t in enumerate(array))
-    return prompt_head + prompt_body
+    if interactive_viewer:
+        if isinstance(obj, (dict, list)):
+            json_str = json.dumps(obj)
+        else:
+            json_str = obj
 
+        id = str(uuid.uuid4())
 
-def get_integer_from_input(selected_index_str: str, array: List[Any]) -> Union[int, None]:
-    """
-    Get an integer from the input string and check if it is a valid index for the given array.
-    Args:
-        selected_index_str (str): The input string to convert to an integer.
-        array (List[Any]): The array (list) of elements to select from.
+        web_dir = os.path.join(os.path.dirname(__file__), "web")
 
-    Returns:
-        int: The selected index if it is valid, otherwise None.
-    """
-    try:
-        selected_index = int(selected_index_str)
-    except ValueError:
-        print("Invalid input. Please enter a valid integer.")
-        return None
+        with open(os.path.join(web_dir, "renderjson.css")) as fp:
+            css = fp.read()
 
-    if selected_index < 0 or selected_index >= len(array):
-        print("Invalid index.")
-        return None
-    return selected_index
+        with open(os.path.join(web_dir, "renderjson.js")) as fp:
+            js = fp.read()
 
-
-def ui_prompt_select_array_element_by_index(
-    array: List[Any], element_name: str = "element", prompt_head: Optional[str] = None
-) -> Any:
-    """
-    Prompt the user to select an element from an array by index and return the chosen element.
-    Args:
-        array (List[Any]): The array (list) of elements to select from.
-        element_name (str): The name of the element to be used in the prompt text (e.g., "transformation", "interface")
-        prompt_head: The prompt text to be displayed before the list of elements.
-
-    Returns:
-        Any: The selected element from the array.
-    """
-    prompt_text = create_prompt_text(array, element_name, prompt_head)
-    selected_index_str = input(prompt_text)
-    index = get_integer_from_input(selected_index_str, array)
-    if index is None:
-        return None
-    result = array[index]
-    print(f"Selected {element_name}: ", array[index])
-    return result
-
-
-def select_coordination_threshold_python(distribution: Dict[int, int], default_threshold: int) -> int:
-    """
-    Select the coordination threshold from the given distribution. Works in regular Python environment.
-    Args:
-        distribution:  The distribution of coordination numbers.
-        default_threshold:  The default threshold value.
-    Returns:
-        int: The selected coordination threshold.
-    """
-    coordination_threshold = default_threshold
-    coordination_numbers = list(distribution.keys())
-    prompt_text = f"\nCoordination numbers distribution: {distribution}" f"\nEnter coordination threshold value: "
-    while True:
-        try:
-            value_str = input(prompt_text)
-            value = int(value_str)
-            if value in coordination_numbers:
-                coordination_threshold = value
-                break
-            else:
-                print(f"Invalid value. Please enter one of these coordination numbers: {coordination_numbers}")
-                break
-        except ValueError:
-            print(f"Please enter a valid integer value from: {coordination_numbers}")
-    return coordination_threshold
+        display(HTML(f'<style>{css}</style><div id="{id}"></div>'))
+        display(
+            HTML(
+                f"<script>{js} "
+                f"renderjson.set_show_to_level({str(level)}); "
+                f'renderjson.set_icons("▸","▾"); '
+                f'document.getElementById("{id}").appendChild(renderjson({json_str}))</script>'
+            )
+        )
+    else:
+        print(json.dumps(obj, indent=4))

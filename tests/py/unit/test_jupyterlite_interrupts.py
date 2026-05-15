@@ -1,7 +1,7 @@
 import asyncio
 
 import pytest
-from mat3ra.notebooks_utils.jupyterlite.interrupts import (
+from mat3ra.notebooks_utils.pyodide.runtime import (
     UserAbortError,
     interruptible_polling_loop,
     run_interruptible_loop_async,

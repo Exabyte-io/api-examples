@@ -1,5 +1,4 @@
-from .python.core.ui import display_JSON
-from .python.other.api.settings import (
+from .core.api.settings import (
     ACCOUNT_ID,
     AUTH_TOKEN,
     ENDPOINT_ARGS,
@@ -12,6 +11,7 @@ from .python.other.api.settings import (
     absolute_path_to_settings_json_file,
     settings_json_config,
 )
+from .ipython.ui import display_JSON
 from .settings import UPLOADS_FOLDER
 
 __all__ = [

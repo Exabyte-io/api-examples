@@ -3,9 +3,10 @@ import os
 
 from mat3ra.api_client import ACCESS_TOKEN_ENV_VAR
 
-from .environment import ENVIRONMENT, EnvironmentsEnum
+from .core.api.auth import authenticate_oidc
 from .io import get_data
-from .jupyterlite.api.auth import authenticate_jupyterlite, authenticate_oidc
+from .primitive.environment import ENVIRONMENT, EnvironmentsEnum
+from .pyodide.api.auth import authenticate_jupyterlite
 
 REFRESH_TOKEN_ENV_VAR = "OIDC_REFRESH_TOKEN"
 

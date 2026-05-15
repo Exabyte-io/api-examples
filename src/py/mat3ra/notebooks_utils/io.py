@@ -1,9 +1,9 @@
 from typing import Any, Dict, Optional
 
-from .enums import EnvironmentsEnum
-from .environment import ENVIRONMENT
-from .jupyterlite.io import get_data_pyodide, set_data_pyodide
-from .python.io import get_data_python, set_data_python
+from .core.io import get_data_python, set_data_python
+from .primitive.enums import EnvironmentsEnum
+from .primitive.environment import ENVIRONMENT
+from .pyodide.io import get_data_pyodide, set_data_pyodide
 
 
 def get_data(key: str, globals_dict: Optional[Dict] = None):

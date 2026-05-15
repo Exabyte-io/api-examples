@@ -18,7 +18,7 @@ jupyterlite = [
   "ipython>=8.0",
 ]
 utils_standata = [
-  "mat3ra-utils @ git+https://github.com/Exabyte-io/utils.git@ed41aac1f780d0bb4f13b414b3c5ede517856520",
+  "mat3ra-utils @ git+https://github.com/Exabyte-io/utils.git@796a302415b8bb886819c6429bdae77db0a83e79",
   "mat3ra-standata",
 ]
 materials = [

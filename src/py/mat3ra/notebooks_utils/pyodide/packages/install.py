@@ -3,8 +3,6 @@ import os
 import re
 from typing import List
 
-import yaml
-
 from ...primitive.environment import ENVIRONMENT
 from ...primitive.logger import log
 
@@ -32,6 +30,11 @@ def get_config_yml_file_path(config_file_path: str) -> str:
 
 async def read_config_into_dict(config_file_path: str) -> dict:
     with open(get_config_yml_file_path(config_file_path), "r") as f:
+        # import micropip  # type: ignore
+        #
+        # await micropip.install("pyyaml")
+        import yaml  # type: ignore
+
         requirements_dict = yaml.safe_load(f)
 
     return requirements_dict

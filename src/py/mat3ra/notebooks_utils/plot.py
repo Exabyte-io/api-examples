@@ -1,6 +1,9 @@
-from matplotlib import pyplot as plt
-
-from .ipython.plot._matplotlib import display_matplotlib_figure, plot_distribution_function, plot_series
+from .ipython.plot._matplotlib import (
+    configure_matplotlib_renderer,
+    display_matplotlib_figure,
+    plot_distribution_function,
+    plot_series,
+)
 from .ipython.plot._plotly import (
     create_realtime_plot,
     create_scatter_plot_2d,
@@ -8,17 +11,11 @@ from .ipython.plot._plotly import (
     plot_2d_heatmap,
     plot_3d_surface,
 )
-from .primitive.environment import is_pyodide_environment
-
-
-def configure_matplotlib_renderer() -> None:
-    if is_pyodide_environment():
-        plt.switch_backend("Agg")
-
 
 configure_matplotlib_renderer()
 
 __all__ = [
+    "configure_matplotlib_renderer",
     "display_matplotlib_figure",
     "plot_distribution_function",
     "plot_series",

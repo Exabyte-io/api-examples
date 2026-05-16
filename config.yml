@@ -60,10 +60,13 @@ notebooks:
       - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
       - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
       - ipywidgets
-      - pandas
       - tabulate==0.9.0
       - mat3ra-utils
       - mat3ra-api-client
+  - name: dataframe
+    packages_pyodide:
+      - jinja2
+      - pandas
   - name: api_examples
     packages_pyodide:
       - annotated_types>=0.6.0

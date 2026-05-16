@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, Union
 
 from .core.io import get_data_python, read_from_url_python, set_data_python
+from .ipython.io import download_content_to_file
 from .primitive.enums import EnvironmentsEnum
 from .primitive.environment import ENVIRONMENT
 from .pyodide.io import get_data_pyodide, read_from_url_pyodide, set_data_pyodide
@@ -48,3 +49,6 @@ async def read_from_url(url: str, as_bytes: bool = False) -> Union[str, bytes]:
     if ENVIRONMENT == EnvironmentsEnum.PYODIDE:
         return await read_from_url_pyodide(url, as_bytes)
     return read_from_url_python(url, as_bytes)
+
+
+__all__ = ["download_content_to_file", "get_data", "read_from_url", "set_data"]

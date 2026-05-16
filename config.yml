@@ -5,66 +5,69 @@
 # Accordingly, the packages are installed using the kernel type, e.g., packages_pyodide.
 # The default packages are installed for all the notebooks.
 default:
-  packages_common:
-    - pandas==1.5.3
-    - ase==3.25.0
-    - ipywidgets
-    - plotly>=5.18
-    - nbformat>=4.2.0
-  packages_python:
-    - pymatgen==2024.4.13
-  packages_pyodide:
-    - lzma
-    - sqlite3
-    # The emfs packages are copied in https://github.com/Exabyte-io/jupyterlite/blob/main/scripts/build.sh#L38
-    - emfs:/drive/packages/pymatgen-2024.4.13-py3-none-any.whl
-    - emfs:/drive/packages/spglib-2.0.2-py3-none-any.whl
-    - emfs:/drive/packages/ruamel.yaml-0.17.32-py3-none-any.whl
-    - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
-    - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
-    - annotated_types>=0.6.0
-    - networkx==3.2.1
-    - monty==2023.11.3
-    - scipy==1.11.2
-    - tabulate==0.9.0
-    - sympy==1.12
-    - uncertainties==3.1.6
-    - jinja2
-    - pymatgen-analysis-defects<=2024.4.23
-    - mat3ra-periodic-table
-    - mat3ra-made>=2025.12.29.post0
-# packages below are used when made is installed from GH wheel (made should be installed from below)
-#    - https://exabyte-io.github.io/made/mat3ra_made-0.1.dev1+ge64d360b8-py3-none-any.whl
-#    - mat3ra-code
-#    - mat3ra-esse
-notebooks:
-  - name: create_interface_with_min_strain_zsl.ipynb
-    packages_common:
-      - plotly>=5.18
-      - nbformat>=4.2.0
     packages_pyodide:
+      - mat3ra-notebooks-utils
+notebooks:
+  - name: made
+    packages_pyodide:
+      - lzma
+      - annotated_types>=0.6.0
+      - networkx==3.2.1
+      - monty==2023.11.3
+      - scipy==1.11.2
+      - tabulate==0.9.0
+      - sympy==1.12
+      - uncertainties==3.1.6
+      - ase==3.25.0
+      - ipywidgets
+      # - plotly>=5.18
+      - nbformat>=4.2.0
+      - emfs:/drive/packages/pymatgen-2024.4.13-py3-none-any.whl
+      - emfs:/drive/packages/spglib-2.0.2-py3-none-any.whl
+      - emfs:/drive/packages/ruamel.yaml-0.17.32-py3-none-any.whl
+      - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
+      - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
+      - pymatgen-analysis-defects<=2024.4.23
+      - mat3ra-periodic-table
+      - mat3ra-made>=2025.12.29.post0
+  # packages below are used when made is installed from GH wheel (made should be installed from below)
+  #    - https://exabyte-io.github.io/made/mat3ra_made-0.1.dev1+ge64d360b8-py3-none-any.whl
+  #    - mat3ra-code
+  #    - mat3ra-esse
   - name: import_material_from_jarvis_db_entry.ipynb
-    packages_common:
+    packages_pyodide:
       - express-py==2024.2.2.post2
       - jarvis-tools
       - munch
       - setuptools
-    packages_pyodide:
       - emfs:/drive/packages/paginate-0.5.6-py3-none-any.whl
       - emfs:/drive/packages/watchdog-2.3.1-py3-none-any.whl
   - name: import_materials_from_files.ipynb
-    packages_common:
+    packages_pyodide:
       - express-py==2024.2.2.post2
       - munch
       - setuptools
-    packages_pyodide:
       - emfs:/drive/packages/paginate-0.5.6-py3-none-any.whl
       - emfs:/drive/packages/watchdog-2.3.1-py3-none-any.whl
   - name: specific_examples
-    packages_common:
+    packages_pyodide:
       - mat3ra-standata
+#      - mat3ra-notebooks-utils[utils_standata]
+  - name: api
+    packages_pyodide:
+      - annotated_types>=0.6.0
+    # needed for pydantic models
+      - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
+      - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
+      - ipywidgets
+      - tabulate==0.9.0
+      - mat3ra-utils
+      - mat3ra-api-client
   - name: api_examples
-    packages_common:
+    packages_pyodide:
+      - annotated_types>=0.6.0
+      - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
+      - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-standata
       - mat3ra-ide
       - mat3ra-api-client

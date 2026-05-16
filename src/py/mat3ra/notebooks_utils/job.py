@@ -4,9 +4,17 @@ from functools import wraps
 from typing import Any, Callable, List
 
 from mat3ra.api_client import APIClient, JobEndpoints
-from mat3ra.made.material import Material
 from mat3ra.utils.extra.tabulate import pretty_print
-from mat3ra.wode import Workflow
+
+try:
+    from mat3ra.made.material import Material
+except ImportError:
+    Material = None  # type: ignore[assignment,misc]
+
+try:
+    from mat3ra.wode import Workflow
+except ImportError:
+    Workflow = None  # type: ignore[assignment,misc]
 
 from .core.entity.job.api import create_job as _create_job
 from .core.entity.job.api import get_jobs_statuses_by_ids, save_files, submit_jobs
@@ -20,10 +28,10 @@ def convert_material_args(fn: Callable) -> Callable:
     @wraps(fn)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         def convert(v: Any) -> Any:
-            if isinstance(v, Material):
+            if Material is not None and isinstance(v, Material):
                 return v.to_dict()
             if isinstance(v, list):
-                return [i.to_dict() if isinstance(i, Material) else i for i in v]
+                return [i.to_dict() if (Material is not None and isinstance(i, Material)) else i for i in v]
             return v
 
         return fn(*[convert(a) for a in args], **{k: convert(v) for k, v in kwargs.items()})
@@ -37,7 +45,7 @@ def convert_workflow_args(fn: Callable) -> Callable:
 
     @wraps(fn)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        convert = lambda v: v.to_dict() if isinstance(v, Workflow) else v  # noqa: E731
+        convert = lambda v: v.to_dict() if (Workflow is not None and isinstance(v, Workflow)) else v  # noqa: E731
         return fn(*[convert(a) for a in args], **{k: convert(v) for k, v in kwargs.items()})
 
     return wrapper

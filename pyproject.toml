@@ -1,37 +1,66 @@
 [project]
-name = "mat3ra-api-examples"
+name = "mat3ra-notebooks-utils"
 dynamic = ["version"]
-description = "Mat3ra API Examples"
+description = "Mat3ra notebooks utilities."
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-  # ase >=3.25.0 is required for supercell to be generated,
-  # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
-  "ase>=3.25.0",
+dependencies = []
+
+[project.optional-dependencies]
+auxilary = [
+  "pydantic",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
+]
+jupyterlite = [
+  "pyyaml",
+  "matplotlib>=3.4.1",
+  "plotly>=5.18",
+  "ipython>=8.0",
+]
+utils_standata = [
+  "mat3ra-utils",
+  "mat3ra-standata",
+]
+api = [
+  "mat3ra-api-client",
+]
+materials = [
+  # ase >=3.25.0 is required for supercell to be generated,
+  # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
+  "mat3ra-notebooks-utils[auxilary]",
+  "mat3ra-notebooks-utils[utils_standata]",
+  "ase>=3.25.0",
   "pymatgen==2024.4.13",
   "mat3ra-made>=2026.4.2.post0",
-  "mat3ra-utils>=2026.3.6.post0",
+]
+workflows = [
+  "mat3ra-notebooks-utils[materials]",
   "mat3ra-wode",
   "mat3ra-prode",
   "mat3ra-ide",
-  "mat3ra-api-client",
-  "mat3ra-standata"
+  "mar3ra-notebooks-utils[api]",
 ]
 
-[project.optional-dependencies]
 # Install all above dependencies in colab
-colab = ["mat3ra-api-examples"]
+colab = ["mat3ra-notebooks-utils"]
+
+# ToDo: figure out necessary packages
 jupyterlab = [
   "jupyterlab>=3.0.17",
   "nbconvert>=6.0.7",
 ]
 # Install colab + jupyterlab on localhost
-localhost = ["mat3ra-api-examples[jupyterlab]"]
+localhost = ["mat3ra-notebooks-utils[jupyterlab]"]
 dev = [
   "pre-commit>=3.3.3",
   "pip-tools>=6.13.0",
+]
+tests = [
+  "pydantic",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
 ]
 docs = [
   "mkdocs>=1.4.3",
@@ -64,18 +93,18 @@ build-backend = "setuptools.build_meta"
 git_describe_command = "git describe --tags --long"
 
 [tool.setuptools.packages.find]
-include = ["utils"]
+where = ["src/py"]
 
 [tool.setuptools.package-data]
-utils = [
-  "settings.json",
-  "web/renderjson.*",
+"mat3ra.notebooks_utils" = [
+  "core/api/settings.json",
+  "ipython/web/renderjson.*",
 ]
 
 
 [tool.black]
 line-length = 120
-target-version = ['py38']
+target-version = ['py310']
 # 'extend-exclude' excludes files or directories in addition to the defaults
 extend-exclude = '''
 (
@@ -97,6 +126,10 @@ target-version = "py38"
 profile = "black"
 multi_line_output = 3
 include_trailing_comma = true
+
+[tool.mypy]
+python_version = "3.10"
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = "yaml"

@@ -1,14 +1,9 @@
-import datetime
 import urllib.request
-from collections import Counter
 from typing import List, Optional, Union
 
 from mat3ra.api_client import APIClient, JobEndpoints
 from mat3ra.made.material import Material
-from mat3ra.utils.extra.tabulate import pretty_print
 from mat3ra.wode import Workflow
-
-from ...pyodide.runtime import interruptible_polling_loop
 
 
 def save_files(job_id: str, job_endpoint: JobEndpoints, filename_on_cloud: str, filename_on_disk: str) -> None:
@@ -42,33 +37,6 @@ def get_jobs_statuses_by_ids(endpoint: JobEndpoints, job_ids: List[str]) -> List
     """
     jobs = endpoint.list({"_id": {"$in": job_ids}}, {"fields": {"status": 1}})
     return [job["status"] for job in jobs]
-
-
-@interruptible_polling_loop()
-def wait_for_jobs_to_finish_async(endpoint: JobEndpoints, job_ids: List[str]) -> bool:
-    """
-    Waits for jobs to finish and prints their statuses.
-    A job is considered finished if it is not in "pre-submission", "submitted", or "active" status.
-
-    Args:
-        endpoint (JobEndpoints): Job endpoint object from the Exabyte API Client
-        job_ids (list): list of job IDs to wait for
-    """
-    statuses = get_jobs_statuses_by_ids(endpoint, job_ids)
-    counts = Counter(statuses)
-    headers = ["TIME", "SUBMITTED-JOBS", "ACTIVE-JOBS", "FINISHED-JOBS", "ERRORED-JOBS"]
-    now = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
-    row = [
-        now,
-        counts.get("submitted", 0) + counts.get("queued", 0),
-        counts.get("active", 0),
-        counts.get("finished", 0),
-        counts.get("error", 0),
-    ]
-    pretty_print([row], headers, tablefmt="grid", stralign="center")
-
-    active_statuses = {"pre-submission", "submitted", "queued", "active"}
-    return not statuses or any(status in active_statuses for status in statuses)
 
 
 def create_job(

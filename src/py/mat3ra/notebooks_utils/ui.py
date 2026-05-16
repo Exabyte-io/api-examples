@@ -1,7 +1,8 @@
 from typing import Dict
 
 from .core.prompt import select_coordination_threshold_emscripten
-from .ipython.ui import dataframe_to_html, display_JSON
+from .ipython.dataframe import dataframe_to_html
+from .ipython.ui import display_JSON
 from .primitive.environment import is_pyodide_environment
 from .primitive.prompt import select_coordination_threshold_python
 

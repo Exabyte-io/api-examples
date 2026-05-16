@@ -102,7 +102,7 @@ def render_wave_grid(
         display(js)
 
 
-def process_material_entry(
+def _process_material_entry(
     material_entry: Union[Material, Dict], default_properties: MaterialViewProperties
 ) -> Tuple[Material, MaterialViewProperties]:
     """
@@ -163,7 +163,7 @@ def visualize_materials(
         wave_materials = []
         wave_properties_list = []
         for material_entry in materials:
-            material, material_properties = process_material_entry(material_entry, default_properties)
+            material, material_properties = _process_material_entry(material_entry, default_properties)
             wave_materials.append(material)
             wave_properties_list.append(material_properties)
         if len(wave_materials) == 1:
@@ -174,7 +174,7 @@ def visualize_materials(
     else:
         items = []
         for material_entry in materials:
-            material, properties = process_material_entry(material_entry, default_properties)
+            material, properties = _process_material_entry(material_entry, default_properties)
             if material:
                 image_data, image_title = get_material_image(
                     material, title=properties.title, rotation=properties.rotation, repetitions=properties.repetitions

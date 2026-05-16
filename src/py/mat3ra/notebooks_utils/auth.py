@@ -5,6 +5,7 @@ from mat3ra.api_client import ACCESS_TOKEN_ENV_VAR
 
 from .core.api.auth import authenticate_oidc
 from .io import get_data
+from .ipython.ui import show_device_flow_popup
 from .primitive.environment import ENVIRONMENT, EnvironmentsEnum
 from .pyodide.api.auth import authenticate_jupyterlite
 
@@ -24,4 +25,4 @@ async def authenticate(force=False, globals_dict=None):
     if data_from_host:
         await authenticate_jupyterlite(data_from_host)
     elif ACCESS_TOKEN_ENV_VAR not in os.environ or force:
-        await authenticate_oidc()
+        await authenticate_oidc(show_popup=show_device_flow_popup)

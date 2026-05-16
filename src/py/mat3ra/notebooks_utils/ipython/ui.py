@@ -4,7 +4,7 @@ import uuid
 from typing import List
 
 import ipywidgets as widgets
-from IPython.display import HTML, display
+from IPython.display import HTML, Javascript, display
 from pandas import DataFrame
 from pandas.io.formats.style import Styler
 from pydantic import BaseModel
@@ -184,3 +184,15 @@ def get_viewer_js(
     }})();
     {css_loader}
     """
+
+
+def show_device_flow_popup(verification_uri_complete: str, user_code: str) -> None:
+    display(
+        HTML(
+            f"<div style='padding: 15px; background: #e3f2fd; border-left: 4px solid #2196f3; margin: 10px 0;'>"
+            f"<strong>Authentication Required</strong><br/>"
+            f"Enter this code: <strong style='font-size: 1.2em; color: #1976d2;'>{user_code}</strong>"
+            f"</div>"
+        )
+    )
+    display(Javascript(f"window.open({verification_uri_complete!r}, '_blank');"))

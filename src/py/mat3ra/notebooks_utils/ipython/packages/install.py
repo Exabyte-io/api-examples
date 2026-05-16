@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from src.py.mat3ra.notebooks_utils.primitive.environment import ENVIRONMENT
+from ...primitive.environment import ENVIRONMENT
 
 
 def install_package_python(pkg: str, verbose: bool = True):

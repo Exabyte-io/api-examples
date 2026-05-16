@@ -41,6 +41,9 @@ workflows = [
   "mat3ra-ide",
   "mar3ra-notebooks-utils[api]",
 ]
+all = [
+  "mat3ra-notebooks-utils[workflows]"
+]
 
 # Install all above dependencies in colab
 colab = ["mat3ra-notebooks-utils"]
@@ -50,8 +53,6 @@ jupyterlab = [
   "jupyterlab>=3.0.17",
   "nbconvert>=6.0.7",
 ]
-# Install colab + jupyterlab on localhost
-localhost = ["mat3ra-notebooks-utils[jupyterlab]"]
 dev = [
   "pre-commit>=3.3.3",
   "pip-tools>=6.13.0",
@@ -76,7 +77,13 @@ forcefields = [
   # This WILL conflict with base project dependencies
   # Use this optional dependency ONLY in isolated environments
 ]
-
+all_dev = [
+  "mat3ra-notebooks-utils[all]",
+  "mat3ra-notebooks-utils[dev]",
+  "mat3ra-notebooks-utils[tests]",
+  "mat3ra-notebooks-utils[docs]",
+  "mat3ra-notebooks-utils[forcefields]",
+]
 [project.urls]
 homepage = "https://exabyte-io.github.io/api-examples"
 documentation = "https://exabyte-io.github.io/api-examples"

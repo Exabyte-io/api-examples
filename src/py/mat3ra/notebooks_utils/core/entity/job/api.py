@@ -39,8 +39,8 @@ def get_jobs_statuses_by_ids(endpoint: JobEndpoints, job_ids: List[str]) -> List
 
 def create_job(
     api_client: APIClient,
-    material_dicts: List[dict],
-    job_workflow_dict: dict,
+    materials: List[dict],
+    workflow: dict,
     project_id: str,
     owner_id: str,
     prefix: str,
@@ -51,8 +51,8 @@ def create_job(
 
     Args:
         api_client (APIClient): API client instance carrying the authorization context.
-        material_dicts (list[dict]): Serialised material dicts.
-        job_workflow_dict (dict): Serialised workflow dict.
+        materials (list[dict]): Serialised material dicts.
+        workflow (dict): Serialised workflow dict.
         project_id (str): Project ID.
         owner_id (str): Account ID.
         prefix (str): Job name prefix.
@@ -61,19 +61,19 @@ def create_job(
     Returns:
         dict | list[dict]: Created job(s).
     """
-    job_workflow_dict.pop("_id", None)
-    is_multimaterial = job_workflow_dict.get("isMultiMaterial", False)
+    workflow.pop("_id", None)
+    is_multimaterial = workflow.get("isMultiMaterial", False)
 
     config: dict = {
         "_project": {"_id": project_id},
-        "workflow": job_workflow_dict,
+        "workflow": workflow,
         "owner": {"_id": owner_id},
         "name": prefix,
-        "_material": {"_id": material_dicts[0]["_id"]},
+        "_material": {"_id": materials[0]["_id"]},
     }
 
     if is_multimaterial:
-        config["_materials"] = [{"_id": m["_id"]} for m in material_dicts]
+        config["_materials"] = [{"_id": m["_id"]} for m in materials]
 
     if compute:
         config["compute"] = compute

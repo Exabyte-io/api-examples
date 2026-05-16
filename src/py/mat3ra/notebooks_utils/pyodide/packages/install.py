@@ -1,16 +1,15 @@
-import importlib
+import json
 import os
-import sys
+import re
+from typing import List
 
+from ...primitive.environment import ENVIRONMENT
 from ...primitive.logger import log
 
 try:
     import micropip  # type: ignore
 except ImportError:
     micropip = None  # type: ignore
-
-PYODIDE_INIT_PACKAGES = ["pyyaml"]
-PYODIDE_INIT_MODULES = ["yaml"]
 
 
 def get_config_yml_file_path(config_file_path: str) -> str:
@@ -29,13 +28,62 @@ def get_config_yml_file_path(config_file_path: str) -> str:
     return config_file_full_path
 
 
-async def install_init():
-    if sys.platform != "emscripten":
-        return
+async def read_config_into_dict(config_file_path: str) -> dict:
+    with open(get_config_yml_file_path(config_file_path), "r") as f:
+        # import micropip  # type: ignore
+        #
+        # await micropip.install("pyyaml")
+        import yaml  # type: ignore
 
-    await micropip.install(PYODIDE_INIT_PACKAGES)
-    for module in PYODIDE_INIT_MODULES:
-        importlib.import_module(module)
+        requirements_dict = yaml.safe_load(f)
+
+    return requirements_dict
+
+
+def get_packages_list(requirements_dict: dict, notebook_name_pattern: str = "") -> List[str]:
+    """
+    Get the list of packages to install based on the requirements dict.
+
+    Args:
+        requirements_dict (dict): The dictionary containing the requirements.
+        notebook_name_pattern (str): The pattern of the notebook name.
+
+    Returns:
+        List[str]: The list of packages to install.
+    """
+    packages_default_common = requirements_dict.get("default", {}).get("packages_common", [])
+    packages_default_environment_specific = requirements_dict.get("default", {}).get(
+        f"packages_{ENVIRONMENT.value}", []
+    )
+
+    matching_notebook_requirements_list = [
+        cfg for cfg in requirements_dict.get("notebooks", []) if re.search(cfg.get("name"), notebook_name_pattern)
+    ]
+    packages_notebook_common = []
+    packages_notebook_environment_specific = []
+
+    for notebook_requirements in matching_notebook_requirements_list:
+        packages_common = notebook_requirements.get("packages_common", [])
+        packages_environment_specific = notebook_requirements.get(f"packages_{ENVIRONMENT.value}", [])
+        if packages_common:
+            packages_notebook_common.extend(packages_common)
+        if packages_environment_specific:
+            packages_notebook_environment_specific.extend(packages_environment_specific)
+
+    # Note: environment specific packages have to be installed first,
+    # because in Pyodide common packages might depend on them
+    return [
+        *packages_default_environment_specific,
+        *packages_notebook_environment_specific,
+        *packages_default_common,
+        *packages_notebook_common,
+    ]
+
+
+async def get_package_list_from_config(config_file_path: str, notebook_name_pattern: str) -> list:
+    requirements_dict = await read_config_into_dict(config_file_path)
+    packages = get_packages_list(requirements_dict, notebook_name_pattern)
+    return packages
 
 
 async def install_package_pyodide(pkg: str, verbose: bool = True):
@@ -61,3 +109,24 @@ async def install_package_pyodide(pkg: str, verbose: bool = True):
     pkg_name = pkg.split("/")[-1].split("-")[0] if "://" in pkg else pkg.split("==")[0]
     if verbose:
         log(f"Installed {pkg_name}", force_verbose=verbose)
+
+
+async def install_packages_pyodide(notebook_name_pattern: str, verbose: bool = True):
+    """
+    Install the given packages, skipping if the list is unchanged since last run.
+
+    Args:
+        notebook_name_pattern (str): Pattern matched against notebook names in config.yml.
+        verbose (bool): Whether to print the names of the installed packages.
+    """
+    packages = await get_package_list_from_config(get_config_yml_file_path(""), notebook_name_pattern)
+    requirements_hash = str(hash(json.dumps(packages)))
+    if os.environ.get("requirements_hash") != requirements_hash:
+        for pkg in packages:
+            await install_package_pyodide(pkg, verbose)
+        if verbose:
+            log("Packages installed successfully.", force_verbose=verbose)
+        os.environ["requirements_hash"] = requirements_hash
+    else:
+        if verbose:
+            log("Packages are already installed.", force_verbose=verbose)

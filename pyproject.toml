@@ -58,6 +58,7 @@ dev = [
 tests = [
   "pytest",
   "pytest-asyncio",
+  "pytest-cov",
 ]
 docs = [
   "mkdocs>=1.4.3",

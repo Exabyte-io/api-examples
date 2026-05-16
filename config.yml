@@ -66,6 +66,7 @@ notebooks:
   - name: api_examples
     packages_pyodide:
       - annotated_types>=0.6.0
+      - jinja2
       - emfs:/drive/packages/pydantic_core-2.18.2-py3-none-any.whl
       - emfs:/drive/packages/pydantic-2.7.1-py3-none-any.whl
       - mat3ra-standata

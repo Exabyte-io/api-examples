@@ -8,6 +8,7 @@ dependencies = []
 
 [project.optional-dependencies]
 auxilary = [
+  "pydantic",
   "matplotlib>=3.4.1",
   "pandas>=1.5.3",
 ]
@@ -56,6 +57,7 @@ dev = [
   "pip-tools>=6.13.0",
 ]
 tests = [
+  "pydantic",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",

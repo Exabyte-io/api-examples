@@ -52,7 +52,7 @@ import sys
 # ---------------------------------------------------------------------------
 try:
     import mcp.server.stdio
-    from mcp.server import Server
+    from mcp.server import NotificationOptions, Server
     from mcp.server.models import InitializationOptions
     from mcp.types import TextContent, Tool
 except ImportError:
@@ -321,7 +321,7 @@ async def main():
                 server_name="mat3ra-mcp",
                 server_version="0.1.0",
                 capabilities=server.get_capabilities(
-                    notification_options=None,
+                    notification_options=NotificationOptions(),
                     experimental_capabilities={},
                 ),
             ),

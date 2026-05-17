@@ -8,6 +8,19 @@ dependencies = [
     "mat3ra-api-client",
 ]
 
+[project.optional-dependencies]
+openai  = ["openai>=1.0"]
+claude  = ["anthropic>=0.25"]
+gemini  = ["google-genai>=1.0"]
+hf      = ["transformers>=4.40", "accelerate>=0.27"]
+# local (Ollama) uses only stdlib urllib – no extra package needed
+all-llm = [
+    "mat3ra-mcp-server[openai]",
+    "mat3ra-mcp-server[claude]",
+    "mat3ra-mcp-server[gemini]",
+    "mat3ra-mcp-server[hf]",
+]
+
 [project.scripts]
 mat3ra-mcp = "mcp_server.server:main"
 

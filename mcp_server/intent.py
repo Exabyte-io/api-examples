@@ -8,11 +8,14 @@ or the `backend` argument passed at call time:
   openai  requires: pip install openai          + OPENAI_API_KEY
   claude  requires: pip install anthropic        + ANTHROPIC_API_KEY
   gemini  requires: pip install google-genai     + GEMINI_API_KEY
-  local   requires: Ollama running on port 11434 + OLLAMA_MODEL (default: llama3.2)
-  hf      requires: pip install transformers torch (or pip install transformers tf)
-          HF_MODEL env var selects the model (default: Qwen/Qwen2.5-1.5B-Instruct)
-          HF_DEVICE: cpu | cuda | mps | auto  (default: auto)
-          Model is downloaded on first use and cached in ~/.cache/huggingface/
+  hf      local open-source model — two runtimes (set via HF_RUNTIME):
+          transformers  run a model in-process via HuggingFace Transformers (default)
+                        pip install transformers accelerate torch
+                        HF_MODEL  (default: Qwen/Qwen2.5-1.5B-Instruct)
+                        HF_DEVICE (default: auto)
+          ollama        delegate to a running Ollama server (serves HF/GGUF models)
+                        requires: Ollama running on OLLAMA_HOST (default: localhost:11434)
+                        OLLAMA_MODEL (default: llama3.2)
 
 All backends return the same dict:
   {
@@ -377,80 +380,111 @@ def _local(prompt: str) -> tuple[str, dict]:
 
 
 # ---------------------------------------------------------------------------
-# HuggingFace Transformers backend (on-device, open-source)
+# HuggingFace backend — two runtimes selected by HF_RUNTIME env var
+# ---------------------------------------------------------------------------
+#   transformers  in-process HuggingFace Transformers pipeline (default)
+#   ollama        HTTP call to a local Ollama server (serves HF/GGUF models)
 # ---------------------------------------------------------------------------
 
-# Module-level cache so the pipeline is loaded only once per server process.
+# Pipeline cache for the transformers runtime (loaded once per server process).
 _hf_pipeline_cache: dict = {}
 
 
-def _huggingface(prompt: str) -> tuple[str, dict]:
-    """
-    Run a local HuggingFace causal-LM via the `transformers` text-generation
-    pipeline.  The pipeline is loaded once and cached for subsequent calls.
+def _hf_ollama(prompt: str) -> tuple[str, dict]:
+    """HuggingFace via Ollama — Ollama is a local server that serves HF-compatible
+    (GGUF) models.  No Python dependencies beyond stdlib urllib."""
+    host  = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+    model = os.environ.get("OLLAMA_MODEL", "llama3.2")
+    full_prompt = SYSTEM_PROMPT + "\n\nUser request: " + prompt
 
-    Recommended small models (auto-downloaded from HuggingFace Hub):
-      Qwen/Qwen2.5-0.5B-Instruct    ~1 GB  – fastest, runs on CPU
-      Qwen/Qwen2.5-1.5B-Instruct    ~3 GB  – good balance  (default)
-      HuggingFaceTB/SmolLM2-1.7B-Instruct ~3 GB  – very capable
-      microsoft/Phi-3-mini-4k-instruct    ~8 GB  – high quality
+    payload = json.dumps({
+        "model":  model,
+        "prompt": full_prompt,
+        "stream": False,
+    }).encode()
+    req = urllib.request.Request(
+        f"{host}/api/generate",
+        data    = payload,
+        headers = {"Content-Type": "application/json"},
+        method  = "POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            data = json.loads(r.read())
+    except urllib.error.URLError as e:
+        raise RuntimeError(
+            f"Cannot reach Ollama at {host}.  Is it running?  (ollama serve)\n"
+            f"Set OLLAMA_HOST if it is on a different address.  Error: {e}"
+        )
+    return _parse_llm_json(data.get("response", ""))
 
-    Environment variables:
-      HF_MODEL   – model repo id  (default: Qwen/Qwen2.5-1.5B-Instruct)
-      HF_DEVICE  – cpu | cuda | mps | auto  (default: auto)
+
+def _hf_transformers(prompt: str) -> tuple[str, dict]:
+    """HuggingFace via Transformers — runs the model in-process.
+
+    Recommended small models (auto-downloaded on first use):
+      Qwen/Qwen2.5-0.5B-Instruct         ~1 GB  fastest, any CPU
+      Qwen/Qwen2.5-1.5B-Instruct         ~3 GB  default, good balance
+      HuggingFaceTB/SmolLM2-1.7B-Instruct ~3 GB  very capable for size
+      microsoft/Phi-3-mini-4k-instruct    ~8 GB  high quality
+
+    Env vars:
+      HF_MODEL   model repo id  (default: Qwen/Qwen2.5-1.5B-Instruct)
+      HF_DEVICE  cpu | cuda | mps | auto  (default: auto)
     """
     try:
         from transformers import pipeline as hf_pipeline  # noqa: PLC0415
     except ImportError:
         raise RuntimeError(
             "pip install transformers accelerate\n"
-            "For GPU (CUDA): pip install torch --index-url https://download.pytorch.org/whl/cu121\n"
-            "For Apple Silicon: pip install torch  (MPS support is built-in)"
+            "Mac (Apple Silicon / CPU): pip install torch\n"
+            "Linux (CUDA):              pip install torch "
+            "--index-url https://download.pytorch.org/whl/cu121"
         )
 
-    model_id = os.environ.get("HF_MODEL", "Qwen/Qwen2.5-1.5B-Instruct")
-    device   = os.environ.get("HF_DEVICE", "auto")
-
-    # Load (and cache) the pipeline
+    model_id  = os.environ.get("HF_MODEL", "Qwen/Qwen2.5-1.5B-Instruct")
+    device    = os.environ.get("HF_DEVICE", "auto")
     cache_key = (model_id, device)
+
     if cache_key not in _hf_pipeline_cache:
         print(f"[hf] Loading {model_id} on device={device} … (one-time download/load)")
         _hf_pipeline_cache[cache_key] = hf_pipeline(
             "text-generation",
-            model      = model_id,
-            device_map = device,
-            # keep memory usage low for small models
+            model       = model_id,
+            device_map  = device,
             torch_dtype = "auto",
         )
-        print(f"[hf] Model {model_id} ready.")
+        print(f"[hf] {model_id} ready.")
 
-    pipe = _hf_pipeline_cache[cache_key]
-
+    pipe     = _hf_pipeline_cache[cache_key]
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user",   "content": prompt},
     ]
-
-    # apply_chat_template is available on modern tokenizers;
-    # fall back to concatenated text for models that lack it.
     try:
-        result = pipe(
-            messages,
-            max_new_tokens  = 256,
-            do_sample       = False,
-            return_full_text = False,
-        )
+        result = pipe(messages, max_new_tokens=256, do_sample=False,
+                      return_full_text=False)
         text = result[0]["generated_text"]
-        # some pipelines return the messages list instead of a string
-        if isinstance(text, list):
+        if isinstance(text, list):          # some pipelines return message list
             text = text[-1].get("content", "")
     except Exception:
-        # older pipeline API: pass a string
-        full = SYSTEM_PROMPT + "\n\nUser request: " + prompt
-        result = pipe(full, max_new_tokens=256, do_sample=False, return_full_text=False)
-        text = result[0]["generated_text"]
-
+        full   = SYSTEM_PROMPT + "\n\nUser request: " + prompt
+        result = pipe(full, max_new_tokens=256, do_sample=False,
+                      return_full_text=False)
+        text   = result[0]["generated_text"]
     return _parse_llm_json(text)
+
+
+def _huggingface(prompt: str) -> tuple[str, dict]:
+    """Dispatch to the correct HF runtime based on HF_RUNTIME env var."""
+    runtime = os.environ.get("HF_RUNTIME", "transformers").lower()
+    if runtime == "ollama":
+        return _hf_ollama(prompt)
+    if runtime == "transformers":
+        return _hf_transformers(prompt)
+    raise ValueError(
+        f"Unknown HF_RUNTIME={runtime!r}.  Choose 'transformers' or 'ollama'."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -462,7 +496,6 @@ _BACKENDS = {
     "openai": _openai,
     "claude": _claude,
     "gemini": _gemini,
-    "local":  _local,
     "hf":     _huggingface,
 }
 
@@ -475,7 +508,7 @@ def detect_intent(prompt: str, backend: str | None = None) -> dict:
 
     Args:
         prompt:  user text
-        backend: "rules" | "openai" | "claude" | "gemini" | "local" | "hf"
+        backend: "rules" | "openai" | "claude" | "gemini" | "hf"
                  Defaults to INTENT_BACKEND env var, then "rules".
 
     Returns:

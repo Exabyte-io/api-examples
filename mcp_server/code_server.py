@@ -15,10 +15,11 @@ Environment variables:
     OPENAI_API_KEY      required for openai backend
     ANTHROPIC_API_KEY   required for claude backend
     GEMINI_API_KEY      required for gemini backend
-    OLLAMA_HOST         Ollama base URL  (default: http://localhost:11434)
-    OLLAMA_MODEL        model name       (default: llama3.2)
+    HF_RUNTIME          transformers (default) | ollama
     HF_MODEL            HuggingFace model repo id (default: Qwen/Qwen2.5-1.5B-Instruct)
     HF_DEVICE           cpu | cuda | mps | auto  (default: auto)
+    OLLAMA_HOST         Ollama base URL  (default: http://localhost:11434)  [HF_RUNTIME=ollama]
+    OLLAMA_MODEL        model name       (default: llama3.2)                [HF_RUNTIME=ollama]
     OPENAI_MODEL        (default: gpt-4o-mini)
     ANTHROPIC_MODEL     (default: claude-3-5-haiku-latest)
     GEMINI_MODEL        (default: gemini-2.0-flash)
@@ -140,12 +141,11 @@ HTML = """\
     <div class="selector-wrap">
       <span class="sel-label">LLM backend</span>
       <select id="backend">
-        <option value="rules">Rules (no LLM)</option>
+        <option value="rules" selected>Rules (no LLM)</option>
         <option value="openai">OpenAI</option>
         <option value="claude">Claude (Anthropic)</option>
         <option value="gemini">Gemini (Google)</option>
-        <option value="local">Local (Ollama)</option>
-        <option value="hf">HuggingFace (on-device)</option>
+        <option value="hf">HuggingFace local (transformers / Ollama)</option>
       </select>
     </div>
   </div>
@@ -306,7 +306,8 @@ if __name__ == "__main__":
     print(f"  Playground  : http://{HOST}:{PORT}/")
     print(f"  API         : POST http://{HOST}:{PORT}/ask")
     print(f"  Default LLM : {backend}")
-    print(f"  Backends available: rules (always), openai, claude, gemini, local, hf")
+    print(f"  Backends available: rules (always), openai, claude, gemini, hf")
+    print(f"  hf runtime: HF_RUNTIME=transformers (default) | ollama")
     print(f"  Set INTENT_BACKEND=openai (etc.) or select in the UI.")
     print(f"\n  Press Ctrl+C to stop.\n")
     try:

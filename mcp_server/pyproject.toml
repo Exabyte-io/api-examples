@@ -1,0 +1,16 @@
+[project]
+name = "mat3ra-mcp-server"
+version = "0.1.0"
+description = "Proof-of-concept MCP server for the Mat3ra API"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0",
+    "mat3ra-api-client",
+]
+
+[project.scripts]
+mat3ra-mcp = "mcp_server.server:main"
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"

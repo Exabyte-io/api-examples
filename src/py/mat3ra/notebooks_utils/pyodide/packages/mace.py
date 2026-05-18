@@ -7,8 +7,8 @@ MODEL_PATHS_MAP = {
 }
 
 
-def get_mace_model_pyodide(model_name):
+def get_mace_model_pyodide(model_name: str, dispersion=False, default_dtype="float32", device="cpu"):
     if model_name not in MODEL_PATHS_MAP:
         raise ValueError(f"Invalid model name: {model_name}. Valid options are: {list(MODEL_PATHS_MAP.keys())}")
     model_path = MODEL_PATHS_MAP[model_name]
-    return MACECalculator(model_path=model_path, dispersion=False, default_dtype="float32", device="cpu")
+    return MACECalculator(model_path=model_path, dispersion=dispersion, default_dtype=default_dtype, device=device)

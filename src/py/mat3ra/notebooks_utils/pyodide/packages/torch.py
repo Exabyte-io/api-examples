@@ -769,7 +769,29 @@ def patch_fairchem_deps():
             "create": staticmethod(lambda d: _DictConfig(d) if isinstance(d, dict) else d),
         },
     )
-    _make_stub_module("hydra", submodules=["core", "core.global_hydra"])
+    _make_stub_module("hydra", submodules=["core", "core.global_hydra", "utils"])
+
+    def _hydra_instantiate(config, *args, _recursive_=True, **kwargs):
+        import importlib
+        if isinstance(config, dict) and "_target_" in config:
+            target = config["_target_"]
+            mod_path, cls_name = target.rsplit(".", 1)
+            mod = importlib.import_module(mod_path)
+            cls = getattr(mod, cls_name)
+            pos_args = list(args) + list(config.get("_args_", []))
+            cfg = {k: v for k, v in config.items() if not k.startswith("_")}
+            if _recursive_:
+                for k, v in cfg.items():
+                    if isinstance(v, dict) and "_target_" in v:
+                        cfg[k] = _hydra_instantiate(v)
+                    elif isinstance(v, list):
+                        cfg[k] = [_hydra_instantiate(i) if isinstance(i, dict) and "_target_" in i else i for i in v]
+                pos_args = [_hydra_instantiate(a) if isinstance(a, dict) and "_target_" in a else a for a in pos_args]
+            return cls(*pos_args, **{**cfg, **kwargs})
+        return config
+
+    sys.modules["hydra.utils"].instantiate = _hydra_instantiate
+    sys.modules["hydra"].utils = sys.modules["hydra.utils"]
 
     # --- submitit / clusterscope ---
     _make_stub_module("submitit")
@@ -795,6 +817,57 @@ def patch_fairchem_deps():
 
     # --- ase_db_backends ---
     _make_stub_module("ase_db_backends")
+    # --- INT8 quantized model support ---
+    _orig_torch_load = torch.load
+
+    def _int8_aware_torch_load(f, *args, **kwargs):
+        result = _orig_torch_load(f, *args, **kwargs)
+        if isinstance(result, dict) and "quantized_ema_state_dict" in result:
+            import gc as _gc
+            from fairchem.core.units.mlip_unit.api.inference import MLIPInferenceCheckpoint
+
+            print("  Dequantizing INT8 → FP16...")
+            quantized_ema = result["quantized_ema_state_dict"]
+            scales = result["quantization_scales"]
+            ema_state_dict = {}
+            for name, tensor in quantized_ema.items():
+                if name in scales:
+                    ema_state_dict[name] = (tensor.float() * scales[name].float()).half()
+                else:
+                    ema_state_dict[name] = tensor
+            del quantized_ema, scales
+            checkpoint = MLIPInferenceCheckpoint(
+                model_config=result["model_config"],
+                model_state_dict=result.get("model_state_dict", {}),
+                ema_state_dict=ema_state_dict,
+                tasks_config=result["tasks_config"],
+            )
+            del result
+            _gc.collect()
+            print("  ✓ Dequantization complete")
+            return checkpoint
+        return result
+
+    torch.load = _int8_aware_torch_load
+
+    # --- Model registry fallback ---
+    try:
+        from fairchem.core.common.registry import registry as _registry
+
+        _orig_get_model = _registry.get_model_class
+
+        def _fallback_get_model_class(name):
+            try:
+                return _orig_get_model(name)
+            except RuntimeError:
+                import importlib as _imp
+                module_path, class_name = name.rsplit(".", 1)
+                mod = _imp.import_module(module_path)
+                return getattr(mod, class_name)
+
+        _registry.get_model_class = _fallback_get_model_class
+    except Exception:
+        pass
 
     print("✓ FAIRChem dependency stubs applied")
 

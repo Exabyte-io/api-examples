@@ -140,12 +140,6 @@ def patch_torch_linalg():
     torch.Tensor.__array__ = _tensor_array_compat
     torch.Tensor.numpy = lambda self: np.array(self.detach().tolist())
 
-    # Fix torch.compiler.is_compiling for Pyodide
-    if not hasattr(torch, "compiler"):
-        torch.compiler = types.ModuleType("torch.compiler")
-    if not hasattr(torch.compiler, "is_compiling"):
-        torch.compiler.is_compiling = lambda: False
-
     print("✓ Torch linalg patches applied")
 
 
@@ -190,6 +184,552 @@ def patch_torch_testing():
     sys.modules["torch.testing._internal.logging_tensor"] = _logging_tensor
 
     print("✓ Torch testing patches applied")
+
+
+# ==============================================================================
+# Torch compiler patches
+# ==============================================================================
+
+
+def patch_torch_compiler():
+    """
+    Patch torch.compiler for Pyodide WASM.
+
+    - Stubs torch.compiler.is_compiling (not available in WASM build)
+    - Makes torch.compiler.disable a no-op decorator (avoids torch._dynamo
+      import chain which requires C extensions missing in WASM)
+    - Needed by e3nn >= 0.5 and fairchem-core which use @torch.compiler.disable
+    """
+    if not hasattr(torch, "compiler"):
+        torch.compiler = types.ModuleType("torch.compiler")
+    if not hasattr(torch.compiler, "is_compiling"):
+        torch.compiler.is_compiling = lambda: False
+
+    def _compiler_disable(fn=None, recursive=True):
+        if fn is not None:
+            return fn
+        return lambda f: f
+
+    torch.compiler.disable = _compiler_disable
+
+    print("✓ Torch compiler patches applied")
+
+
+# ==============================================================================
+# Torch distributed patches (for FAIRChem)
+# ==============================================================================
+
+
+def patch_torch_distributed():
+    """
+    Stub torch.distributed modules that require C extensions missing in WASM.
+
+    FAIRChem's mlip_unit.py imports from torch.distributed.checkpoint,
+    torch.distributed.fsdp, and torch.distributed.device_mesh.
+    All of these trigger torch._C._distributed_c10d which doesn't exist in WASM.
+    """
+    import enum
+
+    import torch.distributed as _dist
+
+    # Core distributed API stubs
+    if not hasattr(_dist, "group"):
+
+        class _Group:
+            WORLD = None
+
+        _dist.group = _Group
+        _dist.WORLD = None
+    if not hasattr(_dist, "ReduceOp"):
+
+        class _ReduceOp:
+            SUM = 0
+            PRODUCT = 1
+            MIN = 2
+            MAX = 3
+            BAND = 4
+            BOR = 5
+            BXOR = 6
+            AVG = 7
+
+        _dist.ReduceOp = _ReduceOp
+    if not hasattr(_dist, "is_initialized"):
+        _dist.is_initialized = lambda: False
+    if not hasattr(_dist, "get_rank"):
+        _dist.get_rank = lambda group=None: 0
+    if not hasattr(_dist, "get_world_size"):
+        _dist.get_world_size = lambda group=None: 1
+
+    # torch.distributed.nn.functional
+    _dist_nn = types.ModuleType("torch.distributed.nn")
+    _dist_nn.__path__ = []
+    _dist_nn.__package__ = "torch.distributed.nn"
+    _dist_nn_func = types.ModuleType("torch.distributed.nn.functional")
+    _dist_nn_func.__package__ = "torch.distributed.nn"
+    _dist_nn_func.all_reduce = lambda tensor, *a, **k: tensor
+    _dist_nn_func.reduce_scatter = lambda output, input_list, *a, **k: output
+    _dist_nn_func.all_gather = lambda tensor_list, tensor, *a, **k: tensor_list
+    _dist_nn.functional = _dist_nn_func
+    sys.modules["torch.distributed.nn"] = _dist_nn
+    sys.modules["torch.distributed.nn.functional"] = _dist_nn_func
+
+    # C extension stubs
+    sys.modules["torch._C._distributed_c10d"] = types.ModuleType("torch._C._distributed_c10d")
+    _dc10d = types.ModuleType("torch.distributed.distributed_c10d")
+    _dc10d.__package__ = "torch.distributed"
+    sys.modules["torch.distributed.distributed_c10d"] = _dc10d
+
+    # torch.distributed._shard
+    _shard = types.ModuleType("torch.distributed._shard")
+    _shard.__path__ = []
+    _shard.__package__ = "torch.distributed._shard"
+    sys.modules["torch.distributed._shard"] = _shard
+    sys.modules["torch.distributed._shard.api"] = types.ModuleType("torch.distributed._shard.api")
+    _shard_st = types.ModuleType("torch.distributed._shard.sharded_tensor")
+    _shard_st.__path__ = []
+    sys.modules["torch.distributed._shard.sharded_tensor"] = _shard_st
+    _shard_st_meta = types.ModuleType("torch.distributed._shard.sharded_tensor.metadata")
+
+    class _TensorProperties:
+        pass
+
+    _shard_st_meta.TensorProperties = _TensorProperties
+    sys.modules["torch.distributed._shard.sharded_tensor.metadata"] = _shard_st_meta
+
+    # torch.distributed.checkpoint
+    _dcp = types.ModuleType("torch.distributed.checkpoint")
+    _dcp.__path__ = []
+    _dcp.__package__ = "torch.distributed.checkpoint"
+    _dcp.save = lambda *a, **k: None
+    _dcp.load = lambda *a, **k: None
+    _dcp_meta = types.ModuleType("torch.distributed.checkpoint.metadata")
+    _dcp_meta.TensorProperties = _TensorProperties
+
+    class _BytesStorageMetadata:
+        pass
+
+    class _TensorStorageMetadata:
+        pass
+
+    class _Metadata:
+        pass
+
+    _dcp_meta.BytesStorageMetadata = _BytesStorageMetadata
+    _dcp_meta.TensorStorageMetadata = _TensorStorageMetadata
+    _dcp_meta.Metadata = _Metadata
+    _dcp.metadata = _dcp_meta
+    sys.modules["torch.distributed.checkpoint"] = _dcp
+    sys.modules["torch.distributed.checkpoint.metadata"] = _dcp_meta
+
+    for sub in [
+        "state_dict",
+        "stateful",
+        "planner",
+        "storage",
+        "default_planner",
+        "filesystem",
+        "optimizer",
+        "format_utils",
+    ]:
+        _sub_mod = types.ModuleType(f"torch.distributed.checkpoint.{sub}")
+        _sub_mod.__package__ = "torch.distributed.checkpoint"
+        sys.modules[f"torch.distributed.checkpoint.{sub}"] = _sub_mod
+        setattr(_dcp, sub, _sub_mod)
+
+    # format_utils stubs
+    sys.modules["torch.distributed.checkpoint.format_utils"].dcp_to_torch_save = lambda *a, **k: None
+    sys.modules["torch.distributed.checkpoint.format_utils"].torch_save_to_dcp = lambda *a, **k: None
+
+    # state_dict stubs
+    _sd_mod = sys.modules["torch.distributed.checkpoint.state_dict"]
+    _sd_mod.get_model_state_dict = lambda model, *a, **k: model.state_dict() if hasattr(model, "state_dict") else {}
+    _sd_mod.set_model_state_dict = (
+        lambda model, sd, *a, **k: model.load_state_dict(sd) if hasattr(model, "load_state_dict") else None
+    )
+    _sd_mod.get_optimizer_state_dict = (
+        lambda model, optim, *a, **k: optim.state_dict() if hasattr(optim, "state_dict") else {}
+    )
+    _sd_mod.get_state_dict = lambda model, *a, **k: model.state_dict() if hasattr(model, "state_dict") else {}
+    _sd_mod.set_state_dict = lambda model, sd, *a, **k: None
+
+    class _StateDictOptions:
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    _sd_mod.StateDictOptions = _StateDictOptions
+
+    # stateful stub
+    class _Stateful:
+        pass
+
+    sys.modules["torch.distributed.checkpoint.stateful"].Stateful = _Stateful
+
+    # torch.distributed.fsdp
+    _fsdp = types.ModuleType("torch.distributed.fsdp")
+    _fsdp.__path__ = []
+    _fsdp.__package__ = "torch.distributed.fsdp"
+    sys.modules["torch.distributed.fsdp"] = _fsdp
+    for fsdp_sub in ["fully_sharded_data_parallel", "api", "wrap", "sharded_grad_scaler"]:
+        _fsub = types.ModuleType(f"torch.distributed.fsdp.{fsdp_sub}")
+        _fsub.__package__ = "torch.distributed.fsdp"
+        sys.modules[f"torch.distributed.fsdp.{fsdp_sub}"] = _fsub
+        setattr(_fsdp, fsdp_sub, _fsub)
+
+    # FSDP wrap policy stubs
+    class _ModuleWrapPolicy:
+        def __init__(self, module_classes=None):
+            self.module_classes = module_classes or set()
+
+    _fsdp_wrap = sys.modules["torch.distributed.fsdp.wrap"]
+    _fsdp_wrap.ModuleWrapPolicy = _ModuleWrapPolicy
+    _fsdp_wrap.lambda_auto_wrap_policy = lambda *a, **k: None
+    _fsdp_wrap.transformer_auto_wrap_policy = lambda *a, **k: None
+
+    # FSDP classes
+    class _FullyShardedDataParallel(torch.nn.Module):
+        def __init__(self, module, *a, **k):
+            super().__init__()
+            self.module = module
+
+    class _ShardingStrategy(enum.Enum):
+        FULL_SHARD = "FULL_SHARD"
+        SHARD_GRAD_OP = "SHARD_GRAD_OP"
+        NO_SHARD = "NO_SHARD"
+        HYBRID_SHARD = "HYBRID_SHARD"
+
+    class _MixedPrecision:
+        def __init__(self, *a, **k):
+            pass
+
+    class _CPUOffload:
+        def __init__(self, offload_params=False):
+            self.offload_params = offload_params
+
+    class _BackwardPrefetch(enum.Enum):
+        BACKWARD_PRE = "BACKWARD_PRE"
+        BACKWARD_POST = "BACKWARD_POST"
+
+    class _StateDictTypeFSDP(enum.Enum):
+        FULL_STATE_DICT = 0
+        LOCAL_STATE_DICT = 1
+        SHARDED_STATE_DICT = 2
+
+    _fsdp.FullyShardedDataParallel = _FullyShardedDataParallel
+    _fsdp.ShardingStrategy = _ShardingStrategy
+    _fsdp.MixedPrecision = _MixedPrecision
+    _fsdp.CPUOffload = _CPUOffload
+    _fsdp.BackwardPrefetch = _BackwardPrefetch
+    _fsdp.StateDictType = _StateDictTypeFSDP
+
+    # FSDP StateDictConfig stubs
+    class _StateDictConfig:
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    class _ShardedStateDictConfig(_StateDictConfig):
+        pass
+
+    class _FullStateDictConfig(_StateDictConfig):
+        def __init__(self, offload_to_cpu=False, rank0_only=False, **k):
+            super().__init__(**k)
+            self.offload_to_cpu = offload_to_cpu
+            self.rank0_only = rank0_only
+
+    class _FullOptimStateDictConfig(_StateDictConfig):
+        def __init__(self, offload_to_cpu=False, rank0_only=False, **k):
+            super().__init__(**k)
+
+    _fsdp.StateDictConfig = _StateDictConfig
+    _fsdp.ShardedStateDictConfig = _ShardedStateDictConfig
+    _fsdp.FullStateDictConfig = _FullStateDictConfig
+    _fsdp.FullOptimStateDictConfig = _FullOptimStateDictConfig
+    _fsdp.LocalStateDictConfig = type("LocalStateDictConfig", (_StateDictConfig,), {})
+    _fsdp.OptimStateDictConfig = type("OptimStateDictConfig", (_StateDictConfig,), {})
+    _fsdp.ShardedOptimStateDictConfig = type("ShardedOptimStateDictConfig", (_StateDictConfig,), {})
+
+    # torch.distributed.device_mesh
+    _dm = types.ModuleType("torch.distributed.device_mesh")
+    _dm.__package__ = "torch.distributed"
+
+    class _DeviceMesh:
+        def __init__(self, *a, **k):
+            pass
+
+    _dm.DeviceMesh = _DeviceMesh
+    _dm.init_device_mesh = lambda *a, **k: _DeviceMesh()
+    sys.modules["torch.distributed.device_mesh"] = _dm
+
+    # torch.distributed.tensor (DTensor)
+    _dtensor = types.ModuleType("torch.distributed.tensor")
+    _dtensor.__path__ = []
+    _dtensor.__package__ = "torch.distributed.tensor"
+
+    class _DTensor:
+        pass
+
+    _dtensor.DTensor = _DTensor
+    sys.modules["torch.distributed.tensor"] = _dtensor
+
+    # torch.distributed.algorithms
+    _dalgo = types.ModuleType("torch.distributed.algorithms")
+    _dalgo.__path__ = []
+    _dalgo.__package__ = "torch.distributed.algorithms"
+    sys.modules["torch.distributed.algorithms"] = _dalgo
+
+    print("✓ Torch distributed patches applied")
+
+
+# ==============================================================================
+# FAIRChem heavy dependency stubs
+# ==============================================================================
+
+
+def _make_stub_module(name, attrs=None, submodules=None):
+    """Create a stub module with optional attributes and submodules."""
+    mod = types.ModuleType(name)
+    mod.__path__ = []
+    mod.__package__ = name
+    mod.__version__ = "0.0.0"
+    if attrs:
+        for k, v in attrs.items():
+            setattr(mod, k, v)
+    sys.modules[name] = mod
+    if submodules:
+        for sub_name in submodules:
+            full_name = f"{name}.{sub_name}"
+            sub_mod = types.ModuleType(full_name)
+            sub_mod.__path__ = []
+            sub_mod.__package__ = name
+            setattr(mod, sub_name, sub_mod)
+            sys.modules[full_name] = sub_mod
+    return mod
+
+
+def patch_fairchem_deps():
+    """
+    Stub heavy dependencies that fairchem-core imports but doesn't need for inference.
+
+    This stubs: numba, ray (+ serve), wandb, torchtnt, hydra, omegaconf,
+    submitit, clusterscope, tqdm, huggingface_hub, websockets.
+    """
+    # --- numba ---
+    numba_mod = _make_stub_module("numba", submodules=["core", "core.types", "typed"])
+    numba_mod.njit = lambda *a, **k: (lambda f: f) if not a or callable(a[0]) else lambda f: f
+    numba_mod.jit = numba_mod.njit
+    numba_mod.prange = range
+    for t in ("int32", "int64", "float32", "float64", "boolean"):
+        setattr(numba_mod, t, t)
+
+    class _TypedList(list):
+        pass
+
+    sys.modules["numba.typed"].List = _TypedList
+
+    # --- ray ---
+    ray_mod = _make_stub_module(
+        "ray",
+        submodules=[
+            "serve",
+            "runtime_env",
+            "train",
+            "data",
+            "util",
+            "util.scheduling_strategies",
+            "util.queue",
+        ],
+    )
+
+    def _ray_remote(*args, **kwargs):
+        if args and callable(args[0]):
+            args[0]._remote = lambda *a, **kw: None
+            return args[0]
+
+        def wrapper(fn_or_cls):
+            fn_or_cls._remote = lambda *a, **kw: None
+            return fn_or_cls
+
+        return wrapper
+
+    ray_mod.remote = _ray_remote
+    ray_mod.init = lambda *a, **k: None
+    ray_mod.get = lambda *a, **k: None
+    ray_mod.put = lambda *a, **k: None
+    ray_mod.wait = lambda *a, **k: ([], [])
+    ray_mod.is_initialized = lambda: False
+
+    class _ObjectRef:
+        pass
+
+    ray_mod.ObjectRef = _ObjectRef
+
+    class _PlacementGroupSchedulingStrategy:
+        def __init__(self, *a, **k):
+            pass
+
+    sys.modules["ray.util.scheduling_strategies"].PlacementGroupSchedulingStrategy = (
+        _PlacementGroupSchedulingStrategy
+    )
+
+    # ray.serve stubs
+    _serve = sys.modules["ray.serve"]
+
+    def _serve_deployment(*args, **kwargs):
+        if args and callable(args[0]):
+            return args[0]
+        return lambda cls_or_fn: cls_or_fn
+
+    _serve.deployment = _serve_deployment
+    _serve.ingress = lambda *a, **k: (lambda cls: cls)
+    _serve.run = lambda *a, **k: None
+    _serve.batch = lambda *args, **kwargs: (lambda fn: fn) if not args or not callable(args[0]) else args[0]
+
+    _serve_schema = types.ModuleType("ray.serve.schema")
+    _serve_schema.__package__ = "ray.serve"
+
+    class _LoggingConfig:
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    _serve_schema.LoggingConfig = _LoggingConfig
+    _serve.schema = _serve_schema
+    sys.modules["ray.serve.schema"] = _serve_schema
+
+    # --- wandb ---
+    wandb_mod = _make_stub_module("wandb")
+    wandb_mod.init = lambda *a, **k: None
+    wandb_mod.log = lambda *a, **k: None
+    wandb_mod.finish = lambda *a, **k: None
+
+    # --- torchtnt ---
+    _make_stub_module(
+        "torchtnt",
+        submodules=[
+            "framework",
+            "framework.state",
+            "framework.unit",
+            "framework.callback",
+            "framework.auto_unit",
+            "framework.fit",
+            "framework.train",
+            "framework.evaluate",
+            "framework.predict",
+            "utils",
+            "utils.loggers",
+            "utils.timer",
+            "utils.distributed",
+            "utils.prepare_module",
+        ],
+    )
+
+    class _PredictUnit:
+        def __init__(self, *a, **k):
+            pass
+
+        def __class_getitem__(cls, item):
+            return cls
+
+    class _TrainUnit:
+        def __init__(self, *a, **k):
+            pass
+
+        def __class_getitem__(cls, item):
+            return cls
+
+    class _EvalUnit:
+        def __init__(self, *a, **k):
+            pass
+
+        def __class_getitem__(cls, item):
+            return cls
+
+    class _State:
+        def __init__(self, *a, **k):
+            pass
+
+        def __class_getitem__(cls, item):
+            return cls
+
+    class _Callback:
+        pass
+
+    tnt_framework = sys.modules["torchtnt.framework"]
+    tnt_unit = sys.modules["torchtnt.framework.unit"]
+    tnt_state = sys.modules["torchtnt.framework.state"]
+    tnt_cb = sys.modules["torchtnt.framework.callback"]
+    for m in [tnt_framework, tnt_unit]:
+        m.PredictUnit = _PredictUnit
+        m.TrainUnit = _TrainUnit
+        m.EvalUnit = _EvalUnit
+    tnt_state.State = _State
+    tnt_cb.Callback = _Callback
+    tnt_framework.State = _State
+    tnt_framework.Callback = _Callback
+
+    # torchtnt entry point functions
+    sys.modules["torchtnt.framework.fit"].fit = lambda *a, **k: None
+    sys.modules["torchtnt.framework.train"].train = lambda *a, **k: None
+    sys.modules["torchtnt.framework.evaluate"].evaluate = lambda *a, **k: None
+    sys.modules["torchtnt.framework.predict"].predict = lambda *a, **k: None
+
+    # torchtnt.utils stubs
+    tnt_dist = sys.modules["torchtnt.utils.distributed"]
+    tnt_dist.get_file_init_method = lambda *a, **k: ""
+    tnt_dist.get_tcp_init_method = lambda *a, **k: ""
+    tnt_dist.spawn_multi_process = lambda *a, **k: None
+
+    tnt_prep = sys.modules["torchtnt.utils.prepare_module"]
+    tnt_prep.prepare_module = lambda module, *a, **k: module
+    tnt_prep.FSDPStrategy = type("FSDPStrategy", (), {"__init__": lambda self, **k: None})
+    tnt_prep.DDPStrategy = type("DDPStrategy", (), {"__init__": lambda self, **k: None})
+    tnt_prep.NOOPStrategy = type("NOOPStrategy", (), {"__init__": lambda self, **k: None})
+
+    # --- hydra / omegaconf ---
+    omegaconf_mod = _make_stub_module("omegaconf")
+
+    class _DictConfig(dict):
+        pass
+
+    class _ListConfig(list):
+        pass
+
+    omegaconf_mod.DictConfig = _DictConfig
+    omegaconf_mod.ListConfig = _ListConfig
+    omegaconf_mod.OmegaConf = type(
+        "OmegaConf",
+        (),
+        {
+            "to_container": staticmethod(lambda cfg, **k: dict(cfg) if isinstance(cfg, dict) else cfg),
+            "create": staticmethod(lambda d: _DictConfig(d) if isinstance(d, dict) else d),
+        },
+    )
+    _make_stub_module("hydra", submodules=["core", "core.global_hydra"])
+
+    # --- submitit / clusterscope ---
+    _make_stub_module("submitit")
+    _make_stub_module("clusterscope")
+
+    # --- websockets ---
+    _make_stub_module("websockets")
+
+    # --- tqdm ---
+    tqdm_mod = _make_stub_module("tqdm", submodules=["auto", "std"])
+
+    def _tqdm_passthrough(iterable=None, *a, **k):
+        return iterable if iterable is not None else iter([])
+
+    tqdm_mod.tqdm = _tqdm_passthrough
+    sys.modules["tqdm.auto"].tqdm = _tqdm_passthrough
+    sys.modules["tqdm.std"].tqdm = _tqdm_passthrough
+
+    # --- huggingface_hub ---
+    hf_mod = _make_stub_module("huggingface_hub", submodules=["utils"])
+    hf_mod.hf_hub_download = lambda *a, **k: ""
+    hf_mod.snapshot_download = lambda *a, **k: ""
+
+    # --- ase_db_backends ---
+    _make_stub_module("ase_db_backends")
+
+    print("✓ FAIRChem dependency stubs applied")
 
 
 # ==============================================================================
@@ -273,11 +813,24 @@ def patch_mace_tools():
 # ==============================================================================
 
 
-def apply_all_patches():
-    """Apply all torch and MACE patches for Pyodide in one call."""
+def apply_all_patches(include_fairchem=False):
+    """
+    Apply all torch and model patches for Pyodide in one call.
+
+    Args:
+        include_fairchem: If True, also apply FAIRChem-specific patches
+            (torch.distributed, heavy dependency stubs). Set this when
+            using fairchem-core / UMA models.
+    """
     patch_torch_linalg()
+    patch_torch_compiler()
     patch_torch_testing()
     patch_matscipy()
     patch_mace_training()
     patch_mace_tools()
+
+    if include_fairchem:
+        patch_torch_distributed()
+        patch_fairchem_deps()
+
     print("\n✅ All Pyodide patches applied successfully!")

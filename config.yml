@@ -101,3 +101,20 @@ notebooks:
       - ssl
       - h5py
       - lmdb
+  - name: uma
+    packages_pyodide:
+      # Packages with dependencies
+      - opt_einsum
+      - orjson
+      - pyyaml
+      - sqlite3
+      # Packages without dependencies (using nodeps: prefix)
+      - nodeps:opt_einsum_fx
+      - nodeps:e3nn>=0.5
+      - nodeps:ase
+      - nodeps:monty
+      - nodeps:fairchem-core
+      # Stubbed packages (will be patched by torch_pyodide with include_fairchem=True)
+      - ssl
+      - h5py
+      - lmdb

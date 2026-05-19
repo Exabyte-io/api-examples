@@ -103,11 +103,15 @@ notebooks:
       - lmdb
   - name: uma
     packages_pyodide:
+      # antlr4 local wheel (required by omegaconf, PyPI version has ATN mismatch)
+      - emfs:/drive/packages/antlr4_python3_runtime-4.9.3-py3-none-any.whl
       # Packages with dependencies
       - opt_einsum
       - orjson
       - pyyaml
       - sqlite3
+      - omegaconf
+      - hydra-core
       # Packages without dependencies (using nodeps: prefix)
       - nodeps:opt_einsum_fx
       - nodeps:e3nn>=0.5

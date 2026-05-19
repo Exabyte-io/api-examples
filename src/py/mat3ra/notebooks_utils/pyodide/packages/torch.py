@@ -140,7 +140,66 @@ def patch_torch_linalg():
     torch.Tensor.__array__ = _tensor_array_compat
     torch.Tensor.numpy = lambda self: np.array(self.detach().tolist())
 
-    print("✓ Torch linalg patches applied")
+    # torch.from_numpy — WASM PyTorch build lacks NumPy interop
+    _orig_from_numpy = torch.from_numpy
+
+    def _patched_from_numpy(ndarray):
+        try:
+            return _orig_from_numpy(ndarray)
+        except RuntimeError:
+            return torch.tensor(ndarray.tolist())
+
+    torch.from_numpy = _patched_from_numpy
+
+    # torch.as_tensor — also uses numpy interop internally
+    _orig_as_tensor = torch.as_tensor
+
+    def _patched_as_tensor(data, dtype=None, device=None):
+        try:
+            return _orig_as_tensor(data, dtype=dtype, device=device)
+        except (RuntimeError, TypeError):
+            if hasattr(data, "tolist"):
+                return torch.tensor(data.tolist(), dtype=dtype, device=device)
+            return torch.tensor(data, dtype=dtype, device=device)
+
+    torch.as_tensor = _patched_as_tensor
+
+    # Tensor indexing — WASM PyTorch can't infer numpy dtypes for boolean/integer masks
+    _orig_getitem = torch.Tensor.__getitem__
+
+    def _patched_getitem(self, key):
+        if isinstance(key, np.ndarray):
+            key = torch.tensor(key.tolist())
+        return _orig_getitem(self, key)
+
+    torch.Tensor.__getitem__ = _patched_getitem
+
+    _orig_setitem = torch.Tensor.__setitem__
+
+    def _patched_setitem(self, key, value):
+        if isinstance(key, np.ndarray):
+            key = torch.tensor(key.tolist())
+        return _orig_setitem(self, key, value)
+
+    torch.Tensor.__setitem__ = _patched_setitem
+
+    # torch.tensor — handle lists of 0-d tensors (WASM calls len() on elements, fails for 0-d)
+    _orig_torch_tensor = torch.tensor
+
+    def _patched_torch_tensor(data, *args, **kwargs):
+        if isinstance(data, (list, tuple)):
+
+            def _unwrap(item):
+                if isinstance(item, torch.Tensor) and item.ndim == 0:
+                    return item.item()
+                return item
+
+            data = type(data)(_unwrap(x) for x in data)
+        return _orig_torch_tensor(data, *args, **kwargs)
+
+    torch.tensor = _patched_torch_tensor
+
+    print("✓ Torch linalg + numpy interop patches applied")
 
 
 # ==============================================================================
@@ -182,6 +241,10 @@ def patch_torch_testing():
     sys.modules["torch.testing._internal"] = _internal
     sys.modules["torch.testing._internal.common_utils"] = _common_utils
     sys.modules["torch.testing._internal.logging_tensor"] = _logging_tensor
+
+    # Import torch.utils.checkpoint AFTER logging_tensor stubs are set up
+    # (checkpoint.py imports logging_tensor at import time)
+    import torch.utils.checkpoint  # noqa: F401
 
     print("✓ Torch testing patches applied")
 
@@ -486,10 +549,13 @@ def patch_torch_distributed():
 
 def _make_stub_module(name, attrs=None, submodules=None):
     """Create a stub module with optional attributes and submodules."""
+    from importlib.machinery import ModuleSpec
+
     mod = types.ModuleType(name)
     mod.__path__ = []
     mod.__package__ = name
     mod.__version__ = "0.0.0"
+    mod.__spec__ = ModuleSpec(name, None, is_package=True)
     if attrs:
         for k, v in attrs.items():
             setattr(mod, k, v)
@@ -500,6 +566,7 @@ def _make_stub_module(name, attrs=None, submodules=None):
             sub_mod = types.ModuleType(full_name)
             sub_mod.__path__ = []
             sub_mod.__package__ = name
+            sub_mod.__spec__ = ModuleSpec(full_name, None, is_package=True)
             setattr(mod, sub_name, sub_mod)
             sys.modules[full_name] = sub_mod
     return mod

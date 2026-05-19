@@ -174,7 +174,9 @@ def show_device_flow_popup(verification_uri_complete: str, user_code: str) -> No
         HTML(
             f"<div style='padding: 15px; background: #e3f2fd; border-left: 4px solid #2196f3; margin: 10px 0;'>"
             f"<strong>Authentication Required</strong><br/>"
-            f"Enter this code: <strong style='font-size: 1.2em; color: #1976d2;'>{user_code}</strong>"
+            f"Enter this code: <strong style='font-size: 1.2em; color: #1976d2;'>{user_code}</strong><br/>"
+            f"<a href='{verification_uri_complete}' target='_blank' style='color: #1976d2;'>"
+            f"Click here if the browser tab did not open automatically</a>"
             f"</div>"
         )
     )

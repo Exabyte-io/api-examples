@@ -137,6 +137,62 @@ EOF
 
 ---
 
+#### `chgnet-0.3.8-py3-none-any.whl` (4.3 MB)
+
+**Source**: [CederGroupHub/chgnet](https://github.com/CederGroupHub/chgnet) v0.3.8 (PyPI)
+
+**Why custom**: The upstream wheel includes a Cython-compiled graph converter extension (`cygraph.so`) that cannot run in Pyodide's WASM runtime. CHGNet has a built-in `algorithm="legacy"` fallback that uses pure Python when the C extension is unavailable, so we simply strip the `.so` file.
+
+**How to reproduce**:
+
+```bash
+# 1. Download the upstream wheel
+pip download chgnet==0.3.8 --no-deps
+# chgnet-0.3.8-*.whl (~4.5 MB)
+
+# 2. Extract, strip the Cython extension, and repack
+python3 << 'EOF'
+import zipfile, os, shutil
+
+src_whl = next(f for f in os.listdir('.') if f.startswith('chgnet-0.3.8'))
+work_dir = "chgnet_work"
+
+# Extract
+with zipfile.ZipFile(src_whl, 'r') as z:
+    z.extractall(work_dir)
+
+# Remove the Cython .so extension (runtime falls back to pure Python)
+pkg = os.path.join(work_dir, "chgnet", "graph")
+for f in os.listdir(pkg):
+    if f.startswith("cygraph") and f.endswith(".so"):
+        os.remove(os.path.join(pkg, f))
+        print(f"Removed: {f}")
+
+# Repack
+out_whl = "chgnet-0.3.8-py3-none-any.whl"
+with zipfile.ZipFile(out_whl, 'w', zipfile.ZIP_DEFLATED) as zf:
+    for root, dirs, files in os.walk(work_dir):
+        for f in files:
+            full = os.path.join(root, f)
+            arcname = os.path.relpath(full, work_dir)
+            zf.write(full, arcname)
+
+shutil.rmtree(work_dir)
+EOF
+# Output: chgnet-0.3.8-py3-none-any.whl (~4.3 MB)
+```
+
+**What was removed**:
+- `chgnet/graph/cygraph.*.so` — Cython-compiled graph converter (runtime falls back to `algorithm="legacy"`)
+
+**What was kept**:
+- All Python source code
+- Pretrained model v0.3.0 checkpoint (~4 MB, bundled in `chgnet/pretrained/`)
+
+**Runtime patches**: Requires `apply_all_patches(include_chgnet=True)` in [torch.py](../src/py/mat3ra/notebooks_utils/pyodide/packages/torch.py) which stubs `nvidia_smi` (GPU memory detection), `Cython` (build-time dep), and `palettable` (color palette lib imported via `pymatgen.util.plotting`).
+
+---
+
 ## Models
 
 The `models/` subdirectory contains pretrained model checkpoint files:
@@ -145,4 +201,4 @@ The `models/` subdirectory contains pretrained model checkpoint files:
 |------|-------|------|
 | `mattersim-v1.0.0-1M.pth` | MatterSim M3GNet (1M params) | ~4 MB |
 
-> **Note**: The SevenNet 7net-0 model is bundled inside the `sevenn` wheel itself under `pretrained_potentials/`.
+> **Note**: The SevenNet 7net-0 model is bundled inside the `sevenn` wheel under `pretrained_potentials/`. The CHGNet v0.3.0 model is bundled inside the `chgnet` wheel under `chgnet/pretrained/`.

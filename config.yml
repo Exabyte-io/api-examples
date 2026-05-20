@@ -161,3 +161,15 @@ notebooks:
       - ssl
       - h5py
       - lmdb
+  - name: chgnet
+    packages_pyodide:
+      # Packages with dependencies
+      - pyyaml
+      - setuptools
+      # Packages without dependencies
+      - nodeps:ase
+      - nodeps:monty
+      # CHGNet wheel (stripped Cython extension + old model, uses legacy Python mode)
+      - emfs:/drive/packages/chgnet-0.3.8-py3-none-any.whl
+      # Stubbed packages (patched by torch_pyodide with include_chgnet=True)
+      - ssl

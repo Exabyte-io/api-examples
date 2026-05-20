@@ -5,6 +5,7 @@ from .ipython.io import download_content_to_file
 from .primitive.enums import EnvironmentsEnum
 from .primitive.environment import ENVIRONMENT
 from .pyodide.io import get_data_pyodide, read_from_url_pyodide, set_data_pyodide
+from .settings import UPLOADS_FOLDER
 
 
 def get_data(key: str, globals_dict: Optional[Dict] = None):
@@ -21,18 +22,19 @@ def get_data(key: str, globals_dict: Optional[Dict] = None):
         get_data_python(key, globals_dict)
 
 
-def set_data(key: str, value: Any):
+def set_data(key: str, value: Any, folder_path: str = UPLOADS_FOLDER):
     """
     Switch between the two functions `set_data_pyodide` and `set_data_python` based on the environment.
 
     Args:
         key (str): The name under which data will be written or sent.
         value (Any): The value to write or send.
+        folder_path (str, optional): The folder path to use for writing data.
     """
     if ENVIRONMENT == EnvironmentsEnum.PYODIDE:
         set_data_pyodide(key, value)
     elif ENVIRONMENT == EnvironmentsEnum.PYTHON:
-        set_data_python(key, value)
+        set_data_python(key, value, folder_path=folder_path)
 
 
 async def read_from_url(url: str, as_bytes: bool = False) -> Union[str, bytes]:

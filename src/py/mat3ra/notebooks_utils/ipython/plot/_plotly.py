@@ -81,7 +81,7 @@ def create_update_callback(
     Create a general update callback for real-time plotting.
 
     Args:
-        dynamic_object: Object containing step information
+        dynamic_object: ASE Dynamics object containing step information (i.e., BFGS, FIRE)
         value_getter: Function to retrieve the measured value
         figure: Plotly figure to update
         steps: List to store step values
@@ -181,3 +181,25 @@ def plot_2d_heatmap(
 
     fig.update_layout(title=title, xaxis_title=labels["x"], yaxis_title=labels["y"], width=800, height=600)
     render_figure(fig)
+
+
+def progress_callback(
+    dynamic_object: Any,
+    value_getter: Union[Callable, Any],
+    value_label: str = "Value",
+    step_label: str = "N Steps",
+    print_format: str = "Step: {}, Value: {:.4f}",
+):
+    steps: List[int] = []
+    values: List[float] = []
+    _progress_figure = create_realtime_plot(
+        title="Real-time Optimization Progress", x_label=step_label, y_label=value_label
+    )
+    return create_update_callback(
+        dynamic_object=dynamic_object,
+        value_getter=value_getter,
+        figure=_progress_figure,
+        steps=steps,
+        values=values,
+        print_format=print_format,
+    )

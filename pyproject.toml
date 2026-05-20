@@ -28,9 +28,11 @@ api = [
 materials = [
   # ase >=3.25.0 is required for supercell to be generated,
   # otherwise on 3.21.1 we encountered negative number of atoms during supercell generation
+  "ase>=3.25.0",
+  # numpy <=2.0.0 is required for pymatgen 2024.4.13
+  "numpy<=2.0.0",
   "mat3ra-notebooks-utils[auxilary]",
   "mat3ra-notebooks-utils[utils_standata]",
-  "ase>=3.25.0",
   "pymatgen==2024.4.13",
   "mat3ra-made>=2026.4.2.post0",
 ]

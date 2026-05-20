@@ -18,4 +18,4 @@ repos:
     rev: 0.7.1
     hooks:
       - id: nbstripout
-        files: ^other\/materials_designer\/.*\.ipynb$
+        files: ^other\/(materials_designer|experiments)\/.*\.ipynb$

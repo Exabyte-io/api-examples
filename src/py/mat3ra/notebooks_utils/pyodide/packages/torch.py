@@ -959,7 +959,7 @@ def patch_mace_tools():
 # ==============================================================================
 
 
-def apply_all_patches(include_fairchem=False, include_mattersim=False, include_sevennet=False):
+def apply_all_patches(include_fairchem=False, include_mattersim=False, include_sevennet=False, include_chgnet=False):
     """
     Apply all torch and model patches for Pyodide in one call.
 
@@ -973,6 +973,9 @@ def apply_all_patches(include_fairchem=False, include_mattersim=False, include_s
         include_sevennet: If True, also apply SevenNet-specific patches
             (pandas, tqdm, packaging stubs). Set this when
             using SevenNet / 7net models.
+        include_chgnet: If True, also apply CHGNet-specific patches
+            (nvidia_smi, cython stubs). Set this when
+            using CHGNet models.
     """
     patch_torch_linalg()
     patch_torch_compiler()
@@ -992,6 +995,9 @@ def apply_all_patches(include_fairchem=False, include_mattersim=False, include_s
     if include_sevennet:
         patch_torch_distributed()
         patch_sevennet_deps()
+
+    if include_chgnet:
+        patch_chgnet_deps()
 
     print("\n✅ All Pyodide patches applied successfully!")
 
@@ -1417,3 +1423,44 @@ def patch_sevennet_deps():
         pass
 
     print("✓ SevenNet dependency stubs applied")
+
+
+# ==============================================================================
+# CHGNet patches
+# ==============================================================================
+
+
+def patch_chgnet_deps():
+    """
+    Stub dependencies required by CHGNet but not needed for inference in Pyodide.
+
+    Stubs: nvidia_smi (GPU memory detection), Cython.
+    CHGNet's cygraph.so automatically falls back to pure Python 'legacy' mode
+    when the C extension is unavailable, so no graph library patching is needed.
+    """
+    # --- stub nvidia_smi (GPU memory detection, not needed for CPU inference) ---
+    if "nvidia_smi" not in sys.modules:
+        nvidia_mod = types.ModuleType("nvidia_smi")
+        nvidia_mod.nvmlInit = lambda: None
+        nvidia_mod.nvmlShutdown = lambda: None
+        nvidia_mod.nvmlDeviceGetCount = lambda: 0
+        nvidia_mod.nvmlDeviceGetHandleByIndex = lambda idx: None
+        nvidia_mod.nvmlDeviceGetMemoryInfo = lambda handle: None
+        sys.modules["nvidia_smi"] = nvidia_mod
+
+    # --- stub Cython (build-time dependency, not needed at runtime) ---
+    for mod_name in ["Cython", "Cython.Build", "cython"]:
+        if mod_name not in sys.modules:
+            sys.modules[mod_name] = types.ModuleType(mod_name)
+
+    # --- stub palettable (color palette lib used by pymatgen.util.plotting,
+    #     imported via chgnet.model.dynamics -> pymatgen.analysis.eos) ---
+    for mod_name in [
+        "palettable",
+        "palettable.colorbrewer",
+        "palettable.colorbrewer.diverging",
+    ]:
+        if mod_name not in sys.modules:
+            sys.modules[mod_name] = types.ModuleType(mod_name)
+
+    print("✓ CHGNet dependency stubs applied")

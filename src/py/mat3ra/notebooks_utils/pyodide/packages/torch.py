@@ -959,7 +959,7 @@ def patch_mace_tools():
 # ==============================================================================
 
 
-def apply_all_patches(include_fairchem=False, include_mattersim=False):
+def apply_all_patches(include_fairchem=False, include_mattersim=False, include_sevennet=False):
     """
     Apply all torch and model patches for Pyodide in one call.
 
@@ -970,6 +970,9 @@ def apply_all_patches(include_fairchem=False, include_mattersim=False):
         include_mattersim: If True, also apply MatterSim-specific patches
             (loguru, azure, e3nn JIT stubs). Set this when
             using MatterSim / M3GNet models.
+        include_sevennet: If True, also apply SevenNet-specific patches
+            (pandas, tqdm, packaging stubs). Set this when
+            using SevenNet / 7net models.
     """
     patch_torch_linalg()
     patch_torch_compiler()
@@ -985,6 +988,10 @@ def apply_all_patches(include_fairchem=False, include_mattersim=False):
     if include_mattersim:
         patch_torch_distributed()
         patch_mattersim_deps()
+
+    if include_sevennet:
+        patch_torch_distributed()
+        patch_sevennet_deps()
 
     print("\n✅ All Pyodide patches applied successfully!")
 
@@ -1207,3 +1214,206 @@ def patch_mattersim_deps():
     sys.modules["torch_runstats.scatter"].scatter_mean = _scatter_mean
 
     print("✓ MatterSim dependency stubs applied")
+
+
+# ==============================================================================
+# SevenNet patches
+# ==============================================================================
+
+
+def patch_sevennet_deps():
+    """
+    Stub heavy dependencies required by SevenNet but not needed for inference.
+
+    Stubs: pandas, braceexpand, tqdm, packaging, and patches
+    torch_geometric.data.Data for SevenNet's AtomGraphData.
+    """
+    import sys
+
+    # --- packaging (used in __init__.py version check) ---
+    # Only stub if real packaging is not available
+    if "packaging.version" not in sys.modules:
+        try:
+            import packaging.version  # noqa: F401
+        except (ImportError, ModuleNotFoundError):
+            pkg = _make_stub_module("packaging", submodules=["version"])
+
+            class _Version:
+                def __init__(self, v):
+                    self._v = str(v)
+                    parts = self._v.split(".")
+                    self.major = int(parts[0]) if parts else 0
+                    self.minor = int(parts[1]) if len(parts) > 1 else 0
+                    self.micro = int(parts[2]) if len(parts) > 2 else 0
+
+                def __lt__(self, other):
+                    return (self.major, self.minor, self.micro) < (other.major, other.minor, other.micro)
+
+                def __ge__(self, other):
+                    return not self.__lt__(other)
+
+                def __repr__(self):
+                    return f"Version('{self._v}')"
+
+            sys.modules["packaging.version"].Version = _Version
+            sys.modules["packaging.version"].parse = lambda v: _Version(v)
+
+    # --- pandas (used in checkpoint.py, not needed for inference) ---
+    try:
+        import pandas  # noqa: F401
+    except (ImportError, ModuleNotFoundError):
+        pd = _make_stub_module("pandas", submodules=["core", "core.frame"])
+
+        class _DataFrame:
+            def __init__(self, *a, **k):
+                pass
+        pd.DataFrame = _DataFrame
+        sys.modules["pandas.core.frame"].DataFrame = _DataFrame
+
+    # --- braceexpand (used in train/dataload.py) ---
+    try:
+        import braceexpand  # noqa: F401
+    except (ImportError, ModuleNotFoundError):
+        be = _make_stub_module("braceexpand")
+        be.braceexpand = lambda s: [s]
+
+    # --- tqdm (used in util.py and train) ---
+    try:
+        import tqdm  # noqa: F401
+    except (ImportError, ModuleNotFoundError):
+        tqdm_mod = _make_stub_module("tqdm", submodules=["auto"])
+
+        class _tqdm:
+            def __init__(self, iterable=None, *a, **k):
+                self._it = iterable
+
+            def __iter__(self):
+                return iter(self._it) if self._it else iter([])
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                pass
+
+            def update(self, *a):
+                pass
+
+            def close(self):
+                pass
+
+        tqdm_mod.tqdm = _tqdm
+        sys.modules["tqdm.auto"].tqdm = _tqdm
+
+    # --- torch_geometric.data.Data needs proper item access for SevenNet ---
+    import torch
+    tg_data = sys.modules.get("torch_geometric.data")
+    if tg_data is None:
+        _make_stub_module("torch_geometric", submodules=["data", "loader", "utils"])
+        tg_data = sys.modules["torch_geometric.data"]
+
+    class _SevenNetData:
+        """torch_geometric-compatible Data with dict-like access for SevenNet."""
+        def __init__(self, x=None, edge_index=None, edge_attr=None, y=None, pos=None, **kwargs):
+            self._store = {}
+            if x is not None:
+                self._store['x'] = x
+            if edge_index is not None:
+                self._store['edge_index'] = edge_index
+            if edge_attr is not None:
+                self._store['edge_attr'] = edge_attr
+            if y is not None:
+                self._store['y'] = y
+            if pos is not None:
+                self._store['pos'] = pos
+            for k, v in kwargs.items():
+                self._store[k] = v
+
+        def __setitem__(self, key, value):
+            self._store[key] = value
+
+        def __getitem__(self, key):
+            return self._store[key]
+
+        def __contains__(self, key):
+            return key in self._store
+
+        def __delitem__(self, key):
+            del self._store[key]
+
+        def __setattr__(self, name, value):
+            if name == '_store':
+                super().__setattr__(name, value)
+            else:
+                self._store[name] = value
+
+        def __getattr__(self, name):
+            if name == '_store':
+                raise AttributeError(name)
+            try:
+                return self._store[name]
+            except KeyError:
+                raise AttributeError(name)
+
+        def to(self, device):
+            for k, v in self._store.items():
+                if isinstance(v, torch.Tensor):
+                    self._store[k] = v.to(device)
+            return self
+
+        def to_dict(self):
+            return dict(self._store)
+
+        def keys(self):
+            return self._store.keys()
+
+        @classmethod
+        def from_numpy_dict(cls, d):
+            """Convert numpy arrays to tensors."""
+            import numpy as np
+            obj = cls()
+            for k, v in d.items():
+                if isinstance(v, np.ndarray):
+                    if v.dtype in (np.float32, np.float64):
+                        obj._store[k] = torch.from_numpy(v).float()
+                    elif v.dtype in (np.int32, np.int64):
+                        obj._store[k] = torch.from_numpy(v).long()
+                    else:
+                        obj._store[k] = torch.from_numpy(v)
+                elif isinstance(v, (int, float)):
+                    obj._store[k] = v
+                else:
+                    obj._store[k] = v
+            return obj
+
+    tg_data.Data = _SevenNetData
+
+    # --- patch e3nn to skip JIT compilation ---
+    try:
+        import e3nn
+        e3nn._SO3_INITIALIZED = True
+        # Set eager mode to avoid torch.jit.script (not supported in Pyodide)
+        if hasattr(e3nn, '_OPT_DEFAULTS'):
+            e3nn._OPT_DEFAULTS["jit_mode"] = "eager"
+    except Exception:
+        pass
+
+    # --- patch torch.jit for e3nn ---
+    if not hasattr(torch.jit, '_original_script'):
+        _orig_script = torch.jit.script
+
+        def _noop_script(obj=None, *a, **k):
+            if obj is not None:
+                return obj
+            return lambda fn: fn
+
+        torch.jit.script = _noop_script
+
+    # --- patch e3nn compile_mode decorator ---
+    try:
+        import e3nn.util.jit
+        e3nn.util.jit.compile_mode = lambda mode: lambda cls: cls
+    except Exception:
+        pass
+
+    print("✓ SevenNet dependency stubs applied")

@@ -826,16 +826,22 @@ def patch_fairchem_deps():
             import gc as _gc
             from fairchem.core.units.mlip_unit.api.inference import MLIPInferenceCheckpoint
 
-            print("  Dequantizing INT8 → FP16...")
-            quantized_ema = result["quantized_ema_state_dict"]
-            scales = result["quantization_scales"]
+            print("  Dequantizing INT8 → FP16 (streaming)...")
+            quantized_ema = result.pop("quantized_ema_state_dict")
+            scales = result.pop("quantization_scales")
             ema_state_dict = {}
-            for name, tensor in quantized_ema.items():
+            names = list(quantized_ema.keys())
+            for name in names:
+                tensor = quantized_ema.pop(name)
                 if name in scales:
-                    ema_state_dict[name] = (tensor.float() * scales[name].float()).half()
+                    scale = scales.pop(name)
+                    ema_state_dict[name] = (tensor.float() * scale.float()).half()
+                    del scale
                 else:
                     ema_state_dict[name] = tensor
+                del tensor
             del quantized_ema, scales
+            _gc.collect()
             checkpoint = MLIPInferenceCheckpoint(
                 model_config=result["model_config"],
                 model_state_dict=result.get("model_state_dict", {}),

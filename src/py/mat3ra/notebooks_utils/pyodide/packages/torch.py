@@ -826,16 +826,22 @@ def patch_fairchem_deps():
             import gc as _gc
             from fairchem.core.units.mlip_unit.api.inference import MLIPInferenceCheckpoint
 
-            print("  Dequantizing INT8 → FP16...")
-            quantized_ema = result["quantized_ema_state_dict"]
-            scales = result["quantization_scales"]
+            print("  Dequantizing INT8 → FP16 (streaming)...")
+            quantized_ema = result.pop("quantized_ema_state_dict")
+            scales = result.pop("quantization_scales")
             ema_state_dict = {}
-            for name, tensor in quantized_ema.items():
+            names = list(quantized_ema.keys())
+            for name in names:
+                tensor = quantized_ema.pop(name)
                 if name in scales:
-                    ema_state_dict[name] = (tensor.float() * scales[name].float()).half()
+                    scale = scales.pop(name)
+                    ema_state_dict[name] = (tensor.float() * scale.float()).half()
+                    del scale
                 else:
                     ema_state_dict[name] = tensor
+                del tensor
             del quantized_ema, scales
+            _gc.collect()
             checkpoint = MLIPInferenceCheckpoint(
                 model_config=result["model_config"],
                 model_state_dict=result.get("model_state_dict", {}),
@@ -953,7 +959,7 @@ def patch_mace_tools():
 # ==============================================================================
 
 
-def apply_all_patches(include_fairchem=False):
+def apply_all_patches(include_fairchem=False, include_mattersim=False):
     """
     Apply all torch and model patches for Pyodide in one call.
 
@@ -961,6 +967,9 @@ def apply_all_patches(include_fairchem=False):
         include_fairchem: If True, also apply FAIRChem-specific patches
             (torch.distributed, heavy dependency stubs). Set this when
             using fairchem-core / UMA models.
+        include_mattersim: If True, also apply MatterSim-specific patches
+            (loguru, azure, e3nn JIT stubs). Set this when
+            using MatterSim / M3GNet models.
     """
     patch_torch_linalg()
     patch_torch_compiler()
@@ -973,4 +982,228 @@ def apply_all_patches(include_fairchem=False):
         patch_torch_distributed()
         patch_fairchem_deps()
 
+    if include_mattersim:
+        patch_torch_distributed()
+        patch_mattersim_deps()
+
     print("\n✅ All Pyodide patches applied successfully!")
+
+
+# ==============================================================================
+# MatterSim patches
+# ==============================================================================
+
+
+def patch_mattersim_deps():
+    """
+    Stub heavy dependencies required by MatterSim but not needed for inference.
+
+    Stubs: loguru, azure.*, atomate2, seekpath, phonopy, phono3py, mp_api,
+    sklearn, and patches e3nn to disable JIT/torch.compile.
+    """
+    # --- loguru ---
+    loguru_mod = _make_stub_module("loguru")
+
+    class _Logger:
+        def info(self, msg, *a, **k):
+            print(f"INFO: {msg}")
+
+        def warning(self, msg, *a, **k):
+            print(f"WARNING: {msg}")
+
+        def error(self, msg, *a, **k):
+            print(f"ERROR: {msg}")
+
+        def debug(self, msg, *a, **k):
+            pass
+
+        def trace(self, msg, *a, **k):
+            pass
+
+        def success(self, msg, *a, **k):
+            print(f"✓ {msg}")
+
+        def __getattr__(self, name):
+            return lambda *a, **k: None
+
+    loguru_mod.logger = _Logger()
+
+    # --- azure (not needed for inference) ---
+    _make_stub_module("azure", submodules=[
+        "identity", "storage", "storage.blob",
+    ])
+
+    # --- heavy optional deps (not needed for inference) ---
+    for pkg in [
+        "atomate2",
+        "seekpath",
+        "phonopy",
+        "phono3py",
+        "mp_api",
+        "jobflow",
+        "emmet",
+        "emmet.core",
+        "emmet.core.tasks",
+        "maggma",
+    ]:
+        _make_stub_module(pkg)
+
+    # --- scikit-learn (stub) ---
+    sk_mod = _make_stub_module("sklearn", submodules=[
+        "base", "utils", "utils.validation",
+        "preprocessing", "model_selection",
+        "gaussian_process", "gaussian_process.kernels",
+    ])
+
+    # Stub GaussianProcessRegressor
+    class _GPR:
+        def __init__(self, *a, **k):
+            pass
+        def fit(self, *a, **k):
+            return self
+        def predict(self, X, return_std=False):
+            import numpy as _np
+            mean = _np.zeros(X.shape[0])
+            if return_std:
+                return mean, _np.ones(X.shape[0])
+            return mean
+        def log_marginal_likelihood(self):
+            return 0.0
+    sys.modules["sklearn.gaussian_process"].GaussianProcessRegressor = _GPR
+
+    # Stub kernels
+    class _Kernel:
+        pass
+    class _DotProduct(_Kernel):
+        def __init__(self, *a, **k):
+            pass
+    class _Hyperparameter:
+        def __init__(self, *a, **k):
+            pass
+    _sk_kernels = sys.modules["sklearn.gaussian_process.kernels"]
+    _sk_kernels.Kernel = _Kernel
+    _sk_kernels.DotProduct = _DotProduct
+    _sk_kernels.Hyperparameter = _Hyperparameter
+
+    # --- requests (for pyodide-http compat) ---
+    try:
+        import pyodide_http  # noqa: F401
+        pyodide_http.patch_all()
+    except ImportError:
+        pass
+
+    # --- patch e3nn to skip JIT compilation ---
+    try:
+        import e3nn
+        e3nn._SO3_INITIALIZED = True  # skip init
+    except Exception:
+        pass
+
+    # --- patch torch.jit for e3nn ---
+    import torch
+    if not hasattr(torch.jit, '_original_script'):
+        _orig_script = torch.jit.script
+
+        def _noop_script(obj=None, *a, **k):
+            if obj is not None:
+                return obj
+            return lambda fn: fn
+
+        torch.jit.script = _noop_script
+
+    # --- torch_ema (training only) ---
+    _te = _make_stub_module("torch_ema")
+
+    class _EMA:
+        def __init__(self, *a, **k):
+            pass
+    _te.ExponentialMovingAverage = _EMA
+
+    # --- torchmetrics (training only) ---
+    _tm = _make_stub_module("torchmetrics")
+
+    class _MeanMetric:
+        def __init__(self, *a, **k):
+            pass
+    _tm.MeanMetric = _MeanMetric
+
+    # --- torch_geometric (data loading only) ---
+    _tg = _make_stub_module("torch_geometric", submodules=[
+        "data", "loader", "utils",
+    ])
+
+    class _Data:
+        def __init__(self, **kwargs):
+            for k, v in kwargs.items():
+                setattr(self, k, v)
+
+        def to(self, device):
+            import torch as _t
+            for k, v in self.__dict__.items():
+                if isinstance(v, _t.Tensor):
+                    setattr(self, k, v.to(device))
+            return self
+
+    sys.modules["torch_geometric.data"].Data = _Data
+
+    class _DataLoader:
+        """Minimal DataLoader that yields items with Batch-style attributes."""
+        def __init__(self, dataset, batch_size=1, shuffle=False, **kwargs):
+            self._dataset = list(dataset)
+
+        def __iter__(self):
+            import torch as _t
+            for item in self._dataset:
+                # Convert scalar int/float fields to 1-element tensors
+                # (torch_geometric Batch collation does this automatically)
+                for attr in list(vars(item).keys()):
+                    val = getattr(item, attr)
+                    if isinstance(val, (int, float)):
+                        setattr(item, attr, _t.tensor([val]))
+                # Add torch_geometric Batch-style attributes for single graph
+                if not hasattr(item, 'num_graphs'):
+                    item.num_graphs = 1
+                if not hasattr(item, 'batch'):
+                    n_atoms = item.num_atoms if hasattr(item, 'num_atoms') else _t.tensor([0])
+                    if isinstance(n_atoms, _t.Tensor):
+                        n_atoms = int(n_atoms.item())
+                    item.batch = _t.zeros(n_atoms, dtype=_t.long)
+                yield item
+
+        def __len__(self):
+            return len(self._dataset)
+
+    sys.modules["torch_geometric.loader"].DataLoader = _DataLoader
+
+    # --- torch_runstats (scatter ops) ---
+    _trs = _make_stub_module("torch_runstats", submodules=["scatter"])
+    import torch as _torch
+
+    def _scatter(src, index, dim_size=None, dim=0, reduce="sum"):
+        if dim_size is None:
+            dim_size = int(index.max()) + 1
+        out = _torch.zeros(dim_size, *src.shape[1:], dtype=src.dtype, device=src.device)
+        if src.dim() == 1:
+            idx = index
+        else:
+            idx = index.unsqueeze(-1).expand_as(src)
+        if reduce == "sum" or reduce == "add":
+            out.scatter_add_(0, idx, src)
+        elif reduce == "mean":
+            out.scatter_add_(0, idx, src)
+            count = _torch.zeros(dim_size, dtype=src.dtype, device=src.device)
+            count.scatter_add_(0, index, _torch.ones(index.shape[0], dtype=src.dtype, device=src.device))
+            count = count.clamp(min=1)
+            if src.dim() > 1:
+                count = count.unsqueeze(-1)
+            out = out / count
+        return out
+
+    sys.modules["torch_runstats.scatter"].scatter = _scatter
+
+    def _scatter_mean(src, index, dim_size=None, dim=0):
+        return _scatter(src, index, dim_size=dim_size, dim=dim, reduce="mean")
+
+    sys.modules["torch_runstats.scatter"].scatter_mean = _scatter_mean
+
+    print("✓ MatterSim dependency stubs applied")

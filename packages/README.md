@@ -193,12 +193,111 @@ EOF
 
 ---
 
+#### `nequip-0.15.0-py3-none-any.whl` (254 KB)
+
+**Source**: [mir-group/nequip](https://github.com/mir-group/nequip) v0.15.0 (PyPI)
+
+**Why custom**: The upstream NequIP wheel declares heavy training dependencies (`hydra-core`, `lightning`, `torchmetrics`, `lmdb`) that are not needed for inference and would fail to install in Pyodide. The custom wheel strips these from `Requires-Dist` metadata.
+
+**How to reproduce**:
+
+```bash
+# 1. Create a venv with build tools
+python3 -m venv /tmp/nequip_build && source /tmp/nequip_build/bin/activate
+pip install build wheel setuptools
+
+# 2. Download and extract source
+pip download nequip==0.15.0 --no-deps --no-binary :all:
+tar xf nequip-0.15.0.tar.gz && cd nequip-0.15.0
+
+# 3. Strip heavy dependencies from pyproject.toml
+#    Remove these lines from [project].dependencies:
+#      "hydra-core", "lightning", "torchmetrics>=1.6.0",
+#      "lmdb", "tqdm", "requests"
+#    Keep: torch, numpy, matscipy, ase, e3nn, pyyaml
+
+# 4. Build the wheel
+python -m build --wheel
+# Output: dist/nequip-0.15.0-py3-none-any.whl (~254 KB)
+```
+
+**Runtime patches**: Requires `apply_all_patches(include_nequip=True)` in [torch.py](../src/py/mat3ra/notebooks_utils/pyodide/packages/torch.py) which stubs `hydra` (with working `instantiate`), `lightning`, `pytorch_lightning`, `torchmetrics`, `lmdb`, `matscipy` (uses ASE neighbor lists via `NEQUIP_NL=ase`), and patches `e3nn` for eager mode (no JIT).
+
+---
+
 ## Models
 
 The `models/` subdirectory contains pretrained model checkpoint files:
 
-| File | Model | Size |
-|------|-------|------|
-| `mattersim-v1.0.0-1M.pth` | MatterSim M3GNet (1M params) | ~4 MB |
+| File | Model | Size | Notes |
+|------|-------|------|-------|
+| `mattersim-v1.0.0-1M.pth` | MatterSim M3GNet (1M params) | ~4 MB | Direct checkpoint |
+| `nequip-oam-s-config-sd.pth` | NequIP-OAM-S (618K params) | ~2.4 MB | Config + state_dict extracted from `.nequip.zip` package |
 
 > **Note**: The SevenNet 7net-0 model is bundled inside the `sevenn` wheel under `pretrained_potentials/`. The CHGNet v0.3.0 model is bundled inside the `chgnet` wheel under `chgnet/pretrained/`.
+
+### NequIP-OAM-S model extraction
+
+The `nequip-oam-s-config-sd.pth` file contains the model architecture config and state_dict extracted from the NequIP package format (`.nequip.zip`). This is necessary because NequIP's standard loading paths use `torch.package.PackageImporter` or `torch.jit.load`, neither of which work in Pyodide.
+
+**How to reproduce**:
+
+```bash
+# 1. Set up venv with NequIP
+python3 -m venv /tmp/nequip_venv && source /tmp/nequip_venv/bin/activate
+pip install nequip==0.15.0
+
+# 2. Download the NequIP-OAM-S model from Zenodo
+wget https://zenodo.org/records/18775904/files/NequIP-OAM-S-0.1.nequip.zip
+
+# 3. Extract config + state_dict
+python3 << 'PYEOF'
+import torch, io, yaml
+
+pkg_path = "NequIP-OAM-S-0.1.nequip.zip"
+imp = torch.package.PackageImporter(pkg_path)
+
+# Patch for CPU-only loading
+orig = torch.storage._load_from_bytes
+def _load_cpu(b):
+    return torch.load(io.BytesIO(b), map_location="cpu", weights_only=False)
+torch.storage._load_from_bytes = _load_cpu
+pkg_model = imp.load_pickle(package="model", resource="eager_model.pkl", map_location="cpu")
+torch.storage._load_from_bytes = orig
+
+# Extract state_dict and metadata
+inner_sd = pkg_model.sole_model.state_dict()
+metadata = yaml.safe_load(imp.load_text(package="model", resource="package_metadata.txt"))
+type_names = [metadata["atom_types"][i] for i in range(len(metadata["atom_types"]))]
+
+# Extract per-type energy scales and shifts
+scales_t = pkg_model.sole_model.model.func.per_type_energy_scale_shift.scales.data
+shifts_t = pkg_model.sole_model.model.func.per_type_energy_scale_shift.shifts.data
+scales_dict = {tn: scales_t[i, 0].item() for i, tn in enumerate(type_names)}
+shifts_dict = {tn: shifts_t[i, 0].item() for i, tn in enumerate(type_names)}
+
+# Extract avg_num_neighbors from scatter_norm_factor
+snf = pkg_model.sole_model.model.func.layer0_convnet.conv.scatter_norm_factor
+avg_nn = 1.0 / (snf ** 2)
+
+# Save config + state_dict
+torch.save({
+    "type_names": type_names,
+    "r_max": 4.5,
+    "irreps_edge_sh": "1x0e+1x1e",
+    "type_embed_num_features": 32,
+    "feature_irreps_hidden": ["128x0e+64x1e", "128x0e"],
+    "radial_mlp_depth": [1, 1],
+    "radial_mlp_width": [128, 128],
+    "avg_num_neighbors": avg_nn,
+    "per_type_energy_scales": scales_dict,
+    "per_type_energy_shifts": shifts_dict,
+    "has_zbl": True,
+    "state_dict": inner_sd,
+    "metadata": metadata,
+}, "nequip-oam-s-config-sd.pth")
+PYEOF
+# Output: nequip-oam-s-config-sd.pth (~2.4 MB)
+```
+
+The model is then loaded at runtime using `load_nequip_model()` from [torch.py](../src/py/mat3ra/notebooks_utils/pyodide/packages/torch.py), which rebuilds the architecture using `FullNequIPGNNModel` + manually adds the ZBL pair potential, then loads the state_dict.

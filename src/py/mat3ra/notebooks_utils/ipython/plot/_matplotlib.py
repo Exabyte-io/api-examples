@@ -6,6 +6,13 @@ from IPython.display import Image, display
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure as MatplotlibFigure
 
+from ...primitive.environment import is_pyodide_environment
+
+
+def configure_matplotlib_renderer() -> None:
+    if is_pyodide_environment():
+        plt.switch_backend("Agg")
+
 
 def display_matplotlib_figure(figure: MatplotlibFigure) -> None:
     buffer = io.BytesIO()

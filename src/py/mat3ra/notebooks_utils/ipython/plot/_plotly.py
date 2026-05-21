@@ -5,10 +5,7 @@ import plotly.graph_objs as go
 from IPython.display import clear_output, display
 from plotly.subplots import make_subplots
 
-from ...plot import configure_matplotlib_renderer
 from ...primitive.environment import is_pyodide_environment
-
-configure_matplotlib_renderer()
 
 
 def render_figure(figure: Union[go.Figure, go.FigureWidget]) -> None:

@@ -173,3 +173,19 @@ notebooks:
       - emfs:/drive/packages/chgnet-0.3.8-py3-none-any.whl
       # Stubbed packages (patched by torch_pyodide with include_chgnet=True)
       - ssl
+  - name: nequip
+    packages_pyodide:
+      # Packages with dependencies
+      - opt_einsum
+      - pyyaml
+      - setuptools
+      # Packages without dependencies
+      - nodeps:opt_einsum_fx
+      - nodeps:e3nn>=0.5
+      - nodeps:ase
+      # NequIP wheel (stripped of heavy deps: hydra, lightning, torchmetrics)
+      - emfs:/drive/packages/nequip-0.15.0-py3-none-any.whl
+      # Stubbed packages (patched by torch_pyodide with include_nequip=True)
+      - ssl
+      - h5py
+      - lmdb

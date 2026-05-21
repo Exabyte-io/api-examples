@@ -959,7 +959,7 @@ def patch_mace_tools():
 # ==============================================================================
 
 
-def apply_all_patches(include_fairchem=False, include_mattersim=False, include_sevennet=False, include_chgnet=False):
+def apply_all_patches(include_fairchem=False, include_mattersim=False, include_sevennet=False, include_chgnet=False, include_nequip=False):
     """
     Apply all torch and model patches for Pyodide in one call.
 
@@ -976,6 +976,9 @@ def apply_all_patches(include_fairchem=False, include_mattersim=False, include_s
         include_chgnet: If True, also apply CHGNet-specific patches
             (nvidia_smi, cython stubs). Set this when
             using CHGNet models.
+        include_nequip: If True, also apply NequIP-specific patches
+            (lightning, hydra, torchmetrics, e3nn JIT stubs). Set this
+            when using NequIP models.
     """
     patch_torch_linalg()
     patch_torch_compiler()
@@ -998,6 +1001,9 @@ def apply_all_patches(include_fairchem=False, include_mattersim=False, include_s
 
     if include_chgnet:
         patch_chgnet_deps()
+
+    if include_nequip:
+        patch_nequip_deps()
 
     print("\n✅ All Pyodide patches applied successfully!")
 
@@ -1464,3 +1470,325 @@ def patch_chgnet_deps():
             sys.modules[mod_name] = types.ModuleType(mod_name)
 
     print("✓ CHGNet dependency stubs applied")
+
+
+# ==============================================================================
+# NequIP patches
+# ==============================================================================
+
+
+def patch_nequip_deps():
+    """
+    Stub heavy dependencies required by NequIP but not needed for inference.
+
+    Stubs: hydra, lightning, pytorch_lightning, torchmetrics, lmdb, matscipy.
+    Patches e3nn and torch.jit for Pyodide compatibility.
+    Sets NEQUIP_NL=ase to use ASE neighbor lists instead of matscipy.
+    """
+    import os
+    import torch
+
+    # --- Set environment to use ASE neighbor lists ---
+    os.environ["NEQUIP_NL"] = "ase"
+
+    # --- lightning_utilities (used by nequip.utils.logger.RankedLogger) ---
+    _lu = _make_stub_module("lightning_utilities", submodules=[
+        "core", "core.rank_zero",
+    ])
+
+    def _rank_prefixed_message(msg, rank=None):
+        return msg
+
+    def _rank_zero_only(fn):
+        return fn
+
+    sys.modules["lightning_utilities.core.rank_zero"].rank_prefixed_message = _rank_prefixed_message
+    sys.modules["lightning_utilities.core.rank_zero"].rank_zero_only = _rank_zero_only
+
+    # --- lightning / pytorch_lightning ---
+    # NequIP uses lightning for training (EMALightningModule, Trainer, etc.)
+    # Stub all submodules needed by NequIP's import chain
+    _pl = _make_stub_module("lightning", submodules=[
+        "pytorch", "pytorch.utilities", "pytorch.utilities.seed",
+        "pytorch.utilities.warnings", "pytorch.callbacks",
+    ])
+
+    class _IsolateRng:
+        def __enter__(self):
+            return self
+        def __exit__(self, *a):
+            pass
+
+    def _seed_everything(seed=None, workers=False, **kwargs):
+        pass
+
+    sys.modules["lightning.pytorch.utilities.seed"].isolate_rng = lambda: _IsolateRng()
+    sys.modules["lightning.pytorch"].seed_everything = _seed_everything
+
+    # PossibleUserWarning used in nequip.train.lightning
+    class _PossibleUserWarning(UserWarning):
+        pass
+    sys.modules["lightning.pytorch.utilities.warnings"].PossibleUserWarning = _PossibleUserWarning
+
+    # LightningModule used as base class in nequip.train
+    class _LightningModule(torch.nn.Module):
+        def __init__(self, *a, **k):
+            super().__init__()
+        def log(self, *a, **k):
+            pass
+    sys.modules["lightning.pytorch"].LightningModule = _LightningModule
+    sys.modules["lightning"].pytorch = sys.modules["lightning.pytorch"]
+
+    # Callback for lightning.pytorch.callbacks
+    sys.modules["lightning.pytorch.callbacks"].Callback = type("Callback", (), {})
+
+    _make_stub_module("pytorch_lightning", submodules=[
+        "utilities", "utilities.seed",
+    ])
+    sys.modules["pytorch_lightning.utilities.seed"].isolate_rng = lambda: _IsolateRng()
+
+    # --- torchmetrics (Metric is used as base class by DataStatisticsManager) ---
+    _tm = _make_stub_module("torchmetrics")
+
+    class _Metric(torch.nn.Module):
+        def __init__(self, *a, **k):
+            super().__init__()
+
+        def add_state(self, name, default=None, dist_reduce_fx=None, **k):
+            if default is not None:
+                setattr(self, name, default)
+    _tm.Metric = _Metric
+    _tm.MeanMetric = _Metric
+
+    # --- packaging (needed by nequip.__init__) ---
+    if "packaging" not in sys.modules:
+        try:
+            import packaging.version  # noqa: F401
+        except (ImportError, ModuleNotFoundError):
+            pkg = _make_stub_module("packaging", submodules=["version"])
+
+            class _Version:
+                def __init__(self, v):
+                    self._v = str(v)
+                    parts = self._v.split(".")
+                    self.major = int(parts[0]) if parts else 0
+                    self.minor = int(parts[1]) if len(parts) > 1 else 0
+
+                def __lt__(self, other):
+                    return (self.major, self.minor) < (other.major, other.minor)
+
+                def __ge__(self, other):
+                    return not self.__lt__(other)
+
+                def __repr__(self):
+                    return f"Version('{self._v}')"
+
+            sys.modules["packaging.version"].Version = _Version
+            sys.modules["packaging.version"].parse = lambda v: _Version(v)
+
+    # --- lmdb ---
+    if "lmdb" not in sys.modules:
+        sys.modules["lmdb"] = types.ModuleType("lmdb")
+
+    # --- hydra (NequIP uses hydra.utils.instantiate for ZBL pair potential) ---
+    if "hydra" not in sys.modules:
+        _make_stub_module("hydra", submodules=[
+            "core", "core.global_hydra", "utils",
+            "_internal", "_internal.instantiate", "_internal.instantiate._instantiate2",
+        ])
+
+        def _hydra_instantiate(config, *args, _recursive_=True, **kwargs):
+            import importlib
+            if isinstance(config, dict) and "_target_" in config:
+                target = config["_target_"]
+                mod_path, cls_name = target.rsplit(".", 1)
+                mod = importlib.import_module(mod_path)
+                cls = getattr(mod, cls_name)
+                pos_args = list(args) + list(config.get("_args_", []))
+                cfg = {k: v for k, v in config.items() if not k.startswith("_")}
+                if _recursive_:
+                    for k, v in cfg.items():
+                        if isinstance(v, dict) and "_target_" in v:
+                            cfg[k] = _hydra_instantiate(v)
+                        elif isinstance(v, list):
+                            cfg[k] = [_hydra_instantiate(i) if isinstance(i, dict) and "_target_" in i else i for i in v]
+                    pos_args = [_hydra_instantiate(a) if isinstance(a, dict) and "_target_" in a else a for a in pos_args]
+                return cls(*pos_args, **{**cfg, **kwargs})
+            return config
+
+        sys.modules["hydra.utils"].instantiate = _hydra_instantiate
+        sys.modules["hydra"].utils = sys.modules["hydra.utils"]
+        sys.modules["hydra._internal.instantiate._instantiate2"].InstantiationException = type(
+            "InstantiationException", (Exception,), {}
+        )
+
+        # get_method / get_class used by nequip.train.lightning
+        def _hydra_get_target(target_str):
+            import importlib
+            mod_path, name = target_str.rsplit(".", 1)
+            return getattr(importlib.import_module(mod_path), name)
+
+        sys.modules["hydra.utils"].get_method = _hydra_get_target
+        sys.modules["hydra.utils"].get_class = _hydra_get_target
+
+    # --- omegaconf ---
+    if "omegaconf" not in sys.modules:
+        omegaconf_mod = _make_stub_module("omegaconf")
+
+        class _DictConfig(dict):
+            pass
+
+        class _ListConfig(list):
+            pass
+
+        omegaconf_mod.DictConfig = _DictConfig
+        omegaconf_mod.ListConfig = _ListConfig
+        omegaconf_mod.OmegaConf = type(
+            "OmegaConf",
+            (),
+            {
+                "to_container": staticmethod(lambda cfg, **k: dict(cfg) if isinstance(cfg, dict) else cfg),
+                "create": staticmethod(lambda d: _DictConfig(d) if isinstance(d, dict) else d),
+                "register_new_resolver": staticmethod(lambda name, func, **k: None),
+            },
+        )
+
+    # --- matscipy (use ASE neighbor lists) ---
+    if "matscipy" not in sys.modules:
+        _matscipy = types.ModuleType("matscipy")
+        _matscipy.__path__ = []
+        _matscipy.__package__ = "matscipy"
+        _matscipy_neighbours = types.ModuleType("matscipy.neighbours")
+        _matscipy_neighbours.neighbour_list = _matscipy_neighbour_list_compat
+        _matscipy.neighbours = _matscipy_neighbours
+        sys.modules["matscipy"] = _matscipy
+        sys.modules["matscipy.neighbours"] = _matscipy_neighbours
+
+    # --- patch e3nn to skip JIT compilation ---
+    try:
+        import e3nn
+        e3nn._SO3_INITIALIZED = True
+        if hasattr(e3nn, '_OPT_DEFAULTS'):
+            e3nn._OPT_DEFAULTS["jit_mode"] = "eager"
+    except Exception:
+        pass
+
+    # --- patch torch.jit for e3nn ---
+    if not hasattr(torch.jit, '_original_script'):
+        _orig_script = torch.jit.script
+
+        def _noop_script(obj=None, *a, **k):
+            if obj is not None:
+                return obj
+            return lambda fn: fn
+
+        torch.jit.script = _noop_script
+
+    # --- patch e3nn compile_mode decorator ---
+    try:
+        import e3nn.util.jit
+        e3nn.util.jit.compile_mode = lambda mode: lambda cls: cls
+    except Exception:
+        pass
+
+    # --- tqdm ---
+    if "tqdm" not in sys.modules:
+        tqdm_mod = _make_stub_module("tqdm", submodules=["auto", "std"])
+
+        def _tqdm_passthrough(iterable=None, *a, **k):
+            return iterable if iterable is not None else iter([])
+
+        tqdm_mod.tqdm = _tqdm_passthrough
+        sys.modules["tqdm.auto"].tqdm = _tqdm_passthrough
+        sys.modules["tqdm.std"].tqdm = _tqdm_passthrough
+
+    print("✓ NequIP dependency stubs applied")
+
+
+def load_nequip_model(checkpoint_path):
+    """
+    Load a NequIP model from a config+state_dict checkpoint file.
+
+    This bypasses torch.package (which doesn't work in Pyodide) by
+    rebuilding the model architecture from saved config parameters
+    and loading the state_dict directly.
+
+    Args:
+        checkpoint_path: Path to the .pth file containing config + state_dict.
+            Expected keys: type_names, r_max, irreps_edge_sh,
+            type_embed_num_features, feature_irreps_hidden,
+            radial_mlp_depth, radial_mlp_width, avg_num_neighbors,
+            per_type_energy_scales, per_type_energy_shifts,
+            has_zbl, state_dict.
+
+    Returns:
+        A NequIP GraphModel ready for inference.
+    """
+    import torch
+
+    data = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+
+    # Override set_global_state with Pyodide-safe version
+    # The real one calls torch.jit.set_fusion_strategy, torch.multiprocessing,
+    # and e3nn.set_optimization_defaults(jit_script_fx=True), which don't work in WASM.
+    import nequip.utils.global_state as _gs
+
+    def _pyodide_set_global_state(allow_tf32=False, warn_on_override=False):
+        if not _gs._GLOBAL_STATE_INITIALIZED:
+            torch.set_default_dtype(torch.float64)
+            try:
+                import e3nn
+                e3nn.set_optimization_defaults(
+                    specialized_code=True,
+                    optimize_einsums=True,
+                    jit_script_fx=False,  # Disabled for Pyodide
+                )
+            except Exception:
+                pass
+            _gs._GLOBAL_STATE_INITIALIZED = True
+        _gs._latest_global_config["allow_tf32"] = allow_tf32
+
+    _gs.set_global_state = _pyodide_set_global_state
+
+    # Initialize NequIP global state
+    _gs.set_global_state(allow_tf32=False)
+
+    # Build the model from config
+    from nequip.model import FullNequIPGNNModel
+
+    model = FullNequIPGNNModel(
+        seed=0,
+        model_dtype="float32",
+        r_max=data["r_max"],
+        type_names=data["type_names"],
+        irreps_edge_sh=data["irreps_edge_sh"],
+        type_embed_num_features=data["type_embed_num_features"],
+        feature_irreps_hidden=data["feature_irreps_hidden"],
+        radial_mlp_depth=data["radial_mlp_depth"],
+        radial_mlp_width=data["radial_mlp_width"],
+        avg_num_neighbors=data["avg_num_neighbors"],
+        per_type_energy_scales=data["per_type_energy_scales"],
+        per_type_energy_shifts=data["per_type_energy_shifts"],
+        polynomial_cutoff_p=data.get("polynomial_cutoff_p", 6),
+    )
+
+    # Add ZBL pair potential if needed (must come BEFORE total_energy_sum)
+    if data.get("has_zbl", False):
+        from nequip.nn.pair_potential import ZBL
+        seq_net = model.model.func
+        zbl = ZBL(
+            type_names=data["type_names"],
+            chemical_species=data["type_names"],
+            units="metal",
+            irreps_in=seq_net.irreps_out,
+        )
+        seq_net.insert(
+            name="pair_potential", module=zbl, before="total_energy_sum"
+        )
+
+    # Load the state_dict
+    model.load_state_dict(data["state_dict"], strict=True)
+    model.eval()
+
+    print(f"✓ NequIP model loaded ({sum(p.numel() for p in model.parameters()):,} parameters)")
+    return model

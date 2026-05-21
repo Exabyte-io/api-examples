@@ -5,6 +5,7 @@ from typing import Any, List, Optional
 
 from mat3ra.made.material import Material
 from mat3ra.made.tools.build_components import MaterialWithBuildMetadata
+from mat3ra.utils.array import convert_to_array_if_not
 
 from ....io import get_data, set_data
 from ....primitive.enums import SeverityLevelEnum
@@ -46,18 +47,21 @@ def get_materials(globals_dict: Optional[dict] = None) -> List[Any]:
         return load_materials_from_folder()
 
 
-def set_materials(materials: List[Any]):
+def set_materials(materials: List[Any], folder_path: str = UPLOADS_FOLDER):
     """
     Serialize and send a list of Material objects to the environment.
 
     Args:
         materials (List[Material]): The list of Material objects to send.
     """
-    from mat3ra.utils.array import convert_to_array_if_not
 
     materials = convert_to_array_if_not(materials)
     materials_data = [json.loads(material.to_json()) for material in materials]
-    set_data("materials", materials_data)
+    set_data("materials", materials_data, folder_path=folder_path)
+    log(
+        f"Successfully sent {len(materials)} materials to the environment.",
+        SeverityLevelEnum.INFO,
+    )
 
 
 def load_materials_from_folder(folder_path: Optional[str] = None, verbose: bool = True) -> List[Any]:

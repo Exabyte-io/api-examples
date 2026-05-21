@@ -33,19 +33,20 @@ def get_data_python(key: str, globals_dict: Optional[Dict] = None):
         print("No data found in the 'uploads' folder.")
 
 
-def set_data_python(key: str, value: Any):
+def set_data_python(key: str, value: Any, folder_path: str = UPLOADS_FOLDER):
     """
     Write data to the `uploads` folder in a JupyterLab environment.
 
     Args:
         key (str): The name under which data will be written.
         value (Any): The value to write to the `uploads` folder.
+        folder_path (str): The path to the folder where data will be written. Defaults to UPLOADS_FOLDER.
     """
-    if not os.path.exists(UPLOADS_FOLDER):
-        os.makedirs(UPLOADS_FOLDER)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
     for item in value:
         safe_name = item["name"].replace("%", "pct").replace("/", ":")
-        file_path = os.path.join(UPLOADS_FOLDER, f"{safe_name}.json")
+        file_path = os.path.join(folder_path, f"{safe_name}.json")
         with open(file_path, "w") as file:
             json.dump(item, file)
         log(f"Data for {key} written to {file_path}")

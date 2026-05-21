@@ -28,6 +28,8 @@ from collections import namedtuple
 import numpy as np
 import torch
 
+from ...primitive.environment import is_pyodide_environment
+
 # Define return types to mimic PyTorch's named tuples
 EigRet = namedtuple("linalg_eig", ["eigenvalues", "eigenvectors"])  # type: ignore
 EighRet = namedtuple("linalg_eigh", ["eigenvalues", "eigenvectors"])  # type: ignore
@@ -275,9 +277,12 @@ def patch_mace_tools():
 
 def apply_all_patches():
     """Apply all torch and MACE patches for Pyodide in one call."""
-    patch_torch_linalg()
-    patch_torch_testing()
-    patch_matscipy()
-    patch_mace_training()
-    patch_mace_tools()
-    print("\n✅ All Pyodide patches applied successfully!")
+    if is_pyodide_environment():
+        patch_torch_linalg()
+        patch_torch_testing()
+        patch_matscipy()
+        patch_mace_training()
+        patch_mace_tools()
+        print("\n✅ All Pyodide patches applied successfully!")
+    else:
+        print("⚠ Not in Pyodide environment. Patches not applied.")

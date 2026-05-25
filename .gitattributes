@@ -18,6 +18,4 @@ examples/assets/bash_workflow_template.json filter=lfs diff=lfs merge=lfs -text
 *.whl filter=lfs diff=lfs merge=lfs -text
 *.model filter=lfs diff=lfs merge=lfs -text
 packages filter=lfs diff=lfs merge=lfs -text
-packages/models/uma-s-1p1-int8.pt filter=lfs diff=lfs merge=lfs -text
-packages/models/nequip-oam-s-config-sd.pth filter=lfs diff=lfs merge=lfs -text
-packages/models/uma-s-1p1-f16.pt filter=lfs diff=lfs merge=lfs -text
+packages/models/*.pt* filter=lfs diff=lfs merge=lfs -text

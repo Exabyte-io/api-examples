@@ -28,8 +28,6 @@ from collections import namedtuple
 import numpy as np
 import torch
 
-from ...primitive.environment import is_pyodide_environment
-
 # Define return types to mimic PyTorch's named tuples
 EigRet = namedtuple("linalg_eig", ["eigenvalues", "eigenvectors"])  # type: ignore
 EighRet = namedtuple("linalg_eigh", ["eigenvalues", "eigenvectors"])  # type: ignore
@@ -142,13 +140,66 @@ def patch_torch_linalg():
     torch.Tensor.__array__ = _tensor_array_compat
     torch.Tensor.numpy = lambda self: np.array(self.detach().tolist())
 
-    # Fix torch.compiler.is_compiling for Pyodide
-    if not hasattr(torch, "compiler"):
-        torch.compiler = types.ModuleType("torch.compiler")
-    if not hasattr(torch.compiler, "is_compiling"):
-        torch.compiler.is_compiling = lambda: False
+    # torch.from_numpy — WASM PyTorch build lacks NumPy interop
+    _orig_from_numpy = torch.from_numpy
 
-    print("✓ Torch linalg patches applied")
+    def _patched_from_numpy(ndarray):
+        try:
+            return _orig_from_numpy(ndarray)
+        except RuntimeError:
+            return torch.tensor(ndarray.tolist())
+
+    torch.from_numpy = _patched_from_numpy
+
+    # torch.as_tensor — also uses numpy interop internally
+    _orig_as_tensor = torch.as_tensor
+
+    def _patched_as_tensor(data, dtype=None, device=None):
+        try:
+            return _orig_as_tensor(data, dtype=dtype, device=device)
+        except (RuntimeError, TypeError):
+            if hasattr(data, "tolist"):
+                return torch.tensor(data.tolist(), dtype=dtype, device=device)
+            return torch.tensor(data, dtype=dtype, device=device)
+
+    torch.as_tensor = _patched_as_tensor
+
+    # Tensor indexing — WASM PyTorch can't infer numpy dtypes for boolean/integer masks
+    _orig_getitem = torch.Tensor.__getitem__
+
+    def _patched_getitem(self, key):
+        if isinstance(key, np.ndarray):
+            key = torch.tensor(key.tolist())
+        return _orig_getitem(self, key)
+
+    torch.Tensor.__getitem__ = _patched_getitem
+
+    _orig_setitem = torch.Tensor.__setitem__
+
+    def _patched_setitem(self, key, value):
+        if isinstance(key, np.ndarray):
+            key = torch.tensor(key.tolist())
+        return _orig_setitem(self, key, value)
+
+    torch.Tensor.__setitem__ = _patched_setitem
+
+    # torch.tensor — handle lists of 0-d tensors (WASM calls len() on elements, fails for 0-d)
+    _orig_torch_tensor = torch.tensor
+
+    def _patched_torch_tensor(data, *args, **kwargs):
+        if isinstance(data, (list, tuple)):
+
+            def _unwrap(item):
+                if isinstance(item, torch.Tensor) and item.ndim == 0:
+                    return item.item()
+                return item
+
+            data = type(data)(_unwrap(x) for x in data)
+        return _orig_torch_tensor(data, *args, **kwargs)
+
+    torch.tensor = _patched_torch_tensor
+
+    print("✓ Torch linalg + numpy interop patches applied")
 
 
 # ==============================================================================
@@ -191,7 +242,641 @@ def patch_torch_testing():
     sys.modules["torch.testing._internal.common_utils"] = _common_utils
     sys.modules["torch.testing._internal.logging_tensor"] = _logging_tensor
 
+    # Import torch.utils.checkpoint AFTER logging_tensor stubs are set up
+    # (checkpoint.py imports logging_tensor at import time)
+    import torch.utils.checkpoint  # noqa: F401
+
     print("✓ Torch testing patches applied")
+
+
+# ==============================================================================
+# Torch compiler patches
+# ==============================================================================
+
+
+def patch_torch_compiler():
+    """
+    Patch torch.compiler for Pyodide WASM.
+
+    - Stubs torch.compiler.is_compiling (not available in WASM build)
+    - Makes torch.compiler.disable a no-op decorator (avoids torch._dynamo
+      import chain which requires C extensions missing in WASM)
+    - Needed by e3nn >= 0.5 and fairchem-core which use @torch.compiler.disable
+    """
+    if not hasattr(torch, "compiler"):
+        torch.compiler = types.ModuleType("torch.compiler")
+    if not hasattr(torch.compiler, "is_compiling"):
+        torch.compiler.is_compiling = lambda: False
+
+    def _compiler_disable(fn=None, recursive=True):
+        if fn is not None:
+            return fn
+        return lambda f: f
+
+    torch.compiler.disable = _compiler_disable
+
+    print("✓ Torch compiler patches applied")
+
+
+# ==============================================================================
+# Torch distributed patches (for FAIRChem)
+# ==============================================================================
+
+
+def patch_torch_distributed():
+    """
+    Stub torch.distributed modules that require C extensions missing in WASM.
+
+    FAIRChem's mlip_unit.py imports from torch.distributed.checkpoint,
+    torch.distributed.fsdp, and torch.distributed.device_mesh.
+    All of these trigger torch._C._distributed_c10d which doesn't exist in WASM.
+    """
+    import enum
+
+    import torch.distributed as _dist
+
+    # Core distributed API stubs
+    if not hasattr(_dist, "group"):
+
+        class _Group:
+            WORLD = None
+
+        _dist.group = _Group
+        _dist.WORLD = None
+    if not hasattr(_dist, "ReduceOp"):
+
+        class _ReduceOp:
+            SUM = 0
+            PRODUCT = 1
+            MIN = 2
+            MAX = 3
+            BAND = 4
+            BOR = 5
+            BXOR = 6
+            AVG = 7
+
+        _dist.ReduceOp = _ReduceOp
+    if not hasattr(_dist, "is_initialized"):
+        _dist.is_initialized = lambda: False
+    if not hasattr(_dist, "get_rank"):
+        _dist.get_rank = lambda group=None: 0
+    if not hasattr(_dist, "get_world_size"):
+        _dist.get_world_size = lambda group=None: 1
+
+    # torch.distributed.nn.functional
+    _dist_nn = types.ModuleType("torch.distributed.nn")
+    _dist_nn.__path__ = []
+    _dist_nn.__package__ = "torch.distributed.nn"
+    _dist_nn_func = types.ModuleType("torch.distributed.nn.functional")
+    _dist_nn_func.__package__ = "torch.distributed.nn"
+    _dist_nn_func.all_reduce = lambda tensor, *a, **k: tensor
+    _dist_nn_func.reduce_scatter = lambda output, input_list, *a, **k: output
+    _dist_nn_func.all_gather = lambda tensor_list, tensor, *a, **k: tensor_list
+    _dist_nn.functional = _dist_nn_func
+    sys.modules["torch.distributed.nn"] = _dist_nn
+    sys.modules["torch.distributed.nn.functional"] = _dist_nn_func
+
+    # C extension stubs
+    sys.modules["torch._C._distributed_c10d"] = types.ModuleType("torch._C._distributed_c10d")
+    _dc10d = types.ModuleType("torch.distributed.distributed_c10d")
+    _dc10d.__package__ = "torch.distributed"
+    sys.modules["torch.distributed.distributed_c10d"] = _dc10d
+
+    # torch.distributed._shard
+    _shard = types.ModuleType("torch.distributed._shard")
+    _shard.__path__ = []
+    _shard.__package__ = "torch.distributed._shard"
+    sys.modules["torch.distributed._shard"] = _shard
+    sys.modules["torch.distributed._shard.api"] = types.ModuleType("torch.distributed._shard.api")
+    _shard_st = types.ModuleType("torch.distributed._shard.sharded_tensor")
+    _shard_st.__path__ = []
+    sys.modules["torch.distributed._shard.sharded_tensor"] = _shard_st
+    _shard_st_meta = types.ModuleType("torch.distributed._shard.sharded_tensor.metadata")
+
+    class _TensorProperties:
+        pass
+
+    _shard_st_meta.TensorProperties = _TensorProperties
+    sys.modules["torch.distributed._shard.sharded_tensor.metadata"] = _shard_st_meta
+
+    # torch.distributed.checkpoint
+    _dcp = types.ModuleType("torch.distributed.checkpoint")
+    _dcp.__path__ = []
+    _dcp.__package__ = "torch.distributed.checkpoint"
+    _dcp.save = lambda *a, **k: None
+    _dcp.load = lambda *a, **k: None
+    _dcp_meta = types.ModuleType("torch.distributed.checkpoint.metadata")
+    _dcp_meta.TensorProperties = _TensorProperties
+
+    class _BytesStorageMetadata:
+        pass
+
+    class _TensorStorageMetadata:
+        pass
+
+    class _Metadata:
+        pass
+
+    _dcp_meta.BytesStorageMetadata = _BytesStorageMetadata
+    _dcp_meta.TensorStorageMetadata = _TensorStorageMetadata
+    _dcp_meta.Metadata = _Metadata
+    _dcp.metadata = _dcp_meta
+    sys.modules["torch.distributed.checkpoint"] = _dcp
+    sys.modules["torch.distributed.checkpoint.metadata"] = _dcp_meta
+
+    for sub in [
+        "state_dict",
+        "stateful",
+        "planner",
+        "storage",
+        "default_planner",
+        "filesystem",
+        "optimizer",
+        "format_utils",
+    ]:
+        _sub_mod = types.ModuleType(f"torch.distributed.checkpoint.{sub}")
+        _sub_mod.__package__ = "torch.distributed.checkpoint"
+        sys.modules[f"torch.distributed.checkpoint.{sub}"] = _sub_mod
+        setattr(_dcp, sub, _sub_mod)
+
+    # format_utils stubs
+    sys.modules["torch.distributed.checkpoint.format_utils"].dcp_to_torch_save = lambda *a, **k: None
+    sys.modules["torch.distributed.checkpoint.format_utils"].torch_save_to_dcp = lambda *a, **k: None
+
+    # state_dict stubs
+    _sd_mod = sys.modules["torch.distributed.checkpoint.state_dict"]
+    _sd_mod.get_model_state_dict = lambda model, *a, **k: model.state_dict() if hasattr(model, "state_dict") else {}
+    _sd_mod.set_model_state_dict = (
+        lambda model, sd, *a, **k: model.load_state_dict(sd) if hasattr(model, "load_state_dict") else None
+    )
+    _sd_mod.get_optimizer_state_dict = (
+        lambda model, optim, *a, **k: optim.state_dict() if hasattr(optim, "state_dict") else {}
+    )
+    _sd_mod.get_state_dict = lambda model, *a, **k: model.state_dict() if hasattr(model, "state_dict") else {}
+    _sd_mod.set_state_dict = lambda model, sd, *a, **k: None
+
+    class _StateDictOptions:
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    _sd_mod.StateDictOptions = _StateDictOptions
+
+    # stateful stub
+    class _Stateful:
+        pass
+
+    sys.modules["torch.distributed.checkpoint.stateful"].Stateful = _Stateful
+
+    # torch.distributed.fsdp
+    _fsdp = types.ModuleType("torch.distributed.fsdp")
+    _fsdp.__path__ = []
+    _fsdp.__package__ = "torch.distributed.fsdp"
+    sys.modules["torch.distributed.fsdp"] = _fsdp
+    for fsdp_sub in ["fully_sharded_data_parallel", "api", "wrap", "sharded_grad_scaler"]:
+        _fsub = types.ModuleType(f"torch.distributed.fsdp.{fsdp_sub}")
+        _fsub.__package__ = "torch.distributed.fsdp"
+        sys.modules[f"torch.distributed.fsdp.{fsdp_sub}"] = _fsub
+        setattr(_fsdp, fsdp_sub, _fsub)
+
+    # FSDP wrap policy stubs
+    class _ModuleWrapPolicy:
+        def __init__(self, module_classes=None):
+            self.module_classes = module_classes or set()
+
+    _fsdp_wrap = sys.modules["torch.distributed.fsdp.wrap"]
+    _fsdp_wrap.ModuleWrapPolicy = _ModuleWrapPolicy
+    _fsdp_wrap.lambda_auto_wrap_policy = lambda *a, **k: None
+    _fsdp_wrap.transformer_auto_wrap_policy = lambda *a, **k: None
+
+    # FSDP classes
+    class _FullyShardedDataParallel(torch.nn.Module):
+        def __init__(self, module, *a, **k):
+            super().__init__()
+            self.module = module
+
+    class _ShardingStrategy(enum.Enum):
+        FULL_SHARD = "FULL_SHARD"
+        SHARD_GRAD_OP = "SHARD_GRAD_OP"
+        NO_SHARD = "NO_SHARD"
+        HYBRID_SHARD = "HYBRID_SHARD"
+
+    class _MixedPrecision:
+        def __init__(self, *a, **k):
+            pass
+
+    class _CPUOffload:
+        def __init__(self, offload_params=False):
+            self.offload_params = offload_params
+
+    class _BackwardPrefetch(enum.Enum):
+        BACKWARD_PRE = "BACKWARD_PRE"
+        BACKWARD_POST = "BACKWARD_POST"
+
+    class _StateDictTypeFSDP(enum.Enum):
+        FULL_STATE_DICT = 0
+        LOCAL_STATE_DICT = 1
+        SHARDED_STATE_DICT = 2
+
+    _fsdp.FullyShardedDataParallel = _FullyShardedDataParallel
+    _fsdp.ShardingStrategy = _ShardingStrategy
+    _fsdp.MixedPrecision = _MixedPrecision
+    _fsdp.CPUOffload = _CPUOffload
+    _fsdp.BackwardPrefetch = _BackwardPrefetch
+    _fsdp.StateDictType = _StateDictTypeFSDP
+
+    # FSDP StateDictConfig stubs
+    class _StateDictConfig:
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    class _ShardedStateDictConfig(_StateDictConfig):
+        pass
+
+    class _FullStateDictConfig(_StateDictConfig):
+        def __init__(self, offload_to_cpu=False, rank0_only=False, **k):
+            super().__init__(**k)
+            self.offload_to_cpu = offload_to_cpu
+            self.rank0_only = rank0_only
+
+    class _FullOptimStateDictConfig(_StateDictConfig):
+        def __init__(self, offload_to_cpu=False, rank0_only=False, **k):
+            super().__init__(**k)
+
+    _fsdp.StateDictConfig = _StateDictConfig
+    _fsdp.ShardedStateDictConfig = _ShardedStateDictConfig
+    _fsdp.FullStateDictConfig = _FullStateDictConfig
+    _fsdp.FullOptimStateDictConfig = _FullOptimStateDictConfig
+    _fsdp.LocalStateDictConfig = type("LocalStateDictConfig", (_StateDictConfig,), {})
+    _fsdp.OptimStateDictConfig = type("OptimStateDictConfig", (_StateDictConfig,), {})
+    _fsdp.ShardedOptimStateDictConfig = type("ShardedOptimStateDictConfig", (_StateDictConfig,), {})
+
+    # torch.distributed.device_mesh
+    _dm = types.ModuleType("torch.distributed.device_mesh")
+    _dm.__package__ = "torch.distributed"
+
+    class _DeviceMesh:
+        def __init__(self, *a, **k):
+            pass
+
+    _dm.DeviceMesh = _DeviceMesh
+    _dm.init_device_mesh = lambda *a, **k: _DeviceMesh()
+    sys.modules["torch.distributed.device_mesh"] = _dm
+
+    # torch.distributed.tensor (DTensor)
+    _dtensor = types.ModuleType("torch.distributed.tensor")
+    _dtensor.__path__ = []
+    _dtensor.__package__ = "torch.distributed.tensor"
+
+    class _DTensor:
+        pass
+
+    _dtensor.DTensor = _DTensor
+    sys.modules["torch.distributed.tensor"] = _dtensor
+
+    # torch.distributed.algorithms
+    _dalgo = types.ModuleType("torch.distributed.algorithms")
+    _dalgo.__path__ = []
+    _dalgo.__package__ = "torch.distributed.algorithms"
+    sys.modules["torch.distributed.algorithms"] = _dalgo
+
+    print("✓ Torch distributed patches applied")
+
+
+# ==============================================================================
+# FAIRChem heavy dependency stubs
+# ==============================================================================
+
+
+def _make_stub_module(name, attrs=None, submodules=None):
+    """Create a stub module with optional attributes and submodules."""
+    from importlib.machinery import ModuleSpec
+
+    mod = types.ModuleType(name)
+    mod.__path__ = []
+    mod.__package__ = name
+    mod.__version__ = "0.0.0"
+    mod.__spec__ = ModuleSpec(name, None, is_package=True)
+    if attrs:
+        for k, v in attrs.items():
+            setattr(mod, k, v)
+    sys.modules[name] = mod
+    if submodules:
+        for sub_name in submodules:
+            full_name = f"{name}.{sub_name}"
+            sub_mod = types.ModuleType(full_name)
+            sub_mod.__path__ = []
+            sub_mod.__package__ = name
+            sub_mod.__spec__ = ModuleSpec(full_name, None, is_package=True)
+            setattr(mod, sub_name, sub_mod)
+            sys.modules[full_name] = sub_mod
+    return mod
+
+
+def patch_fairchem_deps():
+    """
+    Stub heavy dependencies that fairchem-core imports but doesn't need for inference.
+
+    This stubs: numba, ray (+ serve), wandb, torchtnt, hydra, omegaconf,
+    submitit, clusterscope, tqdm, huggingface_hub, websockets.
+    """
+    # --- numba ---
+    numba_mod = _make_stub_module("numba", submodules=["core", "core.types", "typed"])
+    numba_mod.njit = lambda *a, **k: (lambda f: f) if not a or callable(a[0]) else lambda f: f
+    numba_mod.jit = numba_mod.njit
+    numba_mod.prange = range
+    for t in ("int32", "int64", "float32", "float64", "boolean"):
+        setattr(numba_mod, t, t)
+
+    class _TypedList(list):
+        pass
+
+    sys.modules["numba.typed"].List = _TypedList
+
+    # --- ray ---
+    ray_mod = _make_stub_module(
+        "ray",
+        submodules=[
+            "serve",
+            "runtime_env",
+            "train",
+            "data",
+            "util",
+            "util.scheduling_strategies",
+            "util.queue",
+        ],
+    )
+
+    def _ray_remote(*args, **kwargs):
+        if args and callable(args[0]):
+            args[0]._remote = lambda *a, **kw: None
+            return args[0]
+
+        def wrapper(fn_or_cls):
+            fn_or_cls._remote = lambda *a, **kw: None
+            return fn_or_cls
+
+        return wrapper
+
+    ray_mod.remote = _ray_remote
+    ray_mod.init = lambda *a, **k: None
+    ray_mod.get = lambda *a, **k: None
+    ray_mod.put = lambda *a, **k: None
+    ray_mod.wait = lambda *a, **k: ([], [])
+    ray_mod.is_initialized = lambda: False
+
+    class _ObjectRef:
+        pass
+
+    ray_mod.ObjectRef = _ObjectRef
+
+    class _PlacementGroupSchedulingStrategy:
+        def __init__(self, *a, **k):
+            pass
+
+    sys.modules["ray.util.scheduling_strategies"].PlacementGroupSchedulingStrategy = _PlacementGroupSchedulingStrategy
+
+    # ray.serve stubs
+    _serve = sys.modules["ray.serve"]
+
+    def _serve_deployment(*args, **kwargs):
+        if args and callable(args[0]):
+            return args[0]
+        return lambda cls_or_fn: cls_or_fn
+
+    _serve.deployment = _serve_deployment
+    _serve.ingress = lambda *a, **k: (lambda cls: cls)
+    _serve.run = lambda *a, **k: None
+    _serve.batch = lambda *args, **kwargs: (lambda fn: fn) if not args or not callable(args[0]) else args[0]
+
+    _serve_schema = types.ModuleType("ray.serve.schema")
+    _serve_schema.__package__ = "ray.serve"
+
+    class _LoggingConfig:
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    _serve_schema.LoggingConfig = _LoggingConfig
+    _serve.schema = _serve_schema
+    sys.modules["ray.serve.schema"] = _serve_schema
+
+    # --- wandb ---
+    wandb_mod = _make_stub_module("wandb")
+    wandb_mod.init = lambda *a, **k: None
+    wandb_mod.log = lambda *a, **k: None
+    wandb_mod.finish = lambda *a, **k: None
+
+    # --- torchtnt ---
+    _make_stub_module(
+        "torchtnt",
+        submodules=[
+            "framework",
+            "framework.state",
+            "framework.unit",
+            "framework.callback",
+            "framework.auto_unit",
+            "framework.fit",
+            "framework.train",
+            "framework.evaluate",
+            "framework.predict",
+            "utils",
+            "utils.loggers",
+            "utils.timer",
+            "utils.distributed",
+            "utils.prepare_module",
+        ],
+    )
+
+    class _PredictUnit:
+        def __init__(self, *a, **k):
+            pass
+
+        def __class_getitem__(cls, item):
+            return cls
+
+    class _TrainUnit:
+        def __init__(self, *a, **k):
+            pass
+
+        def __class_getitem__(cls, item):
+            return cls
+
+    class _EvalUnit:
+        def __init__(self, *a, **k):
+            pass
+
+        def __class_getitem__(cls, item):
+            return cls
+
+    class _State:
+        def __init__(self, *a, **k):
+            pass
+
+        def __class_getitem__(cls, item):
+            return cls
+
+    class _Callback:
+        pass
+
+    tnt_framework = sys.modules["torchtnt.framework"]
+    tnt_unit = sys.modules["torchtnt.framework.unit"]
+    tnt_state = sys.modules["torchtnt.framework.state"]
+    tnt_cb = sys.modules["torchtnt.framework.callback"]
+    for m in [tnt_framework, tnt_unit]:
+        m.PredictUnit = _PredictUnit
+        m.TrainUnit = _TrainUnit
+        m.EvalUnit = _EvalUnit
+    tnt_state.State = _State
+    tnt_cb.Callback = _Callback
+    tnt_framework.State = _State
+    tnt_framework.Callback = _Callback
+
+    # torchtnt entry point functions
+    sys.modules["torchtnt.framework.fit"].fit = lambda *a, **k: None
+    sys.modules["torchtnt.framework.train"].train = lambda *a, **k: None
+    sys.modules["torchtnt.framework.evaluate"].evaluate = lambda *a, **k: None
+    sys.modules["torchtnt.framework.predict"].predict = lambda *a, **k: None
+
+    # torchtnt.utils stubs
+    tnt_dist = sys.modules["torchtnt.utils.distributed"]
+    tnt_dist.get_file_init_method = lambda *a, **k: ""
+    tnt_dist.get_tcp_init_method = lambda *a, **k: ""
+    tnt_dist.spawn_multi_process = lambda *a, **k: None
+
+    tnt_prep = sys.modules["torchtnt.utils.prepare_module"]
+    tnt_prep.prepare_module = lambda module, *a, **k: module
+    tnt_prep.FSDPStrategy = type("FSDPStrategy", (), {"__init__": lambda self, **k: None})
+    tnt_prep.DDPStrategy = type("DDPStrategy", (), {"__init__": lambda self, **k: None})
+    tnt_prep.NOOPStrategy = type("NOOPStrategy", (), {"__init__": lambda self, **k: None})
+
+    # --- hydra / omegaconf ---
+    omegaconf_mod = _make_stub_module("omegaconf")
+
+    class _DictConfig(dict):
+        pass
+
+    class _ListConfig(list):
+        pass
+
+    omegaconf_mod.DictConfig = _DictConfig
+    omegaconf_mod.ListConfig = _ListConfig
+    omegaconf_mod.OmegaConf = type(
+        "OmegaConf",
+        (),
+        {
+            "to_container": staticmethod(lambda cfg, **k: dict(cfg) if isinstance(cfg, dict) else cfg),
+            "create": staticmethod(lambda d: _DictConfig(d) if isinstance(d, dict) else d),
+        },
+    )
+    _make_stub_module("hydra", submodules=["core", "core.global_hydra", "utils"])
+
+    def _hydra_instantiate(config, *args, _recursive_=True, **kwargs):
+        import importlib
+
+        if isinstance(config, dict) and "_target_" in config:
+            target = config["_target_"]
+            mod_path, cls_name = target.rsplit(".", 1)
+            mod = importlib.import_module(mod_path)
+            cls = getattr(mod, cls_name)
+            pos_args = list(args) + list(config.get("_args_", []))
+            cfg = {k: v for k, v in config.items() if not k.startswith("_")}
+            if _recursive_:
+                for k, v in cfg.items():
+                    if isinstance(v, dict) and "_target_" in v:
+                        cfg[k] = _hydra_instantiate(v)
+                    elif isinstance(v, list):
+                        cfg[k] = [_hydra_instantiate(i) if isinstance(i, dict) and "_target_" in i else i for i in v]
+                pos_args = [_hydra_instantiate(a) if isinstance(a, dict) and "_target_" in a else a for a in pos_args]
+            return cls(*pos_args, **{**cfg, **kwargs})
+        return config
+
+    sys.modules["hydra.utils"].instantiate = _hydra_instantiate
+    sys.modules["hydra"].utils = sys.modules["hydra.utils"]
+
+    # --- submitit / clusterscope ---
+    _make_stub_module("submitit")
+    _make_stub_module("clusterscope")
+
+    # --- websockets ---
+    _make_stub_module("websockets")
+
+    # --- tqdm ---
+    tqdm_mod = _make_stub_module("tqdm", submodules=["auto", "std"])
+
+    def _tqdm_passthrough(iterable=None, *a, **k):
+        return iterable if iterable is not None else iter([])
+
+    tqdm_mod.tqdm = _tqdm_passthrough
+    sys.modules["tqdm.auto"].tqdm = _tqdm_passthrough
+    sys.modules["tqdm.std"].tqdm = _tqdm_passthrough
+
+    # --- huggingface_hub ---
+    hf_mod = _make_stub_module("huggingface_hub", submodules=["utils"])
+    hf_mod.hf_hub_download = lambda *a, **k: ""
+    hf_mod.snapshot_download = lambda *a, **k: ""
+
+    # --- ase_db_backends ---
+    _make_stub_module("ase_db_backends")
+    # --- INT8 quantized model support ---
+    _orig_torch_load = torch.load
+
+    def _int8_aware_torch_load(f, *args, **kwargs):
+        result = _orig_torch_load(f, *args, **kwargs)
+        if isinstance(result, dict) and "quantized_ema_state_dict" in result:
+            import gc as _gc
+
+            from fairchem.core.units.mlip_unit.api.inference import MLIPInferenceCheckpoint
+
+            print("  Dequantizing INT8 -> FP16 (streaming)...")
+            quantized_ema = result.pop("quantized_ema_state_dict")
+            scales = result.pop("quantization_scales")
+            ema_state_dict = {}
+            names = list(quantized_ema.keys())
+            for name in names:
+                tensor = quantized_ema.pop(name)
+                if name in scales:
+                    scale = scales.pop(name)
+                    ema_state_dict[name] = (tensor.float() * scale.float()).half()
+                    del scale
+                else:
+                    ema_state_dict[name] = tensor
+                del tensor
+            del quantized_ema, scales
+            _gc.collect()
+            checkpoint = MLIPInferenceCheckpoint(
+                model_config=result["model_config"],
+                model_state_dict=result.get("model_state_dict", {}),
+                ema_state_dict=ema_state_dict,
+                tasks_config=result["tasks_config"],
+            )
+            del result
+            _gc.collect()
+            print("  ✓ Dequantization complete")
+            return checkpoint
+        return result
+
+    torch.load = _int8_aware_torch_load
+
+    # --- Model registry fallback ---
+    try:
+        from fairchem.core.common.registry import registry as _registry
+
+        _orig_get_model = _registry.get_model_class
+
+        def _fallback_get_model_class(name):
+            try:
+                return _orig_get_model(name)
+            except RuntimeError:
+                import importlib as _imp
+
+                module_path, class_name = name.rsplit(".", 1)
+                mod = _imp.import_module(module_path)
+                return getattr(mod, class_name)
+
+        _registry.get_model_class = _fallback_get_model_class
+    except Exception:
+        pass
+
+    print("✓ FAIRChem dependency stubs applied")
 
 
 # ==============================================================================
@@ -275,14 +960,557 @@ def patch_mace_tools():
 # ==============================================================================
 
 
-def apply_all_patches():
-    """Apply all torch and MACE patches for Pyodide in one call."""
-    if is_pyodide_environment():
-        patch_torch_linalg()
-        patch_torch_testing()
-        patch_matscipy()
-        patch_mace_training()
-        patch_mace_tools()
-        print("\n✅ All Pyodide patches applied successfully!")
-    else:
-        print("⚠ Not in Pyodide environment. Patches not applied.")
+def apply_all_patches(include_fairchem=False, include_mattersim=False, include_nequip=False):
+    """
+    Apply all torch and model patches for Pyodide in one call.
+
+    Args:
+        include_fairchem: If True, also apply FAIRChem-specific patches
+            (torch.distributed, heavy dependency stubs). Set this when
+            using fairchem-core / UMA models.
+        include_mattersim: If True, also apply MatterSim-specific patches
+            (loguru, azure, e3nn JIT stubs). Set this when
+            using MatterSim / M3GNet models.
+        include_nequip: If True, also apply NequIP-specific patches
+            (lightning, hydra, torchmetrics, e3nn JIT stubs). Set this
+            when using NequIP models.
+    """
+    patch_torch_linalg()
+    patch_torch_compiler()
+    patch_torch_testing()
+    patch_matscipy()
+    patch_mace_training()
+    patch_mace_tools()
+
+    if include_fairchem:
+        patch_torch_distributed()
+        patch_fairchem_deps()
+
+    if include_mattersim:
+        patch_torch_distributed()
+        patch_mattersim_deps()
+
+    if include_nequip:
+        patch_nequip_deps()
+
+    print("\n✅ All Pyodide patches applied successfully!")
+
+
+# ==============================================================================
+# MatterSim patches
+# ==============================================================================
+
+
+def patch_mattersim_deps():
+    """
+    Stub heavy dependencies required by MatterSim but not needed for inference.
+
+    Stubs: loguru, azure.*, atomate2, seekpath, phonopy, phono3py, mp_api,
+    sklearn, and patches e3nn to disable JIT/torch.compile.
+    """
+    loguru_mod = _make_stub_module("loguru")
+
+    class _Logger:
+        def info(self, msg, *a, **k):
+            print(f"INFO: {msg}")
+
+        def warning(self, msg, *a, **k):
+            print(f"WARNING: {msg}")
+
+        def error(self, msg, *a, **k):
+            print(f"ERROR: {msg}")
+
+        def debug(self, msg, *a, **k):
+            pass
+
+        def trace(self, msg, *a, **k):
+            pass
+
+        def success(self, msg, *a, **k):
+            print(f"✓ {msg}")
+
+        def __getattr__(self, name):
+            return lambda *a, **k: None
+
+    loguru_mod.logger = _Logger()
+
+    _make_stub_module("azure", submodules=["identity", "storage", "storage.blob"])
+
+    for pkg in [
+        "atomate2",
+        "seekpath",
+        "phonopy",
+        "phono3py",
+        "mp_api",
+        "jobflow",
+        "emmet",
+        "emmet.core",
+        "emmet.core.tasks",
+        "maggma",
+    ]:
+        _make_stub_module(pkg)
+
+    _make_stub_module(
+        "sklearn",
+        submodules=[
+            "base",
+            "utils",
+            "utils.validation",
+            "preprocessing",
+            "model_selection",
+            "gaussian_process",
+            "gaussian_process.kernels",
+        ],
+    )
+
+    class _GPR:
+        def __init__(self, *a, **k):
+            pass
+
+        def fit(self, *a, **k):
+            return self
+
+        def predict(self, X, return_std=False):
+            import numpy as _np
+
+            mean = _np.zeros(X.shape[0])
+            if return_std:
+                return mean, _np.ones(X.shape[0])
+            return mean
+
+        def log_marginal_likelihood(self):
+            return 0.0
+
+    sys.modules["sklearn.gaussian_process"].GaussianProcessRegressor = _GPR
+
+    class _Kernel:
+        pass
+
+    class _DotProduct(_Kernel):
+        def __init__(self, *a, **k):
+            pass
+
+    class _Hyperparameter:
+        def __init__(self, *a, **k):
+            pass
+
+    _sk_kernels = sys.modules["sklearn.gaussian_process.kernels"]
+    _sk_kernels.Kernel = _Kernel
+    _sk_kernels.DotProduct = _DotProduct
+    _sk_kernels.Hyperparameter = _Hyperparameter
+
+    try:
+        import pyodide_http  # noqa: F401
+
+        pyodide_http.patch_all()
+    except ImportError:
+        pass
+
+    try:
+        import e3nn
+
+        e3nn._SO3_INITIALIZED = True
+    except Exception:
+        pass
+
+    import torch
+
+    if not hasattr(torch.jit, "_original_script"):
+        _orig_script = torch.jit.script
+
+        def _noop_script(obj=None, *a, **k):
+            if obj is not None:
+                return obj
+            return lambda fn: fn
+
+        torch.jit.script = _noop_script
+
+    _te = _make_stub_module("torch_ema")
+
+    class _EMA:
+        def __init__(self, *a, **k):
+            pass
+
+    _te.ExponentialMovingAverage = _EMA
+
+    _tm = _make_stub_module("torchmetrics")
+
+    class _MeanMetric:
+        def __init__(self, *a, **k):
+            pass
+
+    _tm.MeanMetric = _MeanMetric
+
+    _make_stub_module("torch_geometric", submodules=["data", "loader", "utils"])
+
+    class _Data:
+        def __init__(self, **kwargs):
+            for k, v in kwargs.items():
+                setattr(self, k, v)
+
+        def to(self, device):
+            import torch as _t
+
+            for k, v in self.__dict__.items():
+                if isinstance(v, _t.Tensor):
+                    setattr(self, k, v.to(device))
+            return self
+
+    sys.modules["torch_geometric.data"].Data = _Data
+
+    class _DataLoader:
+        def __init__(self, dataset, batch_size=1, shuffle=False, **kwargs):
+            self._dataset = list(dataset)
+
+        def __iter__(self):
+            import torch as _t
+
+            for item in self._dataset:
+                for attr in list(vars(item).keys()):
+                    val = getattr(item, attr)
+                    if isinstance(val, (int, float)):
+                        setattr(item, attr, _t.tensor([val]))
+                if not hasattr(item, "num_graphs"):
+                    item.num_graphs = 1
+                if not hasattr(item, "batch"):
+                    n_atoms = item.num_atoms if hasattr(item, "num_atoms") else _t.tensor([0])
+                    if isinstance(n_atoms, _t.Tensor):
+                        n_atoms = int(n_atoms.item())
+                    item.batch = _t.zeros(n_atoms, dtype=_t.long)
+                yield item
+
+        def __len__(self):
+            return len(self._dataset)
+
+    sys.modules["torch_geometric.loader"].DataLoader = _DataLoader
+
+    _make_stub_module("torch_runstats", submodules=["scatter"])
+    import torch as _torch
+
+    def _scatter(src, index, dim_size=None, dim=0, reduce="sum"):
+        if dim_size is None:
+            dim_size = int(index.max()) + 1
+        out = _torch.zeros(dim_size, *src.shape[1:], dtype=src.dtype, device=src.device)
+        if src.dim() == 1:
+            idx = index
+        else:
+            idx = index.unsqueeze(-1).expand_as(src)
+        if reduce == "sum" or reduce == "add":
+            out.scatter_add_(0, idx, src)
+        elif reduce == "mean":
+            out.scatter_add_(0, idx, src)
+            count = _torch.zeros(dim_size, dtype=src.dtype, device=src.device)
+            count.scatter_add_(0, index, _torch.ones(index.shape[0], dtype=src.dtype, device=src.device))
+            count = count.clamp(min=1)
+            if src.dim() > 1:
+                count = count.unsqueeze(-1)
+            out = out / count
+        return out
+
+    sys.modules["torch_runstats.scatter"].scatter = _scatter
+
+    def _scatter_mean(src, index, dim_size=None, dim=0):
+        return _scatter(src, index, dim_size=dim_size, dim=dim, reduce="mean")
+
+    sys.modules["torch_runstats.scatter"].scatter_mean = _scatter_mean
+
+    print("✓ MatterSim dependency stubs applied")
+
+
+# ==============================================================================
+# NequIP patches
+# ==============================================================================
+
+
+def patch_nequip_deps():
+    """
+    Stub heavy dependencies required by NequIP but not needed for inference.
+
+    Stubs: hydra, lightning, pytorch_lightning, torchmetrics, lmdb, matscipy.
+    Patches e3nn and torch.jit for Pyodide compatibility.
+    Sets NEQUIP_NL=ase to use ASE neighbor lists instead of matscipy.
+    """
+    import os
+
+    import torch
+
+    os.environ["NEQUIP_NL"] = "ase"
+
+    _make_stub_module("lightning_utilities", submodules=["core", "core.rank_zero"])
+
+    def _rank_prefixed_message(msg, rank=None):
+        return msg
+
+    def _rank_zero_only(fn):
+        return fn
+
+    sys.modules["lightning_utilities.core.rank_zero"].rank_prefixed_message = _rank_prefixed_message
+    sys.modules["lightning_utilities.core.rank_zero"].rank_zero_only = _rank_zero_only
+
+    _make_stub_module(
+        "lightning",
+        submodules=[
+            "pytorch",
+            "pytorch.utilities",
+            "pytorch.utilities.seed",
+            "pytorch.utilities.warnings",
+            "pytorch.callbacks",
+        ],
+    )
+
+    class _IsolateRng:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            pass
+
+    def _seed_everything(seed=None, workers=False, **kwargs):
+        pass
+
+    sys.modules["lightning.pytorch.utilities.seed"].isolate_rng = lambda: _IsolateRng()
+    sys.modules["lightning.pytorch"].seed_everything = _seed_everything
+
+    class _PossibleUserWarning(UserWarning):
+        pass
+
+    sys.modules["lightning.pytorch.utilities.warnings"].PossibleUserWarning = _PossibleUserWarning
+
+    class _LightningModule(torch.nn.Module):
+        def __init__(self, *a, **k):
+            super().__init__()
+
+        def log(self, *a, **k):
+            pass
+
+    sys.modules["lightning.pytorch"].LightningModule = _LightningModule
+    sys.modules["lightning"].pytorch = sys.modules["lightning.pytorch"]
+    sys.modules["lightning.pytorch.callbacks"].Callback = type("Callback", (), {})
+
+    _make_stub_module("pytorch_lightning", submodules=["utilities", "utilities.seed"])
+    sys.modules["pytorch_lightning.utilities.seed"].isolate_rng = lambda: _IsolateRng()
+
+    _tm = _make_stub_module("torchmetrics")
+
+    class _Metric(torch.nn.Module):
+        def __init__(self, *a, **k):
+            super().__init__()
+
+        def add_state(self, name, default=None, dist_reduce_fx=None, **k):
+            if default is not None:
+                setattr(self, name, default)
+
+    _tm.Metric = _Metric
+    _tm.MeanMetric = _Metric
+
+    if "packaging" not in sys.modules:
+        try:
+            import packaging.version  # noqa: F401
+        except (ImportError, ModuleNotFoundError):
+            _make_stub_module("packaging", submodules=["version"])
+
+            class _Version:
+                def __init__(self, v):
+                    self._v = str(v)
+                    parts = self._v.split(".")
+                    self.major = int(parts[0]) if parts else 0
+                    self.minor = int(parts[1]) if len(parts) > 1 else 0
+
+                def __lt__(self, other):
+                    return (self.major, self.minor) < (other.major, other.minor)
+
+                def __ge__(self, other):
+                    return not self.__lt__(other)
+
+                def __repr__(self):
+                    return f"Version('{self._v}')"
+
+            sys.modules["packaging.version"].Version = _Version
+            sys.modules["packaging.version"].parse = lambda v: _Version(v)
+
+    if "lmdb" not in sys.modules:
+        sys.modules["lmdb"] = types.ModuleType("lmdb")
+
+    if "hydra" not in sys.modules:
+        _make_stub_module(
+            "hydra",
+            submodules=[
+                "core",
+                "core.global_hydra",
+                "utils",
+                "_internal",
+                "_internal.instantiate",
+                "_internal.instantiate._instantiate2",
+            ],
+        )
+
+        def _hydra_instantiate(config, *args, _recursive_=True, **kwargs):
+            import importlib
+
+            if isinstance(config, dict) and "_target_" in config:
+                target = config["_target_"]
+                mod_path, cls_name = target.rsplit(".", 1)
+                mod = importlib.import_module(mod_path)
+                cls = getattr(mod, cls_name)
+                pos_args = list(args) + list(config.get("_args_", []))
+                cfg = {k: v for k, v in config.items() if not k.startswith("_")}
+                if _recursive_:
+                    for k, v in cfg.items():
+                        if isinstance(v, dict) and "_target_" in v:
+                            cfg[k] = _hydra_instantiate(v)
+                        elif isinstance(v, list):
+                            cfg[k] = [
+                                _hydra_instantiate(i) if isinstance(i, dict) and "_target_" in i else i for i in v
+                            ]
+                    pos_args = [
+                        _hydra_instantiate(a) if isinstance(a, dict) and "_target_" in a else a for a in pos_args
+                    ]
+                return cls(*pos_args, **{**cfg, **kwargs})
+            return config
+
+        sys.modules["hydra.utils"].instantiate = _hydra_instantiate
+        sys.modules["hydra"].utils = sys.modules["hydra.utils"]
+        sys.modules["hydra._internal.instantiate._instantiate2"].InstantiationException = type(
+            "InstantiationException", (Exception,), {}
+        )
+
+        def _hydra_get_target(target_str):
+            import importlib
+
+            mod_path, name = target_str.rsplit(".", 1)
+            return getattr(importlib.import_module(mod_path), name)
+
+        sys.modules["hydra.utils"].get_method = _hydra_get_target
+        sys.modules["hydra.utils"].get_class = _hydra_get_target
+
+    if "omegaconf" not in sys.modules:
+        omegaconf_mod = _make_stub_module("omegaconf")
+
+        class _DictConfig(dict):
+            pass
+
+        class _ListConfig(list):
+            pass
+
+        omegaconf_mod.DictConfig = _DictConfig
+        omegaconf_mod.ListConfig = _ListConfig
+        omegaconf_mod.OmegaConf = type(
+            "OmegaConf",
+            (),
+            {
+                "to_container": staticmethod(lambda cfg, **k: dict(cfg) if isinstance(cfg, dict) else cfg),
+                "create": staticmethod(lambda d: _DictConfig(d) if isinstance(d, dict) else d),
+                "register_new_resolver": staticmethod(lambda name, func, **k: None),
+            },
+        )
+
+    if "matscipy" not in sys.modules:
+        _matscipy = types.ModuleType("matscipy")
+        _matscipy.__path__ = []
+        _matscipy.__package__ = "matscipy"
+        _matscipy_neighbours = types.ModuleType("matscipy.neighbours")
+        _matscipy_neighbours.neighbour_list = _matscipy_neighbour_list_compat
+        _matscipy.neighbours = _matscipy_neighbours
+        sys.modules["matscipy"] = _matscipy
+        sys.modules["matscipy.neighbours"] = _matscipy_neighbours
+
+    try:
+        import e3nn
+
+        e3nn._SO3_INITIALIZED = True
+        if hasattr(e3nn, "_OPT_DEFAULTS"):
+            e3nn._OPT_DEFAULTS["jit_mode"] = "eager"
+    except Exception:
+        pass
+
+    if not hasattr(torch.jit, "_original_script"):
+        _orig_script = torch.jit.script
+
+        def _noop_script(obj=None, *a, **k):
+            if obj is not None:
+                return obj
+            return lambda fn: fn
+
+        torch.jit.script = _noop_script
+
+    try:
+        import e3nn.util.jit
+
+        e3nn.util.jit.compile_mode = lambda mode: lambda cls: cls
+    except Exception:
+        pass
+
+    if "tqdm" not in sys.modules:
+        tqdm_mod = _make_stub_module("tqdm", submodules=["auto", "std"])
+
+        def _tqdm_passthrough(iterable=None, *a, **k):
+            return iterable if iterable is not None else iter([])
+
+        tqdm_mod.tqdm = _tqdm_passthrough
+        sys.modules["tqdm.auto"].tqdm = _tqdm_passthrough
+        sys.modules["tqdm.std"].tqdm = _tqdm_passthrough
+
+    print("✓ NequIP dependency stubs applied")
+
+
+def load_nequip_model(checkpoint_path):
+    import torch
+
+    data = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+
+    import nequip.utils.global_state as _gs
+
+    def _pyodide_set_global_state(allow_tf32=False, warn_on_override=False):
+        if not _gs._GLOBAL_STATE_INITIALIZED:
+            torch.set_default_dtype(torch.float64)
+            try:
+                import e3nn
+
+                e3nn.set_optimization_defaults(
+                    specialized_code=True,
+                    optimize_einsums=True,
+                    jit_script_fx=False,
+                )
+            except Exception:
+                pass
+            _gs._GLOBAL_STATE_INITIALIZED = True
+        _gs._latest_global_config["allow_tf32"] = allow_tf32
+
+    _gs.set_global_state = _pyodide_set_global_state
+    _gs.set_global_state(allow_tf32=False)
+
+    from nequip.model import FullNequIPGNNModel
+
+    model = FullNequIPGNNModel(
+        seed=0,
+        model_dtype="float32",
+        r_max=data["r_max"],
+        type_names=data["type_names"],
+        irreps_edge_sh=data["irreps_edge_sh"],
+        type_embed_num_features=data["type_embed_num_features"],
+        feature_irreps_hidden=data["feature_irreps_hidden"],
+        radial_mlp_depth=data["radial_mlp_depth"],
+        radial_mlp_width=data["radial_mlp_width"],
+        avg_num_neighbors=data["avg_num_neighbors"],
+        per_type_energy_scales=data["per_type_energy_scales"],
+        per_type_energy_shifts=data["per_type_energy_shifts"],
+        polynomial_cutoff_p=data.get("polynomial_cutoff_p", 6),
+    )
+
+    if data.get("has_zbl", False):
+        from nequip.nn.pair_potential import ZBL
+
+        seq_net = model.model.func
+        zbl = ZBL(
+            type_names=data["type_names"],
+            chemical_species=data["type_names"],
+            units="metal",
+            irreps_in=seq_net.irreps_out,
+        )
+        seq_net.insert(name="pair_potential", module=zbl, before="total_energy_sum")
+
+    model.load_state_dict(data["state_dict"], strict=True)
+    model.eval()
+
+    print(f"✓ NequIP model loaded ({sum(p.numel() for p in model.parameters()):,} parameters)")
+    return model

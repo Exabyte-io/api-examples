@@ -12,7 +12,7 @@ MLFF_MODULES = {
 def get_mlff_install_profiles(mlff_name: str) -> str:
     mlff = (mlff_name or "").strip().lower()
     if mlff in MLFF_MODULES:
-        return f"made|api_examples|torch|{mlff}"
+        return f"made|api_examples|torch|mlff|{mlff}"
     raise ValueError(f"Unsupported MLFF: {mlff_name!r}")
 
 

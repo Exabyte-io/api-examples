@@ -83,21 +83,61 @@ notebooks:
   - name: torch
     packages_pyodide:
       - emfs:/drive/packages/torch-2.1.0a0-cp311-cp311-emscripten_3_1_45_wasm32.whl
+  - name: mlff
+    packages_pyodide:
+      - opt_einsum
+      - nodeps:opt_einsum_fx
+      - ssl
+      - h5py
+      - lmdb
   - name: mace
     packages_pyodide:
       # Packages with dependencies
-      - opt_einsum
       - prettytable
       - orjson
       - anywidget
       # Packages without dependencies (using nodeps: prefix)
-      - nodeps:opt_einsum_fx
       - nodeps:e3nn==0.4.4
       - nodeps:torch_ema
       - nodeps:lightning-utilities
       - nodeps:torchmetrics
       - nodeps:mace-torch
-      # Stubbed packages (will be patched by torch_pyodide)
-      - ssl
-      - h5py
-      - lmdb
+  - name: uma
+    packages_pyodide:
+      # antlr4 local wheel (required by omegaconf, PyPI version has ATN mismatch)
+      - emfs:/drive/packages/antlr4_python3_runtime-4.9.3-py3-none-any.whl
+      # Packages with dependencies
+      - orjson
+      - pyyaml
+      - sqlite3
+      - omegaconf
+      - hydra-core
+      # Packages without dependencies (using nodeps: prefix)
+      - nodeps:e3nn>=0.5
+      - nodeps:ase
+      - nodeps:monty
+      - nodeps:fairchem-core
+  - name: mattersim
+    packages_pyodide:
+      # Packages with dependencies
+      - orjson
+      - pyyaml
+      - setuptools
+      # Packages without dependencies
+      - nodeps:e3nn>=0.5
+      - nodeps:ase
+      - nodeps:monty
+      - nodeps:deprecated
+      - wrapt
+      # MatterSim local wheel (pure Python, Cython replaced with NumPy)
+      - emfs:/drive/packages/mattersim-1.1.2-py3-none-any.whl
+  - name: nequip
+    packages_pyodide:
+      # Packages with dependencies
+      - pyyaml
+      - setuptools
+      # Packages without dependencies
+      - nodeps:e3nn>=0.5
+      - nodeps:ase
+      # NequIP wheel (stripped of heavy deps: hydra, lightning, torchmetrics)
+      - emfs:/drive/packages/nequip-0.15.0-py3-none-any.whl

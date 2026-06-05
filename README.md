@@ -8,7 +8,7 @@ Notebooks demonstrating the Mat3ra REST API, in roughly the order a new user sho
 
 | Folder | Notebook | Description |
 |--------|----------|-------------|
-| [system](examples/system/) | [Get Authentication Params](examples/system/get_authentication_params.ipynb) | Programmatically find your user ID and access token. |
+| [system](examples/system/) | [Get Authentication Params](examples/system/get_authentication_params.ipynb) | Authenticate via OIDC and inspect account credentials. |
 | [material](examples/material/) | [Get Materials by Formula](examples/material/get_materials_by_formula.ipynb) | Query materials stored on your account by chemical formula. |
 | [material](examples/material/) | [Create Material](examples/material/create_material.ipynb) | Generate a material in [JSON format](https://docs.mat3ra.com/materials/data/) and upload it to your account. |
 | [material](examples/material/) | [Import Materials from POSCAR](examples/material/upload_materials_from_file_poscar.ipynb) | Import materials directly from POSCAR files. |
@@ -155,13 +155,11 @@ In order to run or edit the examples:
 
 1. Assert an existing Mat3ra.com account. Examples require an account to run. New users can register [here](https://platform.mat3ra.com/register) to obtain one.
 
-2. Open [settings](src/py/mat3ra/notebooks_utils/core/api/settings.json) and adjust it to provide the API authentication parameters. See the [corresponding example](examples/system/get_authentication_params.ipynb) to learn how to obtain the authentication parameters. It is also possible to generate an API token by logging in to [Mat3ra platform](https://platform.mat3ra.com/), navigating to the Account Preferences, and clicking the 'Generate new token' button under API Tokens. More details can be found [here](https://docs.mat3ra.com/accounts/ui/preferences/api/).
+2. Open the desired example notebook and run all cells. Authentication uses OIDC device flow via `await authenticate()` — a browser popup opens for login. On JupyterLite (platform-embedded notebooks), credentials are injected automatically.
 
-3. Open the desired example notebook, adjust it as necessary and run. One can speed up the notebooks execution after running the [Get Authentication Params](examples/system/get_authentication_params.ipynb) one by reusing the kernel from the first notebook.
+3. Optionally, for local Jupyter without OIDC, set legacy API token values in [settings.json](src/py/mat3ra/notebooks_utils/core/api/settings.json). See [Get Authentication Params](examples/system/get_authentication_params.ipynb) for details. API tokens can also be generated in [Account Preferences](https://docs.mat3ra.com/accounts/ui/preferences/api/) on the platform.
 
-  <img src="images/reusable-kernel.png" width="250px" />
-
-NOTE: The Materials Project API key should be obtained from [https://legacy.materialsproject.org/open](https://legacy.materialsproject.org/open).
+NOTE: The Materials Project API key should be set in `settings.json` and obtained from [https://legacy.materialsproject.org/open](https://legacy.materialsproject.org/open).
 
 
 ## Contribute

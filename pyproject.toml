@@ -38,9 +38,8 @@ materials = [
 ]
 workflows = [
   "mat3ra-notebooks-utils[materials]",
-  "mat3ra-code",
-  "mat3ra-mode @ git+https://github.com/Exabyte-io/mode.git@f9136d966dd7f558153f4a02ec8070a8059bd4ef",
-  "mat3ra-wode @ git+https://github.com/Exabyte-io/wode.git@a818aecd7d67a085513a863be3f4227088e1344c",
+  "mat3ra-mode",
+  "mat3ra-wode",
   "mat3ra-ade>=2026.5.29.post0",
   "mat3ra-prode",
   "mat3ra-ide",

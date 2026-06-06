@@ -3,147 +3,107 @@ import re
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 import f90nml
-
-JINJA_PATTERN = re.compile(r"\{\{.*?\}\}|\{%-?.*?-?%\}", re.DOTALL)
-
-
-def _normalize_section(section: str) -> str:
-    return section.lstrip("&").upper()
+from mat3ra.utils.extra.jinja import JINJA_EXPRESSION_PATTERN
 
 
 def _protect_jinja(text: str) -> Tuple[str, Dict[str, str]]:
+    """Replace Jinja expressions with f90nml-safe placeholders."""
     placeholders: Dict[str, str] = {}
+    pattern = re.compile(JINJA_EXPRESSION_PATTERN + r"|\{%-?.*?-?%\}", re.DOTALL)
 
-    def replacer(match: re.Match[str]) -> str:
+    def replacer(match):
         key = f"__JINJA_{len(placeholders)}__"
         placeholders[key] = match.group(0)
         return f"'{key}'"
 
-    return JINJA_PATTERN.sub(replacer, text), placeholders
+    return pattern.sub(replacer, text), placeholders
 
 
 def _restore_jinja(text: str, placeholders: Mapping[str, str]) -> str:
-    restored = text
     for key, original in placeholders.items():
-        restored = restored.replace(f"'{key}'", original)
-    return restored
+        text = text.replace(f"'{key}'", original)
+    return text
 
 
-def _extract_namelist_block(content: str, section: str) -> Tuple[str, str, str]:
-    normalized = _normalize_section(section)
-    pattern = rf"(?ms)(^&{re.escape(normalized)}\s*\n.*?^/\s*$)"
-    match = re.search(pattern, content)
-    if match is None:
+def set_content(content: str, section: str, parameters: Mapping[str, Any]) -> str:
+    """Upsert parameters into a QE namelist section, preserving Jinja and case."""
+    normalized = section.lstrip("&").upper()
+    match = re.search(rf"(?ms)(^&{re.escape(normalized)}\s*\n.*?^/\s*$)", content)
+    if not match:
         raise ValueError(f"Namelist '&{normalized}' not found in input template.")
-    return content[: match.start()], match.group(0), content[match.end() :]
 
-
-def _restore_namelist_header(block: str, section: str) -> str:
-    normalized = _normalize_section(section)
-    return re.sub(r"^&\w+", f"&{normalized}", block, count=1, flags=re.MULTILINE)
-
-
-def _patch_namelist_block(block: str, section: str, parameters: Mapping[str, Any]) -> str:
-    normalized = _normalize_section(section)
+    before, block, after = content[: match.start()], match.group(0), content[match.end() :]
     protected, placeholders = _protect_jinja(block)
     nml = f90nml.reads(protected)
     nml.patch({normalized.lower(): dict(parameters)})
     buffer = io.StringIO()
     nml.write(buffer)
-    patched = _restore_namelist_header(buffer.getvalue(), normalized)
-    return _restore_jinja(patched, placeholders)
+    patched = re.sub(r"^&\w+", f"&{normalized}", buffer.getvalue(), count=1, flags=re.MULTILINE)
+    return before + _restore_jinja(patched, placeholders) + after
 
 
-def set_content(content: str, section: str, parameters: Mapping[str, Any]) -> str:
-    before, block, after = _extract_namelist_block(content, section)
-    patched_block = _patch_namelist_block(block, section, parameters)
-    return before + patched_block + after
+def _get_template_attr(item, attr: str):
+    """Get attribute from nested template dict/object or flat stub."""
+    if isinstance(item, dict):
+        template = item.get("template", item)
+        return template.get(attr) if isinstance(template, dict) else None
+    template = getattr(item, "template", item)
+    return getattr(template, attr, None)
 
 
-def _get_template(input_item):
-    if isinstance(input_item, dict):
-        template = input_item.get("template")
-        if isinstance(template, dict):
-            return template
-        return input_item
-    template = getattr(input_item, "template", None)
-    if template is not None:
-        return template
-    return input_item
-
-
-def _get_input_content(input_item) -> Optional[str]:
-    template = _get_template(input_item)
-    if isinstance(template, dict):
-        return template.get("content")
-    return getattr(template, "content", None)
-
-
-def _set_input_content(input_item, content: str) -> None:
-    template = _get_template(input_item)
-    if isinstance(template, dict):
-        template["content"] = content
+def _set_template_content(item, content: str):
+    """Set content on nested template dict/object or flat stub."""
+    if isinstance(item, dict):
+        template = item.get("template", item)
+        (template if isinstance(template, dict) else item)["content"] = content
     else:
-        template.content = content
+        getattr(item, "template", item).content = content
 
 
-def _get_input_name(input_item) -> Optional[str]:
-    template = _get_template(input_item)
-    if isinstance(template, dict):
-        return template.get("name")
-    return getattr(template, "name", None)
-
-
-def _is_multi_section_parameters(value: Any) -> bool:
-    if not isinstance(value, Mapping):
-        return False
-    return all(isinstance(item, Mapping) for item in value.values())
-
-
-def _patch_qe_input_single(
-    unit,
-    section: str,
-    parameters: Mapping[str, Any],
-    input_name: Optional[str] = None,
-) -> None:
-    matching_inputs = 0
-    for input_item in getattr(unit, "input", []):
-        content = _get_input_content(input_item)
-        if content is None:
-            continue
-        if input_name is not None and _get_input_name(input_item) != input_name:
-            continue
-        _set_input_content(input_item, set_content(content, section, parameters))
-        matching_inputs += 1
-
-    if matching_inputs == 0:
+def _patch_unit(unit, section: str, parameters: Mapping[str, Any], input_name: Optional[str]):
+    """Patch a single namelist section across matching unit inputs."""
+    matched = False
+    for item in getattr(unit, "input", []):
+        content = _get_template_attr(item, "content")
+        if content and (not input_name or _get_template_attr(item, "name") == input_name):
+            _set_template_content(item, set_content(content, section, parameters))
+            matched = True
+    if not matched:
         raise ValueError("No matching input template found for QE patch.")
 
 
 def patch_qe_input(
-    unit,
-    section_or_parameters: Any,
-    parameters: Optional[Mapping[str, Any]] = None,
-    input_name: Optional[str] = None,
-) -> None:
-    if parameters is None and _is_multi_section_parameters(section_or_parameters):
-        for section, section_parameters in section_or_parameters.items():
-            _patch_qe_input_single(unit, section, section_parameters, input_name)
-        return
+    unit, section_or_params: Any, parameters: Optional[Mapping[str, Any]] = None, input_name: Optional[str] = None
+):
+    """
+    Patch QE namelist parameters on a workflow unit.
+
+    Examples:
+        patch_qe_input(unit, "system", {"vdw_corr": "d3_grimme"})
+        patch_qe_input(unit, {"system": {"vdw_corr": "d3_grimme"}})
+    """
     if parameters is None:
-        raise TypeError("Expected section parameters mapping or a section name with parameters.")
-    _patch_qe_input_single(unit, section_or_parameters, parameters, input_name)
+        if not isinstance(section_or_params, Mapping) or not all(
+            isinstance(v, Mapping) for v in section_or_params.values()
+        ):
+            raise TypeError("Expected section name with parameters or multi-section dict.")
+        for section, params in section_or_params.items():
+            _patch_unit(unit, section, params, input_name)
+    else:
+        _patch_unit(unit, section_or_params, parameters, input_name)
 
 
 def patch_workflow_qe_input(
-    workflow,
-    parameters: Mapping[str, Mapping[str, Any]],
-    unit_names: List[str],
-    input_name: Optional[str] = None,
-) -> None:
+    workflow, parameters: Mapping[str, Mapping[str, Any]], unit_names: List[str], input_name: Optional[str] = None
+):
+    """
+    Patch QE inputs across workflow subworkflows for named units.
+
+    Example:
+        patch_workflow_qe_input(workflow, {"system": {"vdw_corr": "d3_grimme"}}, ["pw_relax"])
+    """
     for subworkflow in workflow.subworkflows:
         for unit_name in unit_names:
-            unit = subworkflow.get_unit_by_name(name=unit_name)
-            if unit:
+            if unit := subworkflow.get_unit_by_name(name=unit_name):
                 patch_qe_input(unit, parameters, input_name=input_name)
                 subworkflow.set_unit(unit)

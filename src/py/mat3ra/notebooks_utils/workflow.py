@@ -2,7 +2,7 @@ import re
 from typing import List, Mapping, Optional
 
 
-def _format_value(value: object) -> str:
+def _format_to_f90_value(value: object) -> str:
     """Format Python value as Fortran namelist value."""
     if isinstance(value, bool):
         return ".true." if value else ".false."
@@ -20,7 +20,7 @@ def set_content(content: str, section: str, parameters: Mapping[str, object]) ->
     before, header, body, footer, after = content[: match.start()], *match.groups(), content[match.end() :]
 
     for param, value in parameters.items():
-        line = f"    {param} = {_format_value(value)}"
+        line = f"    {param} = {_format_to_f90_value(value)}"
         param_pattern = rf"(?m)^\s*{re.escape(param)}\s*=.*$"
         body = re.sub(param_pattern, line, body) if re.search(param_pattern, body) else body.rstrip() + f"\n{line}\n"
 

@@ -1,6 +1,6 @@
 import io
 import re
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import Dict, List, Mapping, Optional, Tuple
 
 import f90nml
 from mat3ra.utils.extra.jinja import JINJA_EXPRESSION_PATTERN
@@ -25,7 +25,7 @@ def _restore_jinja(text: str, placeholders: Mapping[str, str]) -> str:
     return text
 
 
-def set_content(content: str, section: str, parameters: Mapping[str, Any]) -> str:
+def set_content(content: str, section: str, parameters: Mapping[str, object]) -> str:
     """Upsert parameters into a QE namelist section, preserving Jinja and case."""
     normalized = section.lstrip("&").upper()
     match = re.search(rf"(?ms)(^&{re.escape(normalized)}\s*\n.*?^/\s*$)", content)
@@ -60,7 +60,7 @@ def _set_template_content(item, content: str):
         getattr(item, "template", item).content = content
 
 
-def _patch_unit(unit, section: str, parameters: Mapping[str, Any], input_name: Optional[str]):
+def _patch_unit(unit, section: str, parameters: Mapping[str, object], input_name: Optional[str]):
     """Patch a single namelist section across matching unit inputs."""
     matched = False
     for item in getattr(unit, "input", []):
@@ -73,29 +73,31 @@ def _patch_unit(unit, section: str, parameters: Mapping[str, Any], input_name: O
 
 
 def patch_qe_input(
-    unit, section_or_params: Any, parameters: Optional[Mapping[str, Any]] = None, input_name: Optional[str] = None
-):
+    unit,
+    parameters: Mapping[str, Mapping[str, object]],
+    input_name: Optional[str] = None,
+) -> None:
     """
     Patch QE namelist parameters on a workflow unit.
 
-    Examples:
-        patch_qe_input(unit, "system", {"vdw_corr": "d3_grimme"})
+    Args:
+        unit: Execution unit with input templates.
+        parameters: Namelist parameters as {section: {key: value}}.
+        input_name: Optional input file name filter.
+
+    Example:
         patch_qe_input(unit, {"system": {"vdw_corr": "d3_grimme"}})
     """
-    if parameters is None:
-        if not isinstance(section_or_params, Mapping) or not all(
-            isinstance(v, Mapping) for v in section_or_params.values()
-        ):
-            raise TypeError("Expected section name with parameters or multi-section dict.")
-        for section, params in section_or_params.items():
-            _patch_unit(unit, section, params, input_name)
-    else:
-        _patch_unit(unit, section_or_params, parameters, input_name)
+    for section, section_parameters in parameters.items():
+        _patch_unit(unit, section, section_parameters, input_name)
 
 
 def patch_workflow_qe_input(
-    workflow, parameters: Mapping[str, Mapping[str, Any]], unit_names: List[str], input_name: Optional[str] = None
-):
+    workflow,
+    parameters: Mapping[str, Mapping[str, object]],
+    unit_names: List[str],
+    input_name: Optional[str] = None,
+) -> None:
     """
     Patch QE inputs across workflow subworkflows for named units.
 

@@ -43,7 +43,7 @@ workflows = [
   "mat3ra-ade>=2026.5.29.post0",
   "mat3ra-prode",
   "mat3ra-ide",
-  "mat3ra-notebooks-utils[api]",
+  "mat3ra-notebooks-utils[api]"
 ]
 all = [
   "mat3ra-notebooks-utils[workflows]"

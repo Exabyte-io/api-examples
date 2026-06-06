@@ -11,17 +11,17 @@ def _format_to_f90_value(value: object) -> str:
 
 def set_content(content: str, section: str, parameters: Mapping[str, object]) -> str:
     """Upsert parameters into a QE namelist section."""
-    section = section.lstrip("&").upper()
-    pattern = rf"(?ms)(^&{re.escape(section)}\s*\n)(.*?)(^/\s*$)"
+    section_name = section.lstrip("&")
+    pattern = rf"(?ims)(^&{re.escape(section_name)}\s*\n)(.*?)(^/\s*$)"
     match = re.search(pattern, content)
     if not match:
-        raise ValueError(f"Namelist '&{section}' not found in input template.")
+        raise ValueError(f"Namelist '&{section_name.upper()}' not found in input template.")
 
     before, header, body, footer, after = content[: match.start()], *match.groups(), content[match.end() :]
 
     for param, value in parameters.items():
         line = f"    {param} = {_format_to_f90_value(value)}"
-        param_pattern = rf"(?m)^\s*{re.escape(param)}\s*=.*$"
+        param_pattern = rf"(?im)^\s*{re.escape(param)}\s*=.*$"
         body = re.sub(param_pattern, line, body) if re.search(param_pattern, body) else body.rstrip() + f"\n{line}\n"
 
     return before + header + body + footer + after

@@ -66,6 +66,8 @@ tests = [
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
+  "mat3ra-wode",
+  "mat3ra-standata",
 ]
 docs = [
   "mkdocs>=1.4.3",

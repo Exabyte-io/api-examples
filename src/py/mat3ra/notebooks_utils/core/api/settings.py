@@ -18,16 +18,8 @@ assert absolute_path_to_settings_json_file
 with open(absolute_path_to_settings_json_file) as settings_json_file:
     settings_json_config = json.load(settings_json_file)
 
-# The variables below are defined in the first code cell
-# in either the Google Colab or Jupyter notebook.
-#
-# In Google Colab, these variables must be filled out in the 'Authorization Form' section of the notebook,
-# which are added to the environment variables.
-#
-# If using Jupyter, these variables can be left to their default values in the code cell, but the user
-# should change these values in the settings.json file located in the examples folder.
-#
-# We prioritize the environment variables for Google Colab, and fall back to the settings from JSON for Jupyter.
+# Environment variables take precedence over settings.json (set by authenticate() or JupyterLite host).
+# For local Jupyter, set legacy API token values in settings.json or use OIDC via authenticate().
 
 ACCOUNT_ID = os.getenv("ACCOUNT_ID", settings_json_config.get("ACCOUNT_ID"))
 AUTH_TOKEN = os.getenv("AUTH_TOKEN", settings_json_config.get("AUTH_TOKEN"))

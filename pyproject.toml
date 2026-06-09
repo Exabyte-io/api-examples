@@ -93,9 +93,6 @@ homepage = "https://exabyte-io.github.io/api-examples"
 documentation = "https://exabyte-io.github.io/api-examples"
 repository = "https://github.com/Exabyte-io/api-examples"
 
-[project.scripts]
-notebook-path = "utils.notebook:print_notebook_path"
-
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2", "wheel"]
 build-backend = "setuptools.build_meta"

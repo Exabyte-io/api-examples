@@ -1,42 +1,42 @@
 import pytest
-from mat3ra.notebooks_utils.workflow import set_content
+from mat3ra.notebooks_utils.workflow import patch_workflow_qe_input
+from mat3ra.standata.workflows import WorkflowStandata
+from mat3ra.wode.workflows import Workflow
 
-PW_INPUT = (
-    "&system\n    VDW_CORR = 'dft-d'\n    ibrav = {{ input.IBRAV }}\n/\n"
-    "&ELECTRONS\n    diago_full_acc = .false.\n    mixing_beta = 0.3\n/\n"
-)
+FIXED_CELL_RELAXATION = "fixed_cell_relaxation.json"
+RELAX_UNIT_NAMES = ["pw_relax"]
+
+
+def _relax_workflow():
+    config = WorkflowStandata.filter_by_application("espresso").get_by_name_first_match(FIXED_CELL_RELAXATION)
+    return Workflow.create(config)
+
+
+def _pw_relax_content(workflow):
+    return workflow.subworkflows[0].get_unit_by_name(name="pw_relax").input[0].template.content
 
 
 @pytest.mark.parametrize(
-    "content,steps,present,absent,error",
+    "parameters,present,absent,error",
     [
         (
-            PW_INPUT,
-            [
-                ("system", {"vdw_corr": "d3_grimme"}),
-                ("electrons", {"mixing_beta": 0.5, "diago_full_acc": True}),
-            ],
-            [
-                "vdw_corr = 'd3_grimme'",
-                "ibrav = {{ input.IBRAV }}",
-                "mixing_beta = 0.5",
-                "diago_full_acc = .true.",
-            ],
-            ["VDW_CORR = 'dft-d'", "mixing_beta = 0.3"],
+            {"system": {"vdw_corr": "d3_grimme"}, "electrons": {"mixing_beta": 0.5, "diago_full_acc": True}},
+            ["vdw_corr = 'd3_grimme'", "{{ input.IBRAV }}", "mixing_beta = 0.5", "diago_full_acc = .true."],
+            ["mixing_beta = 0.3"],
             None,
         ),
-        ("&SYSTEM\n/\n", [("IONS", {"ion_dynamics": "bfgs"})], [], [], "Namelist '&IONS' not found"),
+        ({"FAKESECTION": {"x": 1}}, [], [], "Namelist '&FAKESECTION' not found."),
     ],
 )
-def test_set_content(content, steps, present, absent, error):
+def test_patch_workflow_qe_input(parameters, present, absent, error):
+    workflow = _relax_workflow()
     if error:
         with pytest.raises(ValueError, match=error):
-            set_content(content, *steps[0])
+            patch_workflow_qe_input(workflow, parameters, unit_names=RELAX_UNIT_NAMES)
         return
-    result = content
-    for section, parameters in steps:
-        result = set_content(result, section, parameters)
+    patch_workflow_qe_input(workflow, parameters, unit_names=RELAX_UNIT_NAMES)
+    content = _pw_relax_content(workflow)
     for text in present:
-        assert text in result
+        assert text in content
     for text in absent:
-        assert text not in result
+        assert text not in content

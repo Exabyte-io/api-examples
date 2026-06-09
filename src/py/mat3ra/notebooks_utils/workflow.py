@@ -9,7 +9,7 @@ def patch_workflow_qe_input(
     parameters: Dict[str, Dict[str, object]],
     unit_names: List[str],
     input_name: Optional[str] = None,
-):
+) -> Workflow:
     """
     Patch QE inputs across workflow subworkflows for named units.
 
@@ -46,3 +46,4 @@ def patch_workflow_qe_input(
                     content = content[: match.start()] + header + body + footer + content[match.end() :]
                 template.set_content(content)
             subworkflow.set_unit(unit)
+    return workflow

@@ -1,70 +1,15 @@
 import re
-from typing import List, Mapping, Optional
+from typing import Dict, List, Optional
 
-
-def _format_to_f90_value(value: object) -> str:
-    """Format Python value as Fortran namelist value."""
-    if isinstance(value, bool):
-        return ".true." if value else ".false."
-    return f"'{value}'" if isinstance(value, str) else str(value)
-
-
-def set_content(content: str, section: str, parameters: Mapping[str, object]) -> str:
-    """Upsert parameters into a QE namelist section."""
-    section_name = section.lstrip("&")
-    pattern = rf"(?ims)(^&{re.escape(section_name)}\s*\n)(.*?)(^/\s*$)"
-    match = re.search(pattern, content)
-    if not match:
-        raise ValueError(f"Namelist '&{section_name.upper()}' not found in input template.")
-
-    before, header, body, footer, after = content[: match.start()], *match.groups(), content[match.end() :]
-
-    for param, value in parameters.items():
-        line = f"    {param} = {_format_to_f90_value(value)}"
-        param_pattern = rf"(?im)^\s*{re.escape(param)}\s*=.*$"
-        body = re.sub(param_pattern, line, body) if re.search(param_pattern, body) else body.rstrip() + f"\n{line}\n"
-
-    return before + header + body + footer + after
-
-
-def patch_qe_input(
-    unit,
-    parameters: Mapping[str, Mapping[str, object]],
-    input_name: Optional[str] = None,
-) -> None:
-    """
-    Patch QE namelist parameters on a workflow unit.
-
-    Args:
-        unit: Execution unit with input templates.
-        parameters: Namelist parameters as {section: {key: value}}.
-        input_name: Optional input file name filter.
-
-    Example:
-        patch_qe_input(unit, {"system": {"vdw_corr": "d3_grimme"}})
-    """
-    matched = False
-    for item in getattr(unit, "input", []):
-        template = item.template
-        if input_name and template.name != input_name:
-            continue
-
-        content = template.content
-        for section, params in parameters.items():
-            content = set_content(content, section, params)
-        template.set_content(content)
-        matched = True
-
-    if not matched:
-        raise ValueError("No matching input template found for QE patch.")
+from mat3ra.wode import Workflow
 
 
 def patch_workflow_qe_input(
-    workflow,
-    parameters: Mapping[str, Mapping[str, object]],
+    workflow: Workflow,
+    parameters: Dict[str, Dict[str, object]],
     unit_names: List[str],
     input_name: Optional[str] = None,
-) -> None:
+):
     """
     Patch QE inputs across workflow subworkflows for named units.
 
@@ -77,8 +22,27 @@ def patch_workflow_qe_input(
     Example:
         patch_workflow_qe_input(workflow, {"system": {"vdw_corr": "d3_grimme"}}, ["pw_relax"])
     """
+    f90 = lambda value: (  # noqa: E731
+        f".{str(value).lower()}." if isinstance(value, bool) else repr(value) if isinstance(value, str) else str(value)
+    )
     for subworkflow in workflow.subworkflows:
         for unit_name in unit_names:
-            if unit := subworkflow.get_unit_by_name(name=unit_name):
-                patch_qe_input(unit, parameters, input_name=input_name)
-                subworkflow.set_unit(unit)
+            if not (unit := subworkflow.get_unit_by_name(name=unit_name)):
+                continue
+            for input_item in getattr(unit, "input", []):
+                template = input_item.template
+                if input_name not in (None, template.name):
+                    continue
+                content = template.content
+                for section, updates in parameters.items():
+                    name = section.lstrip("&")
+                    match = re.search(rf"(?ims)(^&{re.escape(name)}\s*\n)(.*?)(^/\s*$)", content)
+                    if not match:
+                        raise ValueError(f"Namelist '&{name.upper()}' not found.")
+                    header, body, footer = match.groups()
+                    for key, value in updates.items():
+                        line, pattern = f"    {key} = {f90(value)}", rf"(?im)^\s*{re.escape(key)}\s*=.*$"
+                        body = re.sub(pattern, line, body) if re.search(pattern, body) else f"{body.rstrip()}\n{line}\n"
+                    content = content[: match.start()] + header + body + footer + content[match.end() :]
+                template.set_content(content)
+            subworkflow.set_unit(unit)

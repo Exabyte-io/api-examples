@@ -1,3 +1,4 @@
+import enum
 import gc
 import sys
 import types
@@ -109,7 +110,15 @@ def _patch_ray_serve():
         def __init__(self, **k):
             self.__dict__.update(k)
 
+    class _ApplicationStatus(enum.Enum):
+        NOT_STARTED = "NOT_STARTED"
+        DEPLOYING = "DEPLOYING"
+        RUNNING = "RUNNING"
+        DEPLOY_FAILED = "DEPLOY_FAILED"
+        DELETING = "DELETING"
+
     serve_schema.LoggingConfig = _LoggingConfig
+    serve_schema.ApplicationStatus = _ApplicationStatus
     serve_mod.schema = serve_schema
     sys.modules["ray.serve.schema"] = serve_schema
 

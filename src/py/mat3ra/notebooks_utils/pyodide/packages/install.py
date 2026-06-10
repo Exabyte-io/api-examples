@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from typing import List
+from typing import List, Union
 
 from ...primitive.environment import ENVIRONMENT
 from ...primitive.logger import log
@@ -72,12 +72,18 @@ def get_packages_list(requirements_dict: dict, notebook_name_pattern: str = "") 
 
     # Note: environment specific packages have to be installed first,
     # because in Pyodide common packages might depend on them
-    return [
-        *packages_default_environment_specific,
-        *packages_notebook_environment_specific,
-        *packages_default_common,
-        *packages_notebook_common,
-    ]
+    return deduplicate_packages(
+        [
+            *packages_default_environment_specific,
+            *packages_notebook_environment_specific,
+            *packages_default_common,
+            *packages_notebook_common,
+        ]
+    )
+
+
+def deduplicate_packages(packages: List[str]) -> List[str]:
+    return list(dict.fromkeys(packages))
 
 
 async def get_package_list_from_config(config_file_path: str, notebook_name_pattern: str) -> list:
@@ -86,7 +92,20 @@ async def get_package_list_from_config(config_file_path: str, notebook_name_patt
     return packages
 
 
-async def install_package_pyodide(pkg: str, verbose: bool = True):
+def should_reinstall_packages(previous_hash: Union[str, None], requirements_hash: str) -> bool:
+    return previous_hash is not None and previous_hash != requirements_hash
+
+
+def package_has_version_specifier(pkg: str) -> bool:
+    spec = pkg.split("nodeps:")[-1]  # Remove nodeps: prefix if present
+    return any(op in spec for op in ("==", ">=", "<=", "!=", "~=", ">", "<"))
+
+
+def should_reinstall_package(pkg: str, profile_changed: bool) -> bool:
+    return profile_changed and package_has_version_specifier(pkg)
+
+
+async def install_package_pyodide(pkg: str, verbose: bool = True, reinstall: bool = False):
     """
     Install a package in a Pyodide environment.
 
@@ -105,7 +124,7 @@ async def install_package_pyodide(pkg: str, verbose: bool = True):
         is_url = pkg.startswith("http://") or pkg.startswith("https://") or pkg.startswith("emfs:/")
         are_dependencies_installed = not is_url
 
-    await micropip.install(pkg, deps=are_dependencies_installed)
+    await micropip.install(pkg, deps=are_dependencies_installed, reinstall=reinstall)
     pkg_name = pkg.split("/")[-1].split("-")[0] if "://" in pkg else pkg.split("==")[0]
     if verbose:
         log(f"Installed {pkg_name}", force_verbose=verbose)
@@ -121,9 +140,15 @@ async def install_packages_pyodide(notebook_name_pattern: str, verbose: bool = T
     """
     packages = await get_package_list_from_config(get_config_yml_file_path(""), notebook_name_pattern)
     requirements_hash = str(hash(json.dumps(packages)))
-    if os.environ.get("requirements_hash") != requirements_hash:
+    previous_hash = os.environ.get("requirements_hash")
+    profile_changed = should_reinstall_packages(previous_hash, requirements_hash)
+    if previous_hash != requirements_hash:
         for pkg in packages:
-            await install_package_pyodide(pkg, verbose)
+            await install_package_pyodide(
+                pkg,
+                verbose,
+                reinstall=should_reinstall_package(pkg, profile_changed),
+            )
         if verbose:
             log("Packages installed successfully.", force_verbose=verbose)
         os.environ["requirements_hash"] = requirements_hash

@@ -1,6 +1,5 @@
 from .ipython.packages.install import install_packages_python
 from .primitive.environment import is_pyodide_environment
-from .pyodide.packages.install import install_packages_pyodide
 
 
 async def install_packages(notebook_name_pattern: str, config_file_path: str = "", verbose: bool = True):
@@ -17,6 +16,8 @@ async def install_packages(notebook_name_pattern: str, config_file_path: str = "
         verbose (bool): Whether to print install progress.
     """
     if is_pyodide_environment():
+        from .pyodide.packages.install import install_packages_pyodide
+
         await install_packages_pyodide(notebook_name_pattern, verbose)
     else:
         install_packages_python(notebook_name_pattern, verbose)

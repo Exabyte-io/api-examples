@@ -5,7 +5,7 @@ This module provides shared Pyodide compatibility patches for torch-based MLFF
 packages. Package-specific patches live in their corresponding package modules.
 
 Usage:
-    from mat3ra.notebooks_utils.pyodide.packages import apply_all_patches
+    from mat3ra.notebooks_utils.pyodide.packages.patches import apply_all_patches
 
     apply_all_patches("mace")
 """

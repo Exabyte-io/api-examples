@@ -20,7 +20,7 @@ def patch_fairchem_deps():
     Stub heavy dependencies that fairchem-core imports but doesn't need for inference.
 
     This stubs: numba, ray (+ serve), wandb, torchtnt, hydra, omegaconf,
-    submitit, clusterscope, tqdm, huggingface_hub, websockets.
+    submitit, psutil, clusterscope, tqdm, huggingface_hub, websockets.
     """
     numba_mod = _make_stub_module("numba", submodules=["core", "core.types", "typed"])
     numba_mod.njit = lambda *a, **k: (lambda f: f) if not a or callable(a[0]) else lambda f: f
@@ -78,7 +78,8 @@ def patch_fairchem_deps():
     _patch_wandb()
     _patch_torchtnt()
     _patch_hydra()
-    _make_stub_module("submitit")
+    _patch_submitit()
+    _patch_psutil()
     _make_stub_module("clusterscope")
     _make_stub_module("websockets")
     _patch_tqdm()
@@ -102,6 +103,7 @@ def _patch_ray_serve():
     serve_mod.ingress = lambda *a, **k: (lambda cls: cls)
     serve_mod.run = lambda *a, **k: None
     serve_mod.batch = lambda *args, **kwargs: (lambda fn: fn) if not args or not callable(args[0]) else args[0]
+    serve_mod.multiplexed = lambda *args, **kwargs: (lambda fn: fn) if not args or not callable(args[0]) else args[0]
 
     serve_schema = types.ModuleType("ray.serve.schema")
     serve_schema.__package__ = "ray.serve"
@@ -121,6 +123,30 @@ def _patch_ray_serve():
     serve_schema.ApplicationStatus = _ApplicationStatus
     serve_mod.schema = serve_schema
     sys.modules["ray.serve.schema"] = serve_schema
+
+
+def _patch_submitit():
+    submitit_mod = _make_stub_module("submitit", submodules=["helpers", "core", "core.utils"])
+
+    class _SubmititPlaceholder:
+        pass
+
+    submitit_mod.Job = _SubmititPlaceholder
+    sys.modules["submitit.helpers"].Checkpointable = _SubmititPlaceholder
+    sys.modules["submitit.helpers"].DelayedSubmission = _SubmititPlaceholder
+    sys.modules["submitit.core.utils"].JobPaths = _SubmititPlaceholder
+
+
+def _patch_psutil():
+    psutil_mod = types.ModuleType("psutil")
+
+    class _UnavailableProcess:
+        def __init__(self, *args, **kwargs):
+            raise RuntimeError("psutil process management is unavailable in Pyodide")
+
+    psutil_mod.Process = _UnavailableProcess
+    psutil_mod.wait_procs = lambda *args, **kwargs: ([], [])
+    sys.modules["psutil"] = psutil_mod
 
 
 def _patch_wandb():

@@ -78,6 +78,7 @@ forcefields = [
   # WARNING: mattersim will automatically upgrade numpy and pymatgen
   # This WILL conflict with base project dependencies
   # Use this optional dependency ONLY in isolated environments
+  "fairchem-core>=0.3.0",
 ]
 all_dev = [
   "mat3ra-notebooks-utils[all]",

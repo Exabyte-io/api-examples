@@ -1,24 +1,13 @@
 """
 Patches for PyTorch and related packages to work in Pyodide environment.
 
-This module provides patches for various torch-related packages that don't work
-in Pyodide's WASM environment, organized by functionality.
+This module provides shared Pyodide compatibility patches for torch-based MLFF
+packages. Package-specific patches live in their corresponding package modules.
 
 Usage:
-    from mat3ra.notebooks_utils.other.torch_pyodide import (
-        patch_torch_linalg,
-        patch_torch_testing,
-        patch_matscipy,
-        patch_lmdb_h5py,
-        patch_mace_tools,
-    )
+    from mat3ra.notebooks_utils.pyodide.packages.patches import apply_all_patches
 
-    # Apply all patches
-    patch_torch_linalg()
-    patch_torch_testing()
-    patch_matscipy()
-    patch_lmdb_h5py()
-    patch_mace_tools()
+    apply_all_patches("mace")
 """
 
 import sys
@@ -28,12 +17,53 @@ from collections import namedtuple
 import numpy as np
 import torch
 
-from ...primitive.environment import is_pyodide_environment
-
 # Define return types to mimic PyTorch's named tuples
 EigRet = namedtuple("linalg_eig", ["eigenvalues", "eigenvectors"])  # type: ignore
 EighRet = namedtuple("linalg_eigh", ["eigenvalues", "eigenvectors"])  # type: ignore
 LUFactorReturn = namedtuple("LUFactorReturn", ["LU", "pivots"])
+_OMEGACONF_RESOLVERS = {}
+
+
+class _DictConfig(dict):
+    pass
+
+
+class _ListConfig(list):
+    pass
+
+
+class _OmegaConf:
+    @staticmethod
+    def to_container(cfg, **kwargs):
+        return dict(cfg) if isinstance(cfg, dict) else cfg
+
+    @staticmethod
+    def create(data):
+        return _DictConfig(data) if isinstance(data, dict) else data
+
+    @staticmethod
+    def register_new_resolver(name, func, **kwargs):
+        _OMEGACONF_RESOLVERS[name] = func
+
+    @staticmethod
+    def register_resolver(name, func, **kwargs):
+        _OMEGACONF_RESOLVERS[name] = func
+
+    @staticmethod
+    def has_resolver(name):
+        return name in _OMEGACONF_RESOLVERS
+
+
+def _ensure_omegaconf_stub():
+    omegaconf_mod = sys.modules.get("omegaconf") or _make_stub_module("omegaconf")
+    omegaconf_mod.DictConfig = getattr(omegaconf_mod, "DictConfig", _DictConfig)
+    omegaconf_mod.ListConfig = getattr(omegaconf_mod, "ListConfig", _ListConfig)
+    omega_conf = getattr(omegaconf_mod, "OmegaConf", _OmegaConf)
+    for name in ("register_new_resolver", "register_resolver", "has_resolver"):
+        if not hasattr(omega_conf, name):
+            setattr(omega_conf, name, getattr(_OmegaConf, name))
+    omegaconf_mod.OmegaConf = omega_conf
+    return omegaconf_mod
 
 
 def _to_np(tensor):
@@ -142,13 +172,66 @@ def patch_torch_linalg():
     torch.Tensor.__array__ = _tensor_array_compat
     torch.Tensor.numpy = lambda self: np.array(self.detach().tolist())
 
-    # Fix torch.compiler.is_compiling for Pyodide
-    if not hasattr(torch, "compiler"):
-        torch.compiler = types.ModuleType("torch.compiler")
-    if not hasattr(torch.compiler, "is_compiling"):
-        torch.compiler.is_compiling = lambda: False
+    # torch.from_numpy — WASM PyTorch build lacks NumPy interop
+    _orig_from_numpy = torch.from_numpy
 
-    print("✓ Torch linalg patches applied")
+    def _patched_from_numpy(ndarray):
+        try:
+            return _orig_from_numpy(ndarray)
+        except RuntimeError:
+            return torch.tensor(ndarray.tolist())
+
+    torch.from_numpy = _patched_from_numpy
+
+    # torch.as_tensor — also uses numpy interop internally
+    _orig_as_tensor = torch.as_tensor
+
+    def _patched_as_tensor(data, dtype=None, device=None):
+        try:
+            return _orig_as_tensor(data, dtype=dtype, device=device)
+        except (RuntimeError, TypeError):
+            if hasattr(data, "tolist"):
+                return torch.tensor(data.tolist(), dtype=dtype, device=device)
+            return torch.tensor(data, dtype=dtype, device=device)
+
+    torch.as_tensor = _patched_as_tensor
+
+    # Tensor indexing — WASM PyTorch can't infer numpy dtypes for boolean/integer masks
+    _orig_getitem = torch.Tensor.__getitem__
+
+    def _patched_getitem(self, key):
+        if isinstance(key, np.ndarray):
+            key = torch.tensor(key.tolist())
+        return _orig_getitem(self, key)
+
+    torch.Tensor.__getitem__ = _patched_getitem
+
+    _orig_setitem = torch.Tensor.__setitem__
+
+    def _patched_setitem(self, key, value):
+        if isinstance(key, np.ndarray):
+            key = torch.tensor(key.tolist())
+        return _orig_setitem(self, key, value)
+
+    torch.Tensor.__setitem__ = _patched_setitem
+
+    # torch.tensor — handle lists of 0-d tensors (WASM calls len() on elements, fails for 0-d)
+    _orig_torch_tensor = torch.tensor
+
+    def _patched_torch_tensor(data, *args, **kwargs):
+        if isinstance(data, (list, tuple)):
+
+            def _unwrap(item):
+                if isinstance(item, torch.Tensor) and item.ndim == 0:
+                    return item.item()
+                return item
+
+            data = type(data)(_unwrap(x) for x in data)
+        return _orig_torch_tensor(data, *args, **kwargs)
+
+    torch.tensor = _patched_torch_tensor
+
+    print("✓ Torch linalg + numpy interop patches applied")
 
 
 # ==============================================================================
@@ -191,7 +274,334 @@ def patch_torch_testing():
     sys.modules["torch.testing._internal.common_utils"] = _common_utils
     sys.modules["torch.testing._internal.logging_tensor"] = _logging_tensor
 
+    # Import torch.utils.checkpoint AFTER logging_tensor stubs are set up
+    # (checkpoint.py imports logging_tensor at import time)
+    import torch.utils.checkpoint  # noqa: F401
+
     print("✓ Torch testing patches applied")
+
+
+# ==============================================================================
+# Torch compiler patches
+# ==============================================================================
+
+
+def patch_torch_compiler():
+    """
+    Patch torch.compiler for Pyodide WASM.
+
+    - Stubs torch.compiler.is_compiling (not available in WASM build)
+    - Makes torch.compiler.disable a no-op decorator (avoids torch._dynamo
+      import chain which requires C extensions missing in WASM)
+    - Needed by e3nn >= 0.5 and fairchem-core which use @torch.compiler.disable
+    """
+    if not hasattr(torch, "compiler"):
+        torch.compiler = types.ModuleType("torch.compiler")
+    if not hasattr(torch.compiler, "is_compiling"):
+        torch.compiler.is_compiling = lambda: False
+
+    def _compiler_disable(fn=None, recursive=True):
+        if fn is not None:
+            return fn
+        return lambda f: f
+
+    torch.compiler.disable = _compiler_disable
+
+    print("✓ Torch compiler patches applied")
+
+
+# ==============================================================================
+# Torch distributed patches (for FAIRChem)
+# ==============================================================================
+
+
+def patch_torch_distributed():
+    """
+    Stub torch.distributed modules that require C extensions missing in WASM.
+
+    FAIRChem's mlip_unit.py imports from torch.distributed.checkpoint,
+    torch.distributed.fsdp, and torch.distributed.device_mesh.
+    All of these trigger torch._C._distributed_c10d which doesn't exist in WASM.
+    """
+    import enum
+
+    import torch.distributed as _dist
+
+    # Core distributed API stubs
+    if not hasattr(_dist, "group"):
+
+        class _Group:
+            WORLD = None
+
+        _dist.group = _Group
+        _dist.WORLD = None
+    if not hasattr(_dist, "ReduceOp"):
+
+        class _ReduceOp:
+            SUM = 0
+            PRODUCT = 1
+            MIN = 2
+            MAX = 3
+            BAND = 4
+            BOR = 5
+            BXOR = 6
+            AVG = 7
+
+        _dist.ReduceOp = _ReduceOp
+    if not hasattr(_dist, "is_initialized"):
+        _dist.is_initialized = lambda: False
+    if not hasattr(_dist, "get_rank"):
+        _dist.get_rank = lambda group=None: 0
+    if not hasattr(_dist, "get_world_size"):
+        _dist.get_world_size = lambda group=None: 1
+
+    # torch.distributed.nn.functional
+    _dist_nn = types.ModuleType("torch.distributed.nn")
+    _dist_nn.__path__ = []
+    _dist_nn.__package__ = "torch.distributed.nn"
+    _dist_nn_func = types.ModuleType("torch.distributed.nn.functional")
+    _dist_nn_func.__package__ = "torch.distributed.nn"
+    _dist_nn_func.all_reduce = lambda tensor, *a, **k: tensor
+    _dist_nn_func.reduce_scatter = lambda output, input_list, *a, **k: output
+    _dist_nn_func.all_gather = lambda tensor_list, tensor, *a, **k: tensor_list
+    _dist_nn.functional = _dist_nn_func
+    sys.modules["torch.distributed.nn"] = _dist_nn
+    sys.modules["torch.distributed.nn.functional"] = _dist_nn_func
+
+    # C extension stubs
+    sys.modules["torch._C._distributed_c10d"] = types.ModuleType("torch._C._distributed_c10d")
+    _dc10d = types.ModuleType("torch.distributed.distributed_c10d")
+    _dc10d.__package__ = "torch.distributed"
+    sys.modules["torch.distributed.distributed_c10d"] = _dc10d
+
+    # torch.distributed._shard
+    _shard = types.ModuleType("torch.distributed._shard")
+    _shard.__path__ = []
+    _shard.__package__ = "torch.distributed._shard"
+    sys.modules["torch.distributed._shard"] = _shard
+    sys.modules["torch.distributed._shard.api"] = types.ModuleType("torch.distributed._shard.api")
+    _shard_st = types.ModuleType("torch.distributed._shard.sharded_tensor")
+    _shard_st.__path__ = []
+    sys.modules["torch.distributed._shard.sharded_tensor"] = _shard_st
+    _shard_st_meta = types.ModuleType("torch.distributed._shard.sharded_tensor.metadata")
+
+    class _TensorProperties:
+        pass
+
+    _shard_st_meta.TensorProperties = _TensorProperties
+    sys.modules["torch.distributed._shard.sharded_tensor.metadata"] = _shard_st_meta
+
+    # torch.distributed.checkpoint
+    _dcp = types.ModuleType("torch.distributed.checkpoint")
+    _dcp.__path__ = []
+    _dcp.__package__ = "torch.distributed.checkpoint"
+    _dcp.save = lambda *a, **k: None
+    _dcp.load = lambda *a, **k: None
+    _dcp_meta = types.ModuleType("torch.distributed.checkpoint.metadata")
+    _dcp_meta.TensorProperties = _TensorProperties
+
+    class _BytesStorageMetadata:
+        pass
+
+    class _TensorStorageMetadata:
+        pass
+
+    class _Metadata:
+        pass
+
+    _dcp_meta.BytesStorageMetadata = _BytesStorageMetadata
+    _dcp_meta.TensorStorageMetadata = _TensorStorageMetadata
+    _dcp_meta.Metadata = _Metadata
+    _dcp.metadata = _dcp_meta
+    sys.modules["torch.distributed.checkpoint"] = _dcp
+    sys.modules["torch.distributed.checkpoint.metadata"] = _dcp_meta
+
+    for sub in [
+        "state_dict",
+        "stateful",
+        "planner",
+        "storage",
+        "default_planner",
+        "filesystem",
+        "optimizer",
+        "format_utils",
+    ]:
+        _sub_mod = types.ModuleType(f"torch.distributed.checkpoint.{sub}")
+        _sub_mod.__package__ = "torch.distributed.checkpoint"
+        sys.modules[f"torch.distributed.checkpoint.{sub}"] = _sub_mod
+        setattr(_dcp, sub, _sub_mod)
+
+    # format_utils stubs
+    sys.modules["torch.distributed.checkpoint.format_utils"].dcp_to_torch_save = lambda *a, **k: None
+    sys.modules["torch.distributed.checkpoint.format_utils"].torch_save_to_dcp = lambda *a, **k: None
+
+    # state_dict stubs
+    _sd_mod = sys.modules["torch.distributed.checkpoint.state_dict"]
+    _sd_mod.get_model_state_dict = lambda model, *a, **k: model.state_dict() if hasattr(model, "state_dict") else {}
+    _sd_mod.set_model_state_dict = (
+        lambda model, sd, *a, **k: model.load_state_dict(sd) if hasattr(model, "load_state_dict") else None
+    )
+    _sd_mod.get_optimizer_state_dict = (
+        lambda model, optim, *a, **k: optim.state_dict() if hasattr(optim, "state_dict") else {}
+    )
+    _sd_mod.get_state_dict = lambda model, *a, **k: model.state_dict() if hasattr(model, "state_dict") else {}
+    _sd_mod.set_state_dict = lambda model, sd, *a, **k: None
+
+    class _StateDictOptions:
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    _sd_mod.StateDictOptions = _StateDictOptions
+
+    # stateful stub
+    class _Stateful:
+        pass
+
+    sys.modules["torch.distributed.checkpoint.stateful"].Stateful = _Stateful
+
+    # torch.distributed.fsdp
+    _fsdp = types.ModuleType("torch.distributed.fsdp")
+    _fsdp.__path__ = []
+    _fsdp.__package__ = "torch.distributed.fsdp"
+    sys.modules["torch.distributed.fsdp"] = _fsdp
+    for fsdp_sub in ["fully_sharded_data_parallel", "api", "wrap", "sharded_grad_scaler"]:
+        _fsub = types.ModuleType(f"torch.distributed.fsdp.{fsdp_sub}")
+        _fsub.__package__ = "torch.distributed.fsdp"
+        sys.modules[f"torch.distributed.fsdp.{fsdp_sub}"] = _fsub
+        setattr(_fsdp, fsdp_sub, _fsub)
+
+    # FSDP wrap policy stubs
+    class _ModuleWrapPolicy:
+        def __init__(self, module_classes=None):
+            self.module_classes = module_classes or set()
+
+    _fsdp_wrap = sys.modules["torch.distributed.fsdp.wrap"]
+    _fsdp_wrap.ModuleWrapPolicy = _ModuleWrapPolicy
+    _fsdp_wrap.lambda_auto_wrap_policy = lambda *a, **k: None
+    _fsdp_wrap.transformer_auto_wrap_policy = lambda *a, **k: None
+
+    # FSDP classes
+    class _FullyShardedDataParallel(torch.nn.Module):
+        def __init__(self, module, *a, **k):
+            super().__init__()
+            self.module = module
+
+    class _ShardingStrategy(enum.Enum):
+        FULL_SHARD = "FULL_SHARD"
+        SHARD_GRAD_OP = "SHARD_GRAD_OP"
+        NO_SHARD = "NO_SHARD"
+        HYBRID_SHARD = "HYBRID_SHARD"
+
+    class _MixedPrecision:
+        def __init__(self, *a, **k):
+            pass
+
+    class _CPUOffload:
+        def __init__(self, offload_params=False):
+            self.offload_params = offload_params
+
+    class _BackwardPrefetch(enum.Enum):
+        BACKWARD_PRE = "BACKWARD_PRE"
+        BACKWARD_POST = "BACKWARD_POST"
+
+    class _StateDictTypeFSDP(enum.Enum):
+        FULL_STATE_DICT = 0
+        LOCAL_STATE_DICT = 1
+        SHARDED_STATE_DICT = 2
+
+    _fsdp.FullyShardedDataParallel = _FullyShardedDataParallel
+    _fsdp.ShardingStrategy = _ShardingStrategy
+    _fsdp.MixedPrecision = _MixedPrecision
+    _fsdp.CPUOffload = _CPUOffload
+    _fsdp.BackwardPrefetch = _BackwardPrefetch
+    _fsdp.StateDictType = _StateDictTypeFSDP
+
+    # FSDP StateDictConfig stubs
+    class _StateDictConfig:
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    class _ShardedStateDictConfig(_StateDictConfig):
+        pass
+
+    class _FullStateDictConfig(_StateDictConfig):
+        def __init__(self, offload_to_cpu=False, rank0_only=False, **k):
+            super().__init__(**k)
+            self.offload_to_cpu = offload_to_cpu
+            self.rank0_only = rank0_only
+
+    class _FullOptimStateDictConfig(_StateDictConfig):
+        def __init__(self, offload_to_cpu=False, rank0_only=False, **k):
+            super().__init__(**k)
+
+    _fsdp.StateDictConfig = _StateDictConfig
+    _fsdp.ShardedStateDictConfig = _ShardedStateDictConfig
+    _fsdp.FullStateDictConfig = _FullStateDictConfig
+    _fsdp.FullOptimStateDictConfig = _FullOptimStateDictConfig
+    _fsdp.LocalStateDictConfig = type("LocalStateDictConfig", (_StateDictConfig,), {})
+    _fsdp.OptimStateDictConfig = type("OptimStateDictConfig", (_StateDictConfig,), {})
+    _fsdp.ShardedOptimStateDictConfig = type("ShardedOptimStateDictConfig", (_StateDictConfig,), {})
+
+    # torch.distributed.device_mesh
+    _dm = types.ModuleType("torch.distributed.device_mesh")
+    _dm.__package__ = "torch.distributed"
+
+    class _DeviceMesh:
+        def __init__(self, *a, **k):
+            pass
+
+    _dm.DeviceMesh = _DeviceMesh
+    _dm.init_device_mesh = lambda *a, **k: _DeviceMesh()
+    sys.modules["torch.distributed.device_mesh"] = _dm
+
+    # torch.distributed.tensor (DTensor)
+    _dtensor = types.ModuleType("torch.distributed.tensor")
+    _dtensor.__path__ = []
+    _dtensor.__package__ = "torch.distributed.tensor"
+
+    class _DTensor:
+        pass
+
+    _dtensor.DTensor = _DTensor
+    sys.modules["torch.distributed.tensor"] = _dtensor
+
+    # torch.distributed.algorithms
+    _dalgo = types.ModuleType("torch.distributed.algorithms")
+    _dalgo.__path__ = []
+    _dalgo.__package__ = "torch.distributed.algorithms"
+    sys.modules["torch.distributed.algorithms"] = _dalgo
+
+    print("✓ Torch distributed patches applied")
+
+
+# ==============================================================================
+# Stub helpers
+# ==============================================================================
+
+
+def _make_stub_module(name, attrs=None, submodules=None):
+    """Create a stub module with optional attributes and submodules."""
+    from importlib.machinery import ModuleSpec
+
+    mod = types.ModuleType(name)
+    mod.__path__ = []
+    mod.__package__ = name
+    mod.__version__ = "0.0.0"
+    mod.__spec__ = ModuleSpec(name, None, is_package=True)
+    if attrs:
+        for k, v in attrs.items():
+            setattr(mod, k, v)
+    sys.modules[name] = mod
+    if submodules:
+        for sub_name in submodules:
+            full_name = f"{name}.{sub_name}"
+            sub_mod = types.ModuleType(full_name)
+            sub_mod.__path__ = []
+            sub_mod.__package__ = name
+            sub_mod.__spec__ = ModuleSpec(full_name, None, is_package=True)
+            setattr(mod, sub_name, sub_mod)
+            sys.modules[full_name] = sub_mod
+    return mod
 
 
 # ==============================================================================
@@ -228,61 +638,9 @@ def patch_matscipy():
     print("✓ Matscipy patches applied")
 
 
-# ==============================================================================
-# LMDB and HDF5 patches
-# ==============================================================================
-
-
-def patch_mace_training():
-    """
-    Stub lmdb and h5py packages.
-
-    These are C-extension packages used by MACE's training/dataset code
-    but not needed for inference. Stubs allow imports to succeed.
-    """
-    for _pkg in ("lmdb", "h5py"):
-        if _pkg not in sys.modules:
-            sys.modules[_pkg] = types.ModuleType(_pkg)
-
-    print("✓ LMDB and HDF5 stubs applied")
-
-
-# ==============================================================================
-# MACE tools patches
-# ==============================================================================
-
-
-def patch_mace_tools():
-    """
-    Fix MACE's torch_geometric import order issues in Pyodide.
-
-    In Pyodide, torch_geometric.data may not be set during circular imports.
-    Pre-importing ensures the attribute is available when MACE needs it.
-    """
-    try:
-        import importlib as _importlib
-
-        _tg = _importlib.import_module("mace.tools.torch_geometric")
-        _tg_data = _importlib.import_module("mace.tools.torch_geometric.data")
-        _tg.data = _tg_data
-        print("✓ MACE tools patches applied")
-    except Exception as e:
-        print(f"⚠ MACE tools patches skipped: {e}")
-
-
-# ==============================================================================
-# Convenience function to apply all patches
-# ==============================================================================
-
-
-def apply_all_patches():
-    """Apply all torch and MACE patches for Pyodide in one call."""
-    if is_pyodide_environment():
-        patch_torch_linalg()
-        patch_torch_testing()
-        patch_matscipy()
-        patch_mace_training()
-        patch_mace_tools()
-        print("\n✅ All Pyodide patches applied successfully!")
-    else:
-        print("⚠ Not in Pyodide environment. Patches not applied.")
+def apply_common_torch_patches():
+    """Apply shared Pyodide patches needed by torch-based MLFF packages."""
+    patch_torch_linalg()
+    patch_torch_compiler()
+    patch_torch_testing()
+    patch_matscipy()
